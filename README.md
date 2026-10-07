@@ -45,6 +45,14 @@ bun run dev
 
 Open the local URL printed by Vite (normally `http://localhost:5173`). The generated counter is a scaffold, not the private application: authentication and backend integration are not implemented.
 
+## Project-local WhatsApp access (Pi)
+
+On the configured Ubuntu workstation, Pi loads WhatsApp only from this repository's `.pi/mcp.json`. That file is machine-specific and locally Git-ignored; it is not required to run the frontend. There is no user-level WhatsApp MCP entry.
+
+The local `whatsapp-bridge.service` must be running. From this repository root, run `pi mcp list` to check the connection, or use `/mcp` inside Pi. After changing configuration, use `/reload` in existing Pi sessions. Pi requires trust before loading project-local MCP configuration.
+
+Only read/search tools and received-media download are exposed; send/mutation tools are hidden. The standing WhatsApp safety instruction is in this repository's `AGENTS.md`.
+
 ## Scaffold choices
 
 The foundation was generated with `create-better-agent-stack@2.0.0`, selecting features instead of a preset:

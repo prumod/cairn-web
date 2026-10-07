@@ -1,0 +1,13 @@
+flowchart LR
+    C["Concurso"]
+    -->|"Concurso selecionado"| P["Proposta"]
+    -->|"Proposta adjudicada"| O["Obra"]
+    -->|"Necessidade de materiais"| S["Stock"]
+
+    S -->|"Stock insuficiente"| Q["Processo de Cotação"]
+    Q -->|"Fornecedor selecionado"| O
+
+    O -->|"Planear"| CR["Cronograma"]
+    CR -->|"Executar tarefas"| O
+
+    O -->|"Obra concluída"| G["Garantia / Pós-Obra"]

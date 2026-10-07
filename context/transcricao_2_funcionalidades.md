@@ -4,7 +4,7 @@
 
 Esta lista consolida as **prioridades acordadas com o utilizador nesta conversa**, com referências às fontes. Não constitui aprovação do utilizador entrevistado, validação técnica ou jurídica. A cobertura do primeiro mockup abaixo é uma proposta de representação destas prioridades; este documento não implementa o protótipo.
 
-A base cumulativa inclui os materiais de trabalho T1/T2, uma ideia inicial, um mapeamento de plataformas e notas visuais. Os materiais de entrevista originais ficam fora deste PR; as referências a T1/T2 e secções permitem rastrear a origem no material de trabalho. As transcrições são textos revistos, com limitações e trechos incertos; não são validação jurídica nem documentação de APIs.
+A base cumulativa inclui os materiais de trabalho T1/T2, uma ideia inicial, um mapeamento de plataformas e notas visuais. Os ficheiros de origem são publicados com este documento para permitir rastrear as referências. As transcrições são textos revistos, com limitações e trechos incertos; não são validação jurídica nem documentação de APIs.
 
 **Decisão de âmbito atual:** o percurso começa em **Início** e termina em **Submeter proposta na plataforma**. Coincide com a escolha explícita da transcrição 2, §21. Descoberta, decisão e preparação entram; avaliação, adjudicação, contratação, execução e pós-obra não entram no primeiro protótipo.
 
@@ -182,8 +182,10 @@ O conjunto mínimo de exemplos cobre anúncio relevante, convite, pesquisa vazia
 ## Referências
 
 - **Diagramas Now:** [entidades](transcricao_2_now_diagrama-de-entidades.mermaid), [fluxo de trabalho](transcricao_2_now_diagrama-do-fluxo-de-trabalho-do-derlan.mermaid), [estados](<transcricao_2_now_concurso-público-diagrama de estados.mermaid>) e [percurso principal](transcricao_2_now_percurso-mais-importante-diagrama-de-entidades.mermaid). Fixam o limite do Now.
-- **T1/T2:** secções numeradas das transcrições de trabalho; os originais não estão incluídos neste PR.
-- **Contexto adicional:** ideia inicial, mapeamento de plataformas e notas visuais de trabalho; os ficheiros de origem não estão incluídos neste PR.
+- **T1:** [transcrição 1](transcricao1_gestao_obras.md), secções numeradas citadas acima.
+- **T2:** [transcrição 2](transcricao2_gestao_obras.txt), secções numeradas citadas acima.
+- **Contexto adicional:** [ideia inicial](ideia_inicial.txt), [mapeamento de plataformas](transcricao1_mapping-plataforma-dados.txt) e [notas visuais](<transcricao1_Notas Iniciais Projeto.jpeg>).
+- **Diagramas históricos da transcrição 1:** [entidades](transcricao1_diagrama-de-entidades.mermaid), [fluxo de trabalho](transcricao1_diagrama-do-fluxo-de-trabalho-do-derlan.mermaid), [estados](<transcricao1_concurso-público-diagrama de estados.mermaid>) e [percurso principal](transcricao1_percurso-mais-importante-diagrama-de-entidades.mermaid).
 
 As decisões desta conversa prevalecem sobre classificações anteriores deste documento. Os diagramas históricos permanecem intactos.
 

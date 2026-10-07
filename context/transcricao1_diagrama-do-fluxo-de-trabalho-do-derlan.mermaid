@@ -1,0 +1,133 @@
+flowchart TD
+
+    START([Início])
+
+    %% =========================
+    %% DESCOBERTA DO CONCURSO
+    %% =========================
+
+    START --> A[Consultar Diário da República]
+    A --> B{Existe concurso relevante?}
+
+    B -- Não --> A
+    B -- Sim --> C[Analisar anúncio do concurso]
+
+    %% Convites
+    EMAIL[Receber aviso por e-mail]
+    EMAIL --> CONVITE[Consultar convite na plataforma]
+    CONVITE --> D{Participar?}
+
+    C --> D
+
+    D -- Não --> FIM1([Não concorrer])
+    D -- Sim --> E[Aceder à plataforma de submissão]
+
+    %% =========================
+    %% PREPARAÇÃO DA PROPOSTA
+    %% =========================
+
+    E --> F[Obter mapas e documentos do concurso]
+    F --> G[Analisar requisitos]
+    G --> H[Preparar proposta]
+
+    H --> H1[Preparar documentação]
+    H --> H2[Preencher mapas / medições]
+    H --> H3[Preparar cronograma financeiro]
+    H --> H4[Definir valor da proposta]
+
+    %% Cotações
+    H4 --> I{Necessita preços de materiais / serviços?}
+
+    I -- Sim --> J[Procurar / contactar fornecedores]
+    J --> K[Receber cotações por telefone ou e-mail]
+    K --> L[Comparar preços e condições]
+    L --> M[Escolher fornecedor / preço para orçamento]
+
+    I -- Não --> N[Finalizar proposta]
+    M --> N
+
+    %% =========================
+    %% SUBMISSÃO
+    %% =========================
+
+    N --> O[Confirmar documentos obrigatórios]
+    O --> P[Verificar prazo limite]
+    P --> Q[Submeter proposta na plataforma]
+
+    Q --> R[Esperar resultado do concurso]
+
+    %% Portal BASE é ocasional
+    R -. consulta ocasional .-> BASE[Consultar Portal BASE<br/>para verificar vencedor e valor]
+
+    %% =========================
+    %% RESULTADO
+    %% =========================
+
+    R --> S{Empresa ganhou?}
+
+    S -- Não --> FIM2([Fim do processo deste concurso])
+
+    S -- Sim --> T[Registar / guardar dados da obra no SAGE]
+
+    %% =========================
+    %% PREPARAÇÃO DA OBRA
+    %% =========================
+
+    T --> U[Preparar gestão da obra]
+    U --> V[Usar Excel para gestão detalhada]
+
+    V --> W[Verificar materiais necessários]
+    W --> X{Existe stock suficiente?}
+
+    X -- Não --> Y[Contactar fornecedores]
+    Y --> Z[Obter e comparar cotações]
+    Z --> AA[Comprar / encomendar materiais]
+
+    X -- Sim --> AB[Utilizar stock existente]
+    AA --> AC[Preparar execução]
+    AB --> AC
+
+    %% =========================
+    %% EXECUÇÃO DA OBRA
+    %% =========================
+
+    AC --> AD[Auto de consignação / início do prazo]
+
+    AD --> AE[Executar obra]
+
+    AE --> AF[Gerir funcionários por obra]
+    AE --> AG[Controlar materiais e stock]
+    AE --> AH[Controlar custos]
+    AE --> AI[Controlar tarefas e prazos]
+
+    AI --> AJ{Existe bloqueio ou dependência?}
+
+    AJ -- Entrega de material --> AK[Esperar entrega]
+    AJ -- Tarefa anterior --> AL[Esperar conclusão da tarefa]
+    AJ -- Tempo de espera --> AM[Esperar período necessário<br/>ex.: secagem]
+    AJ -- Condições externas --> AN[Esperar condições adequadas<br/>ex.: chuva]
+    AJ -- Não --> AO[Continuar execução]
+
+    AK --> AO
+    AL --> AO
+    AM --> AO
+    AN --> AO
+
+    AO --> AP{Obra concluída?}
+
+    AP -- Não --> AE
+    AP -- Sim --> AQ[Encerrar execução da obra]
+
+    %% =========================
+    %% PÓS-OBRA
+    %% =========================
+
+    AQ --> AR[Período de garantia]
+    AR --> AS[Eventuais vistorias]
+    AS --> AT{Está tudo conforme?}
+
+    AT -- Sim --> AU[Possível libertação de retenção]
+    AT -- Não --> AV[Resolver problemas identificados]
+    AV --> AS
+
+    AU --> END([Fim])

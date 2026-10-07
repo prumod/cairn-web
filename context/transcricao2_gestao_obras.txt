@@ -1,0 +1,517 @@
+# Projeto — Texto revisto em Português Técnico Simplificado
+
+## 1. Objetivo geral
+
+O programa deve apoiar a gestão da empresa e das obras.
+
+O programa deve registar os funcionários da empresa.
+
+O programa deve registar quanto foi gasto em cada obra.
+
+O programa deve registar quanto foi recebido em cada obra.
+
+A versão Plus deve acrescentar funções de inteligência artificial.
+
+A inteligência artificial deve identificar os concursos públicos disponíveis no dia.
+
+A pesquisa deve considerar um raio definido a partir da localização da empresa.
+
+A aplicação também deve consultar dados sobre empresas concorrentes.
+
+A consulta deve mostrar os concursos em que cada empresa concorrente participou.
+
+A consulta também deve mostrar os concursos que cada empresa concorrente ganhou.
+
+O mapa deve ser uma visualização central da aplicação.
+
+## 2. Dados públicos e API
+
+O professor mostrou interesse na pesquisa de empresas concorrentes através de dados do governo.
+
+A conversa indicou que alguns destes dados já podem ser consultados diretamente através de uma API.
+
+A API pode fornecer dados sem obrigar a inteligência artificial a pesquisar manualmente as fontes.
+
+Foi referida uma tese usada como referência para o trabalho.
+
+Depois da leitura da tese, foram identificadas informações desatualizadas.
+
+O Diário da República foi referido como um possível exemplo dessa desatualização.
+
+Atualmente, segundo a conversa, alguns dados do Diário da República podem ser obtidos diretamente.
+
+O Diário da República é consultado todos os dias úteis no processo de trabalho descrito.
+
+Todos os dias podem ser publicados novos anúncios de obras.
+
+Foi dado um exemplo em Oliveira de Azeméis.
+
+O exemplo era a construção de um parque infantil com o valor de 23 000 euros.
+
+A obra foi considerada pequena.
+
+Mesmo assim, a empresa onde trabalha um dos participantes poderia analisar a participação nesse concurso.
+
+## 3. Modelação e definição do âmbito
+
+A primeira parte do projeto deve ser a modelação.
+
+A equipa deve definir o âmbito antes de avançar com a implementação.
+
+A equipa deve decidir quais as funções que entram no projeto.
+
+Um elemento pode começar a organizar o código.
+
+Outro elemento pode organizar a modelação.
+
+Depois, a equipa deve rever o que entra e o que fica fora do projeto.
+
+## 4. Utilização do Diário da República
+
+A equipa procurou compreender o processo atual de consulta do Diário da República.
+
+O objetivo foi identificar o que o utilizador procura e o que faz depois da consulta.
+
+No Diário da República existem a primeira série e a segunda série.
+
+Na segunda série existe a área de contratos públicos.
+
+Essa área apresenta os concursos publicados no dia.
+
+Os concursos podem pertencer a várias regiões do país.
+
+A consulta pode exigir a análise de várias páginas.
+
+Foi referido um exemplo com seis páginas de 25 resultados.
+
+Este processo consome tempo.
+
+Segundo a experiência descrita, a maioria dos resultados pode corresponder a obras.
+
+O sistema atual não apresenta um filtro simples para a necessidade descrita.
+
+O utilizador tem de percorrer e analisar os resultados individualmente.
+
+A aplicação deve reduzir este trabalho manual.
+
+Um exemplo de consulta seria:
+
+“Quais são as obras publicadas hoje no Diário da República num raio de X quilómetros da empresa?”
+
+O sistema deve usar o mapa para apresentar os resultados.
+
+O sistema pode, por exemplo, indicar uma obra em Oliveira de Azeméis.
+
+## 5. Plataforma Asingove/AcinGov e peças do concurso
+
+Depois de identificar uma obra, o utilizador consulta a plataforma Asingove/AcinGov.
+
+A plataforma é paga.
+
+A plataforma permite obter as peças do concurso.
+
+As peças incluem desenhos da obra.
+
+As peças também incluem o memorial descritivo e outros documentos da obra.
+
+Foi referido o Vortal como uma plataforma semelhante.
+
+Segundo a conversa, a plataforma Asingove/AcinGov é a mais usada no processo descrito.
+
+O anúncio do concurso apresenta o valor do concurso público.
+
+O anúncio também apresenta a localização e o prazo da obra.
+
+O processo inclui outros fatores.
+
+Um desses fatores é verificar se a empresa está habilitada para executar o serviço.
+
+## 6. Preparação da proposta
+
+Depois de obter as peças, o utilizador prepara a lista de preços unitários.
+
+O utilizador atribui um preço a cada item da lista.
+
+Depois, o utilizador calcula o preço final da proposta.
+
+A empresa usa esse trabalho para preparar a participação no concurso.
+
+O processo também inclui documentação.
+
+O processo pode incluir um cronograma financeiro.
+
+Por exemplo, uma obra pode ter um prazo de três meses.
+
+Nesse caso, o cronograma pode indicar a percentagem prevista para cada mês.
+
+Foi considerado que parte deste detalhe pode ultrapassar o âmbito da apresentação inicial.
+
+A apresentação deve concentrar-se na gestão e na inteligência artificial.
+
+O objetivo é reduzir o tempo gasto no processo.
+
+A redução do tempo deve aumentar a produtividade da empresa.
+
+## 7. Pesquisa por região e empresas concorrentes
+
+Foi usado Sever do Vouga como exemplo da localização da empresa.
+
+Uma pesquisa regional pode incluir Águeda, Aveiro e Oliveira de Azeméis.
+
+A aplicação deve permitir definir um raio de pesquisa.
+
+A aplicação deve procurar anúncios de obras dentro desse raio.
+
+A inteligência artificial deve apoiar a consulta dos dados obtidos através da API.
+
+A aplicação também pode usar o Portal BASE.
+
+O Portal BASE pode apoiar a consulta de informação sobre empresas concorrentes.
+
+A consulta pode identificar concursos em que uma empresa concorrente participou.
+
+A consulta pode mostrar se a empresa concorrente ganhou o concurso.
+
+A consulta pode mostrar o valor do contrato.
+
+A aplicação também pode apresentar empresas concorrentes no mapa.
+
+O mapa pode mostrar os tipos de concursos ganhos por cada empresa concorrente.
+
+## 8. Fornecedores, materiais e prazos
+
+O mapa pode ser reutilizado noutras funções futuras.
+
+Uma função futura pode procurar fornecedores de materiais.
+
+A aplicação pode identificar empresas que vendem um material necessário.
+
+A aplicação também pode registar preços.
+
+Antes e durante a obra, a empresa procura fornecedores para obter cotações.
+
+A aplicação também pode apresentar linhas temporais dos prazos dos concursos.
+
+Esta visualização complementa o mapa.
+
+O mapa apresenta a localização.
+
+A linha temporal apresenta os prazos.
+
+## 9. Habilitações e requisitos da empresa
+
+A aplicação deve considerar os requisitos necessários para participar num concurso.
+
+Um requisito pode ser a classe da empresa.
+
+A classe pode limitar os valores dos concursos em que a empresa pode participar.
+
+A conversa apresentou valores de classes apenas como exemplo aproximado.
+
+A aplicação também deve considerar as licenças da empresa.
+
+Uma empresa pode não ter habilitação adequada para determinada área técnica.
+
+Foi dado o exemplo da área de energia.
+
+Nesse caso, a empresa pode decidir não participar nesse tipo de concurso.
+
+A conversa indicou que estes dados são obtidos no IMPIC.
+
+O texto original não apresentou a designação completa da sigla IMPIC.
+
+## 10. Pesquisa de preços de materiais
+
+O Google é usado principalmente para pesquisar preços e fornecedores de materiais.
+
+Se a obra exigir um material, o utilizador procura empresas que vendem esse material.
+
+Depois, o utilizador pede um orçamento ao fornecedor.
+
+Esta atividade pode ser integrada numa versão futura da aplicação.
+
+## 11. Processo depois da conclusão da obra
+
+Depois da conclusão da obra, ocorre uma vistoria.
+
+A vistoria envolve um representante da empresa.
+
+A vistoria também envolve um representante da câmara municipal.
+
+Se a obra estiver em condições, é emitido um documento de receção provisória.
+
+A receção provisória regista a data de encerramento da obra.
+
+Depois, podem ocorrer novas vistorias durante os anos seguintes.
+
+As vistorias verificam se a obra continua em condições.
+
+Se aparecer um defeito, a empresa pode ter de reparar o serviço.
+
+Foi usado como exemplo um pavimento que apresenta um problema depois da obra.
+
+## 12. Retenção e garantia
+
+Os pagamentos podem incluir uma retenção.
+
+A retenção funciona como uma garantia no processo descrito.
+
+Foi dado um exemplo de um pagamento de 120 000 euros.
+
+Nesse exemplo, parte do valor fica retida.
+
+Se forem retidos 12 000 euros, a empresa recebe inicialmente 108 000 euros.
+
+O valor retido pode ser libertado ao longo dos anos.
+
+A libertação depende das vistorias e das condições aplicáveis.
+
+A conversa apresentou a seguinte distribuição apenas como exemplo:
+
+- 30 % no primeiro ano;
+- 30 % no segundo ano;
+- 15 % no terceiro ano;
+- 15 % no quarto ano;
+- 10 % no quinto ano.
+
+No exemplo, o quinto ano corresponde à receção definitiva.
+
+Depois da receção definitiva, o processo é encerrado.
+
+## 13. Alertas de pós-obra
+
+O controlo das vistorias e retenções é feito atualmente em Excel.
+
+No trabalho diário, alguns prazos podem ser esquecidos.
+
+Um prazo também pode ser ultrapassado antes de o utilizador reparar.
+
+A aplicação pode registar estes prazos.
+
+A aplicação pode apresentar alertas antes da data necessária.
+
+O utilizador também pode perguntar se existe uma vistoria que deve ser pedida.
+
+O sistema pode responder, por exemplo, que existe um prazo dentro de três dias.
+
+Outra opção é ordenar os registos por urgência.
+
+Os registos mais antigos ou urgentes podem aparecer primeiro.
+
+A interface também pode destacar esses registos.
+
+Esta função pode reduzir o tempo gasto no controlo pós-obra.
+
+Esta parte do processo ocorre depois da conclusão da obra.
+
+Segundo a conversa, esta situação aplica-se às obras públicas.
+
+A conversa indicou que o mesmo processo não ocorre nas obras privadas.
+
+Foi referido que cerca de 30 % das obras podem ser privadas.
+
+A maior parte do trabalho descrito corresponde a obras públicas.
+
+## 14. Processo entre a proposta e o início da obra
+
+Antes da obra existe um prazo para entregar a proposta.
+
+Foi dado o exemplo de um prazo que termina às 23:59 do próprio dia.
+
+Depois da entrega, a câmara municipal pode abrir as propostas no dia seguinte.
+
+A abertura também pode ocorrer dois dias depois.
+
+Depois, são apresentados os concorrentes e os respetivos valores.
+
+A entidade gera um relatório preliminar.
+
+Existe um prazo para uma empresa concorrente reclamar de um possível erro noutra proposta.
+
+Foi referido um prazo de cinco dias no exemplo apresentado.
+
+Segundo a experiência descrita, as reclamações não são frequentes.
+
+Depois desse prazo, é gerado o relatório final.
+
+Em seguida, são pedidos os documentos de habilitação.
+
+## 15. Avisos e documentos de habilitação
+
+Os avisos deste processo são recebidos por correio eletrónico.
+
+A plataforma Asingove/AcinGov envia um aviso sobre o prazo dos documentos de habilitação.
+
+O utilizador prepara os documentos da empresa.
+
+A conversa também referiu documentos relacionados com o registo criminal do dono da empresa.
+
+O utilizador entrega os documentos dentro do prazo.
+
+Depois, o processo inclui a minuta do contrato.
+
+Em seguida, o processo inclui o contrato.
+
+Por fim, é emitido o auto de consignação.
+
+O auto de consignação autoriza o início da obra.
+
+## 16. Ferramentas usadas atualmente
+
+Word e Excel são usados para preparar documentação.
+
+O Sage é usado principalmente para controlo depois da obra.
+
+Foram descritas duas versões do Sage.
+
+Uma versão antiga está desatualizada.
+
+Essa versão contém dados de mão de obra e equipamento.
+
+A versão nova contém valores de materiais e faturação.
+
+Os dados estão separados entre as duas versões.
+
+Por esse motivo, o utilizador cria uma folha de cálculo manual no Excel.
+
+O utilizador obtém dados do Sage antigo.
+
+O utilizador também obtém dados do Sage novo.
+
+Depois, o utilizador junta os dados na folha de cálculo.
+
+## 17. Corpo principal da aplicação
+
+A aplicação deve incluir funções de gestão de obra.
+
+A aplicação deve permitir registar equipamento.
+
+A aplicação deve permitir registar mão de obra.
+
+A aplicação deve incluir a gestão dos concursos públicos.
+
+A aplicação deve incluir funções de inteligência artificial.
+
+Estas áreas formam o corpo principal da aplicação descrita.
+
+## 18. Prioridade entre pré-obra e pós-obra
+
+A equipa discutiu se deveria começar pelo processo anterior ou posterior à obra.
+
+A conversa contém mais informação sobre o processo anterior à obra.
+
+Por esse motivo, a equipa considerou começar pelo processo anterior à obra.
+
+A gestão pós-obra pode ser desenvolvida mais tarde.
+
+A equipa considerou que existe tempo para desenvolver ambas as áreas.
+
+Mesmo assim, a prioridade inicial deve ser a gestão anterior à obra e dos concursos.
+
+## 19. Dificuldade técnica
+
+A integração entre a inteligência artificial e uma API foi identificada como uma das partes mais difíceis.
+
+A restante aplicação aproxima-se de um programa de gestão convencional.
+
+A equipa deve pedir apoio aos professores para a integração com a API.
+
+No primeiro sprint, a equipa deve começar pelas funções que já sabe implementar.
+
+Depois, a equipa pode pesquisar e desenvolver as funções mais complexas.
+
+## 20. Gestão de materiais
+
+A gestão de materiais pode ser uma função adicional.
+
+O processo pode incluir a pesquisa de fornecedores.
+
+O processo pode incluir o contacto com fornecedores.
+
+O sistema pode registar cotações recebidas.
+
+O sistema também pode comparar preços.
+
+Esta função também pode aproveitar a visualização em mapa.
+
+## 21. Limite da primeira versão
+
+A equipa discutiu diferentes limites para a primeira versão.
+
+Uma opção era acompanhar o processo até a empresa ganhar o concurso.
+
+Depois, a equipa escolheu um limite mais simples.
+
+A primeira versão termina na submissão da proposta.
+
+A primeira versão não acompanha a execução da obra.
+
+O foco principal é o processo anterior à obra.
+
+## 22. Mapa e dados geográficos
+
+O mapa deve ser uma das visualizações principais.
+
+Os mesmos dados podem ser apresentados de outras formas.
+
+A equipa pode usar uma base de dados com suporte para informação geográfica.
+
+A aplicação também precisa de uma biblioteca de mapas no front-end.
+
+Foi referido um trabalho anterior com mapas como possível referência.
+
+Também foi mencionada uma solução semelhante à usada numa aplicação de fogos.
+
+A conversa sugeriu usar PostgreSQL com um módulo para dados geográficos.
+
+## 23. Tecnologias consideradas
+
+A equipa discutiu o uso de TypeScript.
+
+A equipa também discutiu o uso de React no front-end.
+
+Foi referido que TypeScript é próximo de JavaScript.
+
+React foi considerado simples para uma aplicação dinâmica.
+
+A conversa também mencionou Angular como uma opção com mais estrutura e arquitetura definida.
+
+Um participante referiu experiência anterior com ASP e Razor.
+
+O mapa deve ser implementado no front-end com uma biblioteca adequada.
+
+A equipa ainda precisa de decidir a biblioteca de mapas.
+
+Para a base de dados, foi considerada a utilização de PostgreSQL com suporte geográfico.
+
+## 24. Back-end, estados e entidades
+
+A equipa deve definir as estruturas de dados.
+
+A equipa deve definir os estados do processo.
+
+A equipa também deve definir as entidades principais.
+
+O trabalho inicial deve dar atenção ao back-end.
+
+A modelação dos dados também deve ser uma prioridade.
+
+O mapa deve continuar como uma visualização central dos dados.
+
+## 25. Planeamento e entrega
+
+O projeto tem uma entrega prevista para 19 de novembro.
+
+A equipa deve avançar o máximo possível antes dessa data.
+
+O plano deve refletir o que a equipa consegue construir.
+
+Os requisitos também devem refletir o trabalho que a equipa consegue executar.
+
+A equipa deve evitar definir um projeto demasiado grande.
+
+Se o plano for demasiado grande, a equipa pode ter de retirar funções mais tarde.
+
+Foi discutida a possibilidade de desenvolver parte do programa antes de fechar todos os requisitos.
+
+Dessa forma, o plano pode distinguir o que já foi implementado do que será desenvolvido depois de 19 de novembro.
