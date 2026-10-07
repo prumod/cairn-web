@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "packageManager": "bun",
+  "selection": {
+    "mode": "features",
+    "requested": ["oxlint", "oxfmt", "vite-react", "react-compiler-oxc"],
+    "resolved": [
+      "typescript-node-bun",
+      "obvious-scripts",
+      "oxfmt",
+      "oxlint",
+      "vite-react",
+      "react-compiler-oxc"
+    ]
+  },
+  "features": [
+    "typescript-node-bun",
+    "obvious-scripts",
+    "oxfmt",
+    "oxlint",
+    "vite-react",
+    "react-compiler-oxc"
+  ]
+}

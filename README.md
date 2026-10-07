@@ -1,13 +1,14 @@
 # Cairn Web
 
-This repository will contain the Cairn web application. The application has not been scaffolded yet, so there is no local web server to start. This repository currently contains only the project setup and collaboration instructions.
+This repository contains the Cairn frontend in `web/`, a Bun workspace using Vite, React, and the experimental Oxc-based React Compiler. Oxlint and Oxfmt run from the repository root across the whole project. The backend is separate and is not scaffolded here.
 
 New developers: read this file first. If setup instructions change, update this README in the same pull request.
 
 ## Prerequisites
 
 - Git
-- [Bun](https://bun.sh/docs/installation), the JavaScript runtime and package manager used by this project
+- [Bun](https://bun.sh/docs/installation) 1.3.14, the JavaScript runtime and package manager used by this project
+- Node.js 22.12 or newer if running Vite with Node.js (including Vercel builds)
 - Access to the private GitHub repository
 
 Check that Git and Bun are installed:
@@ -28,24 +29,56 @@ If the organization or repository name changes, use the clone URL shown on the G
 
 ## Set up and run
 
-Install the project dependencies (none are needed yet):
+From the repository root, install the workspace dependencies:
 
 ```sh
 bun run setup
 ```
 
-`bun run update` also installs dependencies in an existing checkout. There are no application dependencies or lockfile yet.
+`bun run update` also installs dependencies in an existing checkout. Commit `bun.lock` when dependencies change; use `bun install --frozen-lockfile` for reproducible installs.
 
-The application has not been created, so `bun run dev` is not available yet. When application tooling is added, this README and `package.json` will be updated in that same pull request.
+Start the frontend:
+
+```sh
+bun run dev
+```
+
+Open the local URL printed by Vite (normally `http://localhost:5173`). The generated counter is a scaffold, not the private application: authentication and backend integration are not implemented.
+
+## Scaffold choices
+
+The foundation was generated with `create-better-agent-stack@2.0.0`, selecting features instead of a preset:
+
+```sh
+bunx create-better-agent-stack@2.0.0 --name cairn-web-features \
+  --features oxlint,oxfmt,vite-react,react-compiler-oxc \
+  --package-manager bun --no-interactive
+```
+
+This is a reference command for an empty temporary directory, not a setup command for this repository. The generated frontend was moved into `web/`, and formatting/linting dependencies and commands were kept at the root. `.agent-stack/manifest.json` records the generator selection. No preset, ESLint, Ultracite, Anti-slop, test framework, or CI workflow was selected. The Oxc compiler is enabled with `react({ compiler: true })` in `web/vite.config.ts`; it is experimental.
+
+## Deployment target
+
+The frontend is intended for Vercel, with `main` as the production branch and automatic Git deployments. Use the repository root as the Vercel Root Directory, `bun install --frozen-lockfile` as the Install Command, `bun run build` as the Build Command, and `web/dist` as the Output Directory. Use the Vite framework preset. Vercel project linking and deployments have not been configured yet.
+
+The separate backend is intended for Railway. Private data must require backend authentication; the frontend scaffold does not provide access control.
 
 ## Project commands
 
-| Command | Purpose |
-| --- | --- |
-| `bun run setup` | Prepare a fresh checkout by installing dependencies. |
-| `bun run update` | Install dependencies after updating an existing checkout. |
+| Command                | Purpose                                                          |
+| ---------------------- | ---------------------------------------------------------------- |
+| `bun run setup`        | Prepare a fresh checkout by installing dependencies.             |
+| `bun run update`       | Install dependencies after updating an existing checkout.        |
+| `bun run dev`          | Start the frontend development server.                           |
+| `bun run build`        | Build the frontend into `web/dist`.                              |
+| `bun run preview`      | Serve the built frontend locally.                                |
+| `bun run format`       | Format supported files across the repository with Oxfmt.         |
+| `bun run format:check` | Check repository formatting without writing files.               |
+| `bun run lint`         | Lint source and configuration across the repository with Oxlint. |
+| `bun run typecheck`    | Typecheck the frontend and its Vite configuration.               |
+| `bun run check`        | Run formatting, linting, typechecking, and the frontend build.   |
 
-There are no test, lint, typecheck, check, or CI commands yet. Do not treat a missing check as a passing check. Add these commands when the corresponding tools and meaningful checks exist.
+There are no tests or automated CI gates yet. Do not treat a missing test suite as a passing test suite.
 
 ## Work through GitHub
 
@@ -83,7 +116,7 @@ For a change:
 
 ## Before opening a PR
 
-There are no automated application checks yet. Review your changes and run any relevant manual check you can. In particular:
+Run `bun run check`, review your changes, and run relevant manual checks. In particular:
 
 ```sh
 git diff --check
