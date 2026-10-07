@@ -1,0 +1,49 @@
+Programa de Gestão de Obras
+
+
+
+- Campos que devem conter no programa
+
+
+Funcionários
+
+Cadastro de Obras e clientes
+
+Equipamentos
+
+Controle de Materiais
+
+Faturação (Entrada)
+
+Fornecedores
+
+Despesas (Saídas)
+
+Mapas
+
+Mapas de medição
+
+
+
+
+
+IA
+
+
+
+Pedir contato a IA dos fornecedores referente a determinado material
+
+
+Pedir Quanto já foi gerado de despesa naquela obra
+
+
+
+Quanto já faturou naquela obra e saber se a obra está no vermelho ou no verde
+
+
+
+Saber quantos % já foi concluído do mapa de medição item a item, quanto tem do estoque dos materiais
+
+
+
+Saber se aquele concurso publico está dentro do raio de trabalho da empresa (mapas)

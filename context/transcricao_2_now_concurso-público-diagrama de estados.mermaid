@@ -1,0 +1,32 @@
+stateDiagram-v2
+    %% Variante NOW; base cumulativa: transcrições 1 e 2.
+    %% Estados da participação / proposta da empresa, não fases legais do procedimento.
+    %% Limite do diagrama: submissão; não acompanha avaliação, adjudicação ou obra.
+
+    state "Participação no concurso — NOW" as Participacao {
+        [*] --> EmAnalise
+        state "Oportunidade / convite em análise" as EmAnalise
+        state "Proposta em preparação" as Preparacao
+        state "Proposta completa e revista / pronta para submissão" as Pronta
+        state "Proposta submetida na plataforma externa" as Submetida
+        state "Não participar" as NaoParticipar
+        state "Prazo ultrapassado sem submissão" as SemSubmissao
+
+        EmAnalise --> Preparacao: Rever interesse, classe, licenças e requisitos e decidir participar
+        EmAnalise --> NaoParticipar: Decidir não concorrer / recusar convite
+        EmAnalise --> SemSubmissao: Termina o prazo sem entrega
+        Preparacao --> Pronta: Rever documentos, preços, valor e cronograma exigido
+        Pronta --> Preparacao: Rever omissões ou alterações
+        Preparacao --> SemSubmissao: Termina o prazo sem entrega
+        Pronta --> SemSubmissao: Termina o prazo sem entrega
+        Pronta --> Submetida: Submeter na plataforma dentro do prazo
+        Submetida --> [*]
+        NaoParticipar --> [*]
+        SemSubmissao --> [*]
+    }
+
+    %% A revisão de classe e licenças apoia a decisão humana; regras jurídicas não estão validadas.
+    note right of Participacao
+        Submissão simulada no protótipo.
+        Fim do NOW, não do concurso.
+    end note

@@ -1,0 +1,85 @@
+flowchart TD
+    %% Evidência cumulativa: transcricao1_gestao_obras.md + transcricao2_gestao_obras.txt.
+    %% Fluxo de trabalho descrito, não automação já existente no Cairn.
+    %% NOW termina em SUBMETER. Etapas posteriores são contexto, não âmbito inicial.
+
+    subgraph NOW["NOW — Início até submissão da proposta"]
+        START(["Início"])
+        START --> DR["Consultar anúncios do dia no Diário da República<br/>2.ª série — contratos públicos"]
+        DR --> REGIAO["Analisar obras por localização e raio da empresa<br/>Cairn proposto: mapa, lista e prazos"]
+        REGIAO --> RELEVANTE{"Existe concurso relevante?"}
+        RELEVANTE -- Não --> DR
+        RELEVANTE -- Sim --> ANALISAR["Analisar anúncio<br/>Entidade, descrição, valor, localização e prazos"]
+
+        START --> EMAIL["Receber aviso de convite por e-mail"]
+        EMAIL --> CONVITE["Consultar convite na plataforma<br/>O e-mail é apenas um aviso"]
+        CONVITE --> ANALISAR
+
+        ANALISAR --> HABILITACAO["Verificar classe, licenças e requisitos da empresa<br/>Dados referidos: IMPIC; limites a confirmar"]
+        HABILITACAO --> PARTICIPAR{"Participar?"}
+        PARTICIPAR -- Não --> NAO(["Não concorrer<br/>Se houver convite, tratar recusa na plataforma"])
+        PARTICIPAR -- Sim --> PLATAFORMA["Aceder à plataforma indicada<br/>AcinGov ou outra, por exemplo Vortal"]
+        PLATAFORMA --> PECAS["Obter peças do concurso<br/>Desenhos, memorial descritivo, mapas e requisitos"]
+        PECAS --> REQUISITOS["Rever requisitos e documentos exigidos"]
+
+        REQUISITOS --> PREPARAR["Preparar conjunto da proposta<br/>Ferramentas atuais: Word e Excel"]
+        PREPARAR --> DOCUMENTOS["Preparar documentação exigida<br/>Incluindo documentos do responsável, quando pedidos"]
+        PREPARAR --> PRECOS["Preencher mapa de medições / lista de preços unitários<br/>Atribuir preço a cada item"]
+        PREPARAR --> CRONOGRAMA["Preparar cronograma financeiro, quando exigido<br/>Distribuir percentagens e valores por período"]
+
+        PRECOS --> NECESSITA{"Necessita de preços externos?"}
+        NECESSITA -- Sim --> FORNECEDORES["Pesquisar fornecedores e pedir cotações<br/>Google, telefone e e-mail; processo externo no Now"]
+        FORNECEDORES --> COMPARAR["Comparar preço, condições e validade<br/>Considerar preferência por fornecedor"]
+        COMPARAR --> VALOR["Definir preços unitários e calcular valor final<br/>Regra de margem por validar; sem percentagem fixa"]
+        NECESSITA -- Não --> VALOR
+
+        DOCUMENTOS --> REVER["Reunir e rever a proposta<br/>Documentos, mapa preenchido, valor e cronograma exigido"]
+        CRONOGRAMA --> REVER
+        VALOR --> REVER
+        REVER --> COMPLETA{"Proposta completa e revista?<br/>Documentos, preços e cronograma exigido"}
+        COMPLETA -- Não --> PREPARAR
+        COMPLETA -- Sim --> PRAZO{"Dentro do prazo de submissão?"}
+        PRAZO -- Não --> EXPIRADA(["Prazo ultrapassado sem submissão"])
+        PRAZO -- Sim --> SUBMETER["Submeter proposta na plataforma<br/>Ação externa; no protótipo, apenas simulação"]
+    end
+
+    subgraph LATER["Após submissão — contexto fora do NOW; suporte de produto proposto em LATER"]
+        SUBMETER --> ABERTURA["Aguardar abertura das propostas<br/>Consultar concorrentes e valores na plataforma"]
+        ABERTURA --> PRELIMINAR["Consultar relatório preliminar"]
+        PRELIMINAR --> RECLAMACAO["Decorrer prazo de reclamação<br/>Apresentar reclamação se necessário"]
+        RECLAMACAO --> FINAL["Consultar relatório final / decisão"]
+        FINAL -. "Consulta ocasional de adjudicação" .-> BASE["Consultar Portal BASE<br/>Vencedor e valor do contrato"]
+        FINAL --> GANHOU{"Empresa ganhou?"}
+        GANHOU -- Não --> FIMCONCURSO(["Fim da participação neste concurso"])
+        GANHOU -- Sim --> DOCSHAB["Preparar e entregar documentos de habilitação<br/>Aviso por e-mail da plataforma; prazo próprio"]
+        DOCSHAB --> MINUTA["Tratar minuta e contrato"]
+        MINUTA --> CONSIGNACAO["Auto de consignação<br/>Autoriza início da obra e do prazo de execução"]
+        CONSIGNACAO --> GESTAO["Preparar gestão da obra<br/>Reunir dados dos dois Sage no Excel"]
+        GESTAO --> STOCK{"Existe stock suficiente?"}
+        STOCK -- Não --> COMPRAR["Obter cotações e encomendar materiais"]
+        STOCK -- Sim --> USAR["Utilizar materiais existentes"]
+        COMPRAR --> EXECUTAR["Executar e gerir obra<br/>Mão de obra, equipamento, materiais, custos e tarefas"]
+        USAR --> EXECUTAR
+        EXECUTAR --> BLOQUEIO{"Existe bloqueio ou dependência?"}
+        BLOQUEIO -- Sim --> ESPERAR["Gerir entrega, tarefa anterior, secagem ou condições externas"]
+        ESPERAR --> CONCLUIDA{"Obra concluída?"}
+        BLOQUEIO -- Não --> CONCLUIDA
+        CONCLUIDA -- Não --> EXECUTAR
+        CONCLUIDA -- Sim --> VISTORIA["Realizar vistoria com empresa e entidade pública"]
+        VISTORIA --> CONFORME{"Está conforme?"}
+        CONFORME -- Não --> REPARAR["Reparar problemas identificados"]
+        REPARAR --> VISTORIA
+        CONFORME -- Sim --> PROVISORIA["Emitir receção provisória<br/>Registar data de encerramento da obra"]
+        PROVISORIA --> GARANTIA["Acompanhar garantia, vistorias e prazos<br/>Atualmente em Excel; alertas propostos"]
+        GARANTIA --> DEFEITO{"Defeitos identificados nas vistorias?"}
+        DEFEITO -- Sim --> CORRIGIR["Reparar e voltar a verificar"]
+        CORRIGIR --> GARANTIA
+        DEFEITO -- Não --> RETENCAO["Pedir libertação de retenções conforme condições<br/>Percentagens e anos do exemplo não são regras fixas"]
+        RETENCAO --> DEFINITIVA{"Condições para receção definitiva cumpridas?"}
+        DEFINITIVA -- Não --> GARANTIA
+        DEFINITIVA -- Sim --> ENCERRAR["Receção definitiva / encerramento"]
+        ENCERRAR --> FIM(["Fim"])
+    end
+
+    style NOW fill:#eef6ee,stroke:#397647
+    style LATER fill:#f4f4f4,stroke:#777777

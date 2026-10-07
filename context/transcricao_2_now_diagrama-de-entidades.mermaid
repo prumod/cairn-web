@@ -1,0 +1,47 @@
+flowchart LR
+    %% Modelo conceptual cumulativo: transcrições 1 e 2, ideia inicial e notas associadas.
+    %% Grupos não afirmam bounded contexts ou aggregate roots já validados.
+    %% Linhas sólidas: relações conceptuais. Tracejadas: fontes / interações externas.
+    %% Apenas conceitos NOW: descoberta, decisão, preparação e submissão.
+    %% Preços obtidos externamente são introduzidos manualmente; sem módulo de fornecedores.
+
+    subgraph NOW["NOW — conceitos do percurso até à submissão"]
+        EMPRESA["Empresa participante<br/>Localização de referência<br/>Classe e licenças"]
+        PESQUISA["Pesquisa de oportunidades<br/>Data de publicação e raio<br/>Visualizações: mapa, lista e linha temporal"]
+        CONCURSO["Concurso / procedimento<br/>Entidade, descrição, valor anunciado<br/>Localização, prazo da obra<br/>Prazo de entrega da proposta e plataforma"]
+        CONVITE["Convite, quando existir<br/>Entidade, referência e decisão"]
+        PECAS["Peças e requisitos do concurso<br/>Desenhos, memorial descritivo, mapas<br/>Documentos exigidos e requisitos de participação"]
+        PROPOSTA["Proposta da empresa<br/>Conjunto de documentos<br/>Valor proposto e estado de preparação"]
+        DOCUMENTO["Documento da proposta<br/>Identificação e ficheiro<br/>Obrigatoriedade e situação de preparação"]
+        MAPA["Mapa de medições / lista de preços unitários<br/>Itens, unidades e quantidades<br/>Preços unitários e valores por item"]
+        FINANCEIRO["Cronograma financeiro, quando exigido<br/>Períodos, percentagens e valores previstos"]
+        SUBMISSAO["Submissão na plataforma externa<br/>Entrega da proposta dentro do prazo<br/>Limite do NOW; simulada no protótipo"]
+
+        EMPRESA -->|"Define localização e raio"| PESQUISA
+        PESQUISA -->|"Identifica oportunidades"| CONCURSO
+        CONCURSO --- CONVITE
+        CONCURSO --- PECAS
+        EMPRESA -->|"Decide participar"| PROPOSTA
+        CONCURSO -->|"Objeto da participação"| PROPOSTA
+        PECAS -->|"Determinam conteúdo exigido"| PROPOSTA
+        PROPOSTA --- DOCUMENTO
+        PROPOSTA --- MAPA
+        PROPOSTA --- FINANCEIRO
+        PROPOSTA --> SUBMISSAO
+    end
+
+    DR["Diário da República<br/>Fonte de anúncios"]
+    IMPIC["IMPIC<br/>Fonte referida para classe e licenças"]
+    PLATAFORMA["Plataforma externa: AcinGov / Vortal<br/>Peças, convites e submissão"]
+    EMAIL["E-mail<br/>Aviso de convite"]
+    OFFICE["Word / Excel<br/>Ferramentas atuais de preparação"]
+
+    DR -. "Fonte externa; dados fictícios no protótipo" .-> CONCURSO
+    IMPIC -. "Referência externa; sem consulta real no protótipo" .-> EMPRESA
+    PLATAFORMA -. "Disponibiliza" .-> PECAS
+    PLATAFORMA -. "Disponibiliza" .-> CONVITE
+    EMAIL -. "Apenas aviso; sem integração de correio" .-> CONVITE
+    OFFICE -. "Preparação atual representada no protótipo" .-> PROPOSTA
+    SUBMISSAO -. "Ação externa; simulada no protótipo" .-> PLATAFORMA
+
+    style NOW fill:#eef6ee,stroke:#397647

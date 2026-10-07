@@ -1,0 +1,112 @@
+flowchart LR
+    %% Modelo conceptual cumulativo: transcrições 1 e 2, ideia inicial e notas associadas.
+    %% Grupos não afirmam bounded contexts ou aggregate roots já validados.
+    %% Linhas sólidas: relações conceptuais. Tracejadas: fontes / interações externas.
+    %% Grupos LATER: contexto fora do NOW e áreas de produto propostas, não compromisso de automatizar cada etapa.
+
+    subgraph NOW["NOW — conceitos do percurso até à submissão"]
+        EMPRESA["Empresa participante<br/>Localização de referência<br/>Classe e licenças"]
+        PESQUISA["Pesquisa de oportunidades<br/>Data de publicação e raio<br/>Visualizações: mapa, lista e linha temporal"]
+        CONCURSO["Concurso / procedimento<br/>Entidade, descrição, valor anunciado<br/>Localização, prazo da obra<br/>Prazo de entrega da proposta e plataforma"]
+        CONVITE["Convite, quando existir<br/>Entidade, referência e decisão"]
+        PECAS["Peças e requisitos do concurso<br/>Desenhos, memorial descritivo, mapas<br/>Documentos exigidos e requisitos de participação"]
+        PROPOSTA["Proposta da empresa<br/>Conjunto de documentos<br/>Valor proposto e estado de preparação"]
+        DOCUMENTO["Documento da proposta<br/>Identificação e ficheiro<br/>Obrigatoriedade e situação de preparação"]
+        MAPA["Mapa de medições / lista de preços unitários<br/>Itens, unidades e quantidades<br/>Preços unitários e valores por item"]
+        FINANCEIRO["Cronograma financeiro, quando exigido<br/>Períodos, percentagens e valores previstos"]
+        SUBMISSAO["Submissão na plataforma externa<br/>Entrega da proposta dentro do prazo<br/>Limite do NOW; simulada no protótipo"]
+
+        EMPRESA -->|"Define localização / capacidade a verificar"| PESQUISA
+        PESQUISA -->|"Identifica oportunidades"| CONCURSO
+        CONCURSO --- CONVITE
+        CONCURSO --- PECAS
+        EMPRESA -->|"Decide participar"| PROPOSTA
+        CONCURSO -->|"Objeto da participação"| PROPOSTA
+        PECAS -->|"Determinam conteúdo exigido"| PROPOSTA
+        PROPOSTA --- DOCUMENTO
+        PROPOSTA --- MAPA
+        PROPOSTA --- FINANCEIRO
+        PROPOSTA --> SUBMISSAO
+    end
+
+    subgraph COMPRAS["LATER — gestão integrada de fornecedores e cotações"]
+        PROCESSO["Processo de cotação<br/>Material / serviço e pedidos"]
+        FORNECEDOR["Fornecedor<br/>Nome, contactos, produtos / serviços<br/>Localização, quando conhecida"]
+        COTACAO["Cotação<br/>Preço, validade e condições<br/>Fornecedor e referência do pedido"]
+        PROCESSO --- COTACAO
+        FORNECEDOR -->|"Responde ao pedido"| COTACAO
+    end
+    COTACAO -->|"Pode informar preços; processo manual externo no NOW"| MAPA
+
+    subgraph POS_SUBMISSAO["LATER — avaliação e contratação"]
+        AVALIACAO["Avaliação do procedimento<br/>Concorrentes e valores apresentados<br/>Relatórios preliminar / final e reclamações"]
+        ADJUDICACAO["Resultado / adjudicação<br/>Adjudicatário e valor adjudicado"]
+        DOCSHAB["Documentos de habilitação pós-adjudicação<br/>Documentos da empresa e do responsável<br/>Prazo comunicado pela plataforma"]
+        CONTRATO["Minuta e contrato"]
+        CONSIGNACAO["Auto de consignação<br/>Autorização de início e contagem do prazo"]
+        SUBMISSAO --> AVALIACAO
+        AVALIACAO --> ADJUDICACAO
+        ADJUDICACAO -->|"Se adjudicado à empresa"| DOCSHAB
+        DOCSHAB --> CONTRATO
+        CONTRATO --> CONSIGNACAO
+    end
+
+    subgraph OBRA["LATER — gestão e execução da obra"]
+        O["Obra<br/>Cliente / entidade e valor adjudicado<br/>Início, prazo, estado, despesas e recebimentos"]
+        STOCK["Inventário / stock<br/>Materiais e quantidades disponíveis"]
+        PLANEAMENTO["Planeamento da obra<br/>Tarefas, datas, duração, dependências<br/>Entregas, espera e condições externas"]
+        RECURSOS["Afetação de recursos<br/>Funcionários, mão de obra e equipamento<br/>Obra, período e custos"]
+        CONSIGNACAO --> O
+        O --- STOCK
+        O --- PLANEAMENTO
+        O --- RECURSOS
+        STOCK -->|"Stock insuficiente"| PROCESSO
+        PROCESSO -->|"Encomenda de materiais"| O
+    end
+
+    subgraph POS_OBRA["LATER — pós-obra pública"]
+        PROVISORIA["Receção provisória<br/>Vistoria de conclusão e conformidade<br/>Data de encerramento da obra"]
+        GARANTIA["Garantia e acompanhamento<br/>Vistorias, defeitos e reparações<br/>Prazos e alertas propostos"]
+        RETENCAO["Retenções financeiras<br/>Valores retidos e libertações<br/>Condições e prazos aplicáveis"]
+        DEFINITIVA["Receção definitiva<br/>Encerramento do processo"]
+        O -->|"Conclusão conforme após vistoria"| PROVISORIA
+        PROVISORIA --> GARANTIA
+        GARANTIA --- RETENCAO
+        GARANTIA -->|"Condições cumpridas"| DEFINITIVA
+    end
+
+    subgraph VALIDAR["MAYBE — capacidades / cobertura a validar"]
+        ASSISTENTE["Consulta em linguagem natural<br/>Dados públicos obtidos por API<br/>Disponibilidade, cobertura e comportamento por validar"]
+        CONCORRENTES["Análise de empresas concorrentes<br/>Participações, vitórias, valores e localização<br/>Cobertura dos dados por confirmar"]
+        ASSISTENTE -. "Apoio à pesquisa" .-> PESQUISA
+        CONCORRENTES -. "Informação adicional para análise" .-> CONCURSO
+    end
+
+    DR["Diário da República<br/>Anúncios de contratos públicos"]
+    IMPIC["IMPIC<br/>Classe e licenças referidas na entrevista"]
+    PLATAFORMA["Plataforma externa: AcinGov / Vortal<br/>Peças, convites, submissão e avisos"]
+    EMAIL["E-mail / telefone"]
+    BASE["Portal BASE<br/>Consulta de contratos adjudicados"]
+    OFFICE["Word / Excel<br/>Preparação atual de documentos e mapas"]
+    SAGE["Dois Sage + Excel<br/>Dados antigos de mão de obra / equipamento<br/>Dados novos de materiais / faturação; consolidação manual"]
+
+    DR -. "Fonte de anúncios; API referida, não verificada" .-> CONCURSO
+    IMPIC -. "Fonte referida para habilitações" .-> EMPRESA
+    PLATAFORMA -. "Disponibiliza" .-> PECAS
+    PLATAFORMA -. "Disponibiliza" .-> CONVITE
+    SUBMISSAO -. "Realizada fora do Cairn" .-> PLATAFORMA
+    PLATAFORMA -. "Avisos de habilitação" .-> DOCSHAB
+    EMAIL -. "Aviso de convite" .-> CONVITE
+    EMAIL -. "Pedidos e respostas atuais" .-> PROCESSO
+    BASE -. "Consulta ocasional" .-> ADJUDICACAO
+    BASE -. "Fonte proposta; participações por validar" .-> CONCORRENTES
+    OFFICE -. "Ferramentas atuais" .-> PROPOSTA
+    SAGE -. "Gestão atual" .-> O
+    SAGE -. "Controlo atual em Excel" .-> GARANTIA
+
+    style NOW fill:#eef6ee,stroke:#397647
+    style COMPRAS fill:#f4f4f4,stroke:#777777
+    style POS_SUBMISSAO fill:#f4f4f4,stroke:#777777
+    style OBRA fill:#f4f4f4,stroke:#777777
+    style POS_OBRA fill:#f4f4f4,stroke:#777777
+    style VALIDAR fill:#fff7e6,stroke:#a87520
