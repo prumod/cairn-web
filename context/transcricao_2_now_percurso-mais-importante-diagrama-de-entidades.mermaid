@@ -1,0 +1,26 @@
+flowchart LR
+    %% Variante NOW independente; base cumulativa: transcrições 1 e 2.
+    %% O diagrama cumulativo original permanece sem alterações.
+    %% T2 §21 fixa o limite na submissão; adjudicação, obra e pós-obra ficam fora.
+    %% Apenas relações conceptuais, não uma arquitetura de agregados já decidida.
+
+    EMPRESA["Empresa<br/>Localização, classe e licenças"]
+    PESQUISA["Pesquisa de oportunidades<br/>Anúncios por data e raio<br/>Mapa, lista e prazos"]
+    CONCURSO["Concurso / convite<br/>Valor, localização e prazos<br/>Requisitos e plataforma"]
+    PECAS["Peças do concurso<br/>Desenhos, memorial e mapas"]
+    PROPOSTA["Proposta<br/>Estado de preparação e valor final"]
+    DOCUMENTOS["Documentos exigidos<br/>Checklist de preparação"]
+    PRECOS["Mapa de medições / preços unitários<br/>Itens, quantidades e preços"]
+    FINANCEIRO["Cronograma financeiro<br/>Quando exigido"]
+    SUBMISSAO["Submeter proposta na plataforma<br/>Fim do NOW; ação externa simulada no protótipo"]
+
+    EMPRESA -->|"Localização de referência"| PESQUISA
+    PESQUISA -->|"Identifica"| CONCURSO
+    EMPRESA -->|"Verificar capacidade e decidir participar"| PROPOSTA
+    CONCURSO -->|"Participação da empresa"| PROPOSTA
+    CONCURSO -->|"Obter na plataforma"| PECAS
+    PECAS -->|"Orientam preparação"| PROPOSTA
+    PROPOSTA --- DOCUMENTOS
+    PROPOSTA --- PRECOS
+    PROPOSTA --- FINANCEIRO
+    PROPOSTA -->|"Rever documentação, valor e prazo"| SUBMISSAO
