@@ -9,7 +9,7 @@ New developers: read this file first. If setup instructions change, update this 
 - Git
 - [Bun](https://bun.sh/docs/installation) 1.3.14, the JavaScript runtime and package manager used by this project
 - Node.js 22.12 or newer if running Vite with Node.js (including Vercel builds)
-- Access to the private GitHub repository
+- A GitHub account; contributors who need to push changes must accept their repository invitation
 
 Check that Git and Bun are installed:
 
@@ -21,7 +21,7 @@ bun --version
 ## Get the code
 
 ```sh
-git clone https://github.com/prumoh/cairn-web.git
+git clone https://github.com/prumod/cairn-web.git
 cd cairn-web
 ```
 
@@ -90,7 +90,7 @@ There are no tests or automated CI gates yet. Do not treat a missing test suite 
 
 ## Work through GitHub
 
-GitHub Issues are the source of truth for project work. The [Cairn Web project board](https://github.com/orgs/prumoh/projects/1) tracks work through Backlog, Ready, In Progress, In Review, and Done. The customer can describe a problem or ask a question in an Issue; they do not need to create branches, use a terminal, or understand implementation details. The senior and mid-level developers follow up and turn the problem into development work.
+GitHub Issues are the source of truth for project work. The [Cairn Web project board](https://github.com/orgs/prumod/projects/1) tracks work through Backlog, Ready, In Progress, In Review, and Done. The customer can describe a problem or ask a question in an Issue; they do not need to create branches, use a terminal, or understand implementation details. The senior and mid-level developers follow up and turn the problem into development work.
 
 For a change:
 
@@ -119,7 +119,7 @@ For a change:
    ```
 
 5. Open a Pull Request on GitHub, link the Issue (for example, `Closes #123`), and explain what changed and how you checked it. Keep PRs small.
-6. Review is optional. Changes to `main` still go through a PR, but an approval from another contributor is not required. Authors may merge their own PR after checking the diff and running the relevant checks.
+6. Changes to `main` require a PR with at least one approval. Force pushes and deletion of `main` are blocked. An organization owner may authorize a one-time admin bypass; this does not remove the approval requirement for future changes.
 7. Address any review feedback, then squash-merge and delete the merged remote branch. Agents perform the merge and branch deletion only when explicitly requested by the user.
 
 ## Before opening a PR
