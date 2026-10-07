@@ -7,4 +7,4 @@
 - Run the appropriate project checks after changes. Update tests when behavior changes, once tests exist. If a required check cannot be run, say so.
 - Update README setup instructions in the same change whenever developer setup changes.
 - Review your own diff before considering the task finished.
-- Follow the same branch, Pull Request, and review rules as human contributors. AI-generated code is not automatically merged.
+- Follow the branch and Pull Request workflow in README.md. Merge and remote branch deletion require an explicit user request.

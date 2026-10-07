@@ -111,8 +111,8 @@ For a change:
    ```
 
 5. Open a Pull Request on GitHub, link the Issue (for example, `Closes #123`), and explain what changed and how you checked it. Keep PRs small.
-6. Request a review. Changes to `main` should go through a PR and receive at least one approval. GitHub is not currently enforcing this rule because the private repository's plan does not include branch protection. Until that is resolved, do not merge your own PR; ask the organization owner if you are unsure.
-7. Address review feedback, then squash-merge after approval. GitHub deletes the merged branch automatically when configured.
+6. Review is optional. Changes to `main` still go through a PR, but an approval from another contributor is not required. Authors may merge their own PR after checking the diff and running the relevant checks.
+7. Address any review feedback, then squash-merge and delete the merged remote branch. Agents perform the merge and branch deletion only when explicitly requested by the user.
 
 ## Before opening a PR
 
