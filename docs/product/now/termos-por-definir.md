@@ -2,7 +2,7 @@
 
 Lista de trabalho para resolver o vocabulário de [Now](funcionalidades.md), ordenada do maior para o menor grau de certeza sobre o significado. A certeza indicada é uma avaliação qualitativa do apoio nas fontes, não uma aprovação pelo utilizador ou uma validação jurídica.
 
-Nenhum destes termos é tratado como definitivamente resolvido. O [GLOSSARY.md](../../GLOSSARY.md) fica reservado às definições sem incerteza e não contém atualmente definições.
+Nenhum destes termos é tratado como definitivamente resolvido. O [GLOSSARY.md](../../../GLOSSARY.md) fica reservado às definições sem incerteza e não contém atualmente definições.
 
 Uma caixa marcada significa que o significado e o nome do termo foram confirmados e que a definição correspondente foi atualizada no glossário. Confirmar um termo não equivale a validar regras jurídicas, contabilísticas ou técnicas.
 
