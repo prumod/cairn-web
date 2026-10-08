@@ -2,7 +2,7 @@
 
 **Data de consulta:** 7 de outubro de 2026. **Issue:** [#5](https://github.com/prumod/cairn-web/issues/5).
 
-**Atualização de âmbito:** a pesquisa mantém as conclusões originais e as prioridades de produto. O [wireframe atual](../system/wireframe.md) cobre Now, Later e Maybe como experiência completa sem estilos, com dados fictícios e ações simuladas; as prioridades não aparecem na interface.
+**Atualização de âmbito:** a pesquisa mantém as conclusões originais e as prioridades de produto. O [protótipo atual](../system/prototype.md) cobre Now, Later e Maybe como experiência completa, evoluindo de wireframe sem estilos para UI próxima da produção, sempre com dados fictícios e ações simuladas; as prioridades não aparecem na interface. O termo «mockup» no texto original abaixo designava a demonstração; para testes de tarefas, usar o protótipo interativo, não apenas uma imagem estática.
 
 **Requisitos comparados:** [lista Now / Later / Maybe / Never](../README.md), incluindo os 32 identificadores N01–N12, L01–L08 e M01–M12. A pesquisa não altera essas prioridades nem implementa o protótipo.
 

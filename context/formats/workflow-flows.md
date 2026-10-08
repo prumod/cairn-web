@@ -38,7 +38,7 @@ flowchart TD
     H --> END(["Fim deste percurso"])
 ```
 
-A saída «Não participar» termina a participação desta empresa, não o Concurso. O fim deste exemplo não limita a experiência completa do wireframe a Now.
+A saída «Não participar» termina a participação desta empresa, não o Concurso. O fim deste exemplo não limita a experiência completa do protótipo a Now.
 
 ## Como rever
 

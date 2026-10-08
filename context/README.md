@@ -7,9 +7,11 @@
 - [Maybe](maybe/funcionalidades.md): ideias a validar antes de compromisso.
 - [Never](never/funcionalidades.md): exclusões deliberadas; atualmente vazio.
 - [Transcriptions](transcriptions/): entrevistas e notas originais, com numeração de origem.
-- [System](system/): [ideia inicial](system/ideia_inicial.txt) e [contrato do wireframe](system/wireframe.md).
+- [System](system/): [ideia inicial](system/ideia_inicial.txt) e [contrato do protótipo interativo](system/prototype.md).
 - [Research](research/): [investigação técnica](research/pesquisa_arquitetura_cairn.md) e [pesquisa de mercado](research/pesquisa_mercado_cairn.md).
 - [Formats](formats/README.md): guias reutilizáveis e exemplos ilustrativos para modelação pontual; não são especificação do produto.
+
+O protótipo evolui na mesma implementação: primeiro wireframe sem estilos para rever estrutura e comportamento; depois design visual próximo da produção. UX e UI são revistas ao longo dessa evolução. Mockups são representações visuais de apoio, normalmente estáticas; não substituem o protótipo interativo.
 
 ## Quatro níveis de prioridade
 
@@ -18,7 +20,7 @@
 - **Maybe:** ideias que precisam de validação antes de compromisso de produção.
 - **Never:** exclusões deliberadas do produto, não apenas de uma fase. Nenhuma foi aprovada.
 
-A classificação é uma decisão de produto, não uma divisão da interface. O wireframe cobre toda a experiência de Now, Later e Maybe. Demonstrar uma capacidade não altera a prioridade, não confirma a viabilidade de integração e não constitui compromisso de produção. Gantt/Microsoft Project permanece Maybe.
+A classificação é uma decisão de produto, não uma divisão da interface. O protótipo interativo cobre toda a experiência de Now, Later e Maybe. Demonstrar uma capacidade não altera a prioridade, não confirma a viabilidade de integração e não constitui compromisso de produção. Gantt/Microsoft Project permanece Maybe.
 
 ## Estatuto das fontes e convenções
 
@@ -26,7 +28,7 @@ As prioridades foram acordadas com o utilizador, mas ainda precisam de validaç�
 
 Só os registos em `transcriptions/` usam numeração de entrevista. Os documentos derivados têm nomes descritivos e são atualizados diretamente, com histórico no Git; não se criam conjuntos `transcricao_3_*` ou snapshots numerados.
 
-Para a experiência completa e os limites técnicos da demonstração, prevalece [system/wireframe.md](system/wireframe.md).
+Para a experiência completa e os limites técnicos da demonstração, prevalece [system/prototype.md](system/prototype.md).
 
 ## Validação pendente
 
