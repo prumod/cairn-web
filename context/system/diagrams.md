@@ -6,181 +6,251 @@ Modelos conceptuais, não regras jurídicas validadas nem estruturas de backend 
 
 ## Entidades
 
-Fluxo detalhado entre entidades e relações, com a mesma notação do «Percurso principal», mas incluindo conceitos de suporte e relações fora do caminho principal. As setas indicam relações, não ordem de execução; os passos estão em «Fluxo de trabalho».
+Formato [DDD de entidades e agregados](../formats/entity-aggregate-flows.md): BC, AR, entidades de suporte, VO, composição, referências e interações entre raízes. **Todas as fronteiras e interações são hipóteses**, não decisões de backend. BC é âmbito de linguagem e regras; Now/Later/Maybe são apenas metadados de prioridade.
 
-Os conceitos são propostas de modelação derivadas das funcionalidades e entrevistas. Não fixam tabelas, cardinalidades, pertença a agregados ou campos de produção. No wireframe, os ficheiros são fictícios e as submissões simuladas; esses limites não redefinem as entidades. Sistemas externos e ferramentas aparecem num grupo distinto, ligados por linhas tracejadas; não representam integrações já disponíveis. Planeamento tipo Project/Gantt permanece Maybe; gestão de recursos e progresso continuam Later.
+Legenda: `🔷 AR:` raiz de agregado; `◽ E:` entidade de suporte; `▫ VO:` valor sem identidade própria. VO também aparecem como tipos de propriedades, por exemplo `VO Dinheiro`. Linhas `---` indicam composição proposta; linhas tracejadas `Referência:` indicam associações sem propriedade partilhada; setas `Evento:` ou `Pedido:` indicam colaboração proposta entre raízes. O grupo externo e os rótulos `Externo:` identificam fontes, ferramentas ou destinos, não integrações disponíveis.
+
+A seleção de uma oportunidade é uma ação humana: o evento representado comunica essa seleção à Participação, não muda o estado público do Concurso. Submissão e confirmação são simuladas no wireframe. Eventos não pressupõem event bus, microserviços, criação automática de registos ou efeitos externos. «Aguardar decisão» permanece estado da Participação, não uma nova entidade. Nenhum BC é classificado como core domain sem validar o seu valor estratégico.
+
+A vista do sistema acrescenta contexto Later e Maybe aos mesmos conceitos Now. Planeamento tipo Project/Gantt permanece Maybe; gestão de recursos e progresso permanecem Later.
 
 ```mermaid
 flowchart LR
 
-    subgraph NOW["NOW — descoberta e proposta"]
-        EMPRESA["Empresa participante<br/>Localização, classe e licenças declaradas"]
-        PESQUISA["Critérios de pesquisa<br/>Data de publicação e raio"]
-        ADJUDICANTE["Entidade adjudicante<br/>Identificação e contactos"]
-        CONCURSO["Concurso / procedimento<br/>Descrição e valor anunciado<br/>Localização, prazo da obra e prazo de entrega"]
-        CONVITE["Convite<br/>Destinatário, referência e informação de resposta"]
-        PECAS["Peças do concurso<br/>Desenhos, memorial descritivo e mapas"]
-        REQUISITO["Requisito do concurso<br/>Descrição, obrigatoriedade e informação por confirmar"]
-        PARTICIPACAO["Participação da empresa<br/>Empresa × concurso<br/>Decisão e estado de acompanhamento"]
-        PROPOSTA["Proposta<br/>Estado de preparação e valor proposto"]
-        CHECKLIST["Item da checklist<br/>Requisito e situação de preparação"]
-        DOCUMENTO["Documento da proposta<br/>Identificação e ficheiro"]
-        MAPA["Mapa de medições / preços unitários"]
-        ITEM["Item do mapa<br/>Descrição, unidade, quantidade e preço unitário<br/>Subtotal"]
-        FINANCEIRO["Cronograma financeiro<br/>Quando exigido"]
-        PERIODO["Período do cronograma<br/>Percentagem e valor previsto"]
-        SUBMISSAO["Submissão da proposta<br/>Referência e confirmação de entrega"]
+    subgraph BC_EMPRESAS["BC: Empresa e habilitações — hipótese | Now"]
+        EMPRESA["🔷 AR: Empresa participante<br/><br/>• Localização: VO Localização<br/>• Classe e licenças declaradas"]
+        PESQUISA["▫ VO: Critérios de pesquisa<br/>• Data de publicação<br/>• Raio e localização de referência"]
+        EMPRESA ---|"Inclui critérios"| PESQUISA
+    end
 
-        EMPRESA -->|"Referência dos critérios"| PESQUISA
-        PESQUISA -->|"Correspondem a"| CONCURSO
-        ADJUDICANTE -->|"Entidade do procedimento"| CONCURSO
-        CONCURSO -->|"Pode ter"| CONVITE
-        EMPRESA -->|"Destinatária"| CONVITE
-        CONCURSO -->|"Tem"| PECAS
-        CONCURSO -->|"Define"| REQUISITO
-        PECAS -->|"Documentam"| REQUISITO
-        EMPRESA -->|"Titular"| PARTICIPACAO
-        CONCURSO -->|"Objeto da participação"| PARTICIPACAO
-        PARTICIPACAO -->|"Pode ter"| PROPOSTA
+    subgraph BC_CONCURSOS["BC: Concursos — hipótese | Now / Later"]
+        CONCURSO["🔷 AR: Concurso / procedimento<br/><br/>• Descrição<br/>• Valor anunciado: VO Dinheiro<br/>• Localização: VO Localização<br/>• Prazo da obra e prazo de entrega<br/>• Estado"]
+        ADJUDICANTE["▫ VO: EntidadeAdjudicanteRef<br/>• Identificação e contactos de referência"]
+        CONVITE["◽ E: Convite<br/>• DestinatárioRef<br/>• Referência e informação de resposta"]
+        PECAS["◽ E: Peças do concurso<br/>• Referência e versão<br/>• Desenhos, memorial descritivo e mapas"]
+        REQUISITO["◽ E: Requisito do concurso<br/>• Identificação e descrição<br/>• Obrigatoriedade e informação por confirmar"]
+
+        CONCURSO ---|"Identifica por referência"| ADJUDICANTE
+        CONCURSO ---|"Inclui quando existe"| CONVITE
+        CONCURSO ---|"Inclui"| PECAS
+        CONCURSO ---|"Inclui"| REQUISITO
+        AVALIACAO["◽ E: Relatório de avaliação — Later<br/>• Versão preliminar / final<br/>• Propostas e valores apresentados"]
+        ADJUDICACAO["▫ VO: Resultado da adjudicação — Later<br/>• Adjudicatário: VO EmpresaRef<br/>• Valor adjudicado: VO Dinheiro"]
+        CONCURSO ---|"Inclui relatórios"| AVALIACAO
+        CONCURSO ---|"Inclui resultado quando existe"| ADJUDICACAO
+    end
+
+    subgraph BC_PROPOSTAS["BC: Propostas e participação — hipótese | Now / Later"]
+        PARTICIPACAO["🔷 AR: Participação da empresa<br/><br/>• EmpresaRef e ConcursoRef<br/>• Decisão e estado de acompanhamento"]
+        PROPOSTA["🔷 AR: Proposta<br/><br/>• ParticipaçãoRef<br/>• Estado de preparação<br/>• Valor proposto: VO Dinheiro"]
+        CHECKLIST["◽ E: Item da checklist<br/>• RequisitoRef<br/>• Situação de preparação"]
+        DOCUMENTO["◽ E: Documento da proposta<br/>• Identificação e ficheiro"]
+        MAPA["◽ E: Mapa de medições / preços unitários<br/>• Identificação e versão"]
+        ITEM["◽ E: Item do mapa<br/>• Descrição, unidade e quantidade<br/>• Preço unitário e subtotal: VO Dinheiro"]
+        FINANCEIRO["◽ E: Cronograma financeiro<br/>• Identificação e versão<br/>• Quando exigido"]
+        PERIODO["▫ VO: Período do cronograma<br/>• Intervalo: VO Período<br/>• Percentagem: VO Percentagem<br/>• Valor previsto: VO Dinheiro"]
+        SUBMISSAO["◽ E: Submissão da proposta<br/>• PropostaRef<br/>• Referência e confirmação de entrega"]
+
+        PARTICIPACAO ---|"Inclui"| SUBMISSAO
         PROPOSTA ---|"Inclui"| CHECKLIST
-        REQUISITO -->|"Referência do item"| CHECKLIST
-        CHECKLIST -->|"Pode referenciar"| DOCUMENTO
         PROPOSTA ---|"Inclui"| DOCUMENTO
         PROPOSTA ---|"Inclui"| MAPA
         MAPA ---|"Contém"| ITEM
         PROPOSTA ---|"Inclui quando exigido"| FINANCEIRO
         FINANCEIRO ---|"Contém"| PERIODO
-        PROPOSTA -->|"Objeto da submissão"| SUBMISSAO
+        RECLAMACAO["◽ E: Reclamação — Later<br/>• Referência e conteúdo"]
+        DOCSHAB["◽ E: Documento de habilitação — Later<br/>• Empresa / responsávelRef<br/>• Prazo comunicado"]
+        PARTICIPACAO ---|"Inclui quando existe"| RECLAMACAO
+        PARTICIPACAO ---|"Inclui após adjudicação quando exigido"| DOCSHAB
     end
 
-    subgraph COMPRAS["LATER — fornecedores, cotações e materiais"]
-        PROCESSO["Pedido de cotação<br/>Material / serviço e condições"]
-        FORNECEDOR["Fornecedor<br/>Identificação, contactos e localização"]
-        COTACAO["Cotação<br/>Preço, validade e condições"]
-        MATERIAL["Material<br/>Descrição e unidade"]
-        STOCK["Stock<br/>Material, quantidade e localização / obra"]
-
-        EMPRESA -->|"Titular"| PROCESSO
-        PROCESSO -->|"Destinatário"| FORNECEDOR
-        PROCESSO -->|"Objeto"| MATERIAL
-        PROCESSO -->|"Tem respostas"| COTACAO
-        FORNECEDOR -->|"Autor da cotação"| COTACAO
-        COTACAO -->|"Preço de referência para"| ITEM
-        MATERIAL -->|"Objeto do registo"| STOCK
-        EMPRESA -->|"Titular"| STOCK
+    subgraph BC_COMPRAS["BC: Compras / Orçamentação — hipótese | Later"]
+        PROCESSO["🔷 AR: Pedido de cotação<br/><br/>• EmpresaRef e MaterialRef<br/>• Serviço e condições"]
+        COTACAO["◽ E: Cotação<br/>• FornecedorRef<br/>• Preço: VO Dinheiro<br/>• Validade e condições"]
+        FORNECEDOR["🔷 AR: Fornecedor<br/><br/>• Identificação e contactos<br/>• Localização: VO Localização"]
+        PROCESSO ---|"Inclui respostas"| COTACAO
     end
 
-    subgraph POS_SUBMISSAO["LATER — acompanhamento e contratação"]
-        AVALIACAO["Relatório de avaliação<br/>Versão preliminar / final<br/>Propostas e valores apresentados"]
-        RECLAMACAO["Reclamação<br/>Referência e conteúdo"]
-        ADJUDICACAO["Adjudicação / resultado<br/>Adjudicatário e valor adjudicado"]
-        DOCSHAB["Documento de habilitação<br/>Empresa / responsável e prazo comunicado"]
-        CONTRATO["Contrato<br/>Minuta, partes e valor"]
-        CONSIGNACAO["Auto de consignação<br/>Referência, data e condições de início"]
-
-        CONCURSO -->|"Tem relatórios"| AVALIACAO
-        AVALIACAO -->|"Pode referenciar"| PROPOSTA
-        PARTICIPACAO -->|"Pode ter"| RECLAMACAO
-        RECLAMACAO -->|"Incide sobre"| AVALIACAO
-        CONCURSO -->|"Pode ter resultado"| ADJUDICACAO
-        EMPRESA -->|"Possível adjudicatária"| ADJUDICACAO
-        PARTICIPACAO -->|"Pode exigir após adjudicação"| DOCSHAB
-        ADJUDICACAO -->|"Base do contrato"| CONTRATO
-        EMPRESA -->|"Parte contratante"| CONTRATO
-        ADJUDICANTE -->|"Parte contratante"| CONTRATO
-        CONTRATO -->|"Pode ter"| CONSIGNACAO
+    subgraph BC_STOCK["BC: Materiais / Stock — hipótese | Later"]
+        MATERIAL["🔷 AR: Material<br/><br/>• Identificação, descrição e unidade"]
+        STOCK["🔷 AR: Inventário / Stock<br/><br/>• EmpresaRef<br/>• Localização / ObraRef"]
+        ITEMSTOCK["◽ E: Item de stock<br/>• MaterialRef<br/>• Quantidade"]
+        STOCK ---|"Inclui"| ITEMSTOCK
     end
 
-    subgraph OBRA["LATER — obras, recursos e finanças"]
-        O["Obra<br/>Identificação, localização, início, prazo e estado"]
-        CLIENTE["Cliente<br/>Identificação e contactos"]
-        FUNCIONARIO["Funcionário<br/>Identificação e informação de mão de obra"]
-        EQUIPAMENTO["Equipamento<br/>Identificação e custos"]
-        RECURSOS["Afetação de recursos<br/>Obra, período e custos"]
-        DESPESA["Despesa da obra<br/>Descrição, data e valor"]
-        FATURACAO["Registo de faturação<br/>Obra, data e valor faturado"]
-        RECEBIMENTO["Recebimento<br/>Data e valor recebido"]
-        PROGRESSO["Registo de progresso<br/>Item do mapa e percentagem concluída"]
-
-        CONTRATO -->|"Contrato da obra"| O
-        CONSIGNACAO -->|"Referência de início"| O
-        CLIENTE -->|"Cliente da obra"| O
-        O -->|"Pode ter stock"| STOCK
-        O -->|"Tem afetações"| RECURSOS
-        RECURSOS -->|"Pode referenciar"| FUNCIONARIO
-        RECURSOS -->|"Pode referenciar"| EQUIPAMENTO
-        O -->|"Tem"| DESPESA
-        O -->|"Tem"| FATURACAO
-        FATURACAO -->|"Pode ter recebimentos"| RECEBIMENTO
-        O -->|"Tem"| PROGRESSO
-        PROGRESSO -->|"Referência"| ITEM
+    subgraph BC_CONTRATACAO["BC: Contratação — hipótese | Later"]
+        CONTRATO["🔷 AR: Contrato<br/><br/>• ProcedimentoRef e ParticipaçãoRef<br/>• Partes, minuta e valor: VO Dinheiro"]
+        CONSIGNACAO["◽ E: Auto de consignação<br/>• Referência e data<br/>• Condições de início"]
+        RETENCAO["◽ E: Retenção financeira<br/>• Valor retido: VO Dinheiro<br/>• Condições e libertações"]
+        CONTRATO ---|"Inclui quando existe"| CONSIGNACAO
+        CONTRATO ---|"Inclui quando prevista"| RETENCAO
     end
 
-    subgraph POS_OBRA["LATER — pós-obra pública"]
-        PROVISORIA["Receção provisória<br/>Referência, data e conformidade"]
-        GARANTIA["Garantia da obra<br/>Condições e prazos"]
-        VISTORIA["Vistoria<br/>Data e resultado"]
-        REPARACAO["Reparação<br/>Problema identificado e situação"]
-        RETENCAO["Retenção financeira<br/>Valor retido, condições e libertações"]
-        DEFINITIVA["Receção definitiva<br/>Referência e data"]
-
-        O -->|"Pode ter"| PROVISORIA
-        O -->|"Pode ter"| GARANTIA
-        O -->|"Tem registos de"| VISTORIA
-        VISTORIA -->|"Pode originar"| REPARACAO
-        GARANTIA -->|"Pode ter acompanhamento por"| VISTORIA
-        CONTRATO -->|"Pode prever"| RETENCAO
-        O -->|"Pode ter"| DEFINITIVA
+    subgraph BC_OBRA["BC: Gestão da obra — hipótese | Later"]
+        O["🔷 AR: Obra<br/><br/>• ContratoRef e ClienteRef<br/>• Identificação, localização, início, prazo e estado"]
+        CLIENTE["🔷 AR: Cliente<br/><br/>• Identificação e contactos"]
+        DESPESA["◽ E: Despesa da obra<br/>• Descrição, data e valor: VO Dinheiro"]
+        PROGRESSO["◽ E: Registo de progresso<br/>• Item do mapaRef<br/>• Percentagem concluída: VO Percentagem"]
+        PROVISORIA["◽ E: Receção provisória<br/>• Referência, data e conformidade"]
+        O ---|"Inclui"| DESPESA
+        O ---|"Inclui"| PROGRESSO
+        O ---|"Inclui quando existe"| PROVISORIA
     end
 
-    subgraph VALIDAR["MAYBE — conceitos propostos, por validar"]
-        PLANEAMENTO["Plano de execução<br/>Representação tipo Project / Gantt"]
-        TAREFA["Tarefa do plano<br/>Datas, duração e dependências"]
-        CONSULTA["Consulta assistida<br/>Pergunta, resposta fictícia e referências"]
-        CONCORRENTES["Relatório de concorrência<br/>Participações, resultados, valores e localização<br/>Cobertura por confirmar"]
-
-        O -->|"Pode ter"| PLANEAMENTO
-        PLANEAMENTO -->|"Contém"| TAREFA
-        TAREFA -->|"Dependência entre tarefas"| TAREFA
-        CONSULTA -->|"Referência dos critérios"| PESQUISA
-        CONSULTA -->|"Pode referenciar"| CONCURSO
-        CONCORRENTES -->|"Pode referenciar"| CONCURSO
-        CONCORRENTES -->|"Pode referenciar"| EMPRESA
+    subgraph BC_RECURSOS["BC: Recursos — hipótese | Later"]
+        RECURSOS["🔷 AR: Afetação de recursos<br/><br/>• ObraRef, FuncionárioRef e EquipamentoRef<br/>• Período: VO Período<br/>• Custos: VO Dinheiro"]
+        FUNCIONARIO["🔷 AR: Funcionário<br/><br/>• Identificação e informação de mão de obra"]
+        EQUIPAMENTO["🔷 AR: Equipamento<br/><br/>• Identificação e custos: VO Dinheiro"]
     end
 
-    subgraph FONTES["Sistemas externos e ferramentas — contexto, não entidades de domínio"]
-        DR["Diário da República"]
-        IMPIC["IMPIC"]
-        PLATAFORMA["Plataforma externa<br/>AcinGov / Vortal"]
-        EMAIL["E-mail / telefone"]
-        OFFICE["Word / Excel"]
-        BASE["Portal BASE"]
-        SAGE["Sage / Excel"]
+    subgraph BC_FINANCAS["BC: Faturação e recebimentos — hipótese | Later"]
+        FATURACAO["🔷 AR: Registo de faturação<br/><br/>• ObraRef e data<br/>• Valor faturado: VO Dinheiro"]
+        RECEBIMENTO["◽ E: Recebimento<br/>• Data e valor recebido: VO Dinheiro"]
+        FATURACAO ---|"Inclui recebimentos"| RECEBIMENTO
     end
 
-    DR -. "Fonte de anúncios; sem consulta real no wireframe" .-> CONCURSO
-    IMPIC -. "Fonte referida de habilitações; acesso por validar" .-> EMPRESA
-    CONCURSO -. "Plataforma indicada" .-> PLATAFORMA
-    PLATAFORMA -. "Origem das peças" .-> PECAS
-    PLATAFORMA -. "Origem do convite" .-> CONVITE
-    EMAIL -. "Canal de aviso; simulado" .-> CONVITE
-    OFFICE -. "Ferramentas atuais de preparação" .-> PROPOSTA
-    SUBMISSAO -. "Destino real externo; simulado no wireframe" .-> PLATAFORMA
-    EMAIL -. "Canal atual de pedidos / respostas" .-> PROCESSO
-    PLATAFORMA -. "Origem de avisos de habilitação" .-> DOCSHAB
-    BASE -. "Fonte de resultados; acesso e cobertura por validar" .-> ADJUDICACAO
-    BASE -. "Fonte proposta; cobertura por validar" .-> CONCORRENTES
-    SAGE -. "Ferramentas atuais de gestão" .-> O
-    SAGE -. "Controlo atual de garantia em Excel" .-> GARANTIA
+    subgraph BC_POS_OBRA["BC: Pós-obra — hipótese | Later"]
+        GARANTIA["🔷 AR: Garantia da obra<br/><br/>• ObraRef e ContratoRef<br/>• Condições e prazos"]
+        VISTORIA["◽ E: Vistoria<br/>• Data e resultado"]
+        REPARACAO["◽ E: Reparação<br/>• Problema identificado e situação"]
+        DEFINITIVA["◽ E: Receção definitiva<br/>• Referência e data"]
+        GARANTIA ---|"Inclui acompanhamento por"| VISTORIA
+        GARANTIA ---|"Inclui quando necessária"| REPARACAO
+        GARANTIA ---|"Inclui quando existe"| DEFINITIVA
+    end
 
-    style NOW fill:#eef6ee,stroke:#397647
-    style COMPRAS fill:#f4f4f4,stroke:#777777
-    style POS_SUBMISSAO fill:#f4f4f4,stroke:#777777
-    style OBRA fill:#f4f4f4,stroke:#777777
-    style POS_OBRA fill:#f4f4f4,stroke:#777777
-    style VALIDAR fill:#fff7e6,stroke:#a87520
-    style FONTES fill:#eef2f6,stroke:#64748b
+    subgraph BC_PLANEAMENTO["BC: Planeamento da obra — hipótese | Maybe"]
+        PLANEAMENTO["🔷 AR: Plano de execução<br/><br/>• ObraRef<br/>• Representação tipo Project / Gantt"]
+        TAREFA["◽ E: Tarefa do plano<br/>• Datas, duração e estado"]
+        DEPENDENCIA["▫ VO: Dependência<br/>• Tarefa anteriorRef<br/>• Condição de espera / entrega"]
+        PLANEAMENTO ---|"Inclui"| TAREFA
+        TAREFA ---|"Inclui"| DEPENDENCIA
+    end
+
+    subgraph BC_CONSULTA["BC: Consulta assistida — hipótese | Maybe"]
+        CONSULTA["🔷 AR: Consulta assistida<br/><br/>• Pergunta, resposta fictícia e referências"]
+    end
+
+    subgraph BC_CONCORRENCIA["BC: Análise de concorrência — hipótese | Maybe"]
+        CONCORRENTES["🔷 AR: Relatório de concorrência<br/><br/>• Participações, resultados, valores e localização<br/>• Cobertura por confirmar"]
+    end
+
+    %% Referências estruturais — não composições entre raízes
+    PESQUISA -. "Referência: concursos correspondentes" .-> CONCURSO
+    EMPRESA -. "Referência: destinatária" .-> CONVITE
+    PECAS -. "Referência: documentam requisitos" .-> REQUISITO
+    EMPRESA -. "Referência: titular" .-> PARTICIPACAO
+    CONCURSO -. "Referência: objeto da participação" .-> PARTICIPACAO
+    PARTICIPACAO -. "Referência: proposta da participação" .-> PROPOSTA
+    REQUISITO -. "Referência: requisito do item" .-> CHECKLIST
+    CHECKLIST -. "Referência: documento de preparação" .-> DOCUMENTO
+    PROPOSTA -. "Referência: objeto da submissão" .-> SUBMISSAO
+
+    %% Interações propostas — não integrações ou automatizações aprovadas
+    CONCURSO -->|"Evento: OportunidadeSelecionada"| PARTICIPACAO
+    PARTICIPACAO -->|"Pedido: Iniciar preparação [participar]"| PROPOSTA
+    PROPOSTA -->|"Evento: PropostaPronta"| PARTICIPACAO
+    PARTICIPACAO -->|"Evento: EntregaConfirmada [simulada]"| PROPOSTA
+
+    %% Referências estruturais adicionais
+    EMPRESA -. "Referência: titular" .-> PROCESSO
+    PROCESSO -. "Referência: destinatário" .-> FORNECEDOR
+    PROCESSO -. "Referência: objeto do pedido" .-> MATERIAL
+    COTACAO -. "Referência: autor da cotação" .-> FORNECEDOR
+    COTACAO -. "Referência: preço de orçamento" .-> ITEM
+    ITEMSTOCK -. "Referência: material armazenado" .-> MATERIAL
+    EMPRESA -. "Referência: titular" .-> STOCK
+    AVALIACAO -. "Referência: proposta avaliada" .-> PROPOSTA
+    RECLAMACAO -. "Referência: relatório contestado" .-> AVALIACAO
+    ADJUDICACAO -. "Referência: adjudicatária" .-> EMPRESA
+    ADJUDICACAO -. "Referência: base do contrato" .-> CONTRATO
+    EMPRESA -. "Referência: parte contratante" .-> CONTRATO
+    ADJUDICANTE -. "Referência: parte contratante" .-> CONTRATO
+    CONTRATO -. "Referência: contrato da obra" .-> O
+    CONSIGNACAO -. "Referência: início autorizado" .-> O
+    CLIENTE -. "Referência: cliente da obra" .-> O
+    O -. "Referência: inventário da obra" .-> STOCK
+    O -. "Referência: afetações da obra" .-> RECURSOS
+    RECURSOS -. "Referência: funcionário afetado" .-> FUNCIONARIO
+    RECURSOS -. "Referência: equipamento afetado" .-> EQUIPAMENTO
+    O -. "Referência: faturação da obra" .-> FATURACAO
+    PROGRESSO -. "Referência: item acompanhado" .-> ITEM
+    O -. "Referência: garantia da obra" .-> GARANTIA
+    VISTORIA -. "Referência: problema a reparar" .-> REPARACAO
+    GARANTIA -. "Referência: retenção contratual" .-> RETENCAO
+    O -. "Referência: plano da obra" .-> PLANEAMENTO
+    DEPENDENCIA -. "Referência: tarefa anterior" .-> TAREFA
+    CONSULTA -. "Referência: critérios de consulta" .-> PESQUISA
+    CONSULTA -. "Referência: procedimento consultado" .-> CONCURSO
+    CONCORRENTES -. "Referência: procedimento analisado" .-> CONCURSO
+    CONCORRENTES -. "Referência: empresa analisada" .-> EMPRESA
+
+    %% Interações propostas Later / Maybe, não workflow obrigatório
+    PROPOSTA -->|"Pedido: Obter preços [quando necessário]"| PROCESSO
+    PROCESSO -->|"Evento: CotaçõesRecebidas"| PROPOSTA
+    PARTICIPACAO -->|"Evento: AdjudicaçãoComunicada [à empresa]"| CONTRATO
+    CONTRATO -->|"Evento: ContratoCelebrado"| O
+    O -->|"Pedido: Verificar disponibilidade de materiais"| STOCK
+    STOCK -->|"Pedido: Obter cotação [stock insuficiente]"| PROCESSO
+    PROCESSO -->|"Evento: FornecedorSelecionado [compra para obra]"| O
+    O -->|"Pedido: Afetar recursos"| RECURSOS
+    RECURSOS -->|"Evento: RecursosAfetados"| O
+    O -->|"Pedido: Registar faturação"| FATURACAO
+    O -->|"Evento: ReceçãoProvisóriaRegistada"| GARANTIA
+    GARANTIA -->|"Pedido: Libertar retenção [condições cumpridas]"| CONTRATO
+    O -->|"Pedido: Criar planeamento [Maybe]"| PLANEAMENTO
+    PLANEAMENTO -->|"Evento: TarefasAtualizadas [Maybe]"| O
+
+    subgraph FONTES["Sistemas externos e ferramentas — contexto"]
+        DR["🌐 Diário da República"]
+        IMPIC["🌐 IMPIC"]
+        PLATAFORMA["🌐 Plataforma externa<br/>AcinGov / Vortal"]
+        EMAIL["✉️ E-mail / telefone"]
+        OFFICE["🖥️ Word / 📊 Excel"]
+        BASE["🌐 Portal BASE"]
+        SAGE["🖥️ Sage / 📊 Excel"]
+    end
+
+    DR -. "Externo: origem dos anúncios; sem consulta real no wireframe" .-> CONCURSO
+    IMPIC -. "Externo: fonte de habilitações; acesso por validar" .-> EMPRESA
+    CONCURSO -. "Externo: plataforma indicada" .-> PLATAFORMA
+    PLATAFORMA -. "Externo: origem das peças" .-> PECAS
+    PLATAFORMA -. "Externo: origem do convite" .-> CONVITE
+    EMAIL -. "Externo: aviso de convite; simulado" .-> CONVITE
+    OFFICE -. "Externo: preparação atual" .-> PROPOSTA
+    SUBMISSAO -. "Externo: destino da entrega; simulado no wireframe" .-> PLATAFORMA
+    EMAIL -. "Externo: pedidos / respostas atuais" .-> PROCESSO
+    PLATAFORMA -. "Externo: avisos de habilitação" .-> DOCSHAB
+    BASE -. "Externo: resultados; acesso e cobertura por validar" .-> ADJUDICACAO
+    BASE -. "Externo: fonte proposta; cobertura por validar" .-> CONCORRENTES
+    SAGE -. "Externo: gestão atual" .-> O
+    SAGE -. "Externo: garantia atualmente em Excel" .-> GARANTIA
 ```
+
+### Hipóteses a validar
+
+- **Empresa:** gere os dados declarados e os critérios de pesquisa; revisão de habilitações permanece humana.
+- **Concurso:** gere identificação, convite, peças, requisitos, relatórios e resultado. Seleção por uma empresa não altera o procedimento público.
+- **Participação:** gere decisão, acompanhamento e registo de entrega, com referências a Concurso e Proposta; gere também reclamações e documentos pós-adjudicação nesta hipótese.
+- **Proposta:** gere checklist, documentos, mapa, cronograma, totais e completude da versão preparada. Validar identidade, versionamento e consistência com a Participação.
+- **Pedido de cotação:** gere o pedido e respostas identificáveis, com preço, validade e condições; a escolha de fornecedor não altera os dados mestres do Fornecedor.
+- **Fornecedor:** gere identificação e contactos referenciados nas cotações; validar identidade, atualização e histórico dessas referências.
+- **Material:** gere identificação, descrição e unidade; validar como alterações afetam referências em stock e preços.
+- **Inventário / Stock:** gere itens e quantidades por localização/obra, referenciando Material. Regras de reserva e atualização concorrente ainda não estão definidas.
+- **Contrato:** gere minuta, consignação e retenções previstas; regras de aceitação, alteração e libertação precisam de confirmação.
+- **Obra:** gere identificação, prazo, despesa, progresso e receção provisória. Validar quais alterações precisam de consistência conjunta, sem incluir automaticamente todos os recursos e dados financeiros.
+- **Cliente:** gere identificação e contactos usados pela Obra; validar se exige raiz própria ou se é apenas um papel de uma entidade já registada.
+- **Afetação de recursos:** gere referências à Obra, Funcionário e Equipamento, período e custos; regras de disponibilidade e sobreposição ainda precisam de validação.
+- **Funcionário:** gere identificação e informação de mão de obra, independentemente das afetações; os campos e regras de atualização não estão totalmente enumerados.
+- **Equipamento:** gere identificação e informação de custos; validar identidade, disponibilidade e alterações sem incorporar as afetações.
+- **Registo de faturação:** distingue montante faturado dos recebimentos; regras de conciliação e correção ainda precisam de confirmação.
+- **Garantia da obra:** gere acompanhamento, vistorias, reparações e receção definitiva; referencia retenções pertencentes ao Contrato, sem propriedade dupla.
+- **Plano de execução — Maybe:** gere tarefas e dependências; regras de datas, bloqueios e atualização de progresso precisam de validação.
+- **Consulta assistida — Maybe:** candidata a gerir o registo de pergunta, resposta fictícia e referências; validar se precisa de identidade ou persistência própria.
+- **Relatório de concorrência — Maybe:** candidato a gerir resultados e referências de uma análise; cobertura, identidade e necessidade de persistência própria ainda não estão validadas.
+- **VO:** critérios, período do cronograma, resultado da adjudicação e dependência são valores candidatos. `EntidadeAdjudicanteRef` é o valor local que identifica/referencia a entidade pública, não a própria entidade pública nem um cadastro autónomo.
+- **Refinamentos de modelação:** Item de stock explicita quantidades dentro do Inventário; Dependência explicita condições entre tarefas. São propostas derivadas dos conceitos existentes, não novos factos de entrevista nem novas funcionalidades.
+- **Fronteiras:** todas precisam de revisão de invariantes, identidade, volume, concorrência e ciclos de vida. A notação explicita uma proposta, não promove prioridades nem confirma regras legais ou integrações.
 
 ## Fluxo de trabalho
 
@@ -387,29 +457,28 @@ stateDiagram-v2
 
 ## Percurso principal
 
-Subconjunto Now da vista detalhada, com os mesmos conceitos e relações. Omite requisitos, itens da checklist e outros conceitos de suporte, mas não combina Concurso com Convite nem Documento com Item da checklist. As setas representam relações, não passos do utilizador ou fronteiras de agregados. O percurso termina visualmente na Submissão; o acompanhamento da Participação continua fora desta vista.
+Projeção estrutural Now da vista DDD detalhada, com os mesmos nomes, composições e referências. Conforme a convenção acordada, simplifica os rótulos das caixas e omite BC, classificações, propriedades e interações; não substitui a vista DDD nem é um workflow. Critérios e elementos de preparação são valores ou entidades de suporte, não raízes adicionais. O fim visual na Submissão não encerra a Participação. Consultar o [formato do percurso principal](../formats/main-entity-flows.md).
 
 ```mermaid
 flowchart LR
-    EMPRESA["Empresa participante<br/>Localização, classe e licenças declaradas"]
-    PESQUISA["Critérios de pesquisa<br/>Data de publicação e raio"]
-    CONCURSO["Concurso / procedimento<br/>Descrição e valor anunciado<br/>Localização, prazo da obra e prazo de entrega"]
-    PECAS["Peças do concurso<br/>Desenhos, memorial descritivo e mapas"]
-    PARTICIPACAO["Participação da empresa<br/>Empresa × concurso<br/>Decisão e estado de acompanhamento"]
-    PROPOSTA["Proposta<br/>Estado de preparação e valor proposto"]
-    DOCUMENTO["Documento da proposta<br/>Identificação e ficheiro"]
+    EMPRESA["Empresa participante"]
+    PESQUISA["Critérios de pesquisa"]
+    CONCURSO["Concurso / procedimento"]
+    PARTICIPACAO["Participação da empresa"]
+    PROPOSTA["Proposta"]
+    DOCUMENTO["Documento da proposta"]
     MAPA["Mapa de medições / preços unitários"]
-    FINANCEIRO["Cronograma financeiro<br/>Quando exigido"]
-    SUBMISSAO["Submissão da proposta<br/>Referência e confirmação de entrega"]
+    FINANCEIRO["Cronograma financeiro"]
+    SUBMISSAO["Submissão da proposta"]
 
-    EMPRESA -->|"Referência dos critérios"| PESQUISA
-    PESQUISA -->|"Correspondem a"| CONCURSO
-    CONCURSO -->|"Tem"| PECAS
-    EMPRESA -->|"Titular"| PARTICIPACAO
-    CONCURSO -->|"Objeto da participação"| PARTICIPACAO
-    PARTICIPACAO -->|"Pode ter"| PROPOSTA
+    EMPRESA ---|"Inclui critérios"| PESQUISA
+    PESQUISA -. "Referência: concursos correspondentes" .-> CONCURSO
+    EMPRESA -. "Referência: titular" .-> PARTICIPACAO
+    CONCURSO -. "Referência: objeto da participação" .-> PARTICIPACAO
+    PARTICIPACAO -. "Referência: proposta da participação" .-> PROPOSTA
     PROPOSTA ---|"Inclui"| DOCUMENTO
     PROPOSTA ---|"Inclui"| MAPA
     PROPOSTA ---|"Inclui quando exigido"| FINANCEIRO
-    PROPOSTA -->|"Objeto da submissão"| SUBMISSAO
+    PARTICIPACAO ---|"Inclui"| SUBMISSAO
+    PROPOSTA -. "Referência: objeto da submissão" .-> SUBMISSAO
 ```

@@ -6,73 +6,99 @@ Modelos conceptuais, não regras jurídicas validadas nem estruturas de backend 
 
 ## Entidades
 
-Fluxo detalhado entre entidades e relações, com a mesma notação do «Percurso principal», mas incluindo conceitos de suporte e relações fora do caminho principal dentro do âmbito Now. As setas indicam relações, não ordem de execução; os passos estão em «Fluxo de trabalho».
+Formato [DDD de entidades e agregados](../formats/entity-aggregate-flows.md): BC, AR, entidades de suporte, VO, composição, referências e interações entre raízes. **Todas as fronteiras e interações são hipóteses**, não decisões de backend. BC é âmbito de linguagem e regras; Now/Later/Maybe são apenas metadados de prioridade.
 
-Os conceitos são propostas de modelação derivadas das funcionalidades e entrevistas. Não fixam tabelas, cardinalidades, pertença a agregados ou campos de produção. No wireframe, os ficheiros são fictícios e as submissões simuladas; esses limites não redefinem as entidades. Sistemas externos e ferramentas aparecem num grupo distinto, ligados por linhas tracejadas; não representam integrações já disponíveis. Consultar a vista do sistema para Later e Maybe.
+Legenda: `🔷 AR:` raiz de agregado; `◽ E:` entidade de suporte; `▫ VO:` valor sem identidade própria. VO também aparecem como tipos de propriedades, por exemplo `VO Dinheiro`. Linhas `---` indicam composição proposta; linhas tracejadas `Referência:` indicam associações sem propriedade partilhada; setas `Evento:` ou `Pedido:` indicam colaboração proposta entre raízes. O grupo externo e os rótulos `Externo:` identificam fontes, ferramentas ou destinos, não integrações disponíveis.
+
+A seleção de uma oportunidade é uma ação humana: o evento representado comunica essa seleção à Participação, não muda o estado público do Concurso. Submissão e confirmação são simuladas no wireframe. Eventos não pressupõem event bus, microserviços, criação automática de registos ou efeitos externos. «Aguardar decisão» permanece estado da Participação, não uma nova entidade. Nenhum BC é classificado como core domain sem validar o seu valor estratégico.
+
+Vista Now, sem módulo de fornecedores ou planeamento da obra. As interações posteriores estão na vista do sistema.
 
 ```mermaid
 flowchart LR
 
-    subgraph NOW["NOW — descoberta e proposta"]
-        EMPRESA["Empresa participante<br/>Localização, classe e licenças declaradas"]
-        PESQUISA["Critérios de pesquisa<br/>Data de publicação e raio"]
-        ADJUDICANTE["Entidade adjudicante<br/>Identificação e contactos"]
-        CONCURSO["Concurso / procedimento<br/>Descrição e valor anunciado<br/>Localização, prazo da obra e prazo de entrega"]
-        CONVITE["Convite<br/>Destinatário, referência e informação de resposta"]
-        PECAS["Peças do concurso<br/>Desenhos, memorial descritivo e mapas"]
-        REQUISITO["Requisito do concurso<br/>Descrição, obrigatoriedade e informação por confirmar"]
-        PARTICIPACAO["Participação da empresa<br/>Empresa × concurso<br/>Decisão e estado de acompanhamento"]
-        PROPOSTA["Proposta<br/>Estado de preparação e valor proposto"]
-        CHECKLIST["Item da checklist<br/>Requisito e situação de preparação"]
-        DOCUMENTO["Documento da proposta<br/>Identificação e ficheiro"]
-        MAPA["Mapa de medições / preços unitários"]
-        ITEM["Item do mapa<br/>Descrição, unidade, quantidade e preço unitário<br/>Subtotal"]
-        FINANCEIRO["Cronograma financeiro<br/>Quando exigido"]
-        PERIODO["Período do cronograma<br/>Percentagem e valor previsto"]
-        SUBMISSAO["Submissão da proposta<br/>Referência e confirmação de entrega"]
+    subgraph BC_EMPRESAS["BC: Empresa e habilitações — hipótese | Now"]
+        EMPRESA["🔷 AR: Empresa participante<br/><br/>• Localização: VO Localização<br/>• Classe e licenças declaradas"]
+        PESQUISA["▫ VO: Critérios de pesquisa<br/>• Data de publicação<br/>• Raio e localização de referência"]
+        EMPRESA ---|"Inclui critérios"| PESQUISA
+    end
 
-        EMPRESA -->|"Referência dos critérios"| PESQUISA
-        PESQUISA -->|"Correspondem a"| CONCURSO
-        ADJUDICANTE -->|"Entidade do procedimento"| CONCURSO
-        CONCURSO -->|"Pode ter"| CONVITE
-        EMPRESA -->|"Destinatária"| CONVITE
-        CONCURSO -->|"Tem"| PECAS
-        CONCURSO -->|"Define"| REQUISITO
-        PECAS -->|"Documentam"| REQUISITO
-        EMPRESA -->|"Titular"| PARTICIPACAO
-        CONCURSO -->|"Objeto da participação"| PARTICIPACAO
-        PARTICIPACAO -->|"Pode ter"| PROPOSTA
+    subgraph BC_CONCURSOS["BC: Concursos — hipótese | Now"]
+        CONCURSO["🔷 AR: Concurso / procedimento<br/><br/>• Descrição<br/>• Valor anunciado: VO Dinheiro<br/>• Localização: VO Localização<br/>• Prazo da obra e prazo de entrega<br/>• Estado"]
+        ADJUDICANTE["▫ VO: EntidadeAdjudicanteRef<br/>• Identificação e contactos de referência"]
+        CONVITE["◽ E: Convite<br/>• DestinatárioRef<br/>• Referência e informação de resposta"]
+        PECAS["◽ E: Peças do concurso<br/>• Referência e versão<br/>• Desenhos, memorial descritivo e mapas"]
+        REQUISITO["◽ E: Requisito do concurso<br/>• Identificação e descrição<br/>• Obrigatoriedade e informação por confirmar"]
+
+        CONCURSO ---|"Identifica por referência"| ADJUDICANTE
+        CONCURSO ---|"Inclui quando existe"| CONVITE
+        CONCURSO ---|"Inclui"| PECAS
+        CONCURSO ---|"Inclui"| REQUISITO
+    end
+
+    subgraph BC_PROPOSTAS["BC: Propostas e participação — hipótese | Now"]
+        PARTICIPACAO["🔷 AR: Participação da empresa<br/><br/>• EmpresaRef e ConcursoRef<br/>• Decisão e estado de acompanhamento"]
+        PROPOSTA["🔷 AR: Proposta<br/><br/>• ParticipaçãoRef<br/>• Estado de preparação<br/>• Valor proposto: VO Dinheiro"]
+        CHECKLIST["◽ E: Item da checklist<br/>• RequisitoRef<br/>• Situação de preparação"]
+        DOCUMENTO["◽ E: Documento da proposta<br/>• Identificação e ficheiro"]
+        MAPA["◽ E: Mapa de medições / preços unitários<br/>• Identificação e versão"]
+        ITEM["◽ E: Item do mapa<br/>• Descrição, unidade e quantidade<br/>• Preço unitário e subtotal: VO Dinheiro"]
+        FINANCEIRO["◽ E: Cronograma financeiro<br/>• Identificação e versão<br/>• Quando exigido"]
+        PERIODO["▫ VO: Período do cronograma<br/>• Intervalo: VO Período<br/>• Percentagem: VO Percentagem<br/>• Valor previsto: VO Dinheiro"]
+        SUBMISSAO["◽ E: Submissão da proposta<br/>• PropostaRef<br/>• Referência e confirmação de entrega"]
+
+        PARTICIPACAO ---|"Inclui"| SUBMISSAO
         PROPOSTA ---|"Inclui"| CHECKLIST
-        REQUISITO -->|"Referência do item"| CHECKLIST
-        CHECKLIST -->|"Pode referenciar"| DOCUMENTO
         PROPOSTA ---|"Inclui"| DOCUMENTO
         PROPOSTA ---|"Inclui"| MAPA
         MAPA ---|"Contém"| ITEM
         PROPOSTA ---|"Inclui quando exigido"| FINANCEIRO
         FINANCEIRO ---|"Contém"| PERIODO
-        PROPOSTA -->|"Objeto da submissão"| SUBMISSAO
     end
 
-    subgraph FONTES["Sistemas externos e ferramentas — contexto, não entidades de domínio"]
-        DR["Diário da República"]
-        IMPIC["IMPIC"]
-        PLATAFORMA["Plataforma externa<br/>AcinGov / Vortal"]
-        EMAIL["E-mail"]
-        OFFICE["Word / Excel"]
+    %% Referências estruturais — não composições entre raízes
+    PESQUISA -. "Referência: concursos correspondentes" .-> CONCURSO
+    EMPRESA -. "Referência: destinatária" .-> CONVITE
+    PECAS -. "Referência: documentam requisitos" .-> REQUISITO
+    EMPRESA -. "Referência: titular" .-> PARTICIPACAO
+    CONCURSO -. "Referência: objeto da participação" .-> PARTICIPACAO
+    PARTICIPACAO -. "Referência: proposta da participação" .-> PROPOSTA
+    REQUISITO -. "Referência: requisito do item" .-> CHECKLIST
+    CHECKLIST -. "Referência: documento de preparação" .-> DOCUMENTO
+    PROPOSTA -. "Referência: objeto da submissão" .-> SUBMISSAO
+
+    %% Interações propostas — não integrações ou automatizações aprovadas
+    CONCURSO -->|"Evento: OportunidadeSelecionada"| PARTICIPACAO
+    PARTICIPACAO -->|"Pedido: Iniciar preparação [participar]"| PROPOSTA
+    PROPOSTA -->|"Evento: PropostaPronta"| PARTICIPACAO
+    PARTICIPACAO -->|"Evento: EntregaConfirmada [simulada]"| PROPOSTA
+
+    subgraph FONTES["Sistemas externos e ferramentas — contexto"]
+        DR["🌐 Diário da República"]
+        IMPIC["🌐 IMPIC"]
+        PLATAFORMA["🌐 Plataforma externa<br/>AcinGov / Vortal"]
+        EMAIL["✉️ E-mail / telefone"]
+        OFFICE["🖥️ Word / 📊 Excel"]
     end
 
-    DR -. "Fonte de anúncios; sem consulta real no wireframe" .-> CONCURSO
-    IMPIC -. "Fonte referida de habilitações; acesso por validar" .-> EMPRESA
-    CONCURSO -. "Plataforma indicada" .-> PLATAFORMA
-    PLATAFORMA -. "Origem das peças" .-> PECAS
-    PLATAFORMA -. "Origem do convite" .-> CONVITE
-    EMAIL -. "Canal de aviso; simulado" .-> CONVITE
-    OFFICE -. "Ferramentas atuais de preparação" .-> PROPOSTA
-    SUBMISSAO -. "Destino real externo; simulado no wireframe" .-> PLATAFORMA
-
-    style NOW fill:#eef6ee,stroke:#397647
-    style FONTES fill:#eef2f6,stroke:#64748b
+    DR -. "Externo: origem dos anúncios; sem consulta real no wireframe" .-> CONCURSO
+    IMPIC -. "Externo: fonte de habilitações; acesso por validar" .-> EMPRESA
+    CONCURSO -. "Externo: plataforma indicada" .-> PLATAFORMA
+    PLATAFORMA -. "Externo: origem das peças" .-> PECAS
+    PLATAFORMA -. "Externo: origem do convite" .-> CONVITE
+    EMAIL -. "Externo: aviso de convite; simulado" .-> CONVITE
+    OFFICE -. "Externo: preparação atual" .-> PROPOSTA
+    SUBMISSAO -. "Externo: destino da entrega; simulado no wireframe" .-> PLATAFORMA
 ```
+
+### Hipóteses a validar
+
+- **Empresa:** gere os dados declarados e os critérios de pesquisa; habilitações continuam a exigir revisão humana.
+- **Concurso:** gere a identificação do procedimento, convite, peças e requisitos; a seleção por uma empresa não altera o seu ciclo.
+- **Participação:** gere a decisão da empresa e os registos de entrega, com referências a Concurso e Proposta.
+- **Proposta:** gere checklist, documentos, mapa e cronograma. Totais e completude precisam de permanecer coerentes com a versão preparada. Identidade e versionamento destes elementos ainda precisam de validação.
+- **VO:** Critérios de pesquisa e Período do cronograma são valores candidatos, substituídos por valor; registos com identidade ou histórico independente exigiriam reclassificação. `EntidadeAdjudicanteRef` é o valor local que identifica/referencia a entidade pública, não a própria entidade pública nem um cadastro autónomo.
+- **Coordenação:** a referência à Proposta e a entrega confirmada não tornam Participação e Proposta um agregado único. Validar revisão, concorrência e consistência entre eles antes de aprovar estas fronteiras.
 
 ## Fluxo de trabalho
 
@@ -187,29 +213,28 @@ stateDiagram-v2
 
 ## Percurso principal
 
-Subconjunto Now da vista detalhada, com os mesmos conceitos e relações. Omite requisitos, itens da checklist e outros conceitos de suporte, mas não combina Concurso com Convite nem Documento com Item da checklist. As setas representam relações, não passos do utilizador ou fronteiras de agregados. O percurso termina visualmente na Submissão; o acompanhamento da Participação continua fora desta vista.
+Projeção estrutural Now da vista DDD detalhada, com os mesmos nomes, composições e referências. Conforme a convenção acordada, simplifica os rótulos das caixas e omite BC, classificações, propriedades e interações; não substitui a vista DDD nem é um workflow. Critérios e elementos de preparação são valores ou entidades de suporte, não raízes adicionais. O fim visual na Submissão não encerra a Participação. Consultar o [formato do percurso principal](../formats/main-entity-flows.md).
 
 ```mermaid
 flowchart LR
-    EMPRESA["Empresa participante<br/>Localização, classe e licenças declaradas"]
-    PESQUISA["Critérios de pesquisa<br/>Data de publicação e raio"]
-    CONCURSO["Concurso / procedimento<br/>Descrição e valor anunciado<br/>Localização, prazo da obra e prazo de entrega"]
-    PECAS["Peças do concurso<br/>Desenhos, memorial descritivo e mapas"]
-    PARTICIPACAO["Participação da empresa<br/>Empresa × concurso<br/>Decisão e estado de acompanhamento"]
-    PROPOSTA["Proposta<br/>Estado de preparação e valor proposto"]
-    DOCUMENTO["Documento da proposta<br/>Identificação e ficheiro"]
+    EMPRESA["Empresa participante"]
+    PESQUISA["Critérios de pesquisa"]
+    CONCURSO["Concurso / procedimento"]
+    PARTICIPACAO["Participação da empresa"]
+    PROPOSTA["Proposta"]
+    DOCUMENTO["Documento da proposta"]
     MAPA["Mapa de medições / preços unitários"]
-    FINANCEIRO["Cronograma financeiro<br/>Quando exigido"]
-    SUBMISSAO["Submissão da proposta<br/>Referência e confirmação de entrega"]
+    FINANCEIRO["Cronograma financeiro"]
+    SUBMISSAO["Submissão da proposta"]
 
-    EMPRESA -->|"Referência dos critérios"| PESQUISA
-    PESQUISA -->|"Correspondem a"| CONCURSO
-    CONCURSO -->|"Tem"| PECAS
-    EMPRESA -->|"Titular"| PARTICIPACAO
-    CONCURSO -->|"Objeto da participação"| PARTICIPACAO
-    PARTICIPACAO -->|"Pode ter"| PROPOSTA
+    EMPRESA ---|"Inclui critérios"| PESQUISA
+    PESQUISA -. "Referência: concursos correspondentes" .-> CONCURSO
+    EMPRESA -. "Referência: titular" .-> PARTICIPACAO
+    CONCURSO -. "Referência: objeto da participação" .-> PARTICIPACAO
+    PARTICIPACAO -. "Referência: proposta da participação" .-> PROPOSTA
     PROPOSTA ---|"Inclui"| DOCUMENTO
     PROPOSTA ---|"Inclui"| MAPA
     PROPOSTA ---|"Inclui quando exigido"| FINANCEIRO
-    PROPOSTA -->|"Objeto da submissão"| SUBMISSAO
+    PARTICIPACAO ---|"Inclui"| SUBMISSAO
+    PROPOSTA -. "Referência: objeto da submissão" .-> SUBMISSAO
 ```
