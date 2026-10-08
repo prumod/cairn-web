@@ -119,7 +119,7 @@ For a change:
    ```
 
 5. Open a Pull Request on GitHub, link the Issue (for example, `Closes #123`), and explain what changed and how you checked it. Keep PRs small.
-6. Changes to `main` require a PR with at least one approval. Force pushes and deletion of `main` are blocked. An organization owner may authorize a one-time admin bypass; this does not remove the approval requirement for future changes.
+6. Changes to `main` require a PR, but no approving review is required. Force pushes and deletion of `main` are blocked; these protections also apply to administrators.
 7. Address any review feedback, then squash-merge and delete the merged remote branch. Agents perform the merge and branch deletion only when explicitly requested by the user.
 
 ## Before opening a PR
