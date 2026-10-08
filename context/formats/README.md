@@ -19,8 +19,8 @@ Guias reutilizáveis para escrever e rever documentos, não modelos aprovados do
 - Identificadores Mermaid são locais ao desenho, não IDs de produção, nomes de tabelas nem números de versão.
 - As legendas são locais ao formato. Não presumir que uma seta tracejada significa o mesmo em todos os documentos.
 - Distinguir factos de fonte, propostas de modelação e decisões aprovadas. Uma ilustração não valida API, licença, regra jurídica, integração ou fronteira de agregado.
-- Prioridade de produto é independente do formato. Gantt/Microsoft Project continua Maybe; Never continua vazio. O wireframe cobre a experiência completa sem expor prioridades na interface.
+- Prioridade de produto é independente do formato. Gantt/Microsoft Project continua Maybe; Never continua vazio. O protótipo interativo cobre a experiência completa sem expor prioridades na interface.
 
 ## Contexto do produto
 
-Para a experiência e os limites da demonstração, consultar o [contrato do wireframe](../system/wireframe.md). Alterar um exemplo deste diretório não altera o âmbito aprovado.
+Para a experiência e os limites da demonstração, consultar o [contrato do protótipo interativo](../system/prototype.md). Alterar um exemplo deste diretório não altera o âmbito aprovado.

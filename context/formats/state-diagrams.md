@@ -37,7 +37,7 @@ stateDiagram-v2
 
 ## Exemplo — Proposta
 
-Hipótese isolada de estados de uma Proposta; não decide se Proposta e Participação pertencem ao mesmo agregado. O prazo referido é o do Concurso relacionado. Submissão no wireframe é simulada; produção precisaria de confirmação externa verificável.
+Hipótese isolada de estados de uma Proposta; não decide se Proposta e Participação pertencem ao mesmo agregado. O prazo referido é o do Concurso relacionado. Submissão no protótipo é simulada; produção precisaria de confirmação externa verificável.
 
 ```mermaid
 stateDiagram-v2
