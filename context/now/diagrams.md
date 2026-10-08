@@ -6,49 +6,72 @@ Modelos conceptuais, não regras jurídicas validadas nem estruturas de backend 
 
 ## Entidades
 
+Fluxo detalhado entre entidades e relações, com a mesma notação do «Percurso principal», mas incluindo conceitos de suporte e relações fora do caminho principal dentro do âmbito Now. As setas indicam relações, não ordem de execução; os passos estão em «Fluxo de trabalho».
+
+Os conceitos são propostas de modelação derivadas das funcionalidades e entrevistas. Não fixam tabelas, cardinalidades, pertença a agregados ou campos de produção. No wireframe, os ficheiros são fictícios e as submissões simuladas; esses limites não redefinem as entidades. Sistemas externos e ferramentas aparecem num grupo distinto, ligados por linhas tracejadas; não representam integrações já disponíveis. Consultar a vista do sistema para Later e Maybe.
+
 ```mermaid
 flowchart LR
 
-    subgraph NOW["NOW — conceitos do percurso até à submissão"]
-        EMPRESA["Empresa participante<br/>Localização de referência<br/>Classe e licenças"]
-        PESQUISA["Pesquisa de oportunidades<br/>Data de publicação e raio<br/>Visualizações: mapa, lista e linha temporal"]
-        CONCURSO["Concurso / procedimento<br/>Entidade, descrição, valor anunciado<br/>Localização, prazo da obra<br/>Prazo de entrega da proposta e plataforma"]
-        CONVITE["Convite, quando existir<br/>Entidade, referência e decisão"]
-        PECAS["Peças e requisitos do concurso<br/>Desenhos, memorial descritivo, mapas<br/>Documentos exigidos e requisitos de participação"]
-        PROPOSTA["Proposta da empresa<br/>Conjunto de documentos<br/>Valor proposto e estado de preparação"]
-        DOCUMENTO["Documento da proposta<br/>Identificação e ficheiro<br/>Obrigatoriedade e situação de preparação"]
-        MAPA["Mapa de medições / lista de preços unitários<br/>Itens, unidades e quantidades<br/>Preços unitários e valores por item"]
-        FINANCEIRO["Cronograma financeiro, quando exigido<br/>Períodos, percentagens e valores previstos"]
-        SUBMISSAO["Submissão na plataforma externa<br/>Entrega da proposta dentro do prazo<br/>Limite do NOW; simulada no protótipo"]
+    subgraph NOW["NOW — descoberta e proposta"]
+        EMPRESA["Empresa participante<br/>Localização, classe e licenças declaradas"]
+        PESQUISA["Critérios de pesquisa<br/>Data de publicação e raio"]
+        ADJUDICANTE["Entidade adjudicante<br/>Identificação e contactos"]
+        CONCURSO["Concurso / procedimento<br/>Descrição e valor anunciado<br/>Localização, prazo da obra e prazo de entrega"]
+        CONVITE["Convite<br/>Destinatário, referência e informação de resposta"]
+        PECAS["Peças do concurso<br/>Desenhos, memorial descritivo e mapas"]
+        REQUISITO["Requisito do concurso<br/>Descrição, obrigatoriedade e informação por confirmar"]
+        PARTICIPACAO["Participação da empresa<br/>Empresa × concurso<br/>Decisão e estado de acompanhamento"]
+        PROPOSTA["Proposta<br/>Estado de preparação e valor proposto"]
+        CHECKLIST["Item da checklist<br/>Requisito e situação de preparação"]
+        DOCUMENTO["Documento da proposta<br/>Identificação e ficheiro"]
+        MAPA["Mapa de medições / preços unitários"]
+        ITEM["Item do mapa<br/>Descrição, unidade, quantidade e preço unitário<br/>Subtotal"]
+        FINANCEIRO["Cronograma financeiro<br/>Quando exigido"]
+        PERIODO["Período do cronograma<br/>Percentagem e valor previsto"]
+        SUBMISSAO["Submissão da proposta<br/>Referência e confirmação de entrega"]
 
-        EMPRESA -->|"Define localização e raio"| PESQUISA
-        PESQUISA -->|"Identifica oportunidades"| CONCURSO
-        CONCURSO --- CONVITE
-        CONCURSO --- PECAS
-        EMPRESA -->|"Decide participar"| PROPOSTA
-        CONCURSO -->|"Objeto da participação"| PROPOSTA
-        PECAS -->|"Determinam conteúdo exigido"| PROPOSTA
-        PROPOSTA --- DOCUMENTO
-        PROPOSTA --- MAPA
-        PROPOSTA --- FINANCEIRO
-        PROPOSTA --> SUBMISSAO
+        EMPRESA -->|"Referência dos critérios"| PESQUISA
+        PESQUISA -->|"Correspondem a"| CONCURSO
+        ADJUDICANTE -->|"Entidade do procedimento"| CONCURSO
+        CONCURSO -->|"Pode ter"| CONVITE
+        EMPRESA -->|"Destinatária"| CONVITE
+        CONCURSO -->|"Tem"| PECAS
+        CONCURSO -->|"Define"| REQUISITO
+        PECAS -->|"Documentam"| REQUISITO
+        EMPRESA -->|"Titular"| PARTICIPACAO
+        CONCURSO -->|"Objeto da participação"| PARTICIPACAO
+        PARTICIPACAO -->|"Pode ter"| PROPOSTA
+        PROPOSTA -->|"Inclui"| CHECKLIST
+        REQUISITO -->|"Referência do item"| CHECKLIST
+        CHECKLIST -->|"Pode referenciar"| DOCUMENTO
+        PROPOSTA -->|"Inclui"| DOCUMENTO
+        PROPOSTA -->|"Inclui"| MAPA
+        MAPA -->|"Contém"| ITEM
+        PROPOSTA -->|"Inclui quando exigido"| FINANCEIRO
+        FINANCEIRO -->|"Contém"| PERIODO
+        PROPOSTA -->|"Objeto da submissão"| SUBMISSAO
     end
 
-    DR["Diário da República<br/>Fonte de anúncios"]
-    IMPIC["IMPIC<br/>Fonte referida para classe e licenças"]
-    PLATAFORMA["Plataforma externa: AcinGov / Vortal<br/>Peças, convites e submissão"]
-    EMAIL["E-mail<br/>Aviso de convite"]
-    OFFICE["Word / Excel<br/>Ferramentas atuais de preparação"]
+    subgraph FONTES["Sistemas externos e ferramentas — contexto, não entidades de domínio"]
+        DR["Diário da República"]
+        IMPIC["IMPIC"]
+        PLATAFORMA["Plataforma externa<br/>AcinGov / Vortal"]
+        EMAIL["E-mail"]
+        OFFICE["Word / Excel"]
+    end
 
-    DR -. "Fonte externa; dados fictícios no protótipo" .-> CONCURSO
-    IMPIC -. "Referência externa; sem consulta real no protótipo" .-> EMPRESA
-    PLATAFORMA -. "Disponibiliza" .-> PECAS
-    PLATAFORMA -. "Disponibiliza" .-> CONVITE
-    EMAIL -. "Apenas aviso; sem integração de correio" .-> CONVITE
-    OFFICE -. "Preparação atual representada no protótipo" .-> PROPOSTA
-    SUBMISSAO -. "Ação externa; simulada no protótipo" .-> PLATAFORMA
+    DR -. "Fonte de anúncios; sem consulta real no wireframe" .-> CONCURSO
+    IMPIC -. "Fonte referida de habilitações; acesso por validar" .-> EMPRESA
+    CONCURSO -. "Plataforma indicada" .-> PLATAFORMA
+    PLATAFORMA -. "Origem das peças" .-> PECAS
+    PLATAFORMA -. "Origem do convite" .-> CONVITE
+    EMAIL -. "Canal de aviso; simulado" .-> CONVITE
+    OFFICE -. "Ferramentas atuais de preparação" .-> PROPOSTA
+    SUBMISSAO -. "Destino real externo; simulado no wireframe" .-> PLATAFORMA
 
     style NOW fill:#eef6ee,stroke:#397647
+    style FONTES fill:#eef2f6,stroke:#64748b
 ```
 
 ## Fluxo de trabalho
