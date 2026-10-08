@@ -2,9 +2,9 @@
 
 ## O que modela
 
-Ações, decisões e caminhos de uma pessoa ou processo: o que acontece, em que ordem, com que alternativas e retornos. É o formato apropriado para «Consultar anúncio», «Preparar proposta», «Verificar prazo» ou «Pedir cotação».
+Ações, decisões e caminhos de uma pessoa ou processo: o que acontece, em que ordem, com que alternativas e retornos. É o formato apropriado para «Criar encomenda», «Rever dados», «Verificar disponibilidade» ou «Solicitar pagamento».
 
-Não modela diretamente os estados de uma única entidade nem decide que as tarefas são módulos, entidades ou agregados de backend. Pode mostrar ações feitas fora do Cairn, desde que o responsável ou plataforma fique explícito.
+Não modela diretamente os estados de uma única entidade nem decide que as tarefas são módulos, entidades ou agregados de backend. Pode mostrar ações feitas fora do sistema modelado, desde que o responsável ou plataforma fique explícito.
 
 ## Notação
 
@@ -19,33 +19,37 @@ Não modela diretamente os estados de uma única entidade nem decide que as tare
 
 ## Exemplo
 
-Percurso pequeno de preparação, não processo legal completo. «Simular entrega» não acede a uma plataforma nem envia documentos; na operação real, a entrega acontece na plataforma autorizada.
+Percurso pequeno de criação de uma encomenda, não uma política comercial completa. «Solicitar pagamento» representa uma ação no processo; não implica que uma integração esteja implementada.
 
 ```mermaid
 flowchart TD
     START(["Início"])
-    START --> A["Consultar anúncio ou convite fictício"]
-    A --> B{"Participar?"}
-    B -- Não --> RECUSA(["Fim desta participação"])
-    B -- Sim --> C["Rever peças e requisitos"]
-    C --> D["Preparar documentos, preços e cronograma exigido"]
-    D --> E{"Proposta completa?"}
+    START --> A["Selecionar produtos"]
+    A --> B{"Produtos disponíveis?"}
+    B -- Não --> C["Alterar seleção"]
+    C --> A
+    B -- Sim --> D["Indicar dados de entrega"]
+    D --> E{"Dados válidos?"}
     E -- Não --> D
-    E -- Sim --> F{"Dentro do prazo do exemplo?"}
-    F -- Não --> EXPIRADA(["Sem entrega"])
-    F -- Sim --> G["Simular entrega na plataforma"]
-    G --> H["Consultar confirmação simulada"]
-    H --> END(["Fim deste percurso"])
+    E -- Sim --> F["Rever encomenda"]
+    F --> G{"Confirmar encomenda?"}
+    G -- Não --> CANCEL(["Fim sem encomenda"])
+    G -- Sim --> H["Criar encomenda"]
+    H --> I["Solicitar pagamento"]
+    I --> J{"Pagamento autorizado?"}
+    J -- Não --> RETRY(["Rever opções de pagamento"])
+    RETRY --> I
+    J -- Sim --> END(["Encomenda confirmada"])
 ```
 
-A saída «Não participar» termina a participação desta empresa, não o Concurso. O fim deste exemplo não limita a experiência completa do wireframe a Now.
+Os caminhos de indisponibilidade, correção e recusa mostram resultados deste percurso fictício; um processo real pode ter outros passos e regras.
 
 ## Como rever
 
 - Cada tarefa tem um objetivo e um responsável claros?
 - Todas as decisões têm saídas identificadas? Os retornos podem chegar a um fim?
 - O fluxo inclui erros, omissões, recusa ou expiração relevantes, sem inventar regras?
-- Ações externas e ações simuladas estão distinguidas das operações do Cairn?
-- A sequência não é apresentada como universal se depende de um procedimento ou relato?
+- As ações do sistema estão distinguidas das ações de utilizadores ou serviços externos?
+- A sequência não é apresentada como universal se depende de uma política ou fonte?
 - Ações não foram usadas como entidades na vista detalhada?
-- O desenho respeita a diferença entre o processo atual relatado e a experiência proposta?
+- Factos observados, regras e hipóteses estão claramente distinguidos?
