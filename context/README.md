@@ -9,7 +9,6 @@
 - [Transcriptions](transcriptions/): entrevistas e notas originais, com numeração de origem.
 - [System](system/): [ideia inicial](system/ideia_inicial.txt) e [contrato do protótipo interativo](system/prototype.md).
 - [Research](research/): [investigação técnica](research/pesquisa_arquitetura_cairn.md) e [pesquisa de mercado](research/pesquisa_mercado_cairn.md).
-- [Formats](formats/README.md): guias reutilizáveis e exemplos ilustrativos para modelação pontual; não são especificação do produto.
 
 O protótipo evolui na mesma implementação: primeiro wireframe sem estilos para rever estrutura e comportamento; depois design visual próximo da produção. UX e UI são revistas ao longo dessa evolução. Mockups são representações visuais de apoio, normalmente estáticas; não substituem o protótipo interativo.
 
