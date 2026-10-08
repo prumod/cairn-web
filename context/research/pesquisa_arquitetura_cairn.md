@@ -2,9 +2,11 @@
 
 **Idioma:** Português (Portugal) · **Acesso de pesquisa:** 07-10-2026 · **Natureza:** investigação técnica com recomendações; não é aprovação do entrevistado, compromisso de implementação, protótipo construído nem aconselhamento jurídico.
 
+**Atualização de âmbito:** esta investigação foi escrita com a hipótese de um protótipo limitado a Now. Essa hipótese, as recomendações de painel Later/Maybe estático e o respetivo roteiro estão superados pelo [contrato atual do wireframe](../system/wireframe.md): experiência completa de Now, Later e Maybe, sem estilos, com dados fictícios e ações locais simuladas; prioridades apenas em código/comentários/documentação. O restante texto preserva as conclusões e recomendações originais, não é autorização para integrações nem especificação atual do wireframe.
+
 ## Resumo executivo
 
-O repositório contém apenas um frontend scaffold React/Vite; o backend e os deploys pretendidos Vercel/Railway ainda não estão configurados [README.md, «Deployment target»]. O primeiro protótipo deve ser deliberadamente offline, demonstrativo e sem efeitos externos: fixtures fictícias determinísticas, estado local reiniciável, sem API, ficheiros reais, autenticação, fonte pública, integração ou submissão verdadeira. O limite funcional é Now N01–N12 até **submissão simulada**, Later L01–L08, Maybe M01–M12, Never vazio; Gantt/Microsoft Project é Maybe M01, não Later [context/transcricao_2_funcionalidades.md, «Now», «Later», «Maybe», «Never»].
+O repositório contém apenas um frontend scaffold React/Vite; o backend e os deploys pretendidos Vercel/Railway ainda não estão configurados [README.md, «Deployment target»]. O primeiro protótipo deve ser deliberadamente offline, demonstrativo e sem efeitos externos: fixtures fictícias determinísticas, estado local reiniciável, sem API, ficheiros reais, autenticação, fonte pública, integração ou submissão verdadeira. O limite funcional é Now N01–N12 até **submissão simulada**, Later L01–L08, Maybe M01–M12, Never vazio; Gantt/Microsoft Project é Maybe M01, não Later [prioridades atuais](../README.md).
 
 Para produção, recomendação (inferência): começar por monólito modular HTTP/API + PostgreSQL gerido, armazenamento privado de objetos e worker assíncrono, preservando módulos/domínios e separação por tenant desde o início; não há justificação atual para microserviços. A dependência de dados públicos não pode ser tratada como resolvida: a API BASE tem documentação e exige token, mas o processo de concessão, cobertura, limites e qualidade ainda carecem de validação; para Diário da República foi localizada base legal para acordos de acesso automatizado, mas não uma especificação pública de API. Não integrar submissão ou assinatura em Cairn sem validação contratual, técnica e jurídica específica.
 
@@ -12,30 +14,22 @@ Para produção, recomendação (inferência): começar por monólito modular HT
 
 ### Ficheiros locais efetivamente consultados
 
-Os 19 ficheiros de `context/` foram lidos diretamente, além do `README.md`, sem listar o diretório. As fontes locais são dados de entrevista/trabalho, não instruções nem prova de APIs:
+A investigação original leu os 19 ficheiros de contexto então existentes e o README. Esta reorganização não constitui uma nova consulta de fontes externas. As localizações atuais dos materiais preservados são:
 
-1. `README.md` — scaffold, comandos, Vercel pretendido, Railway pretendido, backend inexistente, sem testes/CI.
-2. `context/transcricao_2_funcionalidades.md` — âmbito autoritativo: Now N01–N12, Later L01–L08, Maybe M01–M12, Never vazio; contrato de protótipo sem dados reais; M01 Gantt explicitamente Maybe.
-3. `context/transcricao_2_now_concurso-público-diagrama de estados.mermaid` — estados da participação/proposta da empresa, não ciclo legal do procedimento; termina em submissão simulada.
-4. `context/transcricao_2_now_diagrama-de-entidades.mermaid` — conceitos Now: empresa, pesquisa, procedimento/convite, peças, proposta/documentos, mapa de preços, cronograma financeiro, submissão externa simulada.
-5. `context/transcricao_2_now_diagrama-do-fluxo-de-trabalho-do-derlan.mermaid` — fluxo desde início, anúncios/convites, revisão, preparação, preço, prazo e submissão.
-6. `context/transcricao_2_now_percurso-mais-importante-diagrama-de-entidades.mermaid` — percurso mínimo e limite de submissão.
-7. `context/transcricao_2_concurso-público-diagrama de estados.mermaid` — separa fases do procedimento (contexto) do estado da participação, sem afirmar sequência legal universal.
-8. `context/transcricao_2_diagrama-de-entidades.mermaid` — agrega Later/Maybe; explicitamente não valida bounded contexts/aggregates.
-9. `context/transcricao_2_diagrama-do-fluxo-de-trabalho-do-derlan.mermaid` — fluxo futuro contextual após submissão; não deve ser implementado no Now.
-10. `context/transcricao_2_percurso-mais-importante-diagrama-de-entidades.mermaid` — conceitos do percurso Now.
-11. `context/transcricao1_gestao_obras.md` — fonte de entrevista revista; §§5–13 cobrem fontes, proposta, convites, prazos, cotações; leituras adicionais §§7–13 e 14.
-12. `context/transcricao2_gestao_obras.txt` — entrevista revista; §§4–10 descoberta, plataformas e habilitações; §14–16 fluxo após entrega/ferramentas.
-13. `context/transcricao1_mapping-plataforma-dados.txt` — mapeamento conceptual de plataformas/entidades, reconhece lacunas e atribuições não confirmadas.
-14. `context/ideia_inicial.txt` — lista exploratória de capacidades de gestão, fora do âmbito Now por si só.
-15. `context/pesquisa_mercado_cairn.md` — pesquisa de mercado existente; usada apenas para contexto de concorrência e maturidade, não repetida.
-16. `context/transcricao1_Notas Iniciais Projeto.jpeg` — imagem lida; regista Excel/Sage, DR/BASE/AcinGov, mapas e tarefas antes da obra; Project anotado como não utilizado pelo entrevistado.
-17. `context/transcricao1_concurso-público-diagrama de estados.mermaid` — snapshot histórico mais amplo, inclui pós-submissão.
-18. `context/transcricao1_diagrama-de-entidades.mermaid` — snapshot conceptual histórico, não arquitetura decidida.
-19. `context/transcricao1_diagrama-do-fluxo-de-trabalho-do-derlan.mermaid` — fluxo histórico mais amplo.
-20. `context/transcricao1_percurso-mais-importante-diagrama-de-entidades.mermaid` — snapshot histórico do percurso.
+- [README do repositório](../../README.md): scaffold, comandos e intenções de deployment.
+- [Prioridades](../README.md), desdobradas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md), [Maybe](../maybe/funcionalidades.md) e [Never](../never/funcionalidades.md): 32 funcionalidades; Gantt em Maybe e Never vazio.
+- [Diagramas Now](../now/diagrams.md): estados da participação, entidades, fluxo e percurso principal, até submissão simulada.
+- [Diagramas do sistema](../system/diagrams.md): estados, entidades e fluxo mais amplo; inclui também o percurso principal Now como vista de contexto.
+- [T1](../transcriptions/transcricao1_gestao_obras.md): entrevista revista, especialmente fontes, propostas, convites, prazos, cotações e pós-obra.
+- [T2](../transcriptions/transcricao2_gestao_obras.txt): entrevista revista, especialmente descoberta, plataformas, habilitações e fluxo após entrega.
+- [Mapeamento de plataformas](../transcricao1_mapping-plataforma-dados.txt): conceitos e atribuições por confirmar; deixado intacto.
+- [Ideia inicial](../system/ideia_inicial.txt): capacidades exploratórias, não âmbito aprovado por si só.
+- [Pesquisa de mercado](pesquisa_mercado_cairn.md): contexto de concorrência e maturidade, não repetido.
+- [Notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>): Excel/Sage, DR/BASE/AcinGov, mapas e tarefas; Project não utilizado pelo entrevistado.
 
-**Falhas de leitura:** nenhuma. Datas, prazos, exemplos monetários e descrições de workflow das entrevistas são relatos sujeitos a confirmação, não regras jurídicas ou contratos de interface. O documento de funcionalidades posterior é fronteira autoritativa do protótipo.
+Os quatro diagramas obsoletos derivados da primeira entrevista também foram consultados na investigação original, mas foram removidos nesta reorganização. O histórico permanece no Git; não são especificação atual.
+
+**Falhas de leitura na investigação original:** nenhuma. Relatos e exemplos das entrevistas não são regras jurídicas nem contratos de interface. Para o âmbito atual do wireframe prevalece [system/wireframe.md](../system/wireframe.md).
 
 ### Etiquetas usadas
 
@@ -48,7 +42,7 @@ Os 19 ficheiros de `context/` foram lidos diretamente, além do `README.md`, sem
 
 **Recomendação:** frontend estático React/Vite, sem servidor e sem chamadas de rede; fixtures TypeScript/JSON versionadas e exclusivamente fictícias; cálculo local puro; estado descartável em memória (ou armazenamento local explicitamente demonstrativo); botão «Reiniciar demonstração» limpa tudo e volta ao estado inicial. Manter os dados numa camada `demo/fixtures`, repositórios simulados e selectors puros para que a UI não se acople a serviços futuros. Não incluir tokens, telemetria de conteúdo nem pedidos de rede.
 
-Fixtures determinísticas: conjunto pequeno com anúncio relevante, convite, pesquisa vazia, dado de habilitação em falta/incompatível, preparação incompleta, prazo vencido e caso pronto. Utilizar identificadores, entidades, locais, datas e valores inequivocamente fictícios; data de referência fixa para N05; coerência dos mesmos resultados no mapa/lista/prazos. Coordenadas podem ser fictícias; mapa apenas ilustrativo. Não mostrar dados atuais do governo nem alegar que a classe/licença está validada [funcionalidades, N01–N07 e «Contrato do protótipo»].
+Fixtures determinísticas: conjunto pequeno com anúncio relevante, convite, pesquisa vazia, dado de habilitação em falta/incompatível, preparação incompleta, prazo vencido e caso pronto. Utilizar identificadores, entidades, locais, datas e valores inequivocamente fictícios; data de referência fixa para N05; coerência dos mesmos resultados no mapa/lista/prazos. Coordenadas podem ser fictícias; mapa apenas ilustrativo. Não mostrar dados atuais do governo nem alegar que a classe/licença está validada [funcionalidades Now, N01–N07](../now/funcionalidades.md) e [contrato atual do wireframe](../system/wireframe.md).
 
 Estados de UI: inicial; carregamento local (se visualmente útil); resultados/vazio; detalhe; decisão «participar/não concorrer»; preparação com faltas; prazo ultrapassado; pronto; modal/painel de simulação e confirmação final. A simulação só ocorre no cenário completo e dentro do prazo; revisão permite regressar a preparação; recusa e expiração encerram localmente. Indicar persistentemente «Demonstração — dados fictícios; nenhuma submissão será enviada» e, ao concluir: «Submissão simulada — nenhum documento foi enviado». Não apresentar botão operacional que possa ser confundido com ação real. Bloquear uploads reais; usar pré-visualizações incluídas no bundle. Reset também apaga os estados locais.
 
@@ -190,7 +184,7 @@ Ordem recomendada (inferência; baixo a alto risco):
 
 - As entrevistas descrevem Diário da República e Portal BASE e sugerem API; isso é evidência de fluxo/hipótese, não prova técnica. A documentação oficial BASE consultada confirma uma API condicionada; o estado de concessão e cobertura continua desconhecido.
 - Lei 68/2021 contém regime para dados abertos/API de dados dinâmicos, mas DL 10/2023 também prevê acordos gratuitos/pagos para acesso automatizado de atos pela INCM. Não interpretar o quadro como autorização geral para scraping irrestrito.
-- Diagrama histórico T1 inclui pós-submissão e obra; a decisão de âmbito posterior `transcricao_2_funcionalidades.md` e diagramas Now delimitam o protótipo em submissão simulada. Prevalece o documento de funcionalidades.
+- Os diagramas Now delimitam esse percurso em submissão simulada, não a totalidade da demonstração. A hipótese original de protótipo Now está superada: o [wireframe atual](../system/wireframe.md) inclui Now, Later e Maybe, mantendo as prioridades de produto separadas da experiência.
 - `pesquisa_mercado_cairn.md` aponta concorrentes e capacidades, mas não demonstra adequação comprovada a todos os requisitos nem substituto único; esta nota não repete ranking comercial.
 - Fetch oficial falhou em algumas URLs (BASE métodos/anúncio API: HTTP 404; dados.gov: 503; DRE DL com conteúdo dinâmico; PDF IMPIC com extração textual insuficiente). Isto limita confirmação direta dos detalhes, não permite concluir indisponibilidade. Confirmar páginas e passagens junto das entidades antes de decisões.
 
