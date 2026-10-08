@@ -135,7 +135,7 @@ There are no tests or automated CI gates yet. Do not treat a missing test suite 
 
 ## Work through GitHub
 
-GitHub Issues are the source of truth for project work. The [Cairn Web project board](https://github.com/orgs/prumod/projects/1) tracks work through Backlog, Ready, In Progress, In Review, and Done. The customer can describe a problem or ask a question in an Issue; they do not need to create branches, use a terminal, or understand implementation details. The senior and mid-level developers follow up and turn the problem into development work.
+GitHub Issues are the source of truth for project work. The [Cairn Web project board](https://github.com/orgs/prumod/projects/1) tracks work through Backlog, Ready, In Progress, In Review, and Done. The customer can describe a problem or ask a question in an Issue; they do not need to create branches, use a terminal, or understand implementation details. The senior and mid-level developers follow up and turn the problem into development work. For the step-by-step development workflow, see [How to develop a feature](docs/how-to/desenvolver-uma-funcionalidade.md).
 
 For a change:
 
