@@ -3,12 +3,13 @@
 ## Organização
 
 - [Now](now/funcionalidades.md): funcionalidades prioritárias.
+- [Termos por definir (Now)](now/termos-por-definir.md): vocabulário a confirmar.
 - [Later](later/funcionalidades.md): funcionalidades pretendidas para depois.
 - [Maybe](maybe/funcionalidades.md): ideias a validar antes de compromisso.
 - [Never](never/funcionalidades.md): exclusões deliberadas; atualmente vazio.
 - [Transcriptions](transcriptions/): entrevistas e notas originais, com numeração de origem.
 - [System](system/): [ideia inicial](system/ideia_inicial.txt) e [contrato do protótipo interativo](system/prototype.md).
-- [Research](research/): [investigação técnica](research/pesquisa_arquitetura_cairn.md) e [pesquisa de mercado](research/pesquisa_mercado_cairn.md).
+- [Research](research/): [investigação técnica](research/pesquisa_arquitetura_cairn.md), [pesquisa de mercado](research/pesquisa_mercado_cairn.md) e [fluxo de capturas e anotações](research/screenshots/canvas-workflow.md).
 
 O protótipo evolui na mesma implementação: primeiro wireframe sem estilos para rever estrutura e comportamento; depois design visual próximo da produção. UX e UI são revistas ao longo dessa evolução. Mockups são representações visuais de apoio, normalmente estáticas; não substituem o protótipo interativo.
 
