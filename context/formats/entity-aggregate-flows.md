@@ -4,7 +4,7 @@
 
 A estrutura proposta do domínio e a colaboração entre agregados. Combina **bounded contexts (BC), raízes de agregado (AR), entidades de suporte, Value Objects (VO), referências e interações**. Não é apenas uma lista de conceitos agrupados por prioridade nem um workflow de tarefas.
 
-Esta é a notação obrigatória para as secções «Entidades» dos diagramas Now e do sistema. O formato é fixo; o conteúdo e as fronteiras podem ser hipóteses. Não omitir a classificação por estar por validar: indicar o estatuto no título do BC e na legenda.
+Ao usar este formato, cumprir a notação descrita abaixo. O formato é fixo; o conteúdo e as fronteiras podem ser hipóteses. Não omitir a classificação por estar por validar: indicar o estatuto no título do BC e na legenda.
 
 - **BC:** âmbito em que a linguagem e as regras têm significado consistente; não equivale a um ecrã, prioridade, pasta ou microserviço.
 - **Agregado:** conjunto de conceitos cujas invariantes são protegidas como uma unidade de consistência.
@@ -82,7 +82,7 @@ O [workflow](workflow-flows.md) explica as ações das pessoas. Os [estados](sta
 - VO embutidos têm o tipo explícito? Identidade e ciclo de vida justificam as classificações propostas?
 - Os eventos ligam raízes, descrevem factos e têm condições relevantes? Os pedidos distinguem-se dos eventos?
 - A hipótese de cada agregado descreve as invariantes que precisará de proteger, sem as tratar como decisões aprovadas?
-- Nomes e relações estruturais coincidem com o percurso principal? O subconjunto Now permanece coerente com o sistema?
+- Quando houver vistas relacionadas, os nomes e relações estruturais permanecem coerentes entre elas?
 - Sistemas externos estão fora dos BC de domínio e as ligações são identificadas como `Externo:`?
 - Não existe uma caixa de estado como «Aguarda resultado» fingindo ser entidade?
 - Prioridades, limites de simulação e hipóteses não foram transformados em decisões de produção?
