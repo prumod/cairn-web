@@ -48,7 +48,6 @@ As fontes sustentam o conceito ou uma distinção importante, mas o nome, o alca
 - [ ] **Valor anunciado** — Qual é o significado do valor apresentado no anúncio? Pode ser chamado «preço base» ou essa equivalência não está confirmada?
 - [ ] **Valor total da proposta / valor proposto** — São o mesmo conceito? O valor corresponde ao total da lista de preços ou inclui outras componentes?
 - [ ] **Habilitações da empresa** — Que qualificações engloba este termo e como se relaciona com classe, licenças e eventuais alvarás?
-- [ ] **Cronograma financeiro** — Distribui produção prevista, valores da proposta, pagamentos previstos ou uma combinação destes? Não representa recebimentos reais nem o Gantt de execução.
 
 ## Menor certeza — ambiguidades por resolver
 

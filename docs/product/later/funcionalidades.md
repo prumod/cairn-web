@@ -19,4 +19,11 @@ As classificações seguintes foram aceites na conversa. As fontes justificam a 
 - **L07 — Progresso da execução:** registar percentagem concluída por item do mapa de medições. Não inclui Gantt, dependências ou previsões de conclusão. Base: ideia inicial, pergunta sobre conclusão item a item.
 - **L08 — Pós-obra pública:** receção provisória e definitiva, garantia, vistorias, reparações, retenções e respetiva libertação; alertas de prazos e ordenação por urgência. Base: T1 §14; T2 §§11–13, 18.
 
+- **L09 — Cronograma financeiro da proposta:** incluir e acompanhar esta componente quando exigida. Adiado de Now para Later por decisão do utilizador; continua a pertencer à preparação da proposta, não à execução da obra.
+  - **Objetivo:** não deixar faltar uma componente da proposta descrita nas duas entrevistas.
+  - **Protótipo:** mostrar períodos, percentagens e valores de um cronograma financeiro fictício; permitir assinalar «preparado» ou «não exigido neste concurso». Uma edição avançada fica por validar.
+  - **Base:** T1 §6; T2 §6.
+  - **Limite:** não implementar na fase Now nem condicionar a revisão ou submissão simulada Now à sua preparação. A T2 admite que parte deste detalhe pode ultrapassar a apresentação inicial. Não confundir com o Gantt de execução nem com recebimentos reais. A edição/importação/exportação avançada permanece em Maybe M11.
+  - **Termo por definir:** distribui produção prevista, valores da proposta, pagamentos previstos ou uma combinação destes? Não representa recebimentos reais nem o Gantt de execução. Esta questão foi retirada da lista de termos Now e permanece por confirmar.
+
 As integrações reais e a persistência são trabalho técnico posterior ao protótipo com dados fictícios, não uma funcionalidade adicional nem uma integração já aprovada. As fontes públicas, APIs, mapas e cobertura de dados precisam de validação separada (T2 §§2, 19, 22–24).

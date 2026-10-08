@@ -6,7 +6,7 @@
 
 ## Resumo executivo
 
-O repositório contém apenas um frontend scaffold React/Vite; o backend e os deploys pretendidos Vercel/Railway ainda não estão configurados [README.md, «Deployment target»]. O primeiro protótipo deve ser deliberadamente offline, demonstrativo e sem efeitos externos: fixtures fictícias determinísticas, estado local reiniciável, sem API, ficheiros reais, autenticação, fonte pública, integração ou submissão verdadeira. O limite funcional é Now N01–N12 até **submissão simulada**, Later L01–L08, Maybe M01–M12, Never vazio; Gantt/Microsoft Project é Maybe M01, não Later [prioridades atuais](../README.md).
+O repositório contém apenas um frontend scaffold React/Vite; o backend e os deploys pretendidos Vercel/Railway ainda não estão configurados [README.md, «Deployment target»]. O primeiro protótipo deve ser deliberadamente offline, demonstrativo e sem efeitos externos: fixtures fictícias determinísticas, estado local reiniciável, sem API, ficheiros reais, autenticação, fonte pública, integração ou submissão verdadeira. O limite funcional é Now N01–N10 e N12 até **submissão simulada**, Later L01–L09, Maybe M01–M12, Never vazio; Gantt/Microsoft Project é Maybe M01, não Later [prioridades atuais](../README.md).
 
 Para produção, recomendação (inferência): começar por monólito modular HTTP/API + PostgreSQL gerido, armazenamento privado de objetos e worker assíncrono, preservando módulos/domínios e separação por tenant desde o início; não há justificação atual para microserviços. A dependência de dados públicos não pode ser tratada como resolvida: a API BASE tem documentação e exige token, mas o processo de concessão, cobertura, limites e qualidade ainda carecem de validação; para Diário da República foi localizada base legal para acordos de acesso automatizado, mas não uma especificação pública de API. Não integrar submissão ou assinatura em Cairn sem validação contratual, técnica e jurídica específica.
 
@@ -69,7 +69,7 @@ Modelo mínimo de produção (recomendação; não implica antecipar módulos La
 - Invariantes a validar com utilizador: máximo uma participação ativa por empresa/procedimento; transições permitidas; submissão demo apenas com proposta completa/dentro da data de referência; requisito/doc pode ser obrigatório/opcional/por confirmar; versões de proposta congeladas no momento de revisão; aceitar correcções sem perder trilho.
 - Proveniência: cada campo normalizado liga a um registo de fonte, data de extração, localizador (URL/secção/ficheiro), versão e estado humano (não revisto/revisto/corrigido). Não transformar anotações em fonte governamental. Reter matéria bruta segundo termos e política, minimizando cópias.
 - Multi-tenant desde primeira versão com dados reais: tenant_id em toda linha, FK composta ou verificações, contexto tenant derivado da identidade verificada (nunca confiar em tenant_id fornecido pelo cliente). RLS PostgreSQL como segunda barreira, não substituto de autorização. Donos/superusers podem contornar RLS e policies têm semântica permissive/restrictive; testar com roles não-owner e FORCE RLS quando adequado [PostgreSQL, Row Security Policies, acesso 07-10-2026, https://www.postgresql.org/docs/current/ddl-rowsecurity.html].
-- Dinheiro: EUR, guardar unidades menores inteiras (cêntimos) ou NUMERIC decimal exato com escala explícita, não binary float; quantidades podem precisar precisão separada da moeda. Especificar por item: base × quantidade, escala/preço unitário, regras de IVA/descontos e ponto de arredondamento; arredondar explicitamente ao cêntimo por linha vs total e preservar valor bruto/derivado. Testes de fronteira e totais. A margem de 25% da T1 §11 é exemplo incerto, não regra; Now N10 não inclui margem automática. Guardar taxas/percentagens como decimal e validar soma 100% quando aplicável; cronograma N11 demonstrativo, não previsão contabilística.
+- Dinheiro: EUR, guardar unidades menores inteiras (cêntimos) ou NUMERIC decimal exato com escala explícita, não binary float; quantidades podem precisar precisão separada da moeda. Especificar por item: base × quantidade, escala/preço unitário, regras de IVA/descontos e ponto de arredondamento; arredondar explicitamente ao cêntimo por linha vs total e preservar valor bruto/derivado. Testes de fronteira e totais. A margem de 25% da T1 §11 é exemplo incerto, não regra; Now N10 não inclui margem automática. Guardar taxas/percentagens como decimal e validar soma 100% quando aplicável; cronograma Later L09 demonstrativo, não previsão contabilística.
 
 ## 5. Fontes públicas e integrações de procurement (estado em 07-10-2026)
 
@@ -147,7 +147,7 @@ Ordem recomendada (inferência; baixo a alto risco):
 
 ## 10. Roteiro de validação end-to-end
 
-1. **Prototype Now:** implementar apenas N01–N12 local e demonstrativo; validar percurso com entrevistado sem recolher ficheiros reais. Critérios: reset, invariantes de estados, valores, prazo e aviso anti-envio testados.
+1. **Prototype Now:** implementar apenas N01–N10 e N12 local e demonstrativo; validar percurso com entrevistado sem recolher ficheiros reais. Critérios: reset, invariantes de estados, valores, prazo e aviso anti-envio testados.
 2. **Descoberta de domínio:** rever requisitos/documentos reais anonimizados com autorização, mapear estados/prazos/regras por tipo de procedimento; determinar o que é texto do anúncio vs decisão humana. Validar moeda, IVA, quantidades, arredondamento e estrutura do mapa.
 3. **Viabilidade das fontes (spike isolado):** pedir acesso BASE pelo canal oficial; solicitar documentação INCM; examinar ficha e licença de datasets dados.gov; perguntar à acinGov/VORTAL/esPAP sobre API, sandbox, contratos e limites; medir cobertura/frescura contra amostra manual. Não integrar enquanto não houver autorização.
 4. **Arquitetura production readiness:** escolher identidade, tenancy, storage, DB gerida/backup, fila, observabilidade, threat model, política de retenção, contratos de processamento e CI. Testar restore e isolamento cruzado.
@@ -166,7 +166,7 @@ Ordem recomendada (inferência; baixo a alto risco):
 
 ### Questões em aberto / ações mais úteis
 
-1. Entrevistado confirma N01–N12 e fornece pacote de exemplo anonimizável (mapa, checklist, cronograma)? Como representa prazo e IVA? Qual regra de rounding aceita?
+1. Entrevistado confirma N01–N10 e N12 e fornece pacote de exemplo anonimizável (mapa, checklist)? Como representa prazo e IVA? Qual regra de rounding aceita? O cronograma financeiro será validado separadamente em Later L09.
 2. BASE concede token ao projeto? Qual schema/documentação atual, limite, refresh, histórico, uso/reutilização, SLA e cobertura de anúncios/obras? Medir amostra real antes de arquitetura de ingestion.
 3. INCM tem API/licença/sandbox para atos/anúncios e anexos? Quais custos/limites/termos?
 4. O que os datasets concretos dados.gov cobrem e quando atualizam? Qual dataset é substituto/espelho e que licença se aplica?

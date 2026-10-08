@@ -8,7 +8,7 @@ Este documento regista o âmbito acordado; não afirma que o protótipo já exis
 
 ## Cobertura e prioridades
 
-- Cobrir todas as funcionalidades documentadas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md): N01–N12, L01–L08 e M01–M12.
+- Cobrir todas as funcionalidades documentadas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md): N01–N10 e N12, L01–L09 e M01–M12.
 - [Never](../never/funcionalidades.md) permanece vazio; não inventar exclusões nem ecrãs para preencher este nível.
 - Representar a experiência completa: ecrãs, navegação, campos, controlos, interações, validações, alterações de estado, resultados vazios, informação em falta, erros e correção/regresso quando aplicáveis.
 - Later e Maybe não se limitam a um painel estático de âmbito. Devem demonstrar as respetivas experiências; isso não altera a prioridade nem confirma viabilidade técnica, valor ou regras de negócio.
@@ -58,9 +58,13 @@ Estes limites aplicam-se a ambas as fases, mesmo quando a interface se aproximar
 
 ### Descoberta e proposta
 
-Perfil da empresa → anúncios ou convites → mapa/lista/prazos → detalhe e revisão de requisitos → decisão de participar ou não → peças e checklist → preços unitários e total → cronograma financeiro quando exigido → revisão → submissão simulada. Incluir pesquisa vazia, informação de habilitação em falta/incompatível, recusa, preparação incompleta, regresso à preparação, proposta pronta e prazo ultrapassado.
+Perfil da empresa → anúncios ou convites → mapa/lista/prazos → detalhe e revisão de requisitos → decisão de participar ou não → peças e checklist → preços unitários e total → revisão → submissão simulada. Incluir pesquisa vazia, informação de habilitação em falta/incompatível, recusa, preparação incompleta, regresso à preparação, proposta pronta e prazo ultrapassado.
 
 Este é o percurso Now, não o limite do protótipo completo. A submissão simulada pode alimentar os exemplos de acompanhamento posterior.
+
+### Preparação adicional da proposta — Later
+
+O cronograma financeiro, quando exigido, pertence a Later L09. Demonstrar períodos, percentagens, valores e indicação de preparação quando se trabalhar essa prioridade. Não o implementar na fase Now nem usá-lo como condição de prontidão ou submissão simulada nesse percurso. Esta alteração de prioridade não redefine os requisitos de entrega de um concurso real.
 
 ### Gestão e acompanhamento
 
