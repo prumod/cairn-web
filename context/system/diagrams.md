@@ -2,7 +2,7 @@
 
 Visão geral do sistema e do processo descrito nas entrevistas. As prioridades não são limites do wireframe completo. O percurso principal representa o subconjunto Now, mantido aqui como vista de contexto.
 
-Modelos conceptuais, não regras jurídicas validadas nem estruturas de backend já decididas. As etiquetas de prioridade pertencem à documentação, não à interface. Fontes: [T1](../transcriptions/transcricao1_gestao_obras.md) e [T2](../transcriptions/transcricao2_gestao_obras.txt).
+Modelos conceptuais, não regras jurídicas validadas nem estruturas de backend já decididas. As etiquetas de prioridade pertencem à documentação, não à interface. Fontes: [T1](../transcriptions/transcricao1_gestao_obras.md) e [T2](../transcriptions/transcricao2_gestao_obras.txt). Notação e critérios de revisão: [formatos de modelação](../formats/README.md).
 
 ## Entidades
 
@@ -42,14 +42,14 @@ flowchart LR
         EMPRESA -->|"Titular"| PARTICIPACAO
         CONCURSO -->|"Objeto da participação"| PARTICIPACAO
         PARTICIPACAO -->|"Pode ter"| PROPOSTA
-        PROPOSTA -->|"Inclui"| CHECKLIST
+        PROPOSTA ---|"Inclui"| CHECKLIST
         REQUISITO -->|"Referência do item"| CHECKLIST
         CHECKLIST -->|"Pode referenciar"| DOCUMENTO
-        PROPOSTA -->|"Inclui"| DOCUMENTO
-        PROPOSTA -->|"Inclui"| MAPA
-        MAPA -->|"Contém"| ITEM
-        PROPOSTA -->|"Inclui quando exigido"| FINANCEIRO
-        FINANCEIRO -->|"Contém"| PERIODO
+        PROPOSTA ---|"Inclui"| DOCUMENTO
+        PROPOSTA ---|"Inclui"| MAPA
+        MAPA ---|"Contém"| ITEM
+        PROPOSTA ---|"Inclui quando exigido"| FINANCEIRO
+        FINANCEIRO ---|"Contém"| PERIODO
         PROPOSTA -->|"Objeto da submissão"| SUBMISSAO
     end
 
@@ -184,6 +184,8 @@ flowchart LR
 
 ## Fluxo de trabalho
 
+Processo relatado e experiência proposta, não automação já disponível. Salvo indicação de outros intervenientes, as ações são da empresa participante; abertura, avaliação e decisões da entidade adjudicante são acompanhadas pela empresa, não executadas pelo Cairn. A consulta tracejada ao BASE é auxiliar, não uma etapa obrigatória. No wireframe, consultas, ficheiros, entregas e confirmações usam dados fictícios ou simulação local, sem efeitos externos. Rever a proposta pressupõe reunir os elementos exigidos; os ramos de preparação não impõem uma execução paralela.
+
 ```mermaid
 flowchart TD
 
@@ -225,19 +227,20 @@ flowchart TD
         COMPLETA -- Sim --> PRAZO{"Dentro do prazo de submissão?"}
         PRAZO -- Não --> EXPIRADA(["Prazo ultrapassado sem submissão"])
         PRAZO -- Sim --> SUBMETER["Submeter proposta na plataforma<br/>Ação externa; no protótipo, apenas simulação"]
+        SUBMETER --> CONFIRMACAO["Consultar confirmação de entrega<br/>No wireframe, confirmação simulada"]
     end
 
     subgraph LATER["Após submissão — contexto fora do NOW; suporte de produto proposto em LATER"]
-        SUBMETER --> ABERTURA["Aguardar abertura das propostas<br/>Consultar concorrentes e valores na plataforma"]
+        CONFIRMACAO --> ABERTURA["Acompanhar abertura das propostas<br/>Consultar concorrentes e valores na plataforma"]
         ABERTURA --> PRELIMINAR["Consultar relatório preliminar"]
-        PRELIMINAR --> RECLAMACAO["Decorrer prazo de reclamação<br/>Apresentar reclamação se necessário"]
+        PRELIMINAR --> RECLAMACAO["Acompanhar prazo de reclamação<br/>Apresentar reclamação se necessário"]
         RECLAMACAO --> FINAL["Consultar relatório final / decisão"]
         FINAL -. "Consulta ocasional de adjudicação" .-> BASE["Consultar Portal BASE<br/>Vencedor e valor do contrato"]
         FINAL --> GANHOU{"Empresa ganhou?"}
         GANHOU -- Não --> FIMCONCURSO(["Fim da participação neste concurso"])
         GANHOU -- Sim --> DOCSHAB["Preparar e entregar documentos de habilitação<br/>Aviso por e-mail da plataforma; prazo próprio"]
         DOCSHAB --> MINUTA["Tratar minuta e contrato"]
-        MINUTA --> CONSIGNACAO["Auto de consignação<br/>Autoriza início da obra e do prazo de execução"]
+        MINUTA --> CONSIGNACAO["Tratar auto de consignação<br/>Autoriza início da obra e do prazo de execução"]
         CONSIGNACAO --> GESTAO["Preparar gestão da obra<br/>Reunir dados dos dois Sage no Excel"]
         GESTAO --> STOCK{"Existe stock suficiente?"}
         STOCK -- Não --> COMPRAR["Obter cotações e encomendar materiais"]
@@ -261,7 +264,7 @@ flowchart TD
         DEFEITO -- Não --> RETENCAO["Pedir libertação de retenções conforme condições<br/>Percentagens e anos do exemplo não são regras fixas"]
         RETENCAO --> DEFINITIVA{"Condições para receção definitiva cumpridas?"}
         DEFINITIVA -- Não --> GARANTIA
-        DEFINITIVA -- Sim --> ENCERRAR["Receção definitiva / encerramento"]
+        DEFINITIVA -- Sim --> ENCERRAR["Registar receção definitiva / encerramento"]
         ENCERRAR --> FIM(["Fim"])
     end
 
@@ -285,8 +288,8 @@ stateDiagram-v2
         state "Aberto à entrega de propostas" as Aberto
         state "Prazo de entrega encerrado" as Encerrado
 
-        Publicado --> Aberto: Conforme prazo indicado no procedimento
-        Aberto --> Encerrado: Termina o prazo de entrega
+        Publicado --> Aberto: Início do prazo indicado
+        Aberto --> Encerrado: Fim do prazo de entrega
 
         state "Em abertura de propostas" as Abertura
         state "Em avaliação preliminar" as Preliminar
@@ -296,12 +299,12 @@ stateDiagram-v2
         state "Em contratação" as Contratacao
         state "Contratado" as Contratado
 
-        Encerrado --> Abertura: Entidade abre propostas
-        Abertura --> Preliminar: Avaliação das propostas
+        Encerrado --> Abertura: Abertura das propostas pela entidade
+        Abertura --> Preliminar: Início da avaliação preliminar
         Preliminar --> Reclamacao: Relatório preliminar disponibilizado
-        Reclamacao --> Final: Prazo terminado e reclamações tratadas
-        Final --> Habilitacao: Adjudicação e pedido de documentos
-        Habilitacao --> Contratacao: Documentação entregue e aceite
+        Reclamacao --> Final: Decisão final disponibilizada [prazo terminado e reclamações tratadas]
+        Final --> Habilitacao: Pedido de documentos de habilitação [adjudicação comunicada]
+        Habilitacao --> Contratacao: Aceitação da documentação [documentos entregues]
         Contratacao --> Contratado: Contrato celebrado
     }
 
@@ -318,40 +321,38 @@ Estado da relação entre uma empresa e um concurso, incluindo a sua proposta. N
 
 ```mermaid
 stateDiagram-v2
-
     state "Participação da empresa — Now e Later" as Participacao {
         [*] --> EmAnalise
-        state "Oportunidade em análise" as EmAnalise
-        state "Decisão de participar / proposta em preparação" as Preparacao
-        state "Proposta pronta para submissão" as Pronta
-        state "Proposta submetida na plataforma externa" as Submetida
-        state "Não participar" as NaoParticipar
-        state "Prazo ultrapassado sem submissão" as SemSubmissao
-        state "A aguardar decisão — LATER" as Aguardar
+        state "Oportunidade / convite em análise" as EmAnalise
+        state "Em preparação da proposta" as Preparacao
+        state "Pronta para entrega da proposta" as Pronta
+        state "Com proposta submetida / a aguardar decisão" as Submetida
+        state "Não participante" as NaoParticipar
+        state "Sem proposta entregue dentro do prazo" as SemSubmissao
         state "Não adjudicada à empresa — LATER" as NaoGanha
         state "Adjudicada à empresa — LATER" as Ganha
 
-        EmAnalise --> Preparacao: Rever interesse, classe, licenças e requisitos
-        EmAnalise --> NaoParticipar: Decidir não concorrer / recusar convite
-        EmAnalise --> SemSubmissao: Termina o prazo sem entrega
-        Preparacao --> Pronta: Documentação, preços e cronograma exigido revistos
-        Pronta --> Preparacao: Rever omissões ou alterações
-        Preparacao --> SemSubmissao: Termina o prazo sem entrega
-        Pronta --> SemSubmissao: Termina o prazo sem entrega
-        Pronta --> Submetida: Submeter na plataforma dentro do prazo
-        Submetida --> Aguardar: Fim do NOW
-        Aguardar --> NaoGanha: Decisão não atribui obra à empresa
-        Aguardar --> Ganha: Decisão atribui obra à empresa
+        EmAnalise --> Preparacao: Decisão de participar [requisitos revistos]
+        EmAnalise --> NaoParticipar: Decisão de não concorrer / recusa do convite
+        EmAnalise --> SemSubmissao: Fim do prazo [sem entrega]
+        Preparacao --> Pronta: Revisão concluída [elementos exigidos completos]
+        Pronta --> Preparacao: Omissão ou alteração identificada
+        Preparacao --> SemSubmissao: Fim do prazo [sem entrega]
+        Pronta --> SemSubmissao: Fim do prazo [sem entrega]
+        Pronta --> Submetida: Entrega confirmada [dentro do prazo]
+        Submetida --> NaoGanha: Decisão final comunicada [não adjudicada à empresa]
+        Submetida --> Ganha: Decisão final comunicada [adjudicada à empresa]
         NaoParticipar --> [*]
         SemSubmissao --> [*]
         NaoGanha --> [*]
-        Ganha --> [*]
     }
 
     note right of Participacao
-        No wireframe, submissão e confirmação são simuladas.
+        No wireframe, entrega e confirmação são simuladas.
         Habilitações apoiam revisão humana, sem validação jurídica automática.
-        Documentos pós-adjudicação pertencem a uma etapa distinta da preparação.
+        Aguardar decisão pertence ao acompanhamento Later.
+        Adjudicação não é conclusão da habilitação e contratação.
+        A vista termina em Ganha sem declarar esse estado final.
     end note
 ```
 
@@ -369,12 +370,12 @@ stateDiagram-v2
         state "Recebida provisoriamente / em garantia" as Garantia
         state "Recebida definitivamente / encerrada" as Definitiva
 
-        Consignacao --> Execucao: Início autorizado conforme consignação
+        Consignacao --> Execucao: Início autorizado [condições da consignação cumpridas]
         Execucao --> Vistoria: Obra concluída
-        Vistoria --> Execucao: Corrigir problemas identificados
-        Vistoria --> Garantia: Receção provisória após conformidade
-        Garantia --> Garantia: Vistorias, reparações e libertação de retenções conforme condições
-        Garantia --> Definitiva: Condições para receção definitiva cumpridas
+        Vistoria --> Execucao: Problemas identificados [correção necessária]
+        Vistoria --> Garantia: Receção provisória [conformidade verificada]
+        Garantia --> Garantia: Vistoria realizada / reparação concluída / retenção libertada [conforme condições]
+        Garantia --> Definitiva: Receção definitiva [condições cumpridas]
         Definitiva --> [*]
     }
 
@@ -386,29 +387,29 @@ stateDiagram-v2
 
 ## Percurso principal
 
-Fluxo entre entidades e respetivas relações, não uma sequência de tarefas. Os passos do utilizador estão no diagrama «Fluxo de trabalho».
+Subconjunto Now da vista detalhada, com os mesmos conceitos e relações. Omite requisitos, itens da checklist e outros conceitos de suporte, mas não combina Concurso com Convite nem Documento com Item da checklist. As setas representam relações, não passos do utilizador ou fronteiras de agregados. O percurso termina visualmente na Submissão; o acompanhamento da Participação continua fora desta vista.
 
 ```mermaid
 flowchart LR
-
-    EMPRESA["Empresa<br/>Localização, classe e licenças"]
+    EMPRESA["Empresa participante<br/>Localização, classe e licenças declaradas"]
     PESQUISA["Critérios de pesquisa<br/>Data de publicação e raio"]
-    CONCURSO["Concurso / convite<br/>Valor, localização e prazos<br/>Requisitos e plataforma"]
-    PECAS["Peças do concurso<br/>Desenhos, memorial e mapas"]
-    PROPOSTA["Proposta<br/>Estado de preparação e valor final"]
-    DOCUMENTOS["Documentos exigidos<br/>Checklist de preparação"]
-    PRECOS["Mapa de medições / preços unitários<br/>Itens, quantidades e preços"]
+    CONCURSO["Concurso / procedimento<br/>Descrição e valor anunciado<br/>Localização, prazo da obra e prazo de entrega"]
+    PECAS["Peças do concurso<br/>Desenhos, memorial descritivo e mapas"]
+    PARTICIPACAO["Participação da empresa<br/>Empresa × concurso<br/>Decisão e estado de acompanhamento"]
+    PROPOSTA["Proposta<br/>Estado de preparação e valor proposto"]
+    DOCUMENTO["Documento da proposta<br/>Identificação e ficheiro"]
+    MAPA["Mapa de medições / preços unitários"]
     FINANCEIRO["Cronograma financeiro<br/>Quando exigido"]
-    SUBMISSAO["Submissão da proposta<br/>Registo simulado no wireframe<br/>Fim do percurso Now"]
+    SUBMISSAO["Submissão da proposta<br/>Referência e confirmação de entrega"]
 
     EMPRESA -->|"Referência dos critérios"| PESQUISA
     PESQUISA -->|"Correspondem a"| CONCURSO
-    EMPRESA -->|"Autora da proposta"| PROPOSTA
-    CONCURSO -->|"Objeto da proposta"| PROPOSTA
-    CONCURSO -->|"Tem peças"| PECAS
-    PECAS -->|"Base da proposta"| PROPOSTA
-    PROPOSTA ---|"Inclui"| DOCUMENTOS
-    PROPOSTA ---|"Inclui"| PRECOS
+    CONCURSO -->|"Tem"| PECAS
+    EMPRESA -->|"Titular"| PARTICIPACAO
+    CONCURSO -->|"Objeto da participação"| PARTICIPACAO
+    PARTICIPACAO -->|"Pode ter"| PROPOSTA
+    PROPOSTA ---|"Inclui"| DOCUMENTO
+    PROPOSTA ---|"Inclui"| MAPA
     PROPOSTA ---|"Inclui quando exigido"| FINANCEIRO
     PROPOSTA -->|"Objeto da submissão"| SUBMISSAO
 ```

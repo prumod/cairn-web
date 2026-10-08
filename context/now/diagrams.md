@@ -2,7 +2,7 @@
 
 Vistas do percurso Now: descoberta, decisão, preparação e submissão simulada. Não representam a totalidade do wireframe; consultar o [contrato completo](../system/wireframe.md).
 
-Modelos conceptuais, não regras jurídicas validadas nem estruturas de backend já decididas. As etiquetas de prioridade pertencem à documentação, não à interface. Fontes: [T1](../transcriptions/transcricao1_gestao_obras.md) e [T2](../transcriptions/transcricao2_gestao_obras.txt).
+Modelos conceptuais, não regras jurídicas validadas nem estruturas de backend já decididas. As etiquetas de prioridade pertencem à documentação, não à interface. Fontes: [T1](../transcriptions/transcricao1_gestao_obras.md) e [T2](../transcriptions/transcricao2_gestao_obras.txt). Notação e critérios de revisão: [formatos de modelação](../formats/README.md).
 
 ## Entidades
 
@@ -42,14 +42,14 @@ flowchart LR
         EMPRESA -->|"Titular"| PARTICIPACAO
         CONCURSO -->|"Objeto da participação"| PARTICIPACAO
         PARTICIPACAO -->|"Pode ter"| PROPOSTA
-        PROPOSTA -->|"Inclui"| CHECKLIST
+        PROPOSTA ---|"Inclui"| CHECKLIST
         REQUISITO -->|"Referência do item"| CHECKLIST
         CHECKLIST -->|"Pode referenciar"| DOCUMENTO
-        PROPOSTA -->|"Inclui"| DOCUMENTO
-        PROPOSTA -->|"Inclui"| MAPA
-        MAPA -->|"Contém"| ITEM
-        PROPOSTA -->|"Inclui quando exigido"| FINANCEIRO
-        FINANCEIRO -->|"Contém"| PERIODO
+        PROPOSTA ---|"Inclui"| DOCUMENTO
+        PROPOSTA ---|"Inclui"| MAPA
+        MAPA ---|"Contém"| ITEM
+        PROPOSTA ---|"Inclui quando exigido"| FINANCEIRO
+        FINANCEIRO ---|"Contém"| PERIODO
         PROPOSTA -->|"Objeto da submissão"| SUBMISSAO
     end
 
@@ -75,6 +75,8 @@ flowchart LR
 ```
 
 ## Fluxo de trabalho
+
+Percurso da empresa participante. As ferramentas e ações externas descrevem o processo relatado; mapa, lista e preparação assistida representam a experiência proposta. No wireframe, consultas, ficheiros, entregas e confirmações usam dados fictícios ou simulação local, sem efeitos externos. Rever a proposta pressupõe reunir os elementos exigidos; os ramos de preparação não impõem uma execução paralela.
 
 ```mermaid
 flowchart TD
@@ -114,6 +116,8 @@ flowchart TD
         COMPLETA -- Sim --> PRAZO{"Dentro do prazo de submissão?"}
         PRAZO -- Não --> EXPIRADA(["Prazo ultrapassado sem submissão"])
         PRAZO -- Sim --> SUBMETER["Submeter proposta na plataforma<br/>Ação externa; no protótipo, apenas simulação"]
+        SUBMETER --> CONFIRMACAO["Consultar confirmação de entrega<br/>No wireframe, confirmação simulada"]
+        CONFIRMACAO --> FIMNOW(["Fim do percurso Now<br/>Participação continua no acompanhamento"])
     end
 
     style NOW fill:#eef6ee,stroke:#397647
@@ -135,8 +139,8 @@ stateDiagram-v2
         state "Aberto à entrega de propostas" as Aberto
         state "Prazo de entrega encerrado" as Encerrado
 
-        Publicado --> Aberto: Conforme prazo indicado no procedimento
-        Aberto --> Encerrado: Termina o prazo de entrega
+        Publicado --> Aberto: Início do prazo indicado
+        Aberto --> Encerrado: Fim do prazo de entrega
     }
 
     note right of Concurso
@@ -152,61 +156,60 @@ Estado da relação entre uma empresa e um concurso, incluindo a sua proposta. N
 
 ```mermaid
 stateDiagram-v2
-
-    state "Participação no concurso — Now" as Participacao {
+    state "Participação da empresa — Now" as Participacao {
         [*] --> EmAnalise
         state "Oportunidade / convite em análise" as EmAnalise
-        state "Proposta em preparação" as Preparacao
-        state "Proposta completa e revista / pronta para submissão" as Pronta
-        state "Proposta submetida na plataforma externa" as Submetida
-        state "Não participar" as NaoParticipar
-        state "Prazo ultrapassado sem submissão" as SemSubmissao
+        state "Em preparação da proposta" as Preparacao
+        state "Pronta para entrega da proposta" as Pronta
+        state "Com proposta submetida" as Submetida
+        state "Não participante" as NaoParticipar
+        state "Sem proposta entregue dentro do prazo" as SemSubmissao
 
-        EmAnalise --> Preparacao: Rever interesse, classe, licenças e requisitos e decidir participar
-        EmAnalise --> NaoParticipar: Decidir não concorrer / recusar convite
-        EmAnalise --> SemSubmissao: Termina o prazo sem entrega
-        Preparacao --> Pronta: Rever documentos, preços, valor e cronograma exigido
-        Pronta --> Preparacao: Rever omissões ou alterações
-        Preparacao --> SemSubmissao: Termina o prazo sem entrega
-        Pronta --> SemSubmissao: Termina o prazo sem entrega
-        Pronta --> Submetida: Submeter na plataforma dentro do prazo
-        Submetida --> [*]
+        EmAnalise --> Preparacao: Decisão de participar [requisitos revistos]
+        EmAnalise --> NaoParticipar: Decisão de não concorrer / recusa do convite
+        EmAnalise --> SemSubmissao: Fim do prazo [sem entrega]
+        Preparacao --> Pronta: Revisão concluída [elementos exigidos completos]
+        Pronta --> Preparacao: Omissão ou alteração identificada
+        Preparacao --> SemSubmissao: Fim do prazo [sem entrega]
+        Pronta --> SemSubmissao: Fim do prazo [sem entrega]
+        Pronta --> Submetida: Entrega confirmada [dentro do prazo]
         NaoParticipar --> [*]
         SemSubmissao --> [*]
     }
 
     note right of Participacao
-        No wireframe, submissão e confirmação são simuladas.
+        No wireframe, entrega e confirmação são simuladas.
         Habilitações apoiam revisão humana, sem validação jurídica automática.
-        Submetida encerra o percurso Now, não o concurso nem o wireframe completo.
+        Submetida é limite da vista Now, não estado final da Participação.
+        O acompanhamento continua na vista do sistema.
     end note
 ```
 
 ## Percurso principal
 
-Fluxo entre entidades e respetivas relações, não uma sequência de tarefas. Os passos do utilizador estão no diagrama «Fluxo de trabalho».
+Subconjunto Now da vista detalhada, com os mesmos conceitos e relações. Omite requisitos, itens da checklist e outros conceitos de suporte, mas não combina Concurso com Convite nem Documento com Item da checklist. As setas representam relações, não passos do utilizador ou fronteiras de agregados. O percurso termina visualmente na Submissão; o acompanhamento da Participação continua fora desta vista.
 
 ```mermaid
 flowchart LR
-
-    EMPRESA["Empresa<br/>Localização, classe e licenças"]
+    EMPRESA["Empresa participante<br/>Localização, classe e licenças declaradas"]
     PESQUISA["Critérios de pesquisa<br/>Data de publicação e raio"]
-    CONCURSO["Concurso / convite<br/>Valor, localização e prazos<br/>Requisitos e plataforma"]
-    PECAS["Peças do concurso<br/>Desenhos, memorial e mapas"]
-    PROPOSTA["Proposta<br/>Estado de preparação e valor final"]
-    DOCUMENTOS["Documentos exigidos<br/>Checklist de preparação"]
-    PRECOS["Mapa de medições / preços unitários<br/>Itens, quantidades e preços"]
+    CONCURSO["Concurso / procedimento<br/>Descrição e valor anunciado<br/>Localização, prazo da obra e prazo de entrega"]
+    PECAS["Peças do concurso<br/>Desenhos, memorial descritivo e mapas"]
+    PARTICIPACAO["Participação da empresa<br/>Empresa × concurso<br/>Decisão e estado de acompanhamento"]
+    PROPOSTA["Proposta<br/>Estado de preparação e valor proposto"]
+    DOCUMENTO["Documento da proposta<br/>Identificação e ficheiro"]
+    MAPA["Mapa de medições / preços unitários"]
     FINANCEIRO["Cronograma financeiro<br/>Quando exigido"]
-    SUBMISSAO["Submissão da proposta<br/>Registo simulado no wireframe<br/>Fim do percurso Now"]
+    SUBMISSAO["Submissão da proposta<br/>Referência e confirmação de entrega"]
 
     EMPRESA -->|"Referência dos critérios"| PESQUISA
     PESQUISA -->|"Correspondem a"| CONCURSO
-    EMPRESA -->|"Autora da proposta"| PROPOSTA
-    CONCURSO -->|"Objeto da proposta"| PROPOSTA
-    CONCURSO -->|"Tem peças"| PECAS
-    PECAS -->|"Base da proposta"| PROPOSTA
-    PROPOSTA ---|"Inclui"| DOCUMENTOS
-    PROPOSTA ---|"Inclui"| PRECOS
+    CONCURSO -->|"Tem"| PECAS
+    EMPRESA -->|"Titular"| PARTICIPACAO
+    CONCURSO -->|"Objeto da participação"| PARTICIPACAO
+    PARTICIPACAO -->|"Pode ter"| PROPOSTA
+    PROPOSTA ---|"Inclui"| DOCUMENTO
+    PROPOSTA ---|"Inclui"| MAPA
     PROPOSTA ---|"Inclui quando exigido"| FINANCEIRO
     PROPOSTA -->|"Objeto da submissão"| SUBMISSAO
 ```
