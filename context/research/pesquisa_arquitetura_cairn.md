@@ -18,16 +18,12 @@ A investigação original leu os 19 ficheiros de contexto então existentes e o 
 
 - [README do repositório](../../README.md): scaffold, comandos e intenções de deployment.
 - [Prioridades](../README.md), desdobradas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md), [Maybe](../maybe/funcionalidades.md) e [Never](../never/funcionalidades.md): 32 funcionalidades; Gantt em Maybe e Never vazio.
-- [Diagramas Now](../now/diagrams.md): estados da participação, entidades, fluxo e percurso principal, até submissão simulada.
-- [Diagramas do sistema](../system/diagrams.md): estados, entidades e fluxo mais amplo; inclui também o percurso principal Now como vista de contexto.
 - [T1](../transcriptions/transcricao1_gestao_obras.md): entrevista revista, especialmente fontes, propostas, convites, prazos, cotações e pós-obra.
 - [T2](../transcriptions/transcricao2_gestao_obras.txt): entrevista revista, especialmente descoberta, plataformas, habilitações e fluxo após entrega.
 - [Mapeamento de plataformas](../transcricao1_mapping-plataforma-dados.txt): conceitos e atribuições por confirmar; deixado intacto.
 - [Ideia inicial](../system/ideia_inicial.txt): capacidades exploratórias, não âmbito aprovado por si só.
 - [Pesquisa de mercado](pesquisa_mercado_cairn.md): contexto de concorrência e maturidade, não repetido.
 - [Notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>): Excel/Sage, DR/BASE/AcinGov, mapas e tarefas; Project não utilizado pelo entrevistado.
-
-Os quatro diagramas obsoletos derivados da primeira entrevista também foram consultados na investigação original, mas foram removidos nesta reorganização. O histórico permanece no Git; não são especificação atual.
 
 **Falhas de leitura na investigação original:** nenhuma. Relatos e exemplos das entrevistas não são regras jurídicas nem contratos de interface. Para o âmbito atual do wireframe prevalece [system/wireframe.md](../system/wireframe.md).
 
@@ -70,7 +66,7 @@ Modelo mínimo de produção (recomendação; não implica antecipar módulos La
 - `Tenant/Organization`, `User`, `Membership` e roles; `CompanyProfile` por tenant (localização, habilitações declaradas, sem inferir elegibilidade automática).
 - `Source` + `SourceRecord`/`OpportunityVersion`: identificador externo, URL, tipo (anúncio/convite), entidade, CPV se documentado, valores/descrições/prazos, datas de publicação/observação, origem, confiança/cobertura, hash e payload bruto autorizado. Correções fazem nova versão, não overwrite silencioso.
 - `Participation` (empresa × procedimento), `Proposal` (versões/draft), `RequirementSnapshot`, `DocumentChecklistItem`, `ProposalDocument` (metadados/status/hash/object key), `BillOfQuantities`/`LineItem`, `FinancialSchedule`/periods, `SubmissionSimulation` apenas no demo. Produção real posterior requer modelo separado e decisão de âmbito.
-- Estados: workflow da empresa separado do lifecycle do procedimento. Guardar transições como eventos/audit; transição válida apenas por comando e precondições; `Ready` depende de checklist e itens de preço, não significa validade jurídica; submissão simulada não se converte em submetida. Prazo de execução não se confunde com deadline de proposta; valor base/anunciado não se confunde com valor proposto/adjudicado [diagramas Now e estados].
+- Estados: workflow da empresa separado do lifecycle do procedimento. Guardar transições como eventos/audit; transição válida apenas por comando e precondições; `Ready` depende de checklist e itens de preço, não significa validade jurídica; submissão simulada não se converte em submetida. Prazo de execução não se confunde com deadline de proposta; valor base/anunciado não se confunde com valor proposto/adjudicado.
 - Invariantes a validar com utilizador: máximo uma participação ativa por empresa/procedimento; transições permitidas; submissão demo apenas com proposta completa/dentro da data de referência; requisito/doc pode ser obrigatório/opcional/por confirmar; versões de proposta congeladas no momento de revisão; aceitar correcções sem perder trilho.
 - Proveniência: cada campo normalizado liga a um registo de fonte, data de extração, localizador (URL/secção/ficheiro), versão e estado humano (não revisto/revisto/corrigido). Não transformar anotações em fonte governamental. Reter matéria bruta segundo termos e política, minimizando cópias.
 - Multi-tenant desde primeira versão com dados reais: tenant_id em toda linha, FK composta ou verificações, contexto tenant derivado da identidade verificada (nunca confiar em tenant_id fornecido pelo cliente). RLS PostgreSQL como segunda barreira, não substituto de autorização. Donos/superusers podem contornar RLS e policies têm semântica permissive/restrictive; testar com roles não-owner e FORCE RLS quando adequado [PostgreSQL, Row Security Policies, acesso 07-10-2026, https://www.postgresql.org/docs/current/ddl-rowsecurity.html].
@@ -78,7 +74,7 @@ Modelo mínimo de produção (recomendação; não implica antecipar módulos La
 
 ## 5. Fontes públicas e integrações de procurement (estado em 07-10-2026)
 
-Separar **documentação de acesso**, **método tecnicamente documentado**, **credenciais operacionais**, **cobertura/latência** e **termos**. Entrevistas e diagramas levantam hipóteses apenas.
+Separar **documentação de acesso**, **método tecnicamente documentado**, **credenciais operacionais**, **cobertura/latência** e **termos**. As entrevistas levantam hipóteses apenas.
 
 ### Portal BASE / IMPIC
 
@@ -184,7 +180,7 @@ Ordem recomendada (inferência; baixo a alto risco):
 
 - As entrevistas descrevem Diário da República e Portal BASE e sugerem API; isso é evidência de fluxo/hipótese, não prova técnica. A documentação oficial BASE consultada confirma uma API condicionada; o estado de concessão e cobertura continua desconhecido.
 - Lei 68/2021 contém regime para dados abertos/API de dados dinâmicos, mas DL 10/2023 também prevê acordos gratuitos/pagos para acesso automatizado de atos pela INCM. Não interpretar o quadro como autorização geral para scraping irrestrito.
-- Os diagramas Now delimitam esse percurso em submissão simulada, não a totalidade da demonstração. A hipótese original de protótipo Now está superada: o [wireframe atual](../system/wireframe.md) inclui Now, Later e Maybe, mantendo as prioridades de produto separadas da experiência.
+- A hipótese original de protótipo Now está superada: o [wireframe atual](../system/wireframe.md) inclui Now, Later e Maybe, mantendo as prioridades de produto separadas da experiência.
 - `pesquisa_mercado_cairn.md` aponta concorrentes e capacidades, mas não demonstra adequação comprovada a todos os requisitos nem substituto único; esta nota não repete ranking comercial.
 - Fetch oficial falhou em algumas URLs (BASE métodos/anúncio API: HTTP 404; dados.gov: 503; DRE DL com conteúdo dinâmico; PDF IMPIC com extração textual insuficiente). Isto limita confirmação direta dos detalhes, não permite concluir indisponibilidade. Confirmar páginas e passagens junto das entidades antes de decisões.
 

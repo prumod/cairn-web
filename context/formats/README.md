@@ -21,6 +21,6 @@ Guias reutilizáveis para escrever e rever documentos, não modelos aprovados do
 - Distinguir factos de fonte, propostas de modelação e decisões aprovadas. Uma ilustração não valida API, licença, regra jurídica, integração ou fronteira de agregado.
 - Prioridade de produto é independente do formato. Gantt/Microsoft Project continua Maybe; Never continua vazio. O wireframe cobre a experiência completa sem expor prioridades na interface.
 
-## Onde estão os modelos do produto
+## Contexto do produto
 
-Consultar os [diagramas Now](../now/diagrams.md), os [diagramas do sistema](../system/diagrams.md) e o [contrato do wireframe](../system/wireframe.md). Alterar um exemplo deste diretório não altera esses modelos nem o âmbito aprovado. O [mapeamento existente](../transcricao1_mapping-plataforma-dados.txt) permanece intacto e ainda não foi convertido para o formato proposto aqui.
+Para a experiência e os limites da demonstração, consultar o [contrato do wireframe](../system/wireframe.md). Alterar um exemplo deste diretório não altera o âmbito aprovado. O [mapeamento existente](../transcricao1_mapping-plataforma-dados.txt) permanece intacto e ainda não foi convertido para o formato proposto aqui.
