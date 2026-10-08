@@ -11,8 +11,6 @@
 - [Research](research/): [investigação técnica](research/pesquisa_arquitetura_cairn.md) e [pesquisa de mercado](research/pesquisa_mercado_cairn.md).
 - [Formats](formats/README.md): guias reutilizáveis e exemplos ilustrativos para modelação pontual; não são especificação do produto.
 
-O [mapeamento de plataformas](transcricao1_mapping-plataforma-dados.txt) permanece na raiz, sem alterações, por decisão explícita de adiar a sua reorganização.
-
 ## Quatro níveis de prioridade
 
 - **Now:** funcionalidades prioritárias do percurso de descoberta, decisão, preparação e submissão de proposta.
@@ -26,7 +24,7 @@ A classificação é uma decisão de produto, não uma divisão da interface. O 
 
 As prioridades foram acordadas com o utilizador, mas ainda precisam de validação com o entrevistado. As entrevistas são textos revistos com trechos incertos; não são regras jurídicas nem documentação de APIs. T1 e T2 identificam as secções das entrevistas, não versões de documentos derivados.
 
-Só os registos em `transcriptions/` usam numeração de entrevista, com a exceção temporária do mapeamento deixado intacto. Os documentos derivados têm nomes descritivos e são atualizados diretamente, com histórico no Git; não se criam conjuntos `transcricao_3_*` ou snapshots numerados.
+Só os registos em `transcriptions/` usam numeração de entrevista. Os documentos derivados têm nomes descritivos e são atualizados diretamente, com histórico no Git; não se criam conjuntos `transcricao_3_*` ou snapshots numerados.
 
 Para a experiência completa e os limites técnicos da demonstração, prevalece [system/wireframe.md](system/wireframe.md).
 
