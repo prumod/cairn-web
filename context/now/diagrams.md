@@ -96,12 +96,41 @@ flowchart TD
     style NOW fill:#eef6ee,stroke:#397647
 ```
 
-## Estados
+## Estados por entidade
+
+Cada diagrama acompanha uma única entidade: Concurso e Participação. Não combina o ciclo público com as decisões de uma empresa. São modelos conceptuais baseados nas entrevistas, não regras jurídicas verificadas nem fronteiras de agregados de backend já decididas.
+
+### Concurso
+
+Vista do Concurso relevante para Now. O encerramento do prazo não é o fim do concurso; avaliação e contratação estão na vista do sistema. A submissão de uma empresa não altera, por si só, o estado do Concurso.
+
+```mermaid
+stateDiagram-v2
+    state "Concurso" as Concurso {
+        [*] --> Publicado
+        state "Publicado / convite disponibilizado" as Publicado
+        state "Aberto à entrega de propostas" as Aberto
+        state "Prazo de entrega encerrado" as Encerrado
+
+        Publicado --> Aberto: Conforme prazo indicado no procedimento
+        Aberto --> Encerrado: Termina o prazo de entrega
+    }
+
+    note right of Concurso
+        Estado do procedimento, não da proposta da empresa.
+        Datas e condições dependem do procedimento.
+        A continuação está na vista do sistema.
+    end note
+```
+
+### Participação da empresa
+
+Estado da relação entre uma empresa e um concurso, incluindo a sua proposta. Não participar ou perder o prazo encerra esta participação, não o Concurso. O diagrama não pressupõe que Participação e Proposta sejam o mesmo agregado no backend.
 
 ```mermaid
 stateDiagram-v2
 
-    state "Participação no concurso — NOW" as Participacao {
+    state "Participação no concurso — Now" as Participacao {
         [*] --> EmAnalise
         state "Oportunidade / convite em análise" as EmAnalise
         state "Proposta em preparação" as Preparacao
@@ -124,8 +153,9 @@ stateDiagram-v2
     }
 
     note right of Participacao
-        Submissão simulada no protótipo.
-        Fim do NOW, não do concurso.
+        No wireframe, submissão e confirmação são simuladas.
+        Habilitações apoiam revisão humana, sem validação jurídica automática.
+        Submetida encerra o percurso Now, não o concurso nem o wireframe completo.
     end note
 ```
 

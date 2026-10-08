@@ -204,47 +204,57 @@ flowchart TD
     style LATER fill:#f4f4f4,stroke:#777777
 ```
 
-## Estados
+## Estados por entidade
+
+Cada diagrama acompanha uma única entidade: Concurso, Participação ou Obra. Não combina o ciclo público com as decisões de uma empresa. São modelos conceptuais baseados nas entrevistas, não regras jurídicas verificadas nem fronteiras de agregados de backend já decididas.
+
+### Concurso
+
+Vista parcial do percurso favorável descrito nas entrevistas, até contratação. Execução, vistorias e garantia pertencem à Obra e têm um diagrama separado. Cancelamentos e outros resultados não descritos continuam por modelar; esta sequência não é uma regra legal universal.
+
+```mermaid
+stateDiagram-v2
+    state "Concurso" as Concurso {
+        [*] --> Publicado
+        state "Publicado / convite disponibilizado" as Publicado
+        state "Aberto à entrega de propostas" as Aberto
+        state "Prazo de entrega encerrado" as Encerrado
+
+        Publicado --> Aberto: Conforme prazo indicado no procedimento
+        Aberto --> Encerrado: Termina o prazo de entrega
+
+        state "Em abertura de propostas" as Abertura
+        state "Em avaliação preliminar" as Preliminar
+        state "Em prazo de reclamação" as Reclamacao
+        state "Com decisão final" as Final
+        state "Em habilitação do adjudicatário" as Habilitacao
+        state "Em contratação" as Contratacao
+        state "Contratado" as Contratado
+
+        Encerrado --> Abertura: Entidade abre propostas
+        Abertura --> Preliminar: Avaliação das propostas
+        Preliminar --> Reclamacao: Relatório preliminar disponibilizado
+        Reclamacao --> Final: Prazo terminado e reclamações tratadas
+        Final --> Habilitacao: Adjudicação e pedido de documentos
+        Habilitacao --> Contratacao: Documentação entregue e aceite
+        Contratacao --> Contratado: Contrato celebrado
+    }
+
+    note right of Concurso
+        Estado do procedimento, não da proposta da empresa.
+        Datas e condições dependem do procedimento.
+        A vista termina em Contratado, sem afirmar o fim de todo o ciclo.
+    end note
+```
+
+### Participação da empresa
+
+Estado da relação entre uma empresa e um concurso, incluindo a sua proposta. Não participar ou perder o prazo encerra esta participação, não o Concurso. O diagrama não pressupõe que Participação e Proposta sejam o mesmo agregado no backend.
 
 ```mermaid
 stateDiagram-v2
 
-    state "Fases do procedimento — contexto completo" as Procedimento {
-        [*] --> Publicado
-        state "Anúncio publicado / convite disponibilizado" as Publicado
-        state "Prazo de entrega de propostas em curso" as Aberto
-        state "Prazo de entrega encerrado" as Encerrado
-        state "Propostas abertas / valores apresentados" as Abertura
-        state "Relatório preliminar" as Preliminar
-        state "Prazo de reclamação" as Reclamacao
-        state "Relatório final / decisão" as Final
-        state "Habilitação do adjudicatário" as Habilitacao
-        state "Minuta e contrato" as Contrato
-        state "Auto de consignação / início da obra" as Consignacao
-        state "Obra em execução" as Execucao
-        state "Vistoria de conclusão" as Vistoria
-        state "Receção provisória / garantia" as Garantia
-        state "Receção definitiva / encerramento" as Definitiva
-
-        Publicado --> Aberto: Conforme prazo indicado no procedimento
-        Aberto --> Encerrado: Termina o prazo de entrega
-        Encerrado --> Abertura: Entidade abre propostas
-        Abertura --> Preliminar
-        Preliminar --> Reclamacao
-        Reclamacao --> Final: Termina o prazo e são tratadas eventuais reclamações
-        Final --> Habilitacao: Adjudicação / pedido de documentos
-        Habilitacao --> Contrato: Documentação entregue e aceite
-        Contrato --> Consignacao
-        Consignacao --> Execucao
-        Execucao --> Vistoria: Obra concluída
-        Vistoria --> Execucao: Corrigir problemas identificados
-        Vistoria --> Garantia: Emitir receção provisória após conformidade
-        Garantia --> Garantia: Vistorias, reparações e libertação de retenções conforme condições
-        Garantia --> Definitiva: Condições cumpridas
-        Definitiva --> [*]
-    }
-
-    state "Participação da empresa — NOW até Submetida" as Participacao {
+    state "Participação da empresa — Now e Later" as Participacao {
         [*] --> EmAnalise
         state "Oportunidade em análise" as EmAnalise
         state "Decisão de participar / proposta em preparação" as Preparacao
@@ -274,15 +284,38 @@ stateDiagram-v2
     }
 
     note right of Participacao
-        No protótipo, submissão e confirmação são simuladas.
-        Classe e licenças são verificadas antes de decidir participar.
-        Documentos de habilitação pedidos após adjudicação são outra etapa.
+        No wireframe, submissão e confirmação são simuladas.
+        Habilitações apoiam revisão humana, sem validação jurídica automática.
+        Documentos pós-adjudicação pertencem a uma etapa distinta da preparação.
     end note
+```
 
-    note right of Procedimento
-        Dias, classes, limites monetários e percentagens das entrevistas são exemplos.
-        Cancelamentos e outros resultados não descritos não estão modelados.
-        Os dois ciclos são distintos; um concurso não termina porque esta empresa não concorre.
+### Obra
+
+Ciclo independente após contratação. A consignação inicia o percurso representado; conclusão, receções e garantia não são estados do Concurso. Vistorias e retenções surgem como eventos deste ciclo, sem pressupor entidades ou regras de backend já validadas.
+
+```mermaid
+stateDiagram-v2
+    state "Obra" as Obra {
+        [*] --> Consignacao
+        state "A iniciar / em consignação" as Consignacao
+        state "Em execução" as Execucao
+        state "Em vistoria de conclusão" as Vistoria
+        state "Recebida provisoriamente / em garantia" as Garantia
+        state "Recebida definitivamente / encerrada" as Definitiva
+
+        Consignacao --> Execucao: Início autorizado conforme consignação
+        Execucao --> Vistoria: Obra concluída
+        Vistoria --> Execucao: Corrigir problemas identificados
+        Vistoria --> Garantia: Receção provisória após conformidade
+        Garantia --> Garantia: Vistorias, reparações e libertação de retenções conforme condições
+        Garantia --> Definitiva: Condições para receção definitiva cumpridas
+        Definitiva --> [*]
+    }
+
+    note right of Obra
+        Vista do processo descrito, não automatização de todas as etapas.
+        Prazos e percentagens das entrevistas são exemplos, não regras fixas.
     end note
 ```
 
