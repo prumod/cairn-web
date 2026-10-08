@@ -11,7 +11,7 @@ Created 08-10-2026 with 14 screenshots embedded from the Tenderlake and Alerta c
 5. Capture the actual updated Cairn interface, embed it beside the previous relevant screenshot on this same canvas, and label the iteration and validation result. Keep all earlier screenshots, arrows and notes.
 6. Save the local document and verify the appended result. Wait for feedback before the next implementation cycle.
 
-Access limits: Tenderlake trial ends 15-10-2026; Alerta public list/details are accessible, submitted filtering requires login. CYPE is unavailable because free evaluation requires approval. N10/N11 lack actual feature captures. Marketing imagery does not fill these gaps.
+Access limits: Tenderlake trial ends 15-10-2026; Alerta public list/details are accessible, submitted filtering requires login. CYPE is unavailable because free evaluation requires approval. N10/L09 lack actual feature captures. Marketing imagery does not fill these gaps.
 
 Initial canvas validation: 14 imported images across two pages; no canvas lints reported. No frontend changes were made in this preparation phase.
 

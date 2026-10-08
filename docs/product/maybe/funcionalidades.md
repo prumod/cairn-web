@@ -8,7 +8,7 @@ Consultar as [definições de prioridade](../README.md) e o [contrato do protót
 
 ## Funcionalidades
 
-- **M01 — Planeamento tipo Microsoft Project:** Gantt, tarefas, dependências, tempos de espera, linhas temporais por recurso e previsão de conclusão. Decisão explícita do utilizador: Maybe, não Later. Validar utilidade no trabalho real; o utilizador entrevistado não usa atualmente Microsoft Project. Não inclui a linha temporal de propostas N05 nem o cronograma financeiro N11. Base: T1 §§17, 19–20; notas iniciais, «Programas» e «Visualizações».
+- **M01 — Planeamento tipo Microsoft Project:** Gantt, tarefas, dependências, tempos de espera, linhas temporais por recurso e previsão de conclusão. Decisão explícita do utilizador: Maybe, não Later. Validar utilidade no trabalho real; o utilizador entrevistado não usa atualmente Microsoft Project. Não inclui a linha temporal de propostas N05 nem o cronograma financeiro Later L09. Base: T1 §§17, 19–20; notas iniciais, «Programas» e «Visualizações».
 - **M02 — Assistente para pesquisar concursos:** validar vantagem face aos filtros, respostas esperadas e referências verificáveis. A ideia «Plus» não estabelece um plano comercial. Base: T2 §§1, 4, 7, 19.
 - **M03 — Análise de concorrentes:** participações, vitórias, valores e mapa. Validar cobertura dos dados e utilidade na decisão; o Portal BASE não confirma cobertura de todas as participações. Base: T1 §5.2; T2 §§1, 7.
 - **M04 — Perguntas sobre finanças da obra:** consultar despesas, faturação e saldo em linguagem natural. Validar se acrescenta valor aos resumos de L06. Base: ideia inicial, perguntas sobre despesas e faturação.

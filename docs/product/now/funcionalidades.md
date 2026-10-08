@@ -6,6 +6,22 @@ As prioridades foram acordadas com o utilizador; não constituem aprovação do 
 
 Consultar as [definições de prioridade](../README.md) e o [contrato do protótipo interativo](../system/prototype.md). A prioridade de produção não limita a cobertura do protótipo: Now, Later e Maybe são demonstrados primeiro como wireframe sem estilos e depois com UI próxima da produção, sempre com dados fictícios e ações simuladas. Os limites abaixo descrevem cada prioridade; não impedem demonstrar capacidades de outros níveis no mesmo protótipo.
 
+## Ordem por simplicidade de implementação e compreensão
+
+Estimativa para versões demonstrativas com dados fictícios e ações locais, sem integrações reais. Não representa a ordem cronológica do trabalho nem altera os identificadores das funcionalidades.
+
+1. **N04 — Consultar o concurso e os prazos.**
+2. **N01 — Definir a referência da empresa.** Guardar classe/licenças não equivale a verificar habilitações.
+3. **N07 — Rever requisitos e decidir participar.** Começar pela decisão humana; a comparação de habilitações exige validação adicional.
+4. **N09 — Preparar a documentação com uma checklist.**
+5. **N08 — Organizar as peças do concurso.**
+6. **N06 — Incluir oportunidades recebidas por convite.** Sem leitura de e-mails reais.
+7. **N05 — Consultar a linha temporal dos prazos de propostas.**
+8. **N10 — Preencher a lista de preços unitários e obter o total.**
+9. **N12 — Rever a proposta e simular a passagem à plataforma.** Depende dos elementos preparados nas funcionalidades anteriores.
+10. **N02 — Encontrar anúncios de obras por data e raio.**
+11. **N03 — Explorar oportunidades no mapa e na lista.**
+
 ## Funcionalidades
 
 As referências T1 e T2 indicam as secções numeradas das transcrições 1 e 2. O comportamento de interface abaixo é uma proposta derivada das necessidades descritas, não uma interface especificada nas entrevistas. O percurso Now termina na submissão simulada; o protótipo completo continua nas funcionalidades Later e Maybe.
@@ -80,16 +96,9 @@ As referências T1 e T2 indicam as secções numeradas das transcrições 1 e 2.
 - **Base:** T1 §§6, 9, 11–13; T2 §6.
 - **Limite:** não incluir já um módulo de compras, stock ou pedidos de cotação. A regra de margem está incerta na T1; não aplicar automaticamente 25 % nem tratar esse exemplo como regra de negócio.
 
-### N11 — Incluir o cronograma financeiro quando exigido
-
-- **Objetivo:** não deixar faltar uma componente da proposta descrita nas duas entrevistas.
-- **Protótipo:** mostrar períodos, percentagens e valores de um cronograma financeiro fictício; permitir assinalar «preparado» ou «não exigido neste concurso». Uma edição avançada fica por validar.
-- **Base:** T1 §6; T2 §6.
-- **Limite:** a T2 admite que parte deste detalhe pode ultrapassar a apresentação inicial. Não confundir com o Gantt de execução nem com recebimentos reais.
-
 ### N12 — Rever a proposta e simular a passagem à plataforma
 
-- **Objetivo:** reunir o conjunto completo e verificar o prazo antes da entrega.
-- **Protótipo:** resumir documentos, peças, preços, valor e cronograma exigido; mostrar omissões e prazo ultrapassado; num exemplo completo e dentro do prazo, abrir um painel que representa a plataforma externa e concluir com «Simular submissão». Mostrar «Submissão simulada — nenhum documento foi enviado».
+- **Objetivo:** reunir os elementos preparados no âmbito Now e verificar o prazo antes da entrega.
+- **Protótipo:** resumir documentos, peças, preços e valor; mostrar omissões e prazo ultrapassado; num exemplo completo e dentro do prazo, abrir um painel que representa a plataforma externa e concluir com «Simular submissão». Mostrar «Submissão simulada — nenhum documento foi enviado».
 - **Base:** T1 §§6, 8, 15; T2 §§6, 14, 21.
-- **Limite:** AcinGov/Vortal continua a ser o local da submissão real. Não comprar selos, assinar documentos ou enviar propostas. «Em análise», «Em preparação», «Pronta» e «Submetida» são estados da participação/proposta da empresa, não fases do concurso público.
+- **Limite:** a preparação e o acompanhamento do cronograma financeiro ficam em [Later L09](../later/funcionalidades.md); não são uma condição de prontidão nem uma verificação da revisão Now. A simulação não certifica a completude legal de uma proposta real. AcinGov/Vortal continua a ser o local da submissão real. Não comprar selos, assinar documentos ou enviar propostas. «Em análise», «Em preparação», «Pronta» e «Submetida» são estados da participação/proposta da empresa, não fases do concurso público.

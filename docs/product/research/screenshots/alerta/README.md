@@ -27,7 +27,7 @@ Capturadas sem login nem pagamento e acrescentadas à página 03 do [mesmo canva
 
 Foi aberto o pedido oficial de avaliação em `https://info.cype.com/pt/licenca-de-avaliacao/#Solicitud_licencia_evaluacion`. A página anuncia 30 dias gratuitos, todos os programas/módulos e nenhum pagamento inicial. O formulário pede nome, apelido, telefone, e-mail, morada, distrito, localidade, país e código postal; não apresenta empresa/NIF. Nenhum dado foi preenchido ou enviado.
 
-Não há ainda licença ou aplicação CYPE acessível nesta sessão. As capturas de tabelas de preços e cronograma financeiro N10/N11 dependem de o utilizador completar o pedido com os seus dados, obter aprovação e instalar a aplicação. A página comercial e o formulário não são capturas das funcionalidades e não foram incluídos como tal.
+Não há ainda licença ou aplicação CYPE acessível nesta sessão. As capturas de tabelas de preços e cronograma financeiro N10/L09 dependem de o utilizador completar o pedido com os seus dados, obter aprovação e instalar a aplicação. A página comercial e o formulário não são capturas das funcionalidades e não foram incluídos como tal.
 
 ## Verificação
 

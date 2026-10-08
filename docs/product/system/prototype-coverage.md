@@ -16,10 +16,11 @@ This is the traceability map for the current unstyled wireframe. The priority na
 | N08        | Proposal screen opens bundled fictional document previews.                                                                                                           |
 | N09        | Proposal checklist marks required documents as prepared or missing.                                                                                                  |
 | N10        | Proposal price table edits unit prices and calculates subtotals and total. Missing prices block review.                                                              |
-| N11        | Proposal screen marks the financial schedule as required or not required and records its prepared state.                                                             |
 | N12        | Proposal review lists omissions, checks the fixed deadline, returns to preparation and simulates submission without sending documents.                               |
 
-## Work and follow-up
+## Later capabilities
+
+L09 belongs to proposal preparation, not work execution. Its existing demonstration is classified as Later; it is not a requirement of the Now review or simulated submission. This documentation change does not verify or change the current frontend's readiness checks.
 
 | Capability | Screen or interaction                                                                                                                                                    |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -31,6 +32,7 @@ This is the traceability map for the current unstyled wireframe. The priority na
 | L06        | Finance screen edits expenses, billed amounts and received amounts separately and answers a demonstration question from those values.                                    |
 | L07        | Planning screen edits task completion and shows task dependencies, dates and a schematic Gantt.                                                                          |
 | L08        | Reception and warranty screen distinguishes execution, provisional reception, warranty, inspections, repairs, retention and final reception.                             |
+| L09        | Proposal screen marks the financial schedule as required or not required and records its prepared state. This capability is deferred from Now to Later.                  |
 
 ## Capabilities to evaluate
 
