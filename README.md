@@ -43,7 +43,7 @@ Start the frontend:
 bun run dev
 ```
 
-Open the local URL printed by Vite (normally `http://localhost:5173`). The generated counter is a scaffold, not the private application: authentication and backend integration are not implemented.
+Open the local URL printed by Vite (normally `http://localhost:5173`). Cairn is an unstyled prototype with fictional data and simulated actions. The backend, authentication and external integrations are not implemented.
 
 ## Project-local WhatsApp access (Pi)
 
@@ -52,6 +52,25 @@ On the configured Ubuntu workstation, Pi loads WhatsApp only from this repositor
 The local `whatsapp-bridge.service` must be running. From this repository root, run `pi mcp list` to check the connection, or use `/mcp` inside Pi. After changing configuration, use `/reload` in existing Pi sessions. Pi requires trust before loading project-local MCP configuration.
 
 Only read/search tools and received-media download are exposed; send/mutation tools are hidden. The standing WhatsApp safety instruction is in this repository's `AGENTS.md`.
+
+## Optional Discord MCP setup (Pi)
+
+On a workstation with Pi and a Discord MCP server already configured to use `DISCORD_TOKEN`, run the interactive setup wizard from the repository root:
+
+```sh
+bash scripts/setup-discord-mcp.sh
+```
+
+The wizard guides you through bot access, asks before bot installation or token reset, and saves the token in the Git-ignored `.env` file with mode `0600`. It rejects a symlink or non-regular `.env` target, restricts existing-file permissions before writing, and uses a mode-`0600` temporary file plus atomic replacement so failed updates preserve existing contents. It does not install or configure an MCP server. After token entry, it runs `pi mcp list` and opens Pi for a manual server/channel check. Follow the wizard's instructions to use only server and channel listing tools, not message or mutation tools. Do not commit `.env` or share its contents.
+
+The wizard requires Bash, Pi, and a Discord account permitted to manage the bot. For later Pi sessions, load the trusted local `.env` from the repository root:
+
+```sh
+set -a
+source .env
+set +a
+pi
+```
 
 ## Scaffold choices
 
