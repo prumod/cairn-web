@@ -52,5 +52,3 @@ Exemplo apenas de correspondência conceptual. Não confirma o schema, o acesso 
 - Está claro o que precisaria de integração versus importação/manual, sem afirmar que alguma já existe?
 - Os limites de acesso e os dados pessoais foram considerados antes de recolher dados reais?
 - As citações são links/localizadores úteis, em vez de repetir nomes de transcrições sem secção?
-
-O [mapeamento existente do projeto](../transcricao1_mapping-plataforma-dados.txt) continua intacto. Este guia não o converte nem valida as suas hipóteses.

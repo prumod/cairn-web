@@ -20,7 +20,6 @@ A investigação original leu os 19 ficheiros de contexto então existentes e o 
 - [Prioridades](../README.md), desdobradas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md), [Maybe](../maybe/funcionalidades.md) e [Never](../never/funcionalidades.md): 32 funcionalidades; Gantt em Maybe e Never vazio.
 - [T1](../transcriptions/transcricao1_gestao_obras.md): entrevista revista, especialmente fontes, propostas, convites, prazos, cotações e pós-obra.
 - [T2](../transcriptions/transcricao2_gestao_obras.txt): entrevista revista, especialmente descoberta, plataformas, habilitações e fluxo após entrega.
-- [Mapeamento de plataformas](../transcricao1_mapping-plataforma-dados.txt): conceitos e atribuições por confirmar; deixado intacto.
 - [Ideia inicial](../system/ideia_inicial.txt): capacidades exploratórias, não âmbito aprovado por si só.
 - [Pesquisa de mercado](pesquisa_mercado_cairn.md): contexto de concorrência e maturidade, não repetido.
 - [Notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>): Excel/Sage, DR/BASE/AcinGov, mapas e tarefas; Project não utilizado pelo entrevistado.

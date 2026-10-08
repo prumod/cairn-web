@@ -23,4 +23,4 @@ Guias reutilizáveis para escrever e rever documentos, não modelos aprovados do
 
 ## Contexto do produto
 
-Para a experiência e os limites da demonstração, consultar o [contrato do wireframe](../system/wireframe.md). Alterar um exemplo deste diretório não altera o âmbito aprovado. O [mapeamento existente](../transcricao1_mapping-plataforma-dados.txt) permanece intacto e ainda não foi convertido para o formato proposto aqui.
+Para a experiência e os limites da demonstração, consultar o [contrato do wireframe](../system/wireframe.md). Alterar um exemplo deste diretório não altera o âmbito aprovado.
