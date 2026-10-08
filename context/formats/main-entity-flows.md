@@ -2,42 +2,45 @@
 
 ## O que modela
 
-Um subconjunto das entidades e relações que torna o caminho principal compreensível. Usa a mesma notação da [vista detalhada de entidades](entity-aggregate-flows.md), sem todos os atributos, conceitos de suporte ou relações laterais.
+Uma projeção estrutural reduzida da [vista DDD de entidades e agregados](entity-aggregate-flows.md). Mostra os conceitos e relações necessários para explicar o caminho principal, incluindo elementos de suporte ou VO relevantes, sem toda a colaboração entre agregados.
 
-É um flowchart de entidades, não uma sequência de tarefas. «Concurso», «Proposta» e «Obra» são conceitos; «Selecionar concurso», «Planear» e «Executar tarefas» são ações para o [workflow](workflow-flows.md).
+Esta simplificação conserva a convenção acordada para o percurso principal: **relações entre conceitos, não tarefas nem transições de estados**. As interações por eventos/pedidos ficam na vista DDD; as ações do utilizador ficam no [workflow](workflow-flows.md). Não aplicar esta simplificação à secção detalhada «Entidades».
 
-## Notação
+## Notação obrigatória
 
-- `flowchart LR`: percurso horizontal entre conceitos.
-- Caixas com nomes de entidades; apenas os atributos necessários para compreender o percurso.
-- Setas com relações, como «objeto da proposta», «base da obra» ou «garantia da obra».
-- Sem marcas AR/BC por defeito: usar apenas se as fronteiras forem conhecidas ou explicitamente propostas.
-- Sem caixas de espera, decisões ou eventos intermediários usados como falsas entidades.
+- `flowchart LR`.
+- Caixas com os mesmos nomes da vista detalhada, sem os prefixos DDD, grupos BC ou propriedades não essenciais. A classificação original continua a existir na vista detalhada.
+- `A ---|"Inclui"| B`: mesma composição proposta da vista detalhada.
+- `A -. "Referência: relação" .-> B`: mesma referência estrutural da vista detalhada; conservar nome e direção.
+- Sem eventos/pedidos, caixas de espera, decisões, tarefas ou sistemas externos no percurso estrutural reduzido.
+- Indicar se a vista cobre Now ou o sistema; o fim do desenho não significa o fim do produto nem de um ciclo de vida.
 
 ## Exemplo
 
-Vista reduzida ilustrativa do sistema, não cobertura de Now nem modelo aprovado de agregados. A relação com Contrato só existe no caso correspondente; não afirma que todas as propostas originam contrato ou obra.
+Projeção do exemplo da vista DDD detalhada, sem inventar relações, promover componentes a raízes ou impor uma sequência de ações.
 
 ```mermaid
 flowchart LR
     C["Concurso"]
+    PA["Participação"]
     P["Proposta"]
-    CT["Contrato"]
-    O["Obra"]
-    G["Garantia da obra"]
+    S["Submissão"]
+    MM["Mapa de medições"]
 
-    C -->|"Objeto da proposta"| P
-    P -->|"Pode fundamentar o contrato adjudicado"| CT
-    CT -->|"Contrato da obra"| O
-    O -->|"Pode ter"| G
+    C -. "Referência: objeto da participação" .-> PA
+    PA -. "Referência: proposta da participação" .-> P
+    PA ---|"Inclui"| S
+    P -. "Referência: objeto da submissão" .-> S
+    P ---|"Inclui"| MM
 ```
 
-Fornecedores, cotações, stock, cronogramas e recursos podem ser relevantes na vista detalhada sem pertencer ao caminho mínimo escolhido. Se o objetivo for mostrar quando uma cotação é pedida ou como a obra fica bloqueada, usar workflow ou uma vista de eventos separada.
+Fornecedores, cotações, stock, cronogramas e recursos podem surgir numa vista do sistema sem pertencer ao caminho mínimo Now. Não acrescentar estes conceitos apenas para copiar o âmbito de um exemplo. Se a sequência ou coordenação entre agregados for a questão, consultar workflow ou vista DDD, respetivamente.
 
 ## Como rever
 
-- Só inclui entidades necessárias para explicar o caminho escolhido?
-- Os nomes e relações coincidem com os da vista detalhada, ou existe uma razão documentada para uma simplificação?
-- As setas representam relações, não comandos como «Planear» nem eventos como «ObraConcluida»?
-- Casos condicionais não parecem obrigatórios?
-- Está claro se é uma vista Now ou do sistema mais amplo? O fim do desenho não afirma o fim do produto ou do wireframe.
+- Os conceitos, nomes e relações são um subconjunto da vista detalhada, com a mesma direção e tipo de ligação?
+- A omissão dos prefixos e atributos é apenas visual, sem mudar identidade, composição ou propriedade?
+- Inclui só os conceitos necessários ao percurso escolhido?
+- Cada linha é uma composição ou referência, não tarefa, evento ou transição de estado?
+- Os casos condicionais continuam explícitos nos rótulos relevantes?
+- Âmbito e limites estão claros, sem declarar conclusão de um ciclo por terminar a vista?

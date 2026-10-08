@@ -1,79 +1,88 @@
-# Fluxo detalhado de entidades e agregados
+# Fluxo DDD de entidades e agregados
 
 ## O que modela
 
-Os conceitos do domínio, os seus atributos relevantes e as relações entre eles. Usa a mesma notação do [percurso principal](main-entity-flows.md), mas inclui entidades de suporte e relações laterais. As setas não estabelecem ordem temporal de execução.
+A estrutura proposta do domínio e a colaboração entre agregados. Combina **bounded contexts (BC), raízes de agregado (AR), entidades de suporte, Value Objects (VO), referências e interações**. Não é apenas uma lista de conceitos agrupados por prioridade nem um workflow de tarefas.
 
-Quando houver evidência suficiente, pode também representar hipóteses DDD (Domain-Driven Design):
+Esta é a notação obrigatória para as secções «Entidades» dos diagramas Now e do sistema. O formato é fixo; o conteúdo e as fronteiras podem ser hipóteses. Não omitir a classificação por estar por validar: indicar o estatuto no título do BC e na legenda.
 
-- **Entidade:** conceito com identidade e continuidade, mesmo quando os atributos mudam.
-- **Value Object (VO):** valor definido pelos seus atributos, sem identidade própria; por exemplo, `Dinheiro` com montante e moeda.
-- **Agregado:** conjunto de conceitos cujas regras de consistência são protegidas como uma unidade.
-- **Raiz do agregado (AR):** entidade pela qual se acede e altera esse agregado.
-- **Bounded Context (BC):** âmbito em que termos e regras têm um significado consistente. Não é sinónimo de pasta, módulo visual ou microserviço.
+- **BC:** âmbito em que a linguagem e as regras têm significado consistente; não equivale a um ecrã, prioridade, pasta ou microserviço.
+- **Agregado:** conjunto de conceitos cujas invariantes são protegidas como uma unidade de consistência.
+- **AR:** entidade que controla as alterações e invariantes de um agregado. Um BC pode conter vários agregados.
+- **Entidade (E):** conceito com identidade e continuidade. Uma entidade não marcada AR é suporte de um agregado neste modelo.
+- **VO:** valor definido pelos atributos, sem identidade própria; por exemplo, `Dinheiro` com montante e moeda. Pode ser caixa ou tipo de uma propriedade.
+- **Core domain:** classificação estratégica, não sinónimo de «maior BC». Só incluir essa classificação com uma decisão sustentada; não inventá-la para preencher a notação.
 
-Esses papéis não decorrem automaticamente de ter uma caixa no diagrama. Só marcar AR/BC quando forem decisões confirmadas ou hipóteses explicitamente identificadas. Não declarar «core domain» apenas porque uma área aparece no centro do desenho: isso exige uma decisão sobre valor estratégico.
+## Notação obrigatória
 
-## Notação
+- `flowchart LR`.
+- `subgraph BC_X["BC: Nome — hipótese | prioridade"]` para cada contexto de domínio. Prioridade é metadado: nunca substitui o BC.
+- `🔷 AR: Nome` nas raízes, seguido de propriedades em linhas `•`, quando relevantes.
+- `◽ E: Nome` nas entidades de suporte; `▫ VO: Nome` nos valores representados como caixas. Valores embutidos usam `propriedade: VO Nome`.
+- `AR ---|"Inclui"| E` ou `VO`: composição proposta. Cada entidade de suporte tem uma raiz proprietária identificável; uma ligação entre duas raízes não é composição.
+- `A -. "Referência: relação" .-> B`: associação por referência, incluindo referências entre agregados. Não implica alteração transacional conjunta.
+- `AR -->|"Evento: FactoOcorrido"| AR`: comunicação de um facto relevante para outro agregado.
+- `AR -->|"Pedido: Ação"| AR`: interação proposta. Indicar condições quando necessárias. Eventos e pedidos não são nomes de entidades nem fases adicionais do workflow.
+- Sistemas externos identificados por `🌐`, `🖥️`, `📊` ou `✉️`, num grupo separado. Ligações tracejadas têm rótulo `Externo:` e descrevem origem, destino ou ferramenta; não provam integração.
 
-- `flowchart LR`: vista horizontal de entidades e relações.
-- Caixa com nome e atributos: informação relevante, não schema de base de dados nem lista definitiva de campos.
-- `A -->|"Relação"| B`: relação dirigida e nomeada, não passagem obrigatória à etapa seguinte.
-- `A ---|"Inclui"| B`: associação/composição conceptual; por si só não confirma pertença a um agregado.
-- `subgraph`: agrupamento visual. O rótulo deve dizer se é área, prioridade ou hipótese BC.
-- `🔷 AR?`: raiz candidata, não decisão aprovada. `◽` identifica uma entidade de suporte nesta legenda, sem decidir a sua propriedade.
-- Linha tracejada: contexto externo neste exemplo, não transporte de eventos nem integração implementada.
+Composição diz quem gere o conceito **nesta hipótese**. Ainda é necessário validar identidade, invariantes, concorrência, volume e ciclo de vida antes de aprovar a fronteira. Um evento desenhado não exige event bus, microserviço ou automatização; pode corresponder a coordenação local ou a uma ação humana.
 
 ## Exemplo
 
-Hipóteses ilustrativas. Os grupos não estabelecem a decomposição atual do Cairn; Documento dentro do grupo não valida a sua pertença transacional à Proposta.
+Fronteiras e interações hipotéticas. «Proposta» inclui os seus elementos de preparação; «Participação» controla a decisão e o registo da entrega. O diagrama não valida uma integração externa ou uma regra jurídica.
 
 ```mermaid
 flowchart LR
-    subgraph CONCURSOS["Hipótese BC: Concursos"]
-        C["🔷 AR? Concurso<br/>Entidade adjudicante, descrição, prazo e estado"]
-        V["◽ Convite<br/>Destinatário e referência"]
-        C ---|"Pode ter"| V
+    subgraph BC_CONCURSOS["BC: Concursos — hipótese | Now"]
+        C["🔷 AR: Concurso<br/><br/>• Descrição<br/>• Prazo de entrega<br/>• Estado"]
+        V["◽ E: Convite<br/>• Destinatário<br/>• Referência"]
+        C ---|"Inclui quando existe"| V
     end
 
-    subgraph PROPOSTAS["Hipótese BC: Propostas"]
-        P["🔷 AR? Proposta<br/>Valor proposto e estado"]
-        D["◽ Documento<br/>Identificação e ficheiro"]
-        MM["◽ Mapa de medições<br/>Itens, quantidades e preços"]
-        CF["◽ Cronograma financeiro<br/>Períodos, percentagens e valores"]
+    subgraph BC_PROPOSTAS["BC: Propostas e participação — hipótese | Now"]
+        PA["🔷 AR: Participação<br/><br/>• EmpresaRef<br/>• ConcursoRef<br/>• Decisão e acompanhamento"]
+        S["◽ E: Submissão<br/>• Referência<br/>• Confirmação de entrega"]
+        P["🔷 AR: Proposta<br/><br/>• Estado de preparação<br/>• Valor: VO Dinheiro"]
+        D["◽ E: Documento da proposta<br/>• Identificação<br/>• Ficheiro"]
+        MM["◽ E: Mapa de medições<br/>• Itens, quantidades e preços"]
+        CF["◽ E: Cronograma financeiro<br/>• Períodos e valores: VO Dinheiro"]
+        PA ---|"Inclui"| S
         P ---|"Inclui"| D
         P ---|"Inclui"| MM
         P ---|"Inclui quando exigido"| CF
     end
 
-    subgraph COMPRAS["Hipótese BC: Compras / Orçamentação"]
-        PC["🔷 AR? Pedido de cotação<br/>Material / serviço e condições"]
-        CT["◽ Cotação<br/>Preço, validade e condições"]
-        F["🔷 AR? Fornecedor<br/>Identificação e contactos"]
-        PC -->|"Tem respostas"| CT
-        F -->|"Autor da cotação"| CT
+    C -. "Referência: objeto da participação" .-> PA
+    PA -. "Referência: proposta da participação" .-> P
+    P -. "Referência: objeto da submissão" .-> S
+    C -->|"Evento: OportunidadeSelecionada"| PA
+    PA -->|"Pedido: Iniciar preparação [participar]"| P
+    P -->|"Evento: PropostaPronta"| PA
+    PA -->|"Evento: EntregaConfirmada [simulada]"| P
+
+    subgraph EXTERNOS["Sistemas externos — contexto"]
+        DR["🌐 Diário da República"]
+        PLAT["🌐 Plataforma de propostas"]
     end
-
-    C -->|"Objeto da proposta"| P
-    CT -->|"Referência de preços para"| MM
-
-    DR["Sistema externo: Diário da República"]
-    PLAT["Sistema externo: plataforma de propostas"]
-    DR -. "Fonte de anúncios; acesso por validar" .-> C
-    PLAT -. "Origem de peças / destino da entrega" .-> P
+    DR -. "Externo: origem dos anúncios; acesso por validar" .-> C
+    PLAT -. "Externo: origem de peças" .-> P
+    S -. "Externo: destino da entrega; simulado" .-> PLAT
 ```
 
-## Relações não são eventos
+## Relação com as outras vistas
 
-Uma ligação `Concurso → Proposta` pode significar «objeto da proposta». Não significa automaticamente que um evento `ConcursoSelecionado` cria uma Proposta. Se precisar de representar coordenação por eventos, fazer uma vista separada, com legenda explícita de eventos, emissores, destinatários e efeitos esperados. Não adicionar caixas como «Aguarda resultado» à vista de entidades: isso é estado ou tarefa, não uma nova entidade por si só.
+O [percurso principal](main-entity-flows.md) é uma projeção simplificada das entidades e referências, não uma repetição de todos os BC e eventos. Usa os mesmos nomes e relações; a omissão dos marcadores DDD nessa vista simplificada é intencional, não uma dispensa para a vista detalhada.
+
+O [workflow](workflow-flows.md) explica as ações das pessoas. Os [estados](state-diagrams.md) explicam o ciclo de uma entidade. Um rótulo «Evento: PropostaPronta» aqui comunica um facto entre agregados; não transforma «PropostaPronta» numa nova caixa de entidade.
 
 ## Como rever
 
-- Todos os nós de domínio representam conceitos, não ações como «Criar planeamento» ou «Alocar equipa»?
-- Todas as ligações relevantes têm um significado explícito?
-- Existem relações de suporte além do caminho principal, sem duplicar o workflow?
-- Relações e nomes partilhados com o percurso principal são consistentes?
-- Proposta de agregado tem invariantes e necessidades de consistência a validar, em vez de resultar só da disposição visual?
-- Dependências temporais e transmissão de eventos foram separadas das relações estruturais?
-- Ferramentas externas estão identificadas como contexto, não entidades do produto?
-- A vista não promove Gantt de Maybe a Later nem transforma exemplos em requisitos confirmados?
+- Todos os conceitos de domínio estão num BC e classificados como AR, E ou VO? Cada BC apresenta o estatuto das fronteiras?
+- As entidades de suporte têm um caminho de composição até uma única raiz? Referências não foram confundidas com composição?
+- VO embutidos têm o tipo explícito? Identidade e ciclo de vida justificam as classificações propostas?
+- Os eventos ligam raízes, descrevem factos e têm condições relevantes? Os pedidos distinguem-se dos eventos?
+- A hipótese de cada agregado descreve as invariantes que precisará de proteger, sem as tratar como decisões aprovadas?
+- Nomes e relações estruturais coincidem com o percurso principal? O subconjunto Now permanece coerente com o sistema?
+- Sistemas externos estão fora dos BC de domínio e as ligações são identificadas como `Externo:`?
+- Não existe uma caixa de estado como «Aguarda resultado» fingindo ser entidade?
+- Prioridades, limites de simulação e hipóteses não foram transformados em decisões de produção?
