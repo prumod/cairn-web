@@ -1,5 +1,29 @@
 # Cairn Web
 
+## Começar pela configuração
+
+Depois de obter o código, execute o assistente na pasta do repositório. O assistente instala os pré-requisitos em falta, as dependências, Gitleaks e Chromium, e verifica o projeto. Os comandos são automáticos, sem perguntas `[y/N]`. O sistema pode pedir a palavra-passe de administrador ou autorização para instalar software.
+
+Em Ubuntu ou Ubuntu em WSL:
+
+```sh
+bash scripts/setup-project.sh
+```
+
+Em Windows x64, num terminal PowerShell, sem WSL:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-project.ps1
+```
+
+A opção `Bypass` aplica-se apenas a este processo. Se uma política da organização impedir a execução, peça ajuda ao administrador. Se ainda não tiver o código, descarregue e extraia o [ZIP do repositório](https://github.com/prumod/cairn-web/archive/refs/heads/main.zip) ou siga [Get the code](#get-the-code). No terminal, entre na pasta extraída antes de executar o comando.
+
+No Windows, o assistente instala Git for Windows se necessário. Se faltar o `winget`, indica como instalar o Instalador de Aplicações da Microsoft. Guarda Bun e, se necessário, Node.js em `%USERPROFILE%\.cairn`, acrescenta-os ao `PATH` do utilizador e define `GITLEAKS_BIN` para esta cópia do projeto. O Git for Windows inclui Git Bash, disponível para comandos Bash.
+
+Em Ubuntu/WSL, o assistente instala Bun em `~/.bun` e, se necessário, Node.js em `~/.local/share/cairn`, com uma ligação em `~/.local/bin/node`. Não substitui um ficheiro que já exista nessa localização. Apresenta o comando para ativar estes caminhos no terminal.
+
+Não precisa de criar um `.env` nem configurar Discord, WhatsApp ou serviços de publicação para executar o frontend. Pode repetir o assistente após corrigir um erro. O projeto ainda não tem testes automáticos. As verificações não comprovam o comportamento da aplicação.
+
 This repository contains the Cairn frontend in `web/`, a Bun workspace using Vite, React, and the experimental Oxc-based React Compiler. Oxlint and Oxfmt run from the repository root across the whole project. The backend is separate and is not scaffolded here.
 
 New developers: read this file first. If setup instructions change, update this README in the same pull request.
@@ -29,7 +53,9 @@ If the organization or repository name changes, use the clone URL shown on the G
 
 ## Set up and run
 
-From the repository root, install the workspace dependencies:
+For a fresh checkout, use the [setup assistant](#começar-pela-configuração) first. It also runs the project checks. After it finishes, open a new terminal in the repository root and start the frontend with `bun run dev`. On Ubuntu/WSL, first run `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"` in that terminal.
+
+If the prerequisites are already installed, install the workspace dependencies manually:
 
 ```sh
 bun run setup
