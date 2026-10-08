@@ -2,7 +2,9 @@
 
 **Data de consulta:** 7 de outubro de 2026. **Issue:** [#5](https://github.com/prumod/cairn-web/issues/5).
 
-**Requisitos comparados:** [lista Now / Later / Maybe / Never](transcricao_2_funcionalidades.md), incluindo os 32 identificadores N01–N12, L01–L08 e M01–M12. A pesquisa não altera essas prioridades nem implementa o protótipo.
+**Atualização de âmbito:** a pesquisa mantém as conclusões originais e as prioridades de produto. O [wireframe atual](../system/wireframe.md) cobre Now, Later e Maybe como experiência completa sem estilos, com dados fictícios e ações simuladas; as prioridades não aparecem na interface.
+
+**Requisitos comparados:** [lista Now / Later / Maybe / Never](../README.md), incluindo os 32 identificadores N01–N12, L01–L08 e M01–M12. A pesquisa não altera essas prioridades nem implementa o protótipo.
 
 ## Conclusão executiva
 
