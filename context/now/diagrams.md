@@ -131,27 +131,29 @@ stateDiagram-v2
 
 ## Percurso principal
 
+Fluxo entre entidades e respetivas relações, não uma sequência de tarefas. Os passos do utilizador estão no diagrama «Fluxo de trabalho».
+
 ```mermaid
 flowchart LR
 
     EMPRESA["Empresa<br/>Localização, classe e licenças"]
-    PESQUISA["Pesquisa de oportunidades<br/>Anúncios por data e raio<br/>Mapa, lista e prazos"]
+    PESQUISA["Critérios de pesquisa<br/>Data de publicação e raio"]
     CONCURSO["Concurso / convite<br/>Valor, localização e prazos<br/>Requisitos e plataforma"]
     PECAS["Peças do concurso<br/>Desenhos, memorial e mapas"]
     PROPOSTA["Proposta<br/>Estado de preparação e valor final"]
     DOCUMENTOS["Documentos exigidos<br/>Checklist de preparação"]
     PRECOS["Mapa de medições / preços unitários<br/>Itens, quantidades e preços"]
     FINANCEIRO["Cronograma financeiro<br/>Quando exigido"]
-    SUBMISSAO["Submeter proposta na plataforma<br/>Fim do NOW; ação externa simulada no protótipo"]
+    SUBMISSAO["Submissão da proposta<br/>Registo simulado no wireframe<br/>Fim do percurso Now"]
 
-    EMPRESA -->|"Localização de referência"| PESQUISA
-    PESQUISA -->|"Identifica"| CONCURSO
-    EMPRESA -->|"Verificar capacidade e decidir participar"| PROPOSTA
-    CONCURSO -->|"Participação da empresa"| PROPOSTA
-    CONCURSO -->|"Obter na plataforma"| PECAS
-    PECAS -->|"Orientam preparação"| PROPOSTA
-    PROPOSTA --- DOCUMENTOS
-    PROPOSTA --- PRECOS
-    PROPOSTA --- FINANCEIRO
-    PROPOSTA -->|"Rever documentação, valor e prazo"| SUBMISSAO
+    EMPRESA -->|"Referência dos critérios"| PESQUISA
+    PESQUISA -->|"Correspondem a"| CONCURSO
+    EMPRESA -->|"Autora da proposta"| PROPOSTA
+    CONCURSO -->|"Objeto da proposta"| PROPOSTA
+    CONCURSO -->|"Tem peças"| PECAS
+    PECAS -->|"Base da proposta"| PROPOSTA
+    PROPOSTA ---|"Inclui"| DOCUMENTOS
+    PROPOSTA ---|"Inclui"| PRECOS
+    PROPOSTA ---|"Inclui quando exigido"| FINANCEIRO
+    PROPOSTA -->|"Objeto da submissão"| SUBMISSAO
 ```
