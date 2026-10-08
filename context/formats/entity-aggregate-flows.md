@@ -2,21 +2,21 @@
 
 ## O que modela
 
-A estrutura proposta do domínio e a colaboração entre agregados. Combina **bounded contexts (BC), raízes de agregado (AR), entidades de suporte, Value Objects (VO), referências e interações**. Não é apenas uma lista de conceitos agrupados por prioridade nem um workflow de tarefas.
+A estrutura proposta do domínio e a colaboração entre agregados. Combina **bounded contexts (BC), raízes de agregado (AR), entidades de suporte, Value Objects (VO), referências e interações**. Não é apenas uma lista de conceitos nem um workflow de tarefas.
 
 Ao usar este formato, cumprir a notação descrita abaixo. O formato é fixo; o conteúdo e as fronteiras podem ser hipóteses. Não omitir a classificação por estar por validar: indicar o estatuto no título do BC e na legenda.
 
-- **BC:** âmbito em que a linguagem e as regras têm significado consistente; não equivale a um ecrã, prioridade, pasta ou microserviço.
+- **BC:** âmbito em que a linguagem e as regras têm significado consistente; não equivale a um ecrã, pasta ou microserviço.
 - **Agregado:** conjunto de conceitos cujas invariantes são protegidas como uma unidade de consistência.
 - **AR:** entidade que controla as alterações e invariantes de um agregado. Um BC pode conter vários agregados.
 - **Entidade (E):** conceito com identidade e continuidade. Uma entidade não marcada AR é suporte de um agregado neste modelo.
 - **VO:** valor definido pelos atributos, sem identidade própria; por exemplo, `Dinheiro` com montante e moeda. Pode ser caixa ou tipo de uma propriedade.
 - **Core domain:** classificação estratégica, não sinónimo de «maior BC». Só incluir essa classificação com uma decisão sustentada; não inventá-la para preencher a notação.
 
-## Notação obrigatória
+## Notação
 
 - `flowchart LR`.
-- `subgraph BC_X["BC: Nome — hipótese | prioridade"]` para cada contexto de domínio. Prioridade é metadado: nunca substitui o BC.
+- `subgraph BC_X["BC: Nome — estatuto"]` para cada contexto de domínio. Indicar se a fronteira é hipótese, proposta ou decisão aprovada.
 - `🔷 AR: Nome` nas raízes, seguido de propriedades em linhas `•`, quando relevantes.
 - `◽ E: Nome` nas entidades de suporte; `▫ VO: Nome` nos valores representados como caixas. Valores embutidos usam `propriedade: VO Nome`.
 - `AR ---|"Inclui"| E` ou `VO`: composição proposta. Cada entidade de suporte tem uma raiz proprietária identificável; uma ligação entre duas raízes não é composição.
@@ -29,51 +29,38 @@ Composição diz quem gere o conceito **nesta hipótese**. Ainda é necessário 
 
 ## Exemplo
 
-Fronteiras e interações hipotéticas. «Proposta» inclui os seus elementos de preparação; «Participação» controla a decisão e o registo da entrega. O diagrama não valida uma integração externa ou uma regra jurídica.
+Fronteiras e interações hipotéticas num domínio fictício de encomendas. «Encomenda» inclui os seus itens e «Pagamento» regista o ciclo financeiro. O diagrama não valida uma integração externa nem uma política de negócio.
 
 ```mermaid
 flowchart LR
-    subgraph BC_CONCURSOS["BC: Concursos — hipótese | Now"]
-        C["🔷 AR: Concurso<br/><br/>• Descrição<br/>• Prazo de entrega<br/>• Estado"]
-        V["◽ E: Convite<br/>• Destinatário<br/>• Referência"]
-        C ---|"Inclui quando existe"| V
+    subgraph BC_COMMERCE["BC: Comércio — hipótese | por validar"]
+        C["🔷 AR: Cliente<br/><br/>• Nome<br/>• Contacto"]
+        O["🔷 AR: Encomenda<br/><br/>• Estado<br/>• Total: VO Dinheiro"]
+        I["◽ E: Item da encomenda<br/>• ProdutoRef<br/>• Quantidade<br/>• Preço unitário: VO Dinheiro"]
+        O ---|"Inclui"| I
+        O -. "Referência: cliente" .-> C
     end
 
-    subgraph BC_PROPOSTAS["BC: Propostas e participação — hipótese | Now"]
-        PA["🔷 AR: Participação<br/><br/>• EmpresaRef<br/>• ConcursoRef<br/>• Decisão e acompanhamento"]
-        S["◽ E: Submissão<br/>• Referência<br/>• Confirmação de entrega"]
-        P["🔷 AR: Proposta<br/><br/>• Estado de preparação<br/>• Valor: VO Dinheiro"]
-        D["◽ E: Documento da proposta<br/>• Identificação<br/>• Ficheiro"]
-        MM["◽ E: Mapa de medições<br/>• Itens, quantidades e preços"]
-        CF["◽ E: Cronograma financeiro<br/>• Períodos e valores: VO Dinheiro"]
-        PA ---|"Inclui"| S
-        P ---|"Inclui"| D
-        P ---|"Inclui"| MM
-        P ---|"Inclui quando exigido"| CF
+    subgraph BC_FINANCE["BC: Pagamentos — hipótese | por validar"]
+        P["🔷 AR: Pagamento<br/><br/>• Estado<br/>• Montante: VO Dinheiro"]
+        P -. "Referência: encomenda" .-> O
     end
 
-    C -. "Referência: objeto da participação" .-> PA
-    PA -. "Referência: proposta da participação" .-> P
-    P -. "Referência: objeto da submissão" .-> S
-    C -->|"Evento: OportunidadeSelecionada"| PA
-    PA -->|"Pedido: Iniciar preparação [participar]"| P
-    P -->|"Evento: PropostaPronta"| PA
-    PA -->|"Evento: EntregaConfirmada [simulada]"| P
+    O -->|"Pedido: Autorizar pagamento"| P
+    P -->|"Evento: PagamentoAutorizado"| O
 
-    subgraph EXTERNOS["Sistemas externos — contexto"]
-        DR["🌐 Diário da República"]
-        PLAT["🌐 Plataforma de propostas"]
+    subgraph EXTERNAL["Sistemas externos — contexto"]
+        PSP["🌐 Prestador de pagamentos"]
     end
-    DR -. "Externo: origem dos anúncios; acesso por validar" .-> C
-    PLAT -. "Externo: origem de peças" .-> P
-    S -. "Externo: destino da entrega; simulado" .-> PLAT
+    P -. "Externo: pedido de autorização; integração por validar" .-> PSP
+    PSP -. "Externo: resultado da autorização" .-> P
 ```
 
 ## Relação com as outras vistas
 
 O [percurso principal](main-entity-flows.md) é uma projeção simplificada das entidades e referências, não uma repetição de todos os BC e eventos. Usa os mesmos nomes e relações; a omissão dos marcadores DDD nessa vista simplificada é intencional, não uma dispensa para a vista detalhada.
 
-O [workflow](workflow-flows.md) explica as ações das pessoas. Os [estados](state-diagrams.md) explicam o ciclo de uma entidade. Um rótulo «Evento: PropostaPronta» aqui comunica um facto entre agregados; não transforma «PropostaPronta» numa nova caixa de entidade.
+O [workflow](workflow-flows.md) explica as ações das pessoas. Os [estados](state-diagrams.md) explicam o ciclo de uma entidade. Um rótulo «Evento: PagamentoAutorizado» aqui comunica um facto entre agregados; não transforma o evento numa nova caixa de entidade.
 
 ## Como rever
 
@@ -85,4 +72,4 @@ O [workflow](workflow-flows.md) explica as ações das pessoas. Os [estados](sta
 - Quando houver vistas relacionadas, os nomes e relações estruturais permanecem coerentes entre elas?
 - Sistemas externos estão fora dos BC de domínio e as ligações são identificadas como `Externo:`?
 - Não existe uma caixa de estado como «Aguarda resultado» fingindo ser entidade?
-- Prioridades, limites de simulação e hipóteses não foram transformados em decisões de produção?
+- O âmbito, as hipóteses e as decisões aprovadas estão claramente distinguidos?

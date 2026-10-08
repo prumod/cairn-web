@@ -2,9 +2,9 @@
 
 ## O que modela
 
-O ciclo de vida de **uma entidade ou agregado**, com estados, transições, eventos e condições. Não representa todos os passos do utilizador nem mistura o procedimento público com a participação de uma empresa.
+O ciclo de vida de **uma entidade ou agregado**, com estados, transições, eventos e condições. Não representa todos os passos do utilizador nem mistura ciclos de vida de sujeitos diferentes.
 
-Exemplo de distinção: um Concurso pode continuar aberto mesmo que uma empresa decida não concorrer. «Em preparação» pertence à Proposta ou Participação, não ao Concurso. «Em execução» e «Em garantia» pertencem à Obra. Modelar cada ciclo num bloco separado.
+Por exemplo, o ciclo de vida de uma Conta é diferente do ciclo de vida de uma Subscrição: cancelar uma subscrição não implica necessariamente fechar a conta. Dar a cada sujeito um diagrama separado.
 
 ## Notação
 
@@ -15,52 +15,55 @@ Exemplo de distinção: um Concurso pode continuar aberto mesmo que uma empresa 
 - `Estado --> [*]`: estado final. Não usar para o mero fim de uma vista parcial.
 - `Estado --> Estado: Evento`: evento tratado sem mudança de estado, quando útil.
 
-## Exemplo — Concurso
+## Exemplo — Encomenda
 
-Vista parcial ilustrativa, não sequência legal universal. O exemplo não obriga a existir uma fase «submissões ainda não abertas»: as datas e possibilidades dependem do procedimento.
+Vista parcial ilustrativa, não uma regra universal. Os eventos e as condições dependem das políticas do sistema real.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Publicado
-    state "Concurso publicado / convite disponibilizado" as Publicado
-    state "Aberto à entrega de propostas" as Aberto
-    state "Prazo de entrega encerrado" as Encerrado
+    [*] --> Rascunho
+    state "Em preparação" as Rascunho
+    state "Confirmada" as Confirmada
+    state "Cancelada" as Cancelada
+    state "Concluída" as Concluida
 
-    Publicado --> Aberto: Início do prazo indicado
-    Aberto --> Encerrado: Fim do prazo indicado
+    Rascunho --> Confirmada: Pagamento autorizado
+    Rascunho --> Cancelada: Cancelamento aceite
+    Confirmada --> Cancelada: Cancelamento aceite [elegível]
+    Confirmada --> Concluida: Entrega concluída
 
-    note right of Encerrado
-        A vista termina aqui, mas o Concurso pode continuar.
-        A entrega de uma empresa não encerra o Concurso.
+    note right of Concluida
+        A vista mostra resultados selecionados.
+        Outras regras de cancelamento e falha
+        dependem do sistema real.
     end note
 ```
 
-## Exemplo — Proposta
+## Segundo exemplo — Pagamento
 
-Hipótese isolada de estados de uma Proposta; não decide se Proposta e Participação pertencem ao mesmo agregado. O prazo referido é o do Concurso relacionado. Submissão no protótipo é simulada; produção precisaria de confirmação externa verificável.
+Hipótese simplificada de um ciclo de pagamento. Um pagamento recusado pode permitir uma nova tentativa, mas a política precisa de validação.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Preparacao
-    state "Em preparação" as Preparacao
-    state "Pronta para entrega" as Pronta
-    state "Submetida" as Submetida
-    state "Não entregue dentro do prazo" as NaoEntregue
+    [*] --> Pendente
+    state "Pendente" as Pendente
+    state "Autorizado" as Autorizado
+    state "Recusado" as Recusado
+    state "Liquidado" as Liquidado
 
-    Preparacao --> Pronta: Revisão concluída [sem omissões]
-    Pronta --> Preparacao: Alteração ou omissão identificada
-    Preparacao --> NaoEntregue: Prazo terminado [sem entrega]
-    Pronta --> NaoEntregue: Prazo terminado [sem entrega]
-    Pronta --> Submetida: Entrega confirmada [dentro do prazo]
+    Pendente --> Autorizado: Autorização recebida
+    Pendente --> Recusado: Recusa recebida
+    Recusado --> Pendente: Nova tentativa [permitida]
+    Autorizado --> Liquidado: Liquidação confirmada
 ```
 
-A ausência de estados finais neste exemplo não afirma que o ciclo esteja completo; acompanhamento, revisões e outros resultados ficam fora desta vista. Decidir não participar pode pertencer à Participação antes de sequer existir uma Proposta.
+A ausência de estados finais não afirma que o ciclo esteja completo; estornos, expiração e outros resultados podem ficar fora desta vista.
 
 ## Como rever
 
-- Cada bloco tem um único sujeito? Uma empresa perder ou recusar não deve encerrar o Concurso.
+- Cada bloco tem um único sujeito? Uma alteração num objeto relacionado não deve encerrar este ciclo sem uma regra explícita?
 - Os estados descrevem situações estáveis, não botões ou tarefas?
 - Os rótulos das transições explicam o evento e as condições relevantes?
 - O desenho distingue uma transição permitida de uma sequência obrigatória?
-- A vista declara os resultados omitidos, como cancelamento ou ausência de adjudicação, em vez de inventar regras?
+- A vista declara os resultados omitidos, como cancelamento ou falha, em vez de inventar regras?
 - Os estados finais indicam conclusão real do ciclo modelado, não apenas a última caixa desenhada?
