@@ -163,7 +163,7 @@ ask_secret() {
 # line). Idempotent. Creates ENV_FILE at mode 0600 and rejects unsafe targets.
 write_env() {
   local key="$1" value="$2" grep_status sq="'\\''"
-  if [[ -L "$ENV_FILE" || ( -e "$ENV_FILE" && ! -f "$ENV_FILE" ) ]]; then
+  if [[ -L "$ENV_FILE" || (-e "$ENV_FILE" && ! -f "$ENV_FILE") ]]; then
     warn "Refusing to write to a symlink or non-regular file: $ENV_FILE"
     return 1
   fi
@@ -245,7 +245,7 @@ cd "$PROJECT_ROOT"
 ENV_FILE="$PROJECT_ROOT/.env"
 
 validate_env_target() {
-  if [[ -L "$ENV_FILE" || ( -e "$ENV_FILE" && ! -f "$ENV_FILE" ) ]]; then
+  if [[ -L "$ENV_FILE" || (-e "$ENV_FILE" && ! -f "$ENV_FILE") ]]; then
     warn "Refusing to use a symlink or non-regular file: $ENV_FILE"
     return 1
   fi

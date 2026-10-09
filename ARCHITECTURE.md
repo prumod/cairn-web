@@ -4,7 +4,7 @@
 
 This repository contains the Cairn web frontend. The root Bun workspace owns shared development tooling; `web/` contains the Vite and React application. Vite serves the `web/` entry point and builds static assets to `web/dist`. React is configured with the Oxc-based compiler.
 
-`web/index.html` provides the `#root` element. `web/src/main.tsx` checks that the element exists and mounts `App` inside React `StrictMode`. `web/src/App.tsx` implements the unstyled interactive prototype with fictional data and local React state. Its actions simulate product flows; they are not backend operations, authentication, or external integrations. Treat the prototype as interaction evidence, not proof that planned services or production behavior exist.
+`web/index.html` provides the `#root` element. `web/src/main.tsx` checks that the element exists and renders an empty React `StrictMode` tree into it. There is currently no product UI, routing, application state, API client, backend, authentication, or external integration implemented here. Treat the repository as a frontend foundation, not as evidence that planned product behavior exists.
 
 ## Planned boundary and deployment
 
