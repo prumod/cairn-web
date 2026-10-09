@@ -1,95 +1,194 @@
 # Cairn Web
 
-## Começar pela configuração
+Este repositório contém o frontend do Cairn. Siga os passos abaixo para obter o código, configurar o ambiente e executar o projeto. O frontend ainda apresenta uma página vazia. A interface do produto, o backend, a autenticação e as integrações da aplicação ainda não estão implementados.
 
-Depois de obter o código, execute o assistente na pasta do repositório. O assistente instala os pré-requisitos em falta, as dependências, Gitleaks e Chromium, e verifica o projeto. Os comandos são automáticos, sem perguntas `[y/N]`. O sistema pode pedir a palavra-passe de administrador ou autorização para instalar software.
+Leia este ficheiro antes de começar. Se as instruções de configuração mudarem, atualize este README no mesmo pull request.
 
-Em Ubuntu ou Ubuntu em WSL:
+## Antes de começar
 
-```sh
-bash scripts/setup-project.sh
-```
+Precisa de Git para clonar o repositório. Confirme a instalação com `git --version`. Se ainda não tiver Git, pode descarregar o ZIP na secção seguinte. Os programadores que precisem de enviar alterações também precisam de uma conta GitHub e de aceitar o convite para o repositório.
 
-Em Windows x64, num terminal PowerShell, sem WSL:
+O projeto usa [Bun](https://bun.sh/docs/installation) 1.3.14. O assistente instala esta versão. Se executar o Vite com Node.js, incluindo compilações na Vercel, precisa de Node.js 22.12 ou superior. Para configurar tudo manualmente, consulte [Configurar o projeto](#configurar-o-projeto).
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-project.ps1
-```
+## Obter o código
 
-A opção `Bypass` aplica-se apenas a este processo. Se uma política da organização impedir a execução, peça ajuda ao administrador. Se ainda não tiver o código, descarregue e extraia o [ZIP do repositório](https://github.com/prumod/cairn-web/archive/refs/heads/main.zip) ou siga [Get the code](#get-the-code). No terminal, entre na pasta extraída antes de executar o comando.
-
-No Windows, o assistente instala Git for Windows se necessário. Se faltar o `winget`, indica como instalar o Instalador de Aplicações da Microsoft. Guarda Bun e, se necessário, Node.js em `%USERPROFILE%\.cairn`, acrescenta-os ao `PATH` do utilizador e define `GITLEAKS_BIN` para esta cópia do projeto. Para executar os scripts de validação e de commit/push depois da configuração, use Git Bash.
-
-Em Ubuntu/WSL, o assistente instala Bun em `~/.bun` e, se necessário, Node.js em `~/.local/share/cairn`, com uma ligação em `~/.local/bin/node`. Não substitui um ficheiro que já exista nessa localização. Apresenta o comando para ativar estes caminhos no terminal.
-
-Não precisa de criar um `.env` nem configurar Discord, WhatsApp ou serviços de publicação para executar o frontend. Pode repetir o assistente após corrigir um erro. As suites sem testes indicam uma omissão, não comprovam o comportamento da aplicação.
-
-This repository contains the Cairn frontend in `web/`, a Bun workspace using Vite, React, and the experimental Oxc-based React Compiler. Oxlint and Oxfmt run from the repository root across the whole project. The backend is separate and is not scaffolded here.
-
-New developers: read this file first. If setup instructions change, update this README in the same pull request.
-
-## Prerequisites
-
-- Git
-- [Bun](https://bun.sh/docs/installation) 1.3.14, the JavaScript runtime and package manager used by this project
-- Node.js 22.12 or newer if running Vite with Node.js (including Vercel builds)
-- A GitHub account; contributors who need to push changes must accept their repository invitation
-
-Check that Git and Bun are installed:
-
-```sh
-git --version
-bun --version
-```
-
-## Get the code
+Com Git instalado, abra um terminal e execute:
 
 ```sh
 git clone https://github.com/prumod/cairn-web.git
 cd cairn-web
 ```
 
-If the organization or repository name changes, use the clone URL shown on the GitHub repository page.
+Se não tiver Git, descarregue o [ZIP do repositório](https://github.com/prumod/cairn-web/archive/refs/heads/main.zip), extraia-o e abra um terminal na pasta extraída.
 
-## Set up and run
+Se o nome da organização ou do repositório mudar, use o endereço de clonagem apresentado na página do repositório no GitHub.
 
-For a fresh checkout, use the [setup assistant](#começar-pela-configuração) first. It also runs the project checks. After it finishes, open a new terminal in the repository root and start the frontend with `bun run dev`. On Ubuntu/WSL, first run `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"` in that terminal.
+## Configurar o projeto
 
-If the prerequisites are already installed, prepare the locked workspace dependencies, Gitleaks, and Chromium:
+Use o assistente do seu sistema operativo. O assistente instala os pré-requisitos em falta, as dependências, o Gitleaks e o Chromium, e executa as verificações do projeto. Os comandos são automáticos e não apresentam perguntas `[y/N]`. O sistema pode pedir a palavra-passe de administrador ou autorização para instalar software.
+
+Em Ubuntu ou Ubuntu em WSL, execute na pasta do repositório:
+
+```sh
+bash scripts/setup-project.sh
+```
+
+Em Windows x64, sem WSL, abra o PowerShell na pasta do repositório e execute:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-project.ps1
+```
+
+A opção `Bypass` aplica-se apenas a este processo. Se uma política da organização impedir a execução, peça ajuda ao administrador.
+
+No Windows, o assistente instala Git for Windows se necessário. Se o `winget` não estiver disponível, indica como instalar o Instalador de Aplicações da Microsoft. Guarda Bun e, se necessário, Node.js em `%USERPROFILE%\.cairn`, acrescenta-os ao `PATH` do utilizador e define `GITLEAKS_BIN` para a cópia do projeto. Execute os scripts de validação e os scripts de commit e push através do Git Bash.
+
+Em Ubuntu ou WSL, o assistente instala Bun em `~/.bun` e, se necessário, Node.js em `~/.local/share/cairn`, com uma ligação em `~/.local/bin/node`. Não substitui um ficheiro que já exista nessa localização. No fim, apresenta o comando para adicionar estes caminhos ao `PATH` do terminal.
+
+Se o assistente falhar, corrija o erro apresentado e volte a executá-lo. Se já tiver as ferramentas do sistema instaladas, configure as dependências, o Gitleaks e o Chromium com:
 
 ```sh
 bun run setup
 ```
 
-`bun run update` installs the dependencies from the committed lockfile after pulling changes. Commit `bun.lock` when intentionally changing dependencies.
+`bun run setup` instala as dependências a partir do ficheiro de lock. Confirme que o terminal reconhece Bun 1.3.14 com `bun --version`. Depois de atualizar o repositório, `bun run update` instala as dependências desse ficheiro. Altere `bun.lock` apenas quando mudar intencionalmente as dependências.
 
-Start the frontend:
+Não precisa de criar um ficheiro `.env` nem de configurar Discord, WhatsApp ou serviços de publicação para executar o frontend.
+
+## Como executar o projeto
+
+Depois de configurar o projeto, abra um novo terminal na raiz do repositório.
+
+Em Ubuntu ou WSL, adicione Bun e Node.js ao `PATH` desse terminal:
+
+```sh
+export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"
+```
+
+No Windows, abra um novo terminal PowerShell na raiz do repositório para carregar o `PATH` atualizado pelo assistente.
+
+Inicie o frontend:
 
 ```sh
 bun run dev
 ```
 
-Open the local URL printed by Vite (normally `http://localhost:5173`). The current entry point renders an empty page. Product UI, backend, authentication, and application integrations are not implemented; see [Architecture](ARCHITECTURE.md).
+Abra o endereço que o Vite apresenta no terminal. Normalmente, é `http://localhost:5173`. A página fica vazia enquanto a interface do produto não estiver implementada. Para parar o servidor, prima `Ctrl+C` no terminal.
 
-## Project-local WhatsApp access (Pi)
+## Como contribuir
 
-On the configured Ubuntu workstation, Pi loads WhatsApp only from this repository's `.pi/mcp.json`. That file is machine-specific and locally Git-ignored; it is not required to run the frontend. There is no user-level WhatsApp MCP entry.
+As GitHub Issues são a referência para o trabalho do projeto. O [quadro do projeto Cairn Web](https://github.com/orgs/prumod/projects/1) acompanha o trabalho nas fases Backlog, Ready, In Progress, In Review e Done. O utilizador pode descrever um problema ou fazer uma pergunta numa Issue. Não precisa de criar branches, usar um terminal ou conhecer detalhes de implementação. Os programadores sénior e intermédios ajudam a esclarecer o pedido e a transformá-lo em trabalho de desenvolvimento.
 
-The local `whatsapp-bridge.service` must be running. From this repository root, run `pi mcp list` to check the connection, or use `/mcp` inside Pi. After changing configuration, use `/reload` in existing Pi sessions. Pi requires trust before loading project-local MCP configuration.
+Para ver o processo detalhado de desenvolvimento, consulte [Como desenvolver uma funcionalidade](docs/how-to/desenvolver-uma-funcionalidade.md).
 
-Only read/search tools and received-media download are exposed; send/mutation tools are hidden. The standing WhatsApp safety instruction is in this repository's `AGENTS.md`.
+Para cada alteração:
 
-## Optional Discord MCP setup (Pi)
+1. Encontre ou crie uma GitHub Issue que descreva o trabalho. Se não souber se já existe uma Issue, pergunte a um programador sénior ou intermédio.
+2. Atualize a branch `main` local:
 
-On a workstation with Pi and a Discord MCP server already configured to use `DISCORD_TOKEN`, run the interactive setup wizard from the repository root:
+   ```sh
+   git switch main
+   git pull --ff-only origin main
+   ```
+
+3. Crie uma branch de curta duração. Use o número da Issue, quando existir:
+
+   ```sh
+   git switch -c feat/123-descricao-curta
+   # ou: fix/123-descricao-curta
+   # ou: chore/descricao-curta
+   ```
+
+4. Faça uma alteração focada e crie um commit. Envie a branch:
+
+   ```sh
+   git add <ficheiros-alterados>
+   git commit -m "Descreva a alteração"
+   git push -u origin HEAD
+   ```
+
+5. Abra um pull request no GitHub, associe a Issue, por exemplo com `Closes #123`, e explique o que mudou e como verificou a alteração. Mantenha os pull requests pequenos.
+6. As alterações à `main` exigem um pull request, mas não exigem uma aprovação. As proteções também bloqueiam force pushes e a eliminação da branch `main` para administradores.
+7. Responda aos comentários de revisão. Depois, faça squash e elimine a branch remota. Os agentes só fazem o merge e eliminam branches quando o utilizador o pede explicitamente.
+
+### Verificações antes de abrir um pull request
+
+Execute `bun run check`, reveja as alterações e faça as verificações manuais relevantes. Em particular:
+
+```sh
+git diff --check
+git status --short
+git diff
+```
+
+Indique no pull request o que verificou. Se não conseguir executar uma verificação, diga-o em vez de afirmar que passou.
+
+Se não conseguir aceder ao repositório ou se alguma instrução não funcionar, peça ajuda a um programador sénior ou intermédio. Coloque questões sobre o trabalho numa GitHub Issue ou no pull request relacionado.
+
+## Comandos do projeto
+
+Os scripts executáveis estão em `scripts/`. Cada script encontra a raiz do repositório a partir da sua localização. `scripts/setup.sh` prepara ferramentas e dependências. `scripts/update.sh` instala dependências depois de atualizar o repositório. `scripts/run.sh` inicia a aplicação. `scripts/test.sh` executa os conjuntos de testes contra uma compilação nova. `scripts/check.sh` faz a validação completa, incluindo a auditoria de dependências. Os assistentes `setup-project` também instalam ferramentas do sistema operativo.
+
+| Comando                | Utilização                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `bun run setup`        | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                                             |
+| `bun run update`       | Instala as dependências depois de atualizar uma cópia existente.                                                         |
+| `bun run dev`          | Inicia o servidor de desenvolvimento do frontend.                                                                        |
+| `bun run build`        | Cria a versão de produção do frontend em `web/dist`.                                                                     |
+| `bun run preview`      | Serve localmente a versão compilada.                                                                                     |
+| `bun run format`       | Formata os ficheiros suportados em todo o repositório com Oxfmt.                                                         |
+| `bun run format:check` | Verifica a formatação sem alterar ficheiros.                                                                             |
+| `bun run lint`         | Analisa o código-fonte e a configuração do repositório com Oxlint.                                                       |
+| `bun run typecheck`    | Verifica os tipos do frontend, das configurações de teste e das ligações dos testes.                                     |
+| `bun run audit`        | Audita as dependências bloqueadas, incluindo as ferramentas de desenvolvimento.                                          |
+| `bun run test`         | Executa os testes rápidos, compila a aplicação e executa os cenários no navegador.                                       |
+| `bun run check`        | Executa a formatação, a análise estática, a verificação de tipos, a auditoria de dependências, os testes e a compilação. |
+
+O Vitest, o vitest-cucumber e o Playwright-BDD estão configurados, mas ainda não existem testes da aplicação nem cenários. Os conjuntos de testes vazios são assinalados como ignorados. Isso não comprova o comportamento da aplicação. A CI dos pull requests executa as verificações, a auditoria de dependências e a procura de segredos. O estado `Agent checks` passa a bloquear o merge quando for obrigatório na branch `main`.
+
+Para saber como funcionam as verificações de commit e push, a instalação do Gitleaks e do navegador, e a recuperação de falhas, consulte [Verificações dos agentes](docs/agents/checks.md).
+
+## Publicação
+
+O frontend está preparado para publicação na Vercel. A branch de produção é `main` e a Vercel deve publicar automaticamente as alterações. Configure o projeto Vercel com estes valores:
+
+| Opção                 | Valor                           |
+| --------------------- | ------------------------------- |
+| Diretório raiz        | Raiz do repositório             |
+| Comando de instalação | `bun install --frozen-lockfile` |
+| Comando de compilação | `bun run build`                 |
+| Diretório de saída    | `web/dist`                      |
+| Preset de framework   | Vite                            |
+
+A ligação do projeto à Vercel e as publicações ainda não foram configuradas.
+
+O backend separado está previsto para a Railway. Os dados privados têm de exigir autenticação no backend. O frontend atual não controla o acesso.
+
+## Integrações opcionais com Pi
+
+Estas integrações são opcionais. Não são necessárias para instalar ou executar o frontend.
+
+### Acesso local ao WhatsApp
+
+Na estação Ubuntu configurada, Pi carrega o WhatsApp apenas a partir de `.pi/mcp.json` deste repositório. O ficheiro é local, específico da máquina e ignorado pelo Git. Não é necessário para executar o frontend. Não existe uma entrada WhatsApp ao nível do utilizador.
+
+O serviço local `whatsapp-bridge.service` tem de estar em execução. A partir da raiz do repositório, execute `pi mcp list` para verificar a ligação ou use `/mcp` no Pi. Depois de alterar a configuração, use `/reload` nas sessões Pi abertas. Pi exige que confie na configuração MCP local do projeto antes de a carregar.
+
+A configuração expõe apenas ferramentas de leitura, pesquisa e transferência de ficheiros multimédia recebidos. Esconde ferramentas de envio e alteração. A instrução de segurança para WhatsApp está em `AGENTS.md`.
+
+### Configurar o Discord MCP
+
+Numa estação de trabalho com Pi e um servidor Discord MCP já configurado para usar `DISCORD_TOKEN`, execute o assistente interativo na raiz do repositório:
 
 ```sh
 bash scripts/setup-discord-mcp.sh
 ```
 
-The wizard guides you through bot access, asks before bot installation or token reset, and saves the token in the Git-ignored `.env` file with mode `0600`. It rejects a symlink or non-regular `.env` target, restricts existing-file permissions before writing, and uses a mode-`0600` temporary file plus atomic replacement so failed updates preserve existing contents. It does not install or configure an MCP server. After token entry, it runs `pi mcp list` and opens Pi for a manual server/channel check. Follow the wizard's instructions to use only server and channel listing tools, not message or mutation tools. Do not commit `.env` or share its contents.
+O assistente explica como configurar o acesso do bot, pede autorização antes de instalar o bot ou repor o token e guarda o token no ficheiro `.env`, ignorado pelo Git, com permissões `0600`. Rejeita ficheiros `.env` que sejam ligações simbólicas ou ficheiros especiais. Antes de escrever, restringe as permissões de um ficheiro existente. Usa um ficheiro temporário com permissões `0600` e substituição atómica. Se uma atualização falhar, preserva o conteúdo anterior. Não instala nem configura um servidor MCP.
 
-The wizard requires Bash, Pi, and a Discord account permitted to manage the bot. For later Pi sessions, load the trusted local `.env` from the repository root:
+Depois de introduzir o token, o assistente executa `pi mcp list` e abre o Pi para verificar manualmente o servidor e o canal. Siga as instruções do assistente e use apenas ferramentas para listar servidores e canais. Não use ferramentas para ler mensagens ou fazer alterações. Não submeta o ficheiro `.env` nem partilhe o seu conteúdo.
+
+O assistente requer Bash, Pi e uma conta Discord com autorização para gerir o bot. Para carregar o ficheiro `.env` local em sessões Pi posteriores, execute a partir da raiz do repositório:
 
 ```sh
 set -a
@@ -98,9 +197,11 @@ set +a
 pi
 ```
 
-## Scaffold choices
+## Origem e arquitetura
 
-The foundation was generated with `create-better-agent-stack@2.0.0`, selecting features instead of a preset:
+O frontend está em `web/`. É um workspace Bun que usa Vite, React e o compilador React experimental baseado em Oxc. O Oxlint e o Oxfmt são executados a partir da raiz do repositório sobre o projeto inteiro. O backend é separado e não é criado por este repositório. Consulte [Arquitetura](ARCHITECTURE.md) para mais informação.
+
+A base foi gerada com `create-better-agent-stack@2.0.0`, através da seleção de funcionalidades em vez de um preset:
 
 ```sh
 bunx create-better-agent-stack@2.0.0 --name cairn-web-features \
@@ -108,83 +209,4 @@ bunx create-better-agent-stack@2.0.0 --name cairn-web-features \
   --package-manager bun --no-interactive
 ```
 
-This is a reference command for an empty temporary directory, not a setup command for this repository. The generated frontend was moved into `web/`, and formatting/linting dependencies and commands were kept at the root. `.agent-stack/manifest.json` records the generator selection. No preset, ESLint, Ultracite, Anti-slop, test framework, or CI workflow was selected. The Oxc compiler is enabled with `react({ compiler: true })` in `web/vite.config.ts`; it is experimental.
-
-## Deployment target
-
-The frontend is intended for Vercel, with `main` as the production branch and automatic Git deployments. Use the repository root as the Vercel Root Directory, `bun install --frozen-lockfile` as the Install Command, `bun run build` as the Build Command, and `web/dist` as the Output Directory. Use the Vite framework preset. Vercel project linking and deployments have not been configured yet.
-
-The separate backend is intended for Railway. Private data must require backend authentication; the frontend scaffold does not provide access control.
-
-## Project commands
-
-The executable file interface is `scripts/setup.sh` (prepare tools and dependencies), `scripts/update.sh` (install after pulling), `scripts/run.sh` (start the app), `scripts/test.sh` (run all suites against a fresh build), and `scripts/check.sh` (full validation, including dependency audit). Each resolves the repository root from its own location. The existing `setup-project` wizards additionally provision host prerequisites.
-
-| Command                | Purpose                                                             |
-| ---------------------- | ------------------------------------------------------------------- |
-| `bun run setup`        | Install locked dependencies, Gitleaks, and Chromium.                |
-| `bun run update`       | Install dependencies after updating an existing checkout.           |
-| `bun run dev`          | Start the frontend development server.                              |
-| `bun run build`        | Build the frontend into `web/dist`.                                 |
-| `bun run preview`      | Serve the built frontend locally.                                   |
-| `bun run format`       | Format supported files across the repository with Oxfmt.            |
-| `bun run format:check` | Check repository formatting without writing files.                  |
-| `bun run lint`         | Lint source and configuration across the repository with Oxlint.    |
-| `bun run typecheck`    | Typecheck the frontend, test configurations, and test bindings.     |
-| `bun run audit`        | Audit locked dependencies, including development tools.             |
-| `bun run test`         | Run fast suites, build the app, and run browser scenarios.          |
-| `bun run check`        | Run formatting, linting, types, dependency audit, tests, and build. |
-
-Vitest, vitest-cucumber, and Playwright-BDD are configured, but no application tests or scenarios exist yet. Empty suites explicitly report a skip rather than verified behavior. PR CI runs validation, dependency auditing, and secret scanning; its `Agent checks` status becomes a merge gate once required on `main`.
-
-For the agent-operated commit/push gates, Gitleaks installation, browser setup, and failure recovery, read `docs/agents/checks.md`.
-
-## Work through GitHub
-
-GitHub Issues are the source of truth for project work. The [Cairn Web project board](https://github.com/orgs/prumod/projects/1) tracks work through Backlog, Ready, In Progress, In Review, and Done. The customer can describe a problem or ask a question in an Issue; they do not need to create branches, use a terminal, or understand implementation details. The senior and mid-level developers follow up and turn the problem into development work. For the step-by-step development workflow, see [How to develop a feature](docs/how-to/desenvolver-uma-funcionalidade.md).
-
-For a change:
-
-1. Find or create the GitHub Issue describing the work. Ask the senior or mid-level developer if you are unsure whether an issue already exists.
-2. Update your local `main` branch:
-
-   ```sh
-   git switch main
-   git pull --ff-only origin main
-   ```
-
-3. Create a short-lived branch. Use the Issue number when there is one:
-
-   ```sh
-   git switch -c feat/123-short-description
-   # or: fix/123-short-description
-   # or: chore/short-description
-   ```
-
-4. Make a focused change and commit it. Push your branch:
-
-   ```sh
-   git add <files-you-changed>
-   git commit -m "Describe the change"
-   git push -u origin HEAD
-   ```
-
-5. Open a Pull Request on GitHub, link the Issue (for example, `Closes #123`), and explain what changed and how you checked it. Keep PRs small.
-6. Changes to `main` require a PR, but no approving review is required. Force pushes and deletion of `main` are blocked; these protections also apply to administrators.
-7. Address any review feedback, then squash-merge and delete the merged remote branch. Agents perform the merge and branch deletion only when explicitly requested by the user.
-
-## Before opening a PR
-
-Run `bun run check`, review your changes, and run relevant manual checks. In particular:
-
-```sh
-git diff --check
-git status --short
-git diff
-```
-
-State in the PR what you verified. If a check cannot be run, say so rather than claiming it passed.
-
-## Questions and help
-
-Ask in the related GitHub Issue or PR. If you cannot access the repository or something in these instructions does not work, contact the senior or mid-level developer.
+Este comando serve de referência para uma pasta temporária vazia. Não o use para configurar este repositório. O frontend gerado foi movido para `web/`. As dependências e os comandos de formatação e análise estática foram mantidos na raiz. `.agent-stack/manifest.json` regista as funcionalidades selecionadas. Não foram selecionados um preset, ESLint, Ultracite, Anti-slop, um framework de testes ou um workflow de CI. O compilador Oxc está ativado com `react({ compiler: true })` em `web/vite.config.ts`. É experimental.
