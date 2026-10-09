@@ -2,6 +2,9 @@
 node_modules/
 dist/
 .tools/
+.features-gen/
+test-results/
+playwright-report/
 
 # Local environment and secrets
 .env

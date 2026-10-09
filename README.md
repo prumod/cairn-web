@@ -18,11 +18,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-project.ps1
 
 A opção `Bypass` aplica-se apenas a este processo. Se uma política da organização impedir a execução, peça ajuda ao administrador. Se ainda não tiver o código, descarregue e extraia o [ZIP do repositório](https://github.com/prumod/cairn-web/archive/refs/heads/main.zip) ou siga [Get the code](#get-the-code). No terminal, entre na pasta extraída antes de executar o comando.
 
-No Windows, o assistente instala Git for Windows se necessário. Se faltar o `winget`, indica como instalar o Instalador de Aplicações da Microsoft. Guarda Bun e, se necessário, Node.js em `%USERPROFILE%\.cairn`, acrescenta-os ao `PATH` do utilizador e define `GITLEAKS_BIN` para esta cópia do projeto. O Git for Windows inclui Git Bash, disponível para comandos Bash.
+No Windows, o assistente instala Git for Windows se necessário. Se faltar o `winget`, indica como instalar o Instalador de Aplicações da Microsoft. Guarda Bun e, se necessário, Node.js em `%USERPROFILE%\.cairn`, acrescenta-os ao `PATH` do utilizador e define `GITLEAKS_BIN` para esta cópia do projeto. Para executar os scripts de validação e de commit/push depois da configuração, use Git Bash.
 
 Em Ubuntu/WSL, o assistente instala Bun em `~/.bun` e, se necessário, Node.js em `~/.local/share/cairn`, com uma ligação em `~/.local/bin/node`. Não substitui um ficheiro que já exista nessa localização. Apresenta o comando para ativar estes caminhos no terminal.
 
-Não precisa de criar um `.env` nem configurar Discord, WhatsApp ou serviços de publicação para executar o frontend. Pode repetir o assistente após corrigir um erro. O projeto ainda não tem testes automáticos. As verificações não comprovam o comportamento da aplicação.
+Não precisa de criar um `.env` nem configurar Discord, WhatsApp ou serviços de publicação para executar o frontend. Pode repetir o assistente após corrigir um erro. As suites sem testes indicam uma omissão, não comprovam o comportamento da aplicação.
 
 This repository contains the Cairn frontend in `web/`, a Bun workspace using Vite, React, and the experimental Oxc-based React Compiler. Oxlint and Oxfmt run from the repository root across the whole project. The backend is separate and is not scaffolded here.
 
@@ -55,13 +55,13 @@ If the organization or repository name changes, use the clone URL shown on the G
 
 For a fresh checkout, use the [setup assistant](#começar-pela-configuração) first. It also runs the project checks. After it finishes, open a new terminal in the repository root and start the frontend with `bun run dev`. On Ubuntu/WSL, first run `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"` in that terminal.
 
-If the prerequisites are already installed, install the workspace dependencies manually:
+If the prerequisites are already installed, prepare the locked workspace dependencies, Gitleaks, and Chromium:
 
 ```sh
 bun run setup
 ```
 
-`bun run update` also installs dependencies in an existing checkout. Commit `bun.lock` when dependencies change; use `bun install --frozen-lockfile` for reproducible installs.
+`bun run update` installs the dependencies from the committed lockfile after pulling changes. Commit `bun.lock` when intentionally changing dependencies.
 
 Start the frontend:
 
@@ -69,7 +69,7 @@ Start the frontend:
 bun run dev
 ```
 
-Open the local URL printed by Vite (normally `http://localhost:5173`). Cairn is an unstyled prototype with fictional data and simulated actions. The backend, authentication and external integrations are not implemented.
+Open the local URL printed by Vite (normally `http://localhost:5173`). Cairn is an unstyled prototype with fictional data and simulated actions. The backend, authentication, and external integrations are not implemented; see [Architecture](ARCHITECTURE.md).
 
 ## Project-local WhatsApp access (Pi)
 
@@ -118,20 +118,26 @@ The separate backend is intended for Railway. Private data must require backend 
 
 ## Project commands
 
-| Command                | Purpose                                                          |
-| ---------------------- | ---------------------------------------------------------------- |
-| `bun run setup`        | Prepare a fresh checkout by installing dependencies.             |
-| `bun run update`       | Install dependencies after updating an existing checkout.        |
-| `bun run dev`          | Start the frontend development server.                           |
-| `bun run build`        | Build the frontend into `web/dist`.                              |
-| `bun run preview`      | Serve the built frontend locally.                                |
-| `bun run format`       | Format supported files across the repository with Oxfmt.         |
-| `bun run format:check` | Check repository formatting without writing files.               |
-| `bun run lint`         | Lint source and configuration across the repository with Oxlint. |
-| `bun run typecheck`    | Typecheck the frontend and its Vite configuration.               |
-| `bun run check`        | Run formatting, linting, typechecking, and the frontend build.   |
+The executable file interface is `scripts/setup.sh` (prepare tools and dependencies), `scripts/update.sh` (install after pulling), `scripts/run.sh` (start the app), `scripts/test.sh` (run all suites against a fresh build), and `scripts/check.sh` (full validation, including dependency audit). Each resolves the repository root from its own location. The existing `setup-project` wizards additionally provision host prerequisites.
 
-There are no tests or automated CI gates yet. Do not treat a missing test suite as a passing test suite.
+| Command                | Purpose                                                             |
+| ---------------------- | ------------------------------------------------------------------- |
+| `bun run setup`        | Install locked dependencies, Gitleaks, and Chromium.                |
+| `bun run update`       | Install dependencies after updating an existing checkout.           |
+| `bun run dev`          | Start the frontend development server.                              |
+| `bun run build`        | Build the frontend into `web/dist`.                                 |
+| `bun run preview`      | Serve the built frontend locally.                                   |
+| `bun run format`       | Format supported files across the repository with Oxfmt.            |
+| `bun run format:check` | Check repository formatting without writing files.                  |
+| `bun run lint`         | Lint source and configuration across the repository with Oxlint.    |
+| `bun run typecheck`    | Typecheck the frontend, test configurations, and test bindings.     |
+| `bun run audit`        | Audit locked dependencies, including development tools.             |
+| `bun run test`         | Run fast suites, build the app, and run browser scenarios.          |
+| `bun run check`        | Run formatting, linting, types, dependency audit, tests, and build. |
+
+Vitest, vitest-cucumber, and Playwright-BDD are configured, but no application tests or scenarios exist yet. Empty suites explicitly report a skip rather than verified behavior. PR CI runs validation, dependency auditing, and secret scanning; its `Agent checks` status becomes a merge gate once required on `main`.
+
+For the agent-operated commit/push gates, Gitleaks installation, browser setup, and failure recovery, read `docs/agents/checks.md`.
 
 ## Work through GitHub
 
