@@ -46,7 +46,7 @@ function Verify-Checksum([string]$Archive, [string]$Checksums) {
 
 function Node-Ready {
     if (-not (Get-Command node -ErrorAction SilentlyContinue)) { return $false }
-    & node -e 'const [a,b]=process.versions.node.split(".").map(Number); process.exit(a>22 || (a===22 && b>=12) ? 0 : 1)'
+    & node -e 'const [a,b]=process.versions.node.split(".").map(Number); process.exit((a>22 || (a===22 && b>=12)) && typeof require("node:fs").globSync === "function" ? 0 : 1)'
     return $LASTEXITCODE -eq 0
 }
 
@@ -126,13 +126,12 @@ try {
     # Git Bash aceita caminhos absolutos com barras normais.
     $env:GITLEAKS_BIN = $scanner.Replace('\', '/')
     [Environment]::SetEnvironmentVariable('GITLEAKS_BIN', $env:GITLEAKS_BIN, 'User')
-    $env:PLAYWRIGHT_SKIP_BROWSER_GC = '1'
-    Run bunx @('playwright@1.64.0', 'install', 'chromium')
+    Run bunx @('--no-install', 'playwright', 'install', 'chromium')
 
     Stage 'Verificar o projeto'
-    Run bun @('run', 'check')
+    Run $gitBash @('scripts/check.sh', 'full')
     Write-Host "`nConfiguração concluída. As verificações terminaram sem erros."
-    Write-Host 'O projeto ainda não tem testes automáticos. Estas verificações não comprovam o comportamento da aplicação.'
+    Write-Host 'As suites sem testes indicam uma omissão, não comprovam o comportamento da aplicação.'
     Write-Host 'O assistente acrescentou as ferramentas instaladas ao PATH do seu utilizador.'
     Write-Host 'O GITLEAKS_BIN do seu utilizador aponta para o scanner desta cópia do projeto.'
     Write-Host 'Abra um novo terminal PowerShell nesta pasta e execute: bun run dev'

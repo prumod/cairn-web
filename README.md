@@ -69,7 +69,7 @@ Start the frontend:
 bun run dev
 ```
 
-Open the local URL printed by Vite (normally `http://localhost:5173`). Cairn is an unstyled prototype with fictional data and simulated actions. The backend, authentication, and external integrations are not implemented; see [Architecture](ARCHITECTURE.md).
+Open the local URL printed by Vite (normally `http://localhost:5173`). The current entry point renders an empty page. Product UI, backend, authentication, and application integrations are not implemented; see [Architecture](ARCHITECTURE.md).
 
 ## Project-local WhatsApp access (Pi)
 

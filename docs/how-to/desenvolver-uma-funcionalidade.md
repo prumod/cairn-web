@@ -64,11 +64,17 @@ A aplicação frontend fica em `web/`. Use a pesquisa do editor para encontrar o
 
 Mantenha a alteração limitada ao pedido. Não reformate nem reorganize ficheiros sem relação com a funcionalidade. Se a estrutura existente não for clara, peça orientação antes de introduzir um padrão novo.
 
-## 5. Implemente e defina como testar o comportamento
+## 5. Implemente e teste o comportamento
 
-Implemente os critérios da Issue, um de cada vez. Para cada critério, identifique o resultado observável e defina como o vai testar.
+Implemente os critérios da Issue, um de cada vez. Para cada critério, identifique o resultado observável e acrescente ou atualize um teste automatizado que o verifique.
 
-A branch `main` ainda não tem framework nem testes automatizados. Antes de implementar uma alteração de comportamento, combine com o sénior ou o programador intermédio como será testada automaticamente. Não adicione um framework de testes nem afirme que o comportamento foi testado sem acordo e evidência. Se a Issue incluir a configuração de testes, siga os critérios e instruções dessa Issue.
+O projeto tem três padrões de teste configurados:
+
+- Testes unitários em `tests/unit/**/*.test.ts`.
+- Testes de comportamento em `tests/behavior/**/*.feature`, com um ficheiro `.test.ts` no mesmo caminho. Estes usam `loadFeature` e `describeFeature` de `@amiceli/vitest-cucumber`.
+- Testes de browser em `tests/browser/**/*.feature`, com bindings `*.steps.ts` que usam `createBdd` de `playwright-bdd`.
+
+Ainda não existem testes nem cenários da aplicação. Uma suite vazia indica que não há testes a executar, não que o comportamento foi verificado. Se não souber qual padrão usar ou como criar o primeiro teste, peça orientação ao sénior ou ao programador intermédio.
 
 ## 6. Verifique a funcionalidade no browser
 
@@ -90,7 +96,7 @@ Execute a validação completa antes de abrir a Pull Request:
 bun run check
 ```
 
-Na branch `main` atual, este comando verifica formatação, lint, tipos e build. Ainda não executa testes automatizados. Se falhar, corrija a causa e execute-o novamente. Não descreva estas verificações como prova de que o comportamento funciona.
+Este comando verifica formatação, lint, tipos, testes e build. Se falhar, corrija a causa e execute-o novamente. Se uma suite indicar que não encontrou testes, não a descreva como uma verificação bem-sucedida do comportamento.
 
 Reveja as alterações locais:
 
@@ -123,7 +129,7 @@ No GitHub, abra uma Pull Request da sua branch para `main`. Inclua:
 - Os testes e verificações executados, incluindo a verificação manual no browser.
 - Qualquer verificação que não conseguiu executar.
 
-A branch `main` atual não tem verificações automáticas de Pull Request. Execute `bun run check` localmente e indique o resultado. Se o GitHub mostrar verificações para esta Pull Request, espere que passem. Peça revisão ao sénior ou ao programador intermédio e espere pela aprovação antes do merge. O README indica que o GitHub não exige atualmente uma aprovação para integrar alterações. Neste fluxo, a revisão continua a ser necessária.
+Espere que as verificações automáticas da Pull Request passem. Peça revisão ao sénior ou ao programador intermédio e espere pela aprovação antes do merge. O README indica que o GitHub não exige atualmente uma aprovação para integrar alterações. Neste fluxo, a revisão continua a ser necessária.
 
 Se receber comentários, responda-lhes e faça as alterações na mesma branch. Execute novamente as verificações relevantes e envie as alterações. A Pull Request existente recebe os novos commits.
 

@@ -279,7 +279,7 @@ if ! command -v bun >/dev/null 2>&1 || [[ "$(bun --version)" != 1.3.14 ]]; then
 fi
 [[ "$(bun --version)" == 1.3.14 ]] || fail "Não foi possível ativar o Bun 1.3.14."
 node_ready() {
-  command -v node >/dev/null 2>&1 && node -e 'const [a,b]=process.versions.node.split(".").map(Number); process.exit(a>22 || (a===22 && b>=12) ? 0 : 1)'
+  command -v node >/dev/null 2>&1 && node -e 'const [a,b]=process.versions.node.split(".").map(Number); process.exit((a>22 || (a===22 && b>=12)) && typeof require("node:fs").globSync === "function" ? 0 : 1)'
 }
 if ! node_ready; then
   NODE_VERSION=22.23.2
@@ -309,23 +309,15 @@ run bun install --frozen-lockfile
 
 stage "Preparar Gitleaks e Chromium"
 if [[ ! -x .tools/gitleaks ]] || [[ "$(.tools/gitleaks version)" != 8.30.0 ]]; then
-  case "$NODE_ARCH" in
-    x64) platform=linux_x64; checksum=79a3ab579b53f71efd634f3aaf7e04a0fa0cf206b7ed434638d1547a2470a66e ;;
-    arm64) platform=linux_arm64; checksum=b4cbbb6ddf7d1b2a603088cd03a4e3f7ce48ee7fd449b51f7de6ee2906f5fa2f ;;
-  esac
-  run curl --fail --silent --show-error --location "https://github.com/gitleaks/gitleaks/releases/download/v8.30.0/gitleaks_8.30.0_$platform.tar.gz" --output "$TMP_SETUP/gitleaks.tar.gz"
-  printf '%s  %s\n' "$checksum" "$TMP_SETUP/gitleaks.tar.gz" | sha256sum --check
-  mkdir -p .tools
-  run tar -xzf "$TMP_SETUP/gitleaks.tar.gz" -C .tools gitleaks
-  run .tools/gitleaks version
+  run bash scripts/install-gitleaks.sh
 fi
 # --with-deps instala também as bibliotecas de sistema de que o Chromium precisa.
-run env PLAYWRIGHT_SKIP_BROWSER_GC=1 bunx playwright@1.64.0 install --with-deps chromium
+run bunx --no-install playwright install --with-deps chromium
 
 stage "Verificar o projeto"
 run bun run check
 say "Configuração concluída. As verificações terminaram sem erros."
-say "O projeto ainda não tem testes automáticos. Estas verificações não comprovam o comportamento da aplicação."
+say "As suites sem testes indicam uma omissão, não comprovam o comportamento da aplicação."
 say "Para iniciar o projeto, abra um terminal nesta pasta e execute:"
 printf '  export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"\n  bun run dev\n'
 say "Abra o endereço apresentado pelo Vite, normalmente http://localhost:5173."
