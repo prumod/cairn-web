@@ -1,0 +1,53 @@
+name: Agent checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Agent checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22.23.2"
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: "1.3.14"
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+      - name: Install checksum-verified Gitleaks
+        run: scripts/install-gitleaks.sh
+      - name: Scan introduced history
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+        run: |
+          if [[ -n "$PR_BASE" ]]; then
+            scripts/check-secrets.sh history "$PR_BASE..$PR_HEAD"
+          elif [[ -n "$PUSH_BASE" && ! "$PUSH_BASE" =~ ^0+$ ]]; then
+            scripts/check-secrets.sh history "$PUSH_BASE..$GITHUB_SHA"
+          else
+            scripts/check-secrets.sh history
+          fi
+      - name: Install Chromium and system dependencies
+        run: bunx --no-install playwright install --with-deps chromium
+      - name: Validate code, build, and test suites
+        run: scripts/check.sh full
+      - name: Ensure validation leaves tracked files unchanged
+        run: git diff --exit-code && git diff --cached --exit-code

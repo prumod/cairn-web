@@ -1,0 +1,7 @@
+{
+  "extends": "./web/tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["vitest.config.ts", "playwright.config.ts", "tests/**/*.ts"]
+}
