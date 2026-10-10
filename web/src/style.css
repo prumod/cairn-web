@@ -1,0 +1,140 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #233329;
+  background: #f7f8f4;
+  font-synthesis: none;
+  line-height: 1.6;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.2rem max(1.5rem, calc((100vw - 72rem) / 2));
+  border-bottom: 1px solid #c9d2c5;
+}
+.brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+}
+a {
+  color: #2b513d;
+  text-underline-offset: 0.2em;
+}
+main {
+  max-width: 52rem;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+}
+h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+p {
+  max-width: 68ch;
+}
+form {
+  max-width: 38rem;
+  margin-top: 2rem;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin: 1.25rem 0 0.4rem;
+}
+input {
+  display: block;
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #74836f;
+  border-radius: 0.3rem;
+  background: white;
+  color: inherit;
+  font: inherit;
+}
+input[type="number"] {
+  max-width: 12rem;
+  font-variant-numeric: tabular-nums;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+  padding: 0.6rem 1rem;
+  color: white;
+  background: #2b513d;
+  border: 0;
+  border-radius: 0.3rem;
+}
+form button {
+  margin-top: 1.5rem;
+}
+button:hover {
+  background: #193e2b;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+:focus-visible {
+  outline: 3px solid #86631b;
+  outline-offset: 3px;
+}
+::selection {
+  background: #dce9ce;
+}
+input {
+  caret-color: #2b513d;
+}
+[role="alert"] {
+  color: #9a2525;
+}
+[role="status"] {
+  color: #2b513d;
+  min-height: 1.5rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: 0.8rem 0.5rem;
+  border-bottom: 1px solid #c9d2c5;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  main {
+    margin-top: 2rem;
+  }
+  nav {
+    gap: 1rem;
+  }
+  th,
+  td {
+    padding: 0.6rem 0.3rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  button {
+    transition: background-color 120ms ease-out;
+  }
+}

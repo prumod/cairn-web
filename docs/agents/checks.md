@@ -18,7 +18,11 @@ The full check (push and CI) audits all locked dependencies, including developme
 
 Checks report their failing invocation. Fix the relevant content, restage it for a commit, and execute the gate again. Formatting is validation-only. When a staged snapshot fails but the working tree passes, check for unstaged fixes; the gate validates the commit, not those fixes.
 
-For test boundaries and the distinction between an empty suite and verified behavior, see [Testing](../../TESTING.md). Package scripts and native test configuration define runnable commands and discovered files.
+For test boundaries and coverage limits, see [Testing](../../TESTING.md). Package scripts and native test configuration define runnable commands and discovered files.
+
+## Local application and test process cautions
+
+When Express serves the compiled SPA, use `res.sendFile("index.html", { root: directory })`; avoid passing a path derived from the checkout's absolute location, which can break under hidden `.worktrees` paths. The disposable PostgreSQL process is detached by `pg_ctl`; Playwright's server wrapper needs graceful `SIGTERM` handling and async shutdown, followed by a checked `pg_ctl stop` before removing its temporary directory. Default `SIGKILL` or signal forwarding alone can leave PostgreSQL running.
 
 ## Shared enforcement
 

@@ -1,17 +1,17 @@
 # Testing
 
-## Test boundaries
+## Current test boundaries
 
-The native test configuration and `scripts/run-tests.mjs` define which files are discovered and how each suite runs:
+The native Vitest configuration and `scripts/run-tests.mjs` define discovery and execution:
 
-- Unit tests are direct Vitest tests under `tests/unit/**/*.test.ts`.
-- Behavior features under `tests/behavior/**/*.feature` use a same-path `.test.ts` binding with `loadFeature` and `describeFeature` from `@amiceli/vitest-cucumber`.
-- Browser scenarios under `tests/browser/**/*.feature` use `*.steps.ts` bindings with `createBdd` from `playwright-bdd`. Playwright generates and runs the scenarios against the built app, served on port 4173.
+- Fast Vitest tests are colocated under `{web,backend,shared}/src/**/*.{spec,test}.{ts,tsx}` and under `{web,backend}/tests/{acceptance,typical}/integration/**/*.{spec,test}.{ts,tsx}`.
+- Unit tests belong beside their production module and may import that module's private implementation. Non-unit acceptance/typical integration and e2e tests belong outside `src`.
+- Playwright-BDD executes the approved contracts from root `features/`, with browser bindings under `web/tests/acceptance/e2e/`. The legacy browser feature location is removed.
 
-The test suites are currently empty. Their explicit skip notices mean no behavior was verified; they are not passing evidence. Missing behavior bindings and test generation, configuration, or execution errors are failures once tests exist.
+Current coverage includes one colocated configuration unit test, 18 HTTP/PostgreSQL integration tests, and three root `features/` Playwright-BDD scenarios. The scenarios and controlled identities exercise real app/database behavior but do not validate Google's actual OAuth provider. OAuth and live deployment still require separate manual verification.
 
 ## Running checks
 
-Use the commands in the root `package.json` as the source of truth for available commands. `bun run test:fast` runs the non-browser suites; `bun run test:browser` runs browser scenarios. The full project check includes formatting, linting, typechecking, tests, and build. Agent commit and push gates are described in [Agent Git gates](docs/agents/checks.md).
+Use the commands in the root `package.json` as the source of truth. `bun run test:fast` runs Vitest in an isolated PostgreSQL database; it starts a local PostgreSQL server when available, or accepts `TEST_DATABASE_URL` for a dedicated test server with `CREATEDB`. `bun run test:browser` runs the root Gherkin scenarios against a fixture Express server and disposable PostgreSQL; the fixture's private test identity endpoint exists only in the test server, not production. `bun run check` runs formatting, lint, boundaries, types, audit, tests, and builds. These local checks do not prove OAuth-provider or deployment configuration. Agent gates are described in [Agent Git gates](docs/agents/checks.md).
 
 Tests describe observable behavior and system boundaries. Update relevant tests when those contracts change; test-file discovery and runnable commands remain defined by the package scripts, test configuration, and test runner.

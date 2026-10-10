@@ -1,6 +1,6 @@
 # Cairn Web
 
-Este repositório contém o frontend do Cairn. Siga os passos abaixo para obter o código, configurar o ambiente e executar o projeto. O frontend ainda apresenta uma página vazia. A interface do produto, o backend, a autenticação e as integrações da aplicação ainda não estão implementados.
+Este repositório contém a aplicação web Cairn: frontend React, backend Express, autenticação Google e perfil de empresa partilhado com controlo de acesso. A configuração de OAuth e a publicação ainda não estão concluídas.
 
 Leia este ficheiro antes de começar. Se as instruções de configuração mudarem, atualize este README no mesmo pull request.
 
@@ -8,7 +8,7 @@ Leia este ficheiro antes de começar. Se as instruções de configuração mudar
 
 Precisa de Git para clonar o repositório. Confirme a instalação com `git --version`. Se ainda não tiver Git, pode descarregar o ZIP na secção seguinte. Os programadores que precisem de enviar alterações também precisam de uma conta GitHub e de aceitar o convite para o repositório.
 
-O projeto usa [Bun](https://bun.sh/docs/installation) 1.3.14. O assistente instala esta versão. Se executar o Vite com Node.js, incluindo compilações na Vercel, precisa de Node.js 22.12 ou superior. Para configurar tudo manualmente, consulte [Configurar o projeto](#configurar-o-projeto).
+O projeto usa [Bun](https://bun.sh/docs/installation) 1.3.14. O assistente instala esta versão. Se executar o Vite com Node.js, precisa de Node.js 22.12 ou superior. Para configurar tudo manualmente, consulte [Configurar o projeto](#configurar-o-projeto).
 
 ## Obter o código
 
@@ -53,7 +53,7 @@ bun run setup
 
 `bun run setup` instala as dependências a partir do ficheiro de lock. Confirme que o terminal reconhece Bun 1.3.14 com `bun --version`. Depois de atualizar o repositório, `bun run update` instala as dependências desse ficheiro. Altere `bun.lock` apenas quando mudar intencionalmente as dependências.
 
-Não precisa de criar um ficheiro `.env` nem de configurar Discord, WhatsApp ou serviços de publicação para executar o frontend.
+Para executar apenas a interface em desenvolvimento não precisa de configurar autenticação. Para executar a aplicação completa com backend e PostgreSQL, consulte [Executar o perfil da empresa](docs/how-to/run-company-profile.md). Não configure credenciais reais em ficheiros versionados.
 
 ## Como executar o projeto
 
@@ -67,13 +67,7 @@ export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"
 
 No Windows, abra um novo terminal PowerShell na raiz do repositório para carregar o `PATH` atualizado pelo assistente.
 
-Inicie o frontend:
-
-```sh
-bun run dev
-```
-
-Abra o endereço que o Vite apresenta no terminal. Normalmente, é `http://localhost:5173`. A página fica vazia enquanto a interface do produto não estiver implementada. Para parar o servidor, prima `Ctrl+C` no terminal.
+Para trabalhar apenas na interface, inicie o Vite com `bun run dev` e abra `http://localhost:5173`. As chamadas `/api` são encaminhadas para `http://127.0.0.1:3000`; sem backend e configuração válida, a aplicação completa não funciona. Para executar a aplicação integrada, consulte [Executar o perfil da empresa](docs/how-to/run-company-profile.md).
 
 ## Como contribuir
 
@@ -129,40 +123,33 @@ Se não conseguir aceder ao repositório ou se alguma instrução não funcionar
 
 Os scripts executáveis estão em `scripts/`. Cada script encontra a raiz do repositório a partir da sua localização. `scripts/setup.sh` prepara ferramentas e dependências. `scripts/update.sh` instala dependências depois de atualizar o repositório. `scripts/run.sh` inicia a aplicação. `scripts/test.sh` executa os conjuntos de testes contra uma compilação nova. `scripts/check.sh` faz a validação completa, incluindo a auditoria de dependências. Os assistentes `setup-project` também instalam ferramentas do sistema operativo.
 
-| Comando                | Utilização                                                                                                               |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `bun run setup`        | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                                             |
-| `bun run update`       | Instala as dependências depois de atualizar uma cópia existente.                                                         |
-| `bun run dev`          | Inicia o servidor de desenvolvimento do frontend.                                                                        |
-| `bun run build`        | Cria a versão de produção do frontend em `web/dist`.                                                                     |
-| `bun run preview`      | Serve localmente a versão compilada.                                                                                     |
-| `bun run format`       | Formata os ficheiros suportados em todo o repositório com Oxfmt.                                                         |
-| `bun run format:check` | Verifica a formatação sem alterar ficheiros.                                                                             |
-| `bun run lint`         | Analisa o código-fonte e a configuração do repositório com Oxlint.                                                       |
-| `bun run typecheck`    | Verifica os tipos do frontend, das configurações de teste e das ligações dos testes.                                     |
-| `bun run audit`        | Audita as dependências bloqueadas, incluindo as ferramentas de desenvolvimento.                                          |
-| `bun run test`         | Executa os testes rápidos, compila a aplicação e executa os cenários no navegador.                                       |
-| `bun run check`        | Executa a formatação, a análise estática, a verificação de tipos, a auditoria de dependências, os testes e a compilação. |
+| Comando                   | Utilização                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `bun run setup`           | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                                             |
+| `bun run update`          | Instala as dependências depois de atualizar uma cópia existente.                                                         |
+| `bun run dev`             | Inicia o Vite; encaminha `/api` para o backend local na porta 3000.                                                      |
+| `bun run dev:backend`     | Inicia o backend Express em modo de desenvolvimento (requer ambiente e PostgreSQL).                                      |
+| `bun run build`           | Compila o frontend para `web/dist` e o backend para `backend/dist`.                                                      |
+| `bun run start`           | Inicia o backend compilado, servindo API e frontend na mesma origem.                                                     |
+| `bun run db:migrate`      | Aplica as migrações SQL committed ao banco configurado.                                                                  |
+| `bun run preview`         | Serve apenas os assets Vite; não substitui o backend integrado.                                                          |
+| `bun run format`          | Formata os ficheiros suportados em todo o repositório com Oxfmt.                                                         |
+| `bun run format:check`    | Verifica a formatação sem alterar ficheiros.                                                                             |
+| `bun run lint`            | Analisa o código-fonte e a configuração do repositório com Oxlint.                                                       |
+| `bun run lint:boundaries` | Verifica as fronteiras de módulos e dependências.                                                                        |
+| `bun run test:boundaries` | Prova que as regras de fronteira aceitam e rejeitam exemplos esperados.                                                  |
+| `bun run typecheck`       | Verifica os tipos do frontend, das configurações de teste e das ligações dos testes.                                     |
+| `bun run audit`           | Audita as dependências bloqueadas, incluindo as ferramentas de desenvolvimento.                                          |
+| `bun run test`            | Executa os testes rápidos, compila a aplicação e executa os cenários no navegador.                                       |
+| `bun run check`           | Executa a formatação, a análise estática, a verificação de tipos, a auditoria de dependências, os testes e a compilação. |
 
-O Vitest, o vitest-cucumber e o Playwright-BDD estão configurados, mas ainda não existem testes da aplicação nem cenários. Os conjuntos de testes vazios são assinalados como ignorados. Isso não comprova o comportamento da aplicação. A CI dos pull requests executa as verificações, a auditoria de dependências e a procura de segredos. O estado `Agent checks` passa a bloquear o merge quando for obrigatório na branch `main`.
+Consulte [Estrutura do projeto](docs/reference/project-structure.md) para as regras de módulos e testes. O conjunto atual inclui testes de configuração, integração HTTP/PostgreSQL e cenários Playwright-BDD. `bun run test:fast` requer PostgreSQL local instalado ou `TEST_DATABASE_URL` para um servidor de teste dedicado com permissão `CREATEDB`. A CI de pull requests usa PostgreSQL 18.6 efémero. `Agent checks` é obrigatório na proteção de `main`; a proteção exige também zero aprovações de revisão.
 
 Para saber como funcionam as verificações de commit e push, a instalação do Gitleaks e do navegador, e a recuperação de falhas, consulte [Verificações dos agentes](docs/agents/checks.md).
 
 ## Publicação
 
-O frontend está preparado para publicação na Vercel. A branch de produção é `main` e a Vercel deve publicar automaticamente as alterações. Configure o projeto Vercel com estes valores:
-
-| Opção                 | Valor                           |
-| --------------------- | ------------------------------- |
-| Diretório raiz        | Raiz do repositório             |
-| Comando de instalação | `bun install --frozen-lockfile` |
-| Comando de compilação | `bun run build`                 |
-| Diretório de saída    | `web/dist`                      |
-| Preset de framework   | Vite                            |
-
-A ligação do projeto à Vercel e as publicações ainda não foram configuradas.
-
-O backend separado está previsto para a Railway. Os dados privados têm de exigir autenticação no backend. O frontend atual não controla o acesso.
+A aplicação é executável localmente, mas o Render e Neon ainda não estão configurados nem verificados. O objetivo aprovado continua a ser Render Free (React e Express sob uma origem) e Neon Free (PostgreSQL), sem despesa. Não há `render.yaml` nem pipeline de publicação. Consulte [Arquitetura](ARCHITECTURE.md) e [Executar o perfil da empresa](docs/how-to/run-company-profile.md) para limites entre estado implementado e deployment.
 
 ## Integrações opcionais com Pi
 
@@ -199,7 +186,7 @@ pi
 
 ## Origem e arquitetura
 
-O frontend está em `web/`. É um workspace Bun que usa Vite, React e o compilador React experimental baseado em Oxc. O Oxlint e o Oxfmt são executados a partir da raiz do repositório sobre o projeto inteiro. O backend é separado e não é criado por este repositório. Consulte [Arquitetura](ARCHITECTURE.md) para mais informação.
+O frontend React/Vite está em `web/`; o backend Node/Express está em `backend/` e serve o frontend compilado e a API na mesma origem. A autenticação Better Auth/Google, PostgreSQL via Drizzle e migrações SQL estão implementados. Oxlint e Oxfmt são executados a partir da raiz. Consulte [Arquitetura](ARCHITECTURE.md) para comportamento atual e limites.
 
 A base foi gerada com `create-better-agent-stack@2.0.0`, através da seleção de funcionalidades em vez de um preset:
 
