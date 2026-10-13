@@ -1,6 +1,6 @@
 # Cairn Web
 
-Este repositório contém a aplicação web Cairn: frontend React, backend Express, autenticação Google e perfil de empresa partilhado com controlo de acesso. A configuração de OAuth e a publicação ainda não estão concluídas.
+Este repositório contém a aplicação web Cairn: frontend React, backend Express, autenticação Google e perfil de empresa partilhado com controlo de acesso. Existe um deployment de teste com verificações históricas de OAuth; a adoção dos Blueprints e a publicação de produção ainda não estão concluídas.
 
 Leia este ficheiro antes de começar. Se as instruções de configuração mudarem, atualize este README no mesmo pull request.
 
@@ -123,25 +123,26 @@ Se não conseguir aceder ao repositório ou se alguma instrução não funcionar
 
 Os scripts executáveis estão em `scripts/`. Cada script encontra a raiz do repositório a partir da sua localização. `scripts/setup.sh` prepara ferramentas e dependências. `scripts/update.sh` instala dependências depois de atualizar o repositório. `scripts/run.sh` inicia a aplicação. `scripts/test.sh` executa os conjuntos de testes contra uma compilação nova. `scripts/check.sh` faz a validação completa, incluindo a auditoria de dependências. Os assistentes `setup-project` também instalam ferramentas do sistema operativo.
 
-| Comando                   | Utilização                                                                                                               |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `bun run setup`           | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                                             |
-| `bun run update`          | Instala as dependências depois de atualizar uma cópia existente.                                                         |
-| `bun run dev`             | Inicia o Vite; encaminha `/api` para o backend local na porta 3000.                                                      |
-| `bun run dev:backend`     | Inicia o backend Express em modo de desenvolvimento (requer ambiente e PostgreSQL).                                      |
-| `bun run build`           | Compila o frontend para `web/dist` e o backend para `backend/dist`.                                                      |
-| `bun run start`           | Inicia o backend compilado, servindo API e frontend na mesma origem.                                                     |
-| `bun run db:migrate`      | Aplica as migrações SQL committed ao banco configurado.                                                                  |
-| `bun run preview`         | Serve apenas os assets Vite; não substitui o backend integrado.                                                          |
-| `bun run format`          | Formata os ficheiros suportados em todo o repositório com Oxfmt.                                                         |
-| `bun run format:check`    | Verifica a formatação sem alterar ficheiros.                                                                             |
-| `bun run lint`            | Analisa o código-fonte e a configuração do repositório com Oxlint.                                                       |
-| `bun run lint:boundaries` | Verifica as fronteiras de módulos e dependências.                                                                        |
-| `bun run test:boundaries` | Prova que as regras de fronteira aceitam e rejeitam exemplos esperados.                                                  |
-| `bun run typecheck`       | Verifica os tipos do frontend, das configurações de teste e das ligações dos testes.                                     |
-| `bun run audit`           | Audita as dependências bloqueadas, incluindo as ferramentas de desenvolvimento.                                          |
-| `bun run test`            | Executa os testes rápidos, compila a aplicação e executa os cenários no navegador.                                       |
-| `bun run check`           | Executa a formatação, a análise estática, a verificação de tipos, a auditoria de dependências, os testes e a compilação. |
+| Comando                    | Utilização                                                                                                                                                           |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run setup`            | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                                                                                         |
+| `bun run update`           | Instala as dependências depois de atualizar uma cópia existente.                                                                                                     |
+| `bun run dev`              | Inicia o Vite; encaminha `/api` para o backend local na porta 3000.                                                                                                  |
+| `bun run dev:backend`      | Inicia o backend Express em modo de desenvolvimento (requer ambiente e PostgreSQL).                                                                                  |
+| `bun run build`            | Compila o frontend para `web/dist` e o backend para `backend/dist`.                                                                                                  |
+| `bun run start`            | Inicia o backend compilado, servindo API e frontend na mesma origem.                                                                                                 |
+| `bun run db:migrate`       | Aplica as migrações SQL committed ao banco configurado.                                                                                                              |
+| `bun run preview`          | Serve apenas os assets Vite; não substitui o backend integrado.                                                                                                      |
+| `bun run format`           | Formata os ficheiros suportados em todo o repositório com Oxfmt.                                                                                                     |
+| `bun run format:check`     | Verifica a formatação sem alterar ficheiros.                                                                                                                         |
+| `bun run lint`             | Analisa o código-fonte e a configuração do repositório com Oxlint.                                                                                                   |
+| `bun run lint:boundaries`  | Verifica as fronteiras de módulos e dependências.                                                                                                                    |
+| `bun run test:boundaries`  | Prova que as regras de fronteira aceitam e rejeitam exemplos esperados.                                                                                              |
+| `bun run check:blueprints` | Analisa o Blueprint de teste e o template de produção e verifica a política local, sem contactar o Render.                                                           |
+| `bun run typecheck`        | Verifica os tipos do frontend, das configurações de teste e das ligações dos testes.                                                                                 |
+| `bun run audit`            | Audita as dependências bloqueadas, incluindo as ferramentas de desenvolvimento.                                                                                      |
+| `bun run test`             | Executa os testes rápidos, compila a aplicação e executa os cenários no navegador.                                                                                   |
+| `bun run check`            | Executa a formatação, a análise estática, as verificações de fronteiras e Blueprints, a verificação de tipos, a auditoria de dependências, os testes e a compilação. |
 
 Consulte [Estrutura do projeto](docs/reference/project-structure.md) para as regras de módulos e testes. O conjunto atual inclui testes de configuração, integração HTTP/PostgreSQL e cenários Playwright-BDD. `bun run test:fast` requer PostgreSQL local instalado ou `TEST_DATABASE_URL` para um servidor de teste dedicado com permissão `CREATEDB`. A CI de pull requests usa PostgreSQL 18.6 efémero. `Agent checks` é obrigatório na proteção de `main`; a proteção exige também zero aprovações de revisão.
 
@@ -149,7 +150,11 @@ Para saber como funcionam as verificações de commit e push, a instalação do 
 
 ## Publicação
 
-A aplicação é executável localmente, mas o Render e Neon ainda não estão configurados nem verificados. O objetivo aprovado continua a ser Render Free (React e Express sob uma origem) e Neon Free (PostgreSQL), sem despesa. Não há `render.yaml` nem pipeline de publicação. Consulte [Arquitetura](ARCHITECTURE.md) e [Executar o perfil da empresa](docs/how-to/run-company-profile.md) para limites entre estado implementado e deployment.
+`render.yaml` tem uma definição de teste que visa o nome de serviço `cairn-testing`, na branch `feat/63-company-profile`, com a origem existente `https://cairn-testing.onrender.com`. A adoção do serviço pelo Blueprint ainda não foi verificada. `deploy/render.production.template.yaml` descreve separadamente o futuro serviço `cairn-production`, na branch `main`, mas mantém a decisão de plano em aberto: `plan: __APPROVED_PRODUCTION_PLAN_REQUIRED__`. Não submeta este template até aprovar um plano não-Free e validar o ficheiro contra o Render. Nenhum plano pago está aprovado. A produção não está aprovada nem provisionada; o ficheiro não autoriza operações no Render. O teste usa Free em Frankfurt; ambos os ficheiros excluem bases de dados Render e previews.
+
+O deployment de teste da revisão `0e3dd2d` teve verificações históricas de prontidão, OAuth Google e persistência do perfil após recarregar. Isto não prova o estado atual, a adoção de Blueprints ou a prontidão de produção. Mantenha bases de dados PostgreSQL, clientes OAuth e segredos separados entre local, teste e produção.
+
+Consulte [Gerir os Blueprints Render](docs/how-to/manage-render-blueprints.md) antes de qualquer operação autorizada. O YAML de teste usa `autoDeployTrigger: checksPass`, e o workflow `Agent checks` foi configurado para executar nos pushes a `feat/63-company-profile`. A definição live **Auto-Deploy: After CI Checks Pass** foi confirmada no serviço existente depois de recarregar a página. Isto confirma a definição, mas não prova ainda um deployment após a CI; verifique a revisão após a publicação do workflow. A produção mantém o deploy automático desativado. **Auto Sync** é separado e não foi alterado; confirme-o independentemente antes de qualquer adoção de Blueprint autorizada. O plano Free tem cold starts e limites partilhados; não garante ausência de despesa e o Render desaconselha-o para produção. Não altere faturação nem provisione produção sem autorização. Consulte [Arquitetura](ARCHITECTURE.md) e [Executar o perfil da empresa](docs/how-to/run-company-profile.md) para os restantes limites.
 
 ## Integrações opcionais com Pi
 

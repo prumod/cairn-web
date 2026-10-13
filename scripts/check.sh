@@ -24,6 +24,7 @@ run bun run format:check
 run bun run lint
 run bun run lint:boundaries
 run bun run test:boundaries
+run bun run check:blueprints
 run bun run typecheck
 if [[ "$scope" == full ]]; then
   # Advisory data requires the network; keep it out of the fast commit gate.

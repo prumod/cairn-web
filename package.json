@@ -20,6 +20,7 @@
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
     "lint:boundaries": "node scripts/check-boundaries.mjs",
+    "check:blueprints": "bun run scripts/check-blueprints.mjs && bun test scripts/check-blueprints.test.mjs",
     "test:boundaries": "node scripts/prove-boundaries.mjs",
     "audit": "bun audit",
     "test": "bash scripts/test.sh",
