@@ -40,6 +40,8 @@ const compactEuro = new Intl.NumberFormat("pt-PT", {
 // labels get fixed offsets (relative to the symbol); a leader line links far-off ones.
 const crowdedRingLabels: Record<string, { dx: number; dy: number }> = {
   "Marinha Grande": { dx: -12, dy: 62 },
+  // Leiria's ring is half covered by Marinha Grande's on the west: put its count lower right.
+  Leiria: { dx: 18, dy: 26 },
 };
 const crowdedTenderLabels: Record<
   string,
@@ -53,7 +55,11 @@ const ringLabel = (name: string) => crowdedRingLabels[name];
 function ringLabelProps(name: string, x: number, y: number, r: number) {
   const custom = crowdedRingLabels[name];
   if (custom !== undefined)
-    return { x: x + custom.dx, y: y + custom.dy, textAnchor: "end" as const };
+    return {
+      x: x + custom.dx,
+      y: y + custom.dy,
+      textAnchor: custom.dx > 0 ? ("start" as const) : ("end" as const),
+    };
   // Count sits just left of the ring on the western side, right of it on the eastern side.
   return x < mapSize / 2
     ? { x: x - r - 4, y: y + 4, textAnchor: "end" as const }
@@ -152,7 +158,7 @@ export function VariantVizSymbols({ db, apply }: VariantProps) {
                       r={ringRadius(summary.contracts)}
                       strokeWidth={focus ? 4 : 2}
                     />
-                    {ringLabel(b.name) !== undefined && (
+                    {(ringLabel(b.name)?.dy ?? 0) > 40 && (
                       <line
                         className="map-leader"
                         x1={x}
