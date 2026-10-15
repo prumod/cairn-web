@@ -1,0 +1,111 @@
+/* PROTOTYPE (throwaway, issue #64): layout only — no colours, fonts or visual identity. */
+
+.proto-root {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  height: 100vh;
+}
+
+.proto-main,
+.proto-state {
+  overflow: auto;
+  padding: 8px 8px 72px;
+}
+
+.proto-state {
+  border-left: 1px solid;
+}
+
+.split {
+  display: grid;
+  gap: 8px;
+  height: calc(100vh - 88px);
+}
+
+.split-a {
+  grid-template-columns: 360px 1fr;
+}
+
+.split-b {
+  grid-template-columns: 440px 1fr;
+}
+
+.split-c,
+.split-e {
+  grid-template-columns: 1fr 1fr;
+}
+
+.split-d {
+  grid-template-columns: 320px 1fr 300px;
+}
+
+.col {
+  overflow: auto;
+  border: 1px solid;
+  padding: 8px;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-log {
+  flex: 1 0 240px;
+  overflow: auto;
+  padding-left: 20px;
+}
+
+.wrap {
+  white-space: pre-wrap;
+  font: inherit;
+  margin: 4px 0;
+}
+
+.chips button {
+  margin: 0 4px 4px 0;
+}
+
+.map-wrap {
+  position: relative;
+  width: max-content;
+}
+
+.map-wrap > p {
+  width: 420px;
+}
+
+.map-popover {
+  position: absolute;
+  width: 300px;
+  z-index: 1;
+}
+
+.inline-ask,
+.card {
+  border: 1px solid;
+  padding: 6px;
+  margin: 4px 0;
+  background: Canvas;
+}
+
+.command-bar {
+  width: min(640px, 90vw);
+  margin-top: 10vh;
+}
+
+.switcher {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 12px;
+  border: 2px solid;
+  border-radius: 999px;
+  background: Canvas;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 35%);
+  z-index: 10;
+}
