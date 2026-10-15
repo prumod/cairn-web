@@ -42,6 +42,8 @@ const crowdedRingLabels: Record<string, { dx: number; dy: number }> = {
   "Marinha Grande": { dx: -12, dy: 62 },
   // Leiria's ring is half covered by Marinha Grande's on the west: put its count lower right.
   Leiria: { dx: 18, dy: 26 },
+  // Batalha's count goes east so Marinha Grande's leader line does not cross it.
+  Batalha: { dx: 24, dy: 6 },
 };
 const crowdedTenderLabels: Record<
   string,
