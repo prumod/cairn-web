@@ -870,3 +870,81 @@ body {
   overflow: auto;
   transform: translateX(-50%);
 }
+
+/* Three-column chatbot layouts (F, G, H) */
+.chat-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) 340px;
+  gap: 16px;
+  height: calc(100vh - 128px);
+}
+.side {
+  min-height: 0;
+}
+.side h2 {
+  margin-top: 0;
+}
+.side-list {
+  padding: 0;
+  margin: 0 0 8px;
+  list-style: none;
+}
+.proto-root .side-list button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  margin-bottom: 6px;
+  text-align: left;
+}
+.chat-center {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 16px;
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.chat-center .chat-log {
+  flex: 1;
+  min-height: 0;
+}
+.chat-input {
+  margin-top: 8px;
+}
+.minis {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0;
+}
+.proto-root .mini {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  background: var(--panel);
+}
+.applied {
+  padding-left: 18px;
+  font-size: 13px;
+}
+
+.side .map-wrap {
+  width: 100%;
+}
+.side .map-wrap svg {
+  width: 100%;
+  height: auto;
+}
+.side .map-wrap > p {
+  width: auto;
+}
+.proto-root .deadline-list button {
+  padding: 0;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.proto-root .deadline-list li {
+  padding: 8px 0;
+}

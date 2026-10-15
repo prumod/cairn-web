@@ -6,6 +6,9 @@ import "./prototype.css";
 import { type Change, type ChangeSource, createInitialDb, dbReducer } from "./data";
 import { StatePanel, type VariantInfo, VariantSwitcher } from "./shared";
 import { VariantAgent } from "./VariantAgent";
+import { VariantChatBoard } from "./VariantChatBoard";
+import { VariantChatNav } from "./VariantChatNav";
+import { VariantChatReview } from "./VariantChatReview";
 import { VariantChatCanvas } from "./VariantChatCanvas";
 import { VariantCommandBar } from "./VariantCommandBar";
 import { VariantContextual } from "./VariantContextual";
@@ -17,6 +20,9 @@ const variants: (VariantInfo & { Component: typeof VariantChatCanvas })[] = [
   { key: "C", name: "Barra de comandos", Component: VariantCommandBar },
   { key: "D", name: "Agente com plano", Component: VariantAgent },
   { key: "E", name: "Sugestões proativas", Component: VariantInbox },
+  { key: "F", name: "Chatbot central · navegação + dossier", Component: VariantChatNav },
+  { key: "G", name: "Chatbot central · pedidos + revisão", Component: VariantChatReview },
+  { key: "H", name: "Chatbot central · pipeline + mapa", Component: VariantChatBoard },
 ];
 
 function variantFromUrl(): string {
