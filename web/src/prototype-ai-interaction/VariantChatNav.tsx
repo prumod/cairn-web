@@ -6,6 +6,7 @@ import { procedureById, statusLabel, visibleProcedures } from "./data";
 import { ChatColumn, chatPrompts, useChat } from "./chat";
 import { Checklist, ProcedureFacts, StatusCell, StatusPill, type VariantProps } from "./shared";
 import { participationOf } from "./data";
+import { TermHint } from "./terms";
 
 export function VariantChatNav({ db, apply }: VariantProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -16,7 +17,10 @@ export function VariantChatNav({ db, apply }: VariantProps) {
   return (
     <div className="chat-layout">
       <aside className="col side" aria-label="Obras">
-        <h2>Obras</h2>
+        <h2>
+          Obras
+          <TermHint area="listing" />
+        </h2>
         <ul className="side-list">
           {visibleProcedures(db).map((p) => (
             <li key={p.id}>

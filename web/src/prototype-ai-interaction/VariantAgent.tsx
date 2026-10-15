@@ -13,6 +13,7 @@ import {
   type VariantProps,
 } from "./shared";
 import { type AgentPlan, type StepResult, planFor } from "./simulatedAi";
+import { TermHint } from "./terms";
 
 type StepStatus = "pendente" | "aguarda aprovação" | "feito" | "ignorado";
 type StepState = { status: StepStatus; result?: StepResult };
@@ -114,7 +115,10 @@ export function VariantAgent({ db, apply }: VariantProps) {
 
         {plan !== null && (
           <>
-            <h2>Plano</h2>
+            <h2>
+              Plano
+              <TermHint area="decision" />
+            </h2>
             <p>{plan.summary}</p>
             <ol>
               {plan.steps.map((step, index) => (

@@ -13,7 +13,7 @@ import {
   procedureById,
 } from "./data";
 import { PromptChips, ProposedChanges, StatusPill } from "./shared";
-import { interpret } from "./simulatedAi";
+import { type AiReply, interpret } from "./simulatedAi";
 
 export type ChatMessage = {
   id: number;
@@ -34,11 +34,12 @@ export function useChat(
   db: Db,
   apply: (changes: Change[], source: ChangeSource) => void,
   contextId: string | null,
+  interpretFn: (db: Db, prompt: string, contextId: string | null) => AiReply = interpret,
 ) {
   const [messages, setMessages] = useState<ChatMessage[]>([intro]);
 
   const send = (prompt: string) => {
-    const reply = interpret(db, prompt, contextId);
+    const reply = interpretFn(db, prompt, contextId);
     setMessages((current) => [
       // A newer request supersedes an unanswered proposal.
       ...current.map((m) =>
@@ -105,6 +106,10 @@ export function ProcedureMini({
   );
 }
 
+// Focus ids can also name places, companies or materials (visualisation variants).
+const minisOf = (db: Db, message: ChatMessage) =>
+  message.focusIds.filter((id) => db.procedures.some((p) => p.id === id));
+
 export function ChatColumn({
   db,
   chat,
@@ -141,9 +146,9 @@ export function ChatColumn({
           <li key={m.id}>
             <strong>{m.role === "pessoa" ? "Você" : "IA"}</strong>
             <pre className="wrap">{m.text}</pre>
-            {m.focusIds.length > 0 && m.focusIds.length <= 5 && (
+            {minisOf(db, m).length > 0 && minisOf(db, m).length <= 5 && (
               <div className="minis">
-                {m.focusIds.map((id) => (
+                {minisOf(db, m).map((id) => (
                   <ProcedureMini
                     key={id}
                     db={db}
@@ -199,7 +204,7 @@ export function ChatColumn({
               }
             }}
           />
-          <button type="submit">Enviar</button>
+          <button type="submit">Enviar ➤</button>
         </div>
       </form>
     </section>

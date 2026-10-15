@@ -11,6 +11,7 @@ import {
   visibleProcedures,
 } from "./data";
 import { ChatColumn, chatPrompts, useChat } from "./chat";
+import { TermHint } from "./terms";
 import { OpportunityMap, StatusPill, type VariantProps } from "./shared";
 
 const columns: ParticipationStatus[] = ["nova", "em-analise", "em-preparacao", "nao-concorrer"];
@@ -24,7 +25,11 @@ export function VariantChatBoard({ db, apply }: VariantProps) {
   return (
     <div className="chat-layout">
       <aside className="col side" aria-label="Pipeline">
-        <h2>Pipeline</h2>
+        <h2>
+          Pipeline
+          <TermHint area="states" />
+          <TermHint area="listing" />
+        </h2>
         {columns.map((status) => {
           const items = shown.filter((p) => participationOf(db, p.id).status === status);
           return (
@@ -75,7 +80,10 @@ export function VariantChatBoard({ db, apply }: VariantProps) {
           highlightIds={chat.focusIds}
           onSelect={setSelectedId}
         />
-        <h3>Prazos</h3>
+        <h3>
+          Prazos
+          <TermHint area="deadline" />
+        </h3>
         <ol className="deadline-list">
           {shown.map((p) => (
             <li key={p.id}>

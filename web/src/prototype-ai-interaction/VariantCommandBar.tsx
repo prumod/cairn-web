@@ -14,6 +14,7 @@ import {
 import { type PageId, type PageMatch, appPages, rankPages } from "./pages";
 import { Checklist, OpportunityMap, ProcedureFacts, StatusCell, type VariantProps } from "./shared";
 import { type AiReply, interpret } from "./simulatedAi";
+import { TermHint } from "./terms";
 
 const examples = [
   "onde marco os documentos?",
@@ -99,7 +100,10 @@ export function VariantCommandBar({ db, apply }: VariantProps) {
       case "prazos":
         return (
           <>
-            <h2>Prazos de submissão</h2>
+            <h2>
+              Prazos de submissão
+              <TermHint area="deadline" />
+            </h2>
             <ol className="deadline-list">
               {visibleProcedures(db).map((p) => (
                 <li key={p.id}>
@@ -129,7 +133,10 @@ export function VariantCommandBar({ db, apply }: VariantProps) {
       case "perfil":
         return (
           <>
-            <h2>Perfil da empresa</h2>
+            <h2>
+              Perfil da empresa
+              <TermHint area="profile" />
+            </h2>
             <p>
               {db.company.name} — {db.company.place}
               <br />
@@ -183,7 +190,7 @@ export function VariantCommandBar({ db, apply }: VariantProps) {
 
   return (
     <>
-      <nav className="page-nav" aria-label="Páginas">
+      <nav className="page-nav tabs" aria-label="Páginas">
         {appPages.map((p) => (
           <button
             key={p.id}
@@ -214,8 +221,14 @@ export function VariantCommandBar({ db, apply }: VariantProps) {
                 <caption>Obras no raio de {db.company.radiusKm} km</caption>
                 <thead>
                   <tr>
-                    <th scope="col">Obra</th>
-                    <th scope="col">Prazo</th>
+                    <th scope="col">
+                      Obra
+                      <TermHint area="listing" />
+                    </th>
+                    <th scope="col">
+                      Prazo
+                      <TermHint area="deadline" />
+                    </th>
                     <th scope="col">Estado</th>
                   </tr>
                 </thead>
@@ -309,7 +322,10 @@ export function VariantCommandBar({ db, apply }: VariantProps) {
 
           {preview !== null && (
             <section aria-live="polite">
-              <h2>Interpretação</h2>
+              <h2>
+                Interpretação
+                <TermHint area="decision" />
+              </h2>
               {preview.changes.length > 0 ? (
                 <>
                   <p>Ao premir Enter, a IA vai:</p>

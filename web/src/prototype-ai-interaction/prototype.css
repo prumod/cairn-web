@@ -1,13 +1,14 @@
 /* PROTOTYPE (throwaway, issue #64): visual layer for comparing the AI interaction variants. */
 
 .proto-root {
-  --bg: #f4f5f9;
+  --bg: #dce3ed;
   --panel: #ffffff;
-  --ink: #1b1f2a;
-  --muted: #667085;
-  --line: #e3e6ee;
-  --accent: #4f46e5;
-  --accent-soft: #eef0ff;
+  --ink: #172235;
+  --muted: #46546a;
+  --line: #aebaca;
+  --control-line: #718096;
+  --accent: #3730a3;
+  --accent-soft: #e0e7ff;
   --ok: #067647;
   --ok-soft: #e6f6ee;
   --warn-soft: #fff4d6;
@@ -117,7 +118,7 @@
   padding: 5px 12px;
   color: var(--ink);
   background: var(--panel);
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   border-radius: 8px;
   cursor: pointer;
   transition:
@@ -133,10 +134,15 @@
   background: var(--accent);
   border-color: var(--accent);
 }
+.proto-root button[aria-pressed="true"] small {
+  color: #fff;
+}
 .proto-root button:focus-visible,
 .proto-root input:focus-visible,
-.proto-root textarea:focus-visible {
-  outline: 2px solid var(--accent);
+.proto-root textarea:focus-visible,
+.proto-root select:focus-visible,
+.proto-root [tabindex="0"]:focus-visible {
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 .proto-root button[type="submit"] {
@@ -149,14 +155,32 @@
 }
 
 .proto-root input:not([type="checkbox"]),
-.proto-root textarea {
+.proto-root textarea,
+.proto-root select {
   width: 100%;
   font: inherit;
   padding: 8px 10px;
   color: var(--ink);
   background: var(--panel);
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   border-radius: 8px;
+}
+.proto-root select {
+  width: auto;
+  padding: 5px 8px;
+}
+.proto-root textarea::placeholder,
+.proto-root input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+.proto-root ::selection {
+  color: #fff;
+  background: var(--accent);
+}
+.proto-root input,
+.proto-root textarea {
+  caret-color: var(--accent);
 }
 .proto-root input[type="checkbox"] {
   accent-color: var(--accent);
@@ -171,8 +195,8 @@
   padding: 3px 10px;
   font-size: 12px;
   color: var(--accent);
-  background: var(--accent-soft);
-  border-color: transparent;
+  background: var(--panel);
+  border-color: var(--control-line);
   border-radius: 999px;
 }
 
@@ -450,16 +474,7 @@ body {
   margin: 0;
 }
 
-/* ---- Refinement pass ---- */
-.proto-root {
-  --bg: #eef0f6;
-  --accent: #5b4bf0;
-  --accent-soft: #eeecff;
-  --shadow: 0 1px 2px rgb(16 24 40 / 6%), 0 4px 16px rgb(16 24 40 / 5%);
-  background:
-    radial-gradient(900px 400px at 10% -10%, #e4e1ff 0%, transparent 60%),
-    radial-gradient(700px 360px at 100% 0%, #dff3ff 0%, transparent 55%), var(--bg);
-}
+/* Shared visual hierarchy: workspace, panels, controls and selected states. */
 
 .brand {
   display: flex;
@@ -477,17 +492,16 @@ body {
 .brand-mark {
   width: 22px;
   height: 22px;
-  background: linear-gradient(135deg, #7c6cff, #3ac4ff);
+  background: var(--accent);
   border-radius: 7px 7px 7px 2px;
-  box-shadow: 0 2px 8px rgb(91 75 240 / 40%);
 }
 
 .split {
   height: calc(100vh - 128px);
 }
 .col {
-  box-shadow: var(--shadow);
-  border-color: transparent;
+  box-shadow: none;
+  border-color: var(--line);
 }
 .col h1 {
   display: none;
@@ -497,7 +511,8 @@ body {
   letter-spacing: -0.01em;
 }
 .proto-state {
-  background: #fbfbfe;
+  background: #eaf0f6;
+  border-left-color: var(--control-line);
 }
 
 /* Status pills */
@@ -508,20 +523,24 @@ body {
   font-weight: 600;
   white-space: nowrap;
   color: #475467;
-  background: #eef0f4;
+  background: #e2e8f0;
+  border: 1px solid #718096;
   border-radius: 999px;
 }
 .pill[data-status="em-analise"] {
-  color: #175cd3;
-  background: #e5f0ff;
+  color: #fff;
+  background: #1e40af;
+  border-color: #1e40af;
 }
 .pill[data-status="em-preparacao"] {
-  color: #067647;
-  background: #e0f5ea;
+  color: #fff;
+  background: #166534;
+  border-color: #166534;
 }
 .pill[data-status="nao-concorrer"] {
-  color: #b42318;
-  background: #fdeceb;
+  color: #fff;
+  background: #991b1b;
+  border-color: #991b1b;
 }
 .pill-change del,
 .pill-change ins {
@@ -529,7 +548,6 @@ body {
   background: none;
 }
 .pill-change del .pill {
-  opacity: 0.55;
   text-decoration: line-through;
 }
 .pill-change ins .pill {
@@ -544,9 +562,9 @@ body {
   border-radius: 999px;
 }
 .deadline[data-urgent="true"] {
-  color: #b54708;
-  background: #fff1d6;
-  font-weight: 600;
+  color: #78350f;
+  background: #fde68a;
+  font-weight: 700;
 }
 
 /* Tables and lists */
@@ -554,17 +572,26 @@ body {
   transition: background 0.12s;
 }
 .proto-root tbody tr:hover td {
-  background: #f7f7fc;
+  background: #e8edf5;
+}
+.proto-root tr[aria-selected="true"] td,
+.proto-root tr[data-selected="true"] td {
+  background: var(--accent-soft);
 }
 .proto-root td {
   padding: 10px 8px;
 }
 .proto-root th {
-  background: transparent;
+  color: #24344b;
+  background: #e2e8f0;
+  border-bottom: 2px solid var(--control-line);
+}
+.proto-root table {
+  font-variant-numeric: tabular-nums;
 }
 
 .facts {
-  background: linear-gradient(180deg, #f7f8fc, #f1f3f9);
+  background: #eef2f7;
   border: 1px solid var(--line);
 }
 .checklist > li {
@@ -587,17 +614,20 @@ body {
 }
 .proto-root button[type="submit"],
 .proto-root fieldset button:first-of-type {
-  background: linear-gradient(180deg, #6a5bff, #5242e6);
-  box-shadow: 0 2px 6px rgb(91 75 240 / 35%);
+  background: var(--accent);
+  box-shadow: none;
 }
 .chips button {
   box-shadow: none;
 }
 .chat-log > li:nth-child(odd) {
-  background: var(--bg);
+  background: #eef2f7;
+  border: 1px solid var(--line);
 }
 .chat-log > li:nth-child(even) {
-  background: var(--accent-soft);
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
   border-radius: 12px 12px 2px 12px;
   margin-left: auto;
 }
@@ -607,22 +637,22 @@ body {
 
 /* Proposals and cards */
 .proto-root fieldset {
-  background: #f6f5ff;
-  border: 1px solid #cfc9ff;
-  box-shadow: 0 0 0 3px rgb(91 75 240 / 8%);
+  background: #edf0ff;
+  border: 2px solid var(--accent);
+  box-shadow: none;
 }
 .card {
   position: relative;
   padding-left: 18px;
-  border-color: transparent;
-  box-shadow: var(--shadow);
+  border-color: var(--control-line);
+  box-shadow: none;
 }
 .card::before {
   position: absolute;
   top: 10px;
   bottom: 10px;
   left: 6px;
-  width: 4px;
+  width: 1px;
   content: "";
   background: var(--accent);
   border-radius: 4px;
@@ -692,7 +722,7 @@ body {
 
 /* Map */
 .map-wrap svg {
-  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f3fb 100%);
+  background: #f3f6fa;
   border: 1px solid var(--line);
 }
 .map-wrap g[role="button"]:hover circle {
@@ -701,11 +731,11 @@ body {
 
 /* Command bar and switcher */
 .command-bar {
-  border: 0;
+  border: 1px solid var(--control-line);
   border-radius: 18px;
 }
 .command-bar input {
-  box-shadow: 0 0 0 4px rgb(91 75 240 / 12%);
+  box-shadow: none;
 }
 .switcher {
   background: rgb(27 31 42 / 92%);
@@ -803,11 +833,12 @@ body {
   align-items: flex-end;
   padding: 10px;
   background: var(--panel);
-  border: 1px solid var(--accent);
+  border: 2px solid var(--control-line);
   border-radius: 16px;
-  box-shadow:
-    0 0 0 4px rgb(91 75 240 / 10%),
-    0 8px 24px rgb(16 24 40 / 10%);
+  box-shadow: 0 8px 24px rgb(16 24 40 / 12%);
+}
+.composer-box:focus-within {
+  border-color: var(--accent);
 }
 .proto-root .composer-box textarea {
   flex: 1;
@@ -902,8 +933,8 @@ body {
   min-height: 0;
   padding: 16px;
   background: var(--panel);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
 }
 .chat-center .chat-log {
   flex: 1;
@@ -947,4 +978,879 @@ body {
 }
 .proto-root .deadline-list li {
   padding: 8px 0;
+}
+
+/* ---------- Visualisation variants (I-L) ---------- */
+.viz-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 16px;
+  height: calc(100vh - 128px);
+}
+.viz-main {
+  overflow-y: auto;
+}
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+}
+.viz-note {
+  padding: 8px 12px;
+  background: var(--warn-soft);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.viz-detail {
+  margin-top: 16px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.viz-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.viz-table th,
+.viz-table td {
+  padding: 8px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--line);
+}
+.viz-table th button {
+  padding: 0;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+.viz-table td small {
+  display: block;
+  color: var(--muted);
+}
+.viz-table tbody tr {
+  cursor: pointer;
+}
+.viz-table tr[data-selected="true"] {
+  background: var(--accent-soft);
+}
+.viz-table tr[data-focus="true"] {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.viz-table tr[data-outside="true"] {
+  color: var(--muted);
+  background: #f1f4f8;
+}
+.viz-table.compact td,
+.viz-table.compact th {
+  padding: 5px 8px;
+}
+.bar-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 130px;
+  height: 24px;
+}
+.bar-cell .bar {
+  position: absolute;
+  left: 0;
+  height: 100%;
+  background: #c7d2fe;
+  border-radius: 4px;
+}
+.bar-cell .bar[data-urgent="true"] {
+  background: #fecaca;
+}
+.bar-cell span:last-child {
+  position: relative;
+  padding-left: 6px;
+  white-space: nowrap;
+}
+.viz-map svg {
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+}
+.tender-dot {
+  fill: #475569;
+  stroke: #172235;
+  fill-opacity: 1;
+}
+.tender-dot[data-status="em-analise"] {
+  fill: #f5b942;
+}
+.tender-dot[data-status="em-preparacao"] {
+  fill: var(--accent);
+}
+.tender-dot[data-status="nao-concorrer"] {
+  fill: #cbd5e1;
+}
+.tender-dot[data-outside="true"] {
+  fill: #fff;
+  stroke-dasharray: 3 2;
+}
+.award-ring {
+  fill: #f97316;
+  fill-opacity: 0.12;
+  stroke: #9a3412;
+}
+.arc {
+  fill: none;
+  stroke: #9a3412;
+  stroke-opacity: 0.85;
+  stroke-linecap: round;
+}
+.arc[data-dim="true"] {
+  stroke-opacity: 0.1;
+}
+.buyer-dot {
+  fill: var(--accent);
+}
+.company-dot {
+  fill: #ea580c;
+  stroke: #9a3412;
+}
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 0 0 8px;
+}
+.kpis div {
+  padding: 10px 12px;
+  background: #e2e8f0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.kpis dt {
+  font-size: 12px;
+  color: var(--muted);
+}
+.kpis dd {
+  margin: 2px 0 0;
+  font-size: 18px;
+  font-weight: 650;
+}
+.hbars {
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  list-style: none;
+}
+.hbars li {
+  display: grid;
+  grid-template-columns: 120px 1fr 170px;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+.hbars li[data-focus="true"] {
+  font-weight: 700;
+}
+.hbars button {
+  padding: 0;
+  text-align: left;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+.hbars .track {
+  height: 14px;
+  background: var(--line);
+  border-radius: 7px;
+}
+.hbars .fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 7px;
+}
+.hbars .fill[data-urgent="true"] {
+  background: var(--bad);
+}
+.line-chart {
+  width: 100%;
+  max-width: 620px;
+}
+.line-chart .grid {
+  stroke: var(--line);
+}
+.line-chart .series {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+.line-chart .dot {
+  fill: var(--accent);
+}
+.line-chart text {
+  fill: var(--muted);
+}
+
+/* ---------- Familiar elements ----------
+   Element-level restyle for people less used to web apps: conventional buttons, underlined
+   links, folder tabs, labelled badges, larger text and targets. Layout is untouched. */
+
+.proto-root {
+  font-size: 15px;
+}
+.proto-root small,
+.proto-root .proto-state {
+  font-size: 14px;
+}
+
+/* Section labels in sentence case, darker, instead of small spaced capitals. */
+.proto-root h3,
+.proto-root .proto-state h2,
+.command-bar h2 {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+/* Buttons: raised grey rectangles, like desktop and form buttons. */
+.proto-root button {
+  min-height: 36px;
+  padding: 6px 14px;
+  font-weight: 500;
+  color: var(--ink);
+  background: linear-gradient(#ffffff, #eef1f5);
+  border: 1px solid #8a96a8;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgb(16 24 40 / 18%);
+}
+.proto-root button:hover {
+  background: #e3e8ef;
+  border-color: #4b5568;
+}
+.proto-root button:active {
+  background: #d6dce5;
+  box-shadow: inset 0 1px 2px rgb(16 24 40 / 25%);
+}
+.proto-root button[type="submit"],
+.proto-root fieldset button:first-of-type {
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border-color: #272182;
+}
+.proto-root button[type="submit"]:hover,
+.proto-root fieldset button:first-of-type:hover {
+  background: #2c2785;
+}
+/* Selected toggle: filled with a tick, so "on" does not rely on colour alone. */
+.proto-root button[aria-pressed="true"] {
+  color: #fff;
+  background: var(--accent);
+  border-color: #272182;
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 25%);
+}
+.proto-root button[aria-pressed="true"]::before {
+  content: "✓ ";
+}
+
+/* Links: blue and underlined, as on most websites. */
+.proto-root td button,
+.proto-root .deadline-list button,
+.proto-root .hbars button {
+  min-height: 0;
+  padding: 0;
+  color: #1d4ed8;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.proto-root td button:hover,
+.proto-root .deadline-list button:hover,
+.proto-root .hbars button:hover {
+  color: #1e3a8a;
+  background: none;
+  text-decoration-thickness: 2px;
+}
+
+/* Tabs: folder tabs joined to a line, the selected one opens into the content. */
+.proto-root .tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid var(--control-line);
+}
+.proto-root .tabs button,
+.proto-root .tabs button[aria-pressed="true"] {
+  margin-bottom: -2px;
+  padding: 8px 18px;
+  color: var(--ink);
+  background: #e7ebf1;
+  border: 2px solid transparent;
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  box-shadow: none;
+}
+.proto-root .tabs button:hover {
+  background: #d8dee7;
+}
+.proto-root .tabs button[aria-pressed="true"] {
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--panel);
+  border-color: var(--control-line);
+  box-shadow: 0 2px 0 var(--panel);
+}
+.proto-root .tabs button[aria-pressed="true"]::before {
+  content: none;
+}
+
+/* Suggestions: labelled, rectangular buttons with a speech mark. */
+.chips {
+  align-items: center;
+  gap: 8px;
+}
+.chips-label {
+  flex-basis: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.composer .chips-label {
+  text-align: center;
+}
+.proto-root .chips button {
+  min-height: 34px;
+  padding: 5px 12px;
+  font-size: 14px;
+  color: #1e3a8a;
+  background: #eef2ff;
+  border: 1px solid #6366f1;
+  border-radius: 6px;
+}
+.proto-root .chips button::before {
+  content: "💬 ";
+}
+.proto-root .chips button:hover {
+  background: #e0e7ff;
+  border-color: var(--accent);
+}
+
+/* Text inputs: white box with a clear border, like a paper form field. */
+.proto-root input:not([type="checkbox"]),
+.proto-root textarea,
+.proto-root select {
+  border: 2px solid #8a96a8;
+  border-radius: 6px;
+}
+.composer-box {
+  border: 2px solid #4b5568;
+  border-radius: 8px;
+}
+.proto-root .composer-box textarea {
+  font-size: 16px;
+  border: 0;
+}
+.proto-root input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0 6px 0 0;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.proto-root label:has(input[type="checkbox"]) {
+  cursor: pointer;
+}
+
+/* Status: square-ish badge with an icon, not a pill that looks like a button. */
+.pill {
+  padding: 2px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #344054;
+  background: #eef0f4;
+  border: 1px solid #98a2b3;
+  border-radius: 4px;
+}
+.pill[data-status="em-analise"] {
+  color: #7a2e0e;
+  background: #fff4d6;
+  border-color: #d97706;
+}
+.pill[data-status="em-preparacao"] {
+  color: #05603a;
+  background: #e6f6ee;
+  border-color: #16a34a;
+}
+.pill[data-status="nao-concorrer"] {
+  color: #912018;
+  background: #fdeceb;
+  border-color: #dc2626;
+}
+.deadline {
+  padding: 2px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+}
+.deadline[data-urgent="true"]::before {
+  content: "⚠ ";
+}
+
+/* Tables: readable header row, zebra stripes, visible sort control. */
+.proto-root th,
+.viz-table th {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  background: #dfe5ee;
+}
+.proto-root tbody tr:nth-child(even) td {
+  background: #f6f8fb;
+}
+.proto-root tbody tr:hover td {
+  background: #e8edf5;
+}
+.proto-root tr[aria-selected="true"] td,
+.proto-root tr[data-selected="true"] td {
+  background: var(--accent-soft);
+}
+.viz-table {
+  font-size: 14px;
+}
+.proto-root .viz-table th button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 0;
+  padding: 2px 4px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+}
+.proto-root .viz-table th button:hover {
+  background: #c9d2df;
+}
+.sort-icon {
+  color: var(--accent);
+}
+
+/* Facts: bold labels, like a printed form. */
+.facts dt {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Close buttons look like a window close control. */
+.proto-root .reply-close {
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: 18px;
+}
+
+/* Variant switcher: labelled previous/next buttons. */
+.switcher {
+  gap: 12px;
+  padding: 6px;
+  font-size: 14px;
+}
+.proto-root .switcher button {
+  width: auto;
+  height: 34px;
+  min-height: 0;
+  padding: 0 14px;
+  color: #fff;
+  background: #3a4052;
+  border: 1px solid #6b7488;
+  border-radius: 999px;
+  box-shadow: none;
+}
+.proto-root .switcher button:hover {
+  background: var(--accent);
+}
+
+/* Badges must not read as buttons: no border or raised edge, a coloured left stripe instead. */
+.proto-root .pill,
+.proto-root .pill[data-status] {
+  padding: 1px 8px 1px 6px;
+  border: 0;
+  border-left: 4px solid #98a2b3;
+  border-radius: 2px;
+}
+.proto-root .pill[data-status="em-analise"] {
+  border-left-color: #d97706;
+}
+.proto-root .pill[data-status="em-preparacao"] {
+  border-left-color: #16a34a;
+}
+.proto-root .pill[data-status="nao-concorrer"] {
+  border-left-color: #dc2626;
+}
+.proto-root .pill > span[aria-hidden] {
+  font-size: 14px;
+}
+
+.kpis dt,
+.hbars li {
+  font-size: 14px;
+}
+.line-chart text {
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 4px;
+}
+.pill-change {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.deadline {
+  white-space: nowrap;
+}
+
+/* ---------- Familiar visualisations ----------
+   Maps drawn like a road map, charts like spreadsheet charts, tables like a spreadsheet. */
+
+/* Map base */
+.map-wrap svg {
+  background: #f2efe9;
+}
+.map-land {
+  fill: #f2efe9;
+}
+.map-sea {
+  fill: #aad3df;
+}
+.map-wrap svg text.map-sea-label {
+  font-size: 13px;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  fill: #2f6f8f;
+}
+.map-road line {
+  stroke-linecap: round;
+}
+.map-road .casing {
+  stroke: #c9a26b;
+  stroke-width: 5;
+}
+.map-road .fill {
+  stroke: #fde9b8;
+  stroke-width: 3;
+}
+.map-road.main .casing {
+  stroke: #c27c2c;
+  stroke-width: 7;
+}
+.map-road.main .fill {
+  stroke: #f8bd5e;
+  stroke-width: 4.5;
+}
+.map-town {
+  fill: #fff;
+  stroke: #555;
+  stroke-width: 1.5;
+}
+.map-wrap svg text {
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.map-wrap svg text.map-town-label {
+  fill: #3b3b3b;
+}
+.map-scale rect {
+  fill: #222;
+  stroke: #222;
+}
+.map-scale rect.alt {
+  fill: #fff;
+}
+.map-wrap svg .map-scale text {
+  font-size: 11px;
+}
+.map-north path {
+  fill: #222;
+}
+.map-wrap svg .map-north text {
+  font-weight: 700;
+}
+
+/* Radius, company and pins */
+.map-radius circle {
+  fill: rgb(55 48 163 / 6%);
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 7 5;
+}
+.map-wrap svg .map-radius text {
+  font-weight: 700;
+  fill: var(--accent);
+}
+.map-radius.proposed circle {
+  fill: none;
+  stroke: #b45309;
+  stroke-width: 3;
+  stroke-dasharray: none;
+}
+.map-wrap svg .map-radius.proposed text {
+  fill: #92400e;
+}
+.map-radius-icon {
+  fill: rgb(55 48 163 / 6%);
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+.map-radius-icon.proposed {
+  fill: none;
+  stroke: #b45309;
+  stroke-dasharray: none;
+}
+.map-company path {
+  fill: #172235;
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+.map-company .door {
+  fill: #fff;
+}
+.map-wrap svg .map-company text {
+  font-weight: 700;
+}
+.map-pin path {
+  fill: #1d4ed8;
+  stroke: #1e3a8a;
+  stroke-width: 1.2;
+}
+.map-pin[data-tone="outside"] path {
+  fill: #98a2b3;
+  stroke: #475467;
+}
+.map-pin[data-selected="true"] path {
+  stroke: #000;
+  stroke-width: 2;
+}
+.map-pin-dot {
+  fill: #fff;
+}
+.map-pin-halo {
+  fill: rgb(250 204 21 / 55%);
+  stroke: #a16207;
+  stroke-width: 1.5;
+}
+.map-wrap svg text.map-label {
+  font-weight: 600;
+  fill: var(--ink);
+}
+.map-wrap svg text.map-label.selected {
+  font-size: 13px;
+  font-weight: 800;
+}
+.map-wrap svg text.map-label.company {
+  fill: #7c2d12;
+}
+.map-wrap g[role="button"]:hover .map-pin path {
+  stroke: #000;
+  stroke-width: 2;
+}
+
+/* Proportional symbols and arcs */
+.tender-dot {
+  fill: #667085;
+  fill-opacity: 0.9;
+  stroke: #172235;
+}
+.tender-dot[data-status="em-analise"] {
+  fill: #f59e0b;
+}
+.tender-dot[data-status="em-preparacao"] {
+  fill: #16a34a;
+}
+.tender-dot[data-status="nao-concorrer"] {
+  fill: #fca5a5;
+}
+.arc {
+  stroke: #9a3412;
+  stroke-opacity: 0.75;
+}
+.arc-head {
+  fill: #9a3412;
+}
+.buyer-dot {
+  fill: var(--accent);
+  stroke: #fff;
+  stroke-width: 2;
+}
+.company-dot {
+  fill: #ea580c;
+  stroke: #7c2d12;
+}
+
+/* Legend box under each map */
+.map-legend {
+  margin-top: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.map-legend ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 4px 12px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.map-legend li {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.map-legend svg {
+  flex: none;
+  overflow: visible;
+}
+.map-wrap > .map-legend {
+  width: 420px;
+  max-width: 100%;
+}
+.viz-map > .map-legend,
+.side .map-wrap > .map-legend {
+  width: auto;
+  max-width: 640px;
+}
+
+/* Bar charts: white plot area with gridlines and an axis, value written after each bar. */
+.hbars li {
+  grid-template-columns: 120px 1fr 200px;
+}
+.hbars .track {
+  height: 20px;
+  background-color: #fff;
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0 calc(33.333% - 1px),
+    #d0d7e2 calc(33.333% - 1px) 33.333%
+  );
+  border-left: 2px solid #344054;
+  border-radius: 0;
+}
+.hbars .fill {
+  border-radius: 0 3px 3px 0;
+}
+.hbars-axis .ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Line chart */
+.line-figure {
+  margin: 0;
+  max-width: 640px;
+}
+.line-figure figcaption {
+  font-size: 14px;
+}
+.line-chart {
+  max-width: 640px;
+}
+.line-chart text {
+  font-size: 12px;
+}
+.line-chart .grid {
+  stroke: #d5dbe4;
+}
+.line-chart .axis {
+  stroke: #344054;
+  stroke-width: 1.5;
+}
+.line-chart text.axis-title {
+  font-weight: 700;
+  fill: var(--ink);
+}
+.line-chart text.last-value {
+  font-size: 13px;
+  font-weight: 800;
+  fill: var(--accent);
+}
+.line-chart .dot {
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+
+/* Tables: spreadsheet gridlines, right-aligned numbers, Excel-style data bars. */
+.viz-table th,
+.viz-table td {
+  border-right: 1px solid #dde3ec;
+}
+.viz-table th:last-child,
+.viz-table td:last-child {
+  border-right: 0;
+}
+.proto-root .num {
+  text-align: right;
+}
+.proto-root th.num button {
+  flex-direction: row-reverse;
+}
+.num .bar-cell {
+  justify-content: flex-end;
+}
+.num .bar-cell span:last-child {
+  padding-right: 6px;
+}
+.bar-cell .bar {
+  background: linear-gradient(to right, #93c5fd, #dbeafe);
+  border: 1px solid #60a5fa;
+  border-radius: 2px;
+}
+.bar-cell .bar[data-urgent="true"] {
+  background: linear-gradient(to right, #f87171, #fee2e2);
+  border-color: #ef4444;
+}
+
+/* Fixes: legend icons keep their size inside scaled maps; viz maps use the column width with
+   map-sized text; ring counts in the orange of the rings. */
+.map-wrap .map-legend svg,
+.viz-map .map-legend svg,
+.side .map-wrap .map-legend svg {
+  width: 26px;
+  height: 22px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+.viz-map {
+  width: 100%;
+}
+.viz-map svg text {
+  font-size: 9px;
+}
+.side .map-wrap svg text {
+  font-size: 15px;
+}
+.map-wrap svg text.ring-count {
+  font-weight: 800;
+  fill: #9a3412;
+}
+.proto-root th.num button {
+  flex-direction: row;
 }

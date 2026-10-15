@@ -5,6 +5,7 @@
 import { useState } from "react";
 import { procedureById, visibleProcedures } from "./data";
 import { ChatColumn, chatPrompts, useChat } from "./chat";
+import { TermHint } from "./terms";
 import { ProposedChanges, StatusCell, type VariantProps } from "./shared";
 
 const library: { group: string; prompts: string[] }[] = [
@@ -38,7 +39,18 @@ export function VariantChatReview({ db, apply }: VariantProps) {
         <h2>Pedidos prontos</h2>
         {library.map((entry) => (
           <section key={entry.group}>
-            <h3>{entry.group}</h3>
+            <h3>
+              {entry.group}
+              <TermHint
+                area={
+                  entry.group === "Pesquisar"
+                    ? "map"
+                    : entry.group === "Decidir"
+                      ? "requirements"
+                      : "documents"
+                }
+              />
+            </h3>
             <ul className="side-list">
               {entry.prompts.map((prompt) => (
                 <li key={prompt}>
@@ -78,7 +90,10 @@ export function VariantChatReview({ db, apply }: VariantProps) {
           </p>
         )}
         <table>
-          <caption>Efeito nas obras</caption>
+          <caption>
+            Efeito nas obras
+            <TermHint area="listing" />
+          </caption>
           <tbody>
             {visibleProcedures(chat.preview ?? db).map((p) => (
               <tr key={p.id}>

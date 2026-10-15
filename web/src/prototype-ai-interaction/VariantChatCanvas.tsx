@@ -14,6 +14,7 @@ import {
   type VariantProps,
 } from "./shared";
 import { interpret } from "./simulatedAi";
+import { TermHint } from "./terms";
 
 type Message = {
   id: number;
@@ -113,7 +114,7 @@ export function VariantChatCanvas({ db, apply }: VariantProps) {
   return (
     <div className="split split-a">
       <section className="col canvas-full" aria-label="Canvas">
-        <nav aria-label="Vistas do canvas">
+        <nav className="tabs" aria-label="Vistas do canvas">
           {(["lista", "mapa", "dossier"] as const).map((v) => (
             <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)}>
               {v === "lista" ? "Lista" : v === "mapa" ? "Mapa" : "Dossier"}
@@ -141,9 +142,15 @@ export function VariantChatCanvas({ db, apply }: VariantProps) {
             </caption>
             <thead>
               <tr>
-                <th scope="col">Obra</th>
+                <th scope="col">
+                  Obra
+                  <TermHint area="listing" />
+                </th>
                 <th scope="col">Local</th>
-                <th scope="col">Prazo</th>
+                <th scope="col">
+                  Prazo
+                  <TermHint area="deadline" />
+                </th>
                 <th scope="col">Estado</th>
               </tr>
             </thead>

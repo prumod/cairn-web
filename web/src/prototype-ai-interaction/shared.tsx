@@ -3,6 +3,17 @@
 
 import { type ReactNode, useEffect } from "react";
 import {
+  CompanyMarker,
+  MapBackdrop,
+  MapLegend,
+  MapPin,
+  RadiusRing,
+  legendIcons,
+  mapSize,
+  positionOf,
+} from "./mapKit";
+import { TermHint, TermsReview } from "./terms";
+import {
   type Change,
   type ChangeSource,
   type Db,
@@ -36,42 +47,65 @@ export function ProcedureFacts({ procedure }: { procedure: Procedure }) {
   return (
     <dl className="facts">
       <dt>Entidade adjudicante</dt>
-      <dd>{procedure.buyer}</dd>
+      <dd>
+        {procedure.buyer}
+        <TermHint area="buyer" />
+      </dd>
       <dt>Origem</dt>
       <dd>
         {procedure.origin === "convite"
           ? `Convite (${procedure.receivedOn})`
           : `Anúncio (${procedure.receivedOn})`}
+        <TermHint area="origin" />
       </dd>
       <dt>Localização da obra</dt>
       <dd>
         {procedure.place}, a {procedure.distanceKm} km
+        <TermHint area="map" />
       </dd>
       <dt>Valor anunciado</dt>
-      <dd>{euro.format(procedure.announcedValue)}</dd>
+      <dd>
+        {euro.format(procedure.announcedValue)}
+        <TermHint area="value" />
+      </dd>
       <dt>Prazo de submissão</dt>
       <dd>
         {formatDateTime(procedure.deadline)}{" "}
         <span className="deadline" data-urgent={daysUntilDeadline(procedure) <= 3}>
           {deadlineNote(procedure)}
         </span>
+        <TermHint area="deadline" />
       </dd>
       <dt>Prazo de execução</dt>
-      <dd>{procedure.executionDays} dias</dd>
+      <dd>
+        {procedure.executionDays} dias
+        <TermHint area="execution" />
+      </dd>
       <dt>Plataforma</dt>
-      <dd>{procedure.platform}</dd>
+      <dd>
+        {procedure.platform}
+        <TermHint area="platform" />
+      </dd>
       <dt>Requisitos (ilustrativos)</dt>
       <dd>
         Classe {procedure.requiredClass}; {procedure.requiredLicences.join(", ")}
+        <TermHint area="requirements" />
       </dd>
     </dl>
   );
 }
 
+const statusIcon: Record<ParticipationStatus, string> = {
+  nova: "○",
+  "em-analise": "◐",
+  "em-preparacao": "✓",
+  "nao-concorrer": "✕",
+};
+
 export function StatusPill({ status }: { status: ParticipationStatus }) {
   return (
     <span className="pill" data-status={status}>
-      {statusLabel[status]}
+      <span aria-hidden="true">{statusIcon[status]}</span> {statusLabel[status]}
     </span>
   );
 }
@@ -87,7 +121,13 @@ export function StatusCell({
 }) {
   const before = participationOf(db, procedureId).status;
   const after = participationOf(preview ?? db, procedureId).status;
-  if (before === after) return <StatusPill status={after} />;
+  if (before === after)
+    return (
+      <>
+        <StatusPill status={after} />
+        <TermHint area="states" />
+      </>
+    );
   return (
     <span className="pill-change">
       <del>
@@ -96,6 +136,7 @@ export function StatusCell({
       <ins>
         <StatusPill status={after} />
       </ins>
+      <TermHint area="states" />
     </span>
   );
 }
@@ -116,29 +157,32 @@ export function Checklist({
   const prepared = participationOf(db, procedure.id).preparedDocumentIds;
   const previewPrepared = participationOf(preview ?? db, procedure.id).preparedDocumentIds;
   return (
-    <ul className="checklist">
-      {procedure.documents.map((d) => {
-        const isPrepared = prepared.includes(d.id);
-        const willBePrepared = previewPrepared.includes(d.id);
-        return (
-          <li key={d.id}>
-            <label>
-              <input
-                type="checkbox"
-                checked={isPrepared}
-                disabled={onToggle === undefined}
-                onChange={(event) => onToggle?.(d.id, event.target.checked)}
-              />{" "}
-              {d.name} {d.mandatory ? "(obrigatório)" : "(opcional)"}
-            </label>{" "}
-            {isPrepared !== willBePrepared && (
-              <ins>→ {willBePrepared ? "preparado" : "por preparar"} (proposto)</ins>
-            )}
-            {renderExtra?.(d.id)}
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      <TermHint area="documents" />
+      <ul className="checklist">
+        {procedure.documents.map((d) => {
+          const isPrepared = prepared.includes(d.id);
+          const willBePrepared = previewPrepared.includes(d.id);
+          return (
+            <li key={d.id}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isPrepared}
+                  disabled={onToggle === undefined}
+                  onChange={(event) => onToggle?.(d.id, event.target.checked)}
+                />{" "}
+                {d.name} {d.mandatory ? "(obrigatório)" : "(opcional)"}
+              </label>{" "}
+              {isPrepared !== willBePrepared && (
+                <ins>→ {willBePrepared ? "preparado" : "por preparar"} (proposto)</ins>
+              )}
+              {renderExtra?.(d.id)}
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 }
 
@@ -155,7 +199,18 @@ export function ProposedChanges({
 }) {
   return (
     <fieldset>
-      <legend>Alterações propostas pela IA</legend>
+      <legend>
+        Alterações propostas pela IA
+        <TermHint
+          area={
+            changes.some((c) => c.kind === "set-status")
+              ? "decision"
+              : changes.some((c) => c.kind === "set-document")
+                ? "documents"
+                : "map"
+          }
+        />
+      </legend>
       <ul>
         {changes.map((c) => (
           <li key={describeChange(db, c)}>{describeChange(db, c)}</li>
@@ -169,17 +224,6 @@ export function ProposedChanges({
       </button>
     </fieldset>
   );
-}
-
-export const mapSize = 420;
-const kmToPx = 2.6;
-
-export function pinPosition(procedure: Procedure): { x: number; y: number } {
-  const angle = (procedure.bearingDeg * Math.PI) / 180;
-  return {
-    x: mapSize / 2 + procedure.distanceKm * kmToPx * Math.sin(angle),
-    y: mapSize / 2 - procedure.distanceKm * kmToPx * Math.cos(angle),
-  };
 }
 
 export function OpportunityMap({
@@ -197,9 +241,8 @@ export function OpportunityMap({
   onSelect: (procedureId: string) => void;
   overlay?: ReactNode;
 }) {
-  const center = mapSize / 2;
-  const radius = db.company.radiusKm * kmToPx;
-  const previewRadius = (preview ?? db).company.radiusKm * kmToPx;
+  const radiusKm = db.company.radiusKm;
+  const previewKm = (preview ?? db).company.radiusKm;
   return (
     <div className="map-wrap">
       <svg
@@ -207,56 +250,37 @@ export function OpportunityMap({
         height={mapSize}
         viewBox={`0 0 ${mapSize} ${mapSize}`}
         role="group"
-        aria-label={`Mapa ilustrativo: raio de ${db.company.radiusKm} km à volta de ${db.company.place}`}
+        aria-label={`Mapa ilustrativo: raio de ${radiusKm} km à volta de ${db.company.place}`}
       >
-        <rect x="0" y="0" width={mapSize} height={mapSize} fill="none" stroke="currentColor" />
-        <circle
-          cx={center}
-          cy={center}
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeDasharray="4 4"
-        />
-        {previewRadius !== radius && (
-          <circle
-            cx={center}
-            cy={center}
-            r={previewRadius}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-        )}
-        <rect x={center - 5} y={center - 5} width="10" height="10" fill="currentColor" />
-        <text x={center - 30} y={center + 20} fontSize="11">
-          {db.company.place} (empresa)
-        </text>
+        <MapBackdrop labelTowns={["Ourém", "Coimbra"]} />
+        <RadiusRing km={radiusKm} />
+        {previewKm !== radiusKm && <RadiusRing km={previewKm} proposed />}
+        <CompanyMarker place={db.company.place} />
         {db.procedures.map((p) => {
-          const { x, y } = pinPosition(p);
+          const { x, y } = positionOf(p);
           const outside = !inRadius(preview ?? db, p);
           const highlighted = highlightIds.includes(p.id);
+          const selected = selectedId === p.id;
           return (
             <g
               key={p.id}
               role="button"
               tabIndex={0}
               aria-label={`${p.title}${outside ? " (fora do raio)" : ""}`}
-              aria-pressed={selectedId === p.id}
+              aria-pressed={selected}
               onClick={() => onSelect(p.id)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") onSelect(p.id);
               }}
             >
-              <circle
-                cx={x}
-                cy={y}
-                r={selectedId === p.id ? 9 : 6}
-                fill={outside ? "none" : "currentColor"}
-                stroke="currentColor"
-                strokeWidth={highlighted ? 4 : 1}
+              <MapPin
+                x={x}
+                y={y}
+                tone={outside ? "outside" : "inside"}
+                selected={selected}
+                highlighted={highlighted}
               />
-              <text x={x + 10} y={y + 4} fontSize="11">
+              <text x={x + 11} y={y - 12} className={selected ? "map-label selected" : "map-label"}>
                 {p.place}
                 {highlighted ? " ★" : ""}
               </text>
@@ -265,18 +289,34 @@ export function OpportunityMap({
         })}
       </svg>
       {overlay}
-      <p>
-        <small>
-          ■ empresa · ● dentro do raio · ○ fora do raio · ★ destacado pela IA · tracejado = raio
-          atual
-          {previewRadius !== radius ? " · linha grossa = raio proposto" : ""}
-        </small>
-      </p>
+      <MapLegend
+        items={[
+          { icon: legendIcons.company, label: "A sua empresa" },
+          { icon: legendIcons.pinInside, label: "Obra dentro do raio" },
+          { icon: legendIcons.pinOutside, label: "Obra fora do raio" },
+          { icon: legendIcons.highlighted, label: "Destacada pela IA (★)" },
+          { icon: legendIcons.radius, label: "Raio de pesquisa atual" },
+          ...(previewKm !== radiusKm
+            ? [{ icon: legendIcons.radiusProposed, label: "Raio proposto pela IA" }]
+            : []),
+        ]}
+        after={<TermHint area="map" />}
+      />
     </div>
   );
 }
 
-export function StatePanel({ db, onReset }: { db: Db; onReset: () => void }) {
+export function StatePanel({
+  db,
+  onReset,
+  variant,
+  variantId,
+}: {
+  db: Db;
+  onReset: () => void;
+  variant: string;
+  variantId: string;
+}) {
   return (
     <aside className="proto-state" aria-label="Estado dos dados da demonstração">
       <p>
@@ -285,6 +325,7 @@ export function StatePanel({ db, onReset }: { db: Db; onReset: () => void }) {
       <button type="button" onClick={onReset}>
         Reiniciar demonstração
       </button>
+      <TermsReview variant={variant} id={variantId} />
       <h2>Base de dados (simulada)</h2>
       <p>
         {db.company.name}
@@ -292,12 +333,16 @@ export function StatePanel({ db, onReset }: { db: Db; onReset: () => void }) {
         Classe {db.company.companyClass}; {db.company.licences.join(", ")}
         <br />
         Raio de pesquisa: <strong>{db.company.radiusKm} km</strong>
+        <TermHint area="profile" />
       </p>
       <table>
         <thead>
           <tr>
             <th scope="col">Obra</th>
-            <th scope="col">Estado</th>
+            <th scope="col">
+              Estado
+              <TermHint area="states" />
+            </th>
             <th scope="col">Docs</th>
           </tr>
         </thead>
@@ -369,14 +414,14 @@ export function VariantSwitcher({
   const currentInfo = variants[index];
   return (
     <nav className="switcher" aria-label="Variantes do protótipo">
-      <button type="button" onClick={() => step(-1)} aria-label="Variante anterior">
-        ←
+      <button type="button" onClick={() => step(-1)}>
+        ← Anterior
       </button>
       <span aria-live="polite">
         {currentInfo?.key} ({currentInfo?.name})
       </span>
-      <button type="button" onClick={() => step(1)} aria-label="Variante seguinte">
-        →
+      <button type="button" onClick={() => step(1)}>
+        Seguinte →
       </button>
     </nav>
   );
@@ -391,6 +436,7 @@ export function PromptChips({
 }) {
   return (
     <p className="chips">
+      <span className="chips-label">Sugestões (clique para pedir):</span>
       {prompts.map((prompt) => (
         <button key={prompt} type="button" onClick={() => onPick(prompt)}>
           {prompt}
@@ -448,7 +494,7 @@ export function CenterComposer({
                 }
               }}
             />
-            <button type="submit">Enviar</button>
+            <button type="submit">Enviar ➤</button>
           </div>
         </form>
       </div>

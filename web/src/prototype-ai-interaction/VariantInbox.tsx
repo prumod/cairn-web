@@ -5,6 +5,7 @@ import { useState } from "react";
 import { describeChange, procedureById, visibleProcedures } from "./data";
 import { Checklist, ProcedureFacts, StatusCell, type VariantProps } from "./shared";
 import { type Suggestion, suggestionsFor } from "./simulatedAi";
+import { TermHint } from "./terms";
 
 type Handled = { suggestion: Suggestion; outcome: "aceite" | "dispensada" };
 
@@ -31,7 +32,9 @@ export function VariantInbox({ db, apply }: VariantProps) {
     <div className="split split-e">
       <section className="col" aria-label="Sugestões da IA">
         <h1>E — Sugestões proativas</h1>
-        <h2>Caixa de sugestões ({inbox.length})</h2>
+        <h2>
+          Caixa de sugestões ({inbox.length})<TermHint area="decision" />
+        </h2>
         {inbox.length === 0 && <p>Sem sugestões. A IA volta a sugerir quando os dados mudarem.</p>}
         {inbox.map((suggestion) => (
           <article key={suggestion.id} className="card" data-kind={suggestion.id.split("-")[0]}>
@@ -83,8 +86,14 @@ export function VariantInbox({ db, apply }: VariantProps) {
           <caption>Obras no raio de {db.company.radiusKm} km</caption>
           <thead>
             <tr>
-              <th scope="col">Obra</th>
-              <th scope="col">Prazo</th>
+              <th scope="col">
+                Obra
+                <TermHint area="listing" />
+              </th>
+              <th scope="col">
+                Prazo
+                <TermHint area="deadline" />
+              </th>
               <th scope="col">Estado</th>
             </tr>
           </thead>

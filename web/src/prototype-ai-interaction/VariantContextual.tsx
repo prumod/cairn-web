@@ -11,10 +11,10 @@ import {
   ProposedChanges,
   StatusCell,
   type VariantProps,
-  mapSize,
-  pinPosition,
 } from "./shared";
+import { mapSize, positionOf } from "./mapKit";
 import { type AiReply, interpret } from "./simulatedAi";
+import { TermHint } from "./terms";
 
 type AskTarget =
   | { kind: "obra"; procedureId: string; anchor: "mapa" | "lista" }
@@ -61,7 +61,7 @@ function InlineAsk({
           placeholder="Pergunte ou peça uma alteração…"
           onChange={(event) => setDraft(event.target.value)}
         />{" "}
-        <button type="submit">Enviar</button>
+        <button type="submit">Enviar ➤</button>
       </form>
       {reply !== null && (
         <>
@@ -120,7 +120,7 @@ export function VariantContextual({ db, apply }: VariantProps) {
   );
 
   const mapTarget = askTarget?.kind === "obra" && askTarget.anchor === "mapa" ? askTarget : null;
-  const mapPin = mapTarget === null ? null : pinPosition(procedureById(db, mapTarget.procedureId));
+  const mapPin = mapTarget === null ? null : positionOf(procedureById(db, mapTarget.procedureId));
 
   return (
     <div className="split split-b">
@@ -156,8 +156,14 @@ export function VariantContextual({ db, apply }: VariantProps) {
           <caption>Obras no raio de {db.company.radiusKm} km</caption>
           <thead>
             <tr>
-              <th scope="col">Obra</th>
-              <th scope="col">Prazo</th>
+              <th scope="col">
+                Obra
+                <TermHint area="listing" />
+              </th>
+              <th scope="col">
+                Prazo
+                <TermHint area="deadline" />
+              </th>
               <th scope="col">Estado</th>
               <th scope="col">IA</th>
             </tr>
