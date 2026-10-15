@@ -36,6 +36,35 @@ const compactEuro = new Intl.NumberFormat("pt-PT", {
   notation: "compact",
   maximumFractionDigits: 2,
 });
+// Leiria, Marinha Grande, Alcobaça and Batalha sit within ~50 px of each other, so their
+// labels get fixed offsets (relative to the symbol); a leader line links far-off ones.
+const crowdedRingLabels: Record<string, { dx: number; dy: number }> = {
+  "Marinha Grande": { dx: -12, dy: 62 },
+};
+const crowdedTenderLabels: Record<
+  string,
+  { dx: number; dy: number; anchor: "start" | "middle" | "end" }
+> = {
+  Leiria: { dx: 18, dy: -26, anchor: "start" },
+  Alcobaça: { dx: 0, dy: -30, anchor: "middle" },
+  Batalha: { dx: 12, dy: 20, anchor: "start" },
+};
+const ringLabel = (name: string) => crowdedRingLabels[name];
+function ringLabelProps(name: string, x: number, y: number, r: number) {
+  const custom = crowdedRingLabels[name];
+  if (custom !== undefined)
+    return { x: x + custom.dx, y: y + custom.dy, textAnchor: "end" as const };
+  // Count sits just left of the ring on the western side, right of it on the eastern side.
+  return x < mapSize / 2
+    ? { x: x - r - 4, y: y + 4, textAnchor: "end" as const }
+    : { x: x + r * 0.75, y: y - r * 0.75, textAnchor: "start" as const };
+}
+function tenderLabelProps(place: string, x: number, y: number) {
+  const custom = crowdedTenderLabels[place];
+  return custom === undefined
+    ? { x: x + 12, y: y + 18 }
+    : { x: x + custom.dx, y: y + custom.dy, textAnchor: custom.anchor };
+}
 const dotRadius = (value: number) => 4 + Math.sqrt(value / 1_000_000) * 9;
 const ringRadius = (contracts: number) => 5 + Math.sqrt(contracts) * 4.5;
 const statusLegend = [
@@ -123,14 +152,17 @@ export function VariantVizSymbols({ db, apply }: VariantProps) {
                       r={ringRadius(summary.contracts)}
                       strokeWidth={focus ? 4 : 2}
                     />
+                    {ringLabel(b.name) !== undefined && (
+                      <line
+                        className="map-leader"
+                        x1={x}
+                        y1={y + ringRadius(summary.contracts)}
+                        x2={x + (ringLabel(b.name)?.dx ?? 0)}
+                        y2={y + (ringLabel(b.name)?.dy ?? 0) - 10}
+                      />
+                    )}
                     <text
-                      x={
-                        x < mapSize / 2
-                          ? x - ringRadius(summary.contracts) * 0.75
-                          : x + ringRadius(summary.contracts) * 0.75
-                      }
-                      y={y - ringRadius(summary.contracts) * 0.75}
-                      textAnchor={x < mapSize / 2 ? "end" : "start"}
+                      {...ringLabelProps(b.name, x, y, ringRadius(summary.contracts))}
                       className="map-label ring-count"
                     >
                       {summary.contracts}
@@ -166,8 +198,7 @@ export function VariantVizSymbols({ db, apply }: VariantProps) {
                       strokeWidth={focus || selectedId === p.id ? 4 : 1.5}
                     />
                     <text
-                      x={x + 12}
-                      y={y + 18}
+                      {...tenderLabelProps(p.place, x, y)}
                       className={selectedId === p.id ? "map-label selected" : "map-label"}
                     >
                       {p.place} · {compactEuro.format(p.announcedValue)}

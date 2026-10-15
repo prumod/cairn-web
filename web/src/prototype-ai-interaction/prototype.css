@@ -1854,3 +1854,7 @@ body {
 .proto-root th.num button {
   flex-direction: row;
 }
+.map-leader {
+  stroke: #9a3412;
+  stroke-width: 1;
+}
