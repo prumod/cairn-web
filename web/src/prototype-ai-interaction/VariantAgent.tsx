@@ -2,12 +2,12 @@
 // a plan and runs it step by step, pausing at approval points. An autonomy setting lets
 // document changes run unattended, but participation decisions always wait for a person.
 
-import { type SubmitEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { applyChanges, procedureById } from "./data";
 import {
   Checklist,
   ProcedureFacts,
-  PromptChips,
+  CenterComposer,
   ProposedChanges,
   StatusCell,
   type VariantProps,
@@ -88,11 +88,6 @@ export function VariantAgent({ db, apply }: VariantProps) {
     setCursor(cursor + 1);
   };
 
-  const onSubmit = (event: SubmitEvent) => {
-    event.preventDefault();
-    if (draft.trim() !== "") start(draft);
-  };
-
   const current = plan?.steps[cursor];
   const waiting =
     states[cursor]?.status === "aguarda aprovação" ? states[cursor]?.result : undefined;
@@ -107,21 +102,6 @@ export function VariantAgent({ db, apply }: VariantProps) {
     <div className="split split-d">
       <section className="col" aria-label="Objetivo e plano">
         <h1>D — Agente com plano</h1>
-        <form onSubmit={onSubmit}>
-          <label>
-            Objetivo
-            <br />
-            <textarea
-              rows={2}
-              cols={32}
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-            />
-          </label>
-          <br />
-          <button type="submit">Planear e executar</button>
-        </form>
-        <PromptChips prompts={goals} onPick={start} />
         <label>
           <input
             type="checkbox"
@@ -215,6 +195,17 @@ export function VariantAgent({ db, apply }: VariantProps) {
           </ol>
         )}
       </section>
+      <CenterComposer
+        hero={plan === null}
+        title="Que objetivo quer que o agente cumpra?"
+        label="Objetivo"
+        placeholder="Ex.: prepara a participação na escola…"
+        value={draft}
+        onChange={setDraft}
+        onSubmit={() => start(draft)}
+        prompts={goals}
+        onPrompt={start}
+      />
     </div>
   );
 }

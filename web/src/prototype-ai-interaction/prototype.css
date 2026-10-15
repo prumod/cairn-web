@@ -778,3 +778,91 @@ body {
   height: 100%;
   background: var(--accent);
 }
+
+/* Centred main input */
+.composer {
+  position: fixed;
+  right: 300px;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.composer-inner {
+  width: min(720px, 92%);
+  pointer-events: auto;
+}
+.composer.is-hero {
+  top: 0;
+  bottom: 0;
+  align-items: center;
+  background: rgb(238 240 246 / 72%);
+  backdrop-filter: blur(6px);
+}
+.is-hero .composer-inner {
+  padding: 28px;
+  background: var(--panel);
+  border-radius: 22px;
+  box-shadow: 0 24px 60px rgb(16 24 40 / 18%);
+}
+.composer.is-docked {
+  bottom: 72px;
+  align-items: flex-end;
+}
+.composer-title {
+  margin: 0 0 14px;
+  font-size: 24px;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+.composer-box {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  padding: 10px;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 4px rgb(91 75 240 / 10%),
+    0 8px 24px rgb(16 24 40 / 10%);
+}
+.proto-root .composer-box textarea {
+  flex: 1;
+  padding: 6px;
+  font-size: 15px;
+  resize: none;
+  border: 0;
+}
+.proto-root .composer-box textarea:focus-visible {
+  outline: none;
+}
+.composer-note {
+  margin: 0 0 6px;
+}
+.composer-reply {
+  max-height: 42vh;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  overflow: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgb(16 24 40 / 16%);
+}
+.is-hero .chips {
+  justify-content: center;
+  margin-top: 14px;
+}
+.canvas-full {
+  grid-column: 1 / -1;
+  padding-bottom: 240px;
+}
+.split-a {
+  grid-template-columns: 1fr;
+}
+
+.split-d .col {
+  padding-bottom: 130px;
+}

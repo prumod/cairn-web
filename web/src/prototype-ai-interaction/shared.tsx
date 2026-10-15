@@ -399,3 +399,63 @@ export function PromptChips({
     </p>
   );
 }
+
+// The main AI input: centred on screen until the first request, then docked bottom-centre.
+export function CenterComposer({
+  hero,
+  title,
+  value,
+  onChange,
+  onSubmit,
+  placeholder,
+  prompts,
+  onPrompt,
+  note,
+  above,
+  label,
+}: {
+  hero: boolean;
+  title: string;
+  value: string;
+  onChange: (value: string) => void;
+  onSubmit: () => void;
+  placeholder: string;
+  prompts: string[];
+  onPrompt: (prompt: string) => void;
+  note?: ReactNode;
+  above?: ReactNode;
+  label: string;
+}) {
+  return (
+    <div className={hero ? "composer is-hero" : "composer is-docked"}>
+      <div className="composer-inner">
+        {hero ? <h2 className="composer-title">{title}</h2> : above}
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (value.trim() !== "") onSubmit();
+          }}
+        >
+          {note}
+          <div className="composer-box">
+            <textarea
+              aria-label={label}
+              rows={hero ? 3 : 2}
+              value={value}
+              placeholder={placeholder}
+              onChange={(event) => onChange(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
+            />
+            <button type="submit">Enviar</button>
+          </div>
+        </form>
+        {hero && <PromptChips prompts={prompts} onPick={onPrompt} />}
+      </div>
+    </div>
+  );
+}

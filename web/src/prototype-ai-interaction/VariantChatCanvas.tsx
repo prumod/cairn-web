@@ -1,12 +1,13 @@
 // PROTOTYPE (throwaway, issue #64) — Variant A: chat on the left, a live canvas on the
 // right. AI proposals render on the canvas as <del>/<ins> diffs until accepted or rejected.
 
-import { type SubmitEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type Change, applyChanges, procedureById, visibleProcedures } from "./data";
 import {
   Checklist,
   OpportunityMap,
   ProcedureFacts,
+  CenterComposer,
   PromptChips,
   ProposedChanges,
   StatusCell,
@@ -100,67 +101,17 @@ export function VariantChatCanvas({ db, apply }: VariantProps) {
     );
   };
 
-  const onSubmit = (event: SubmitEvent) => {
-    event.preventDefault();
-    if (draft.trim() !== "") send(draft);
-  };
-
   const select = (procedureId: string) => {
     setSelectedId(procedureId);
     setView("dossier");
   };
 
+  const last = messages.at(-1);
+  const hero = messages.length <= 1;
+
   return (
     <div className="split split-a">
-      <section className="col chat" aria-label="Conversa com a IA">
-        <h1>A — Chat + canvas</h1>
-        <ol className="chat-log" ref={logRef}>
-          {messages.map((m) => (
-            <li key={m.id}>
-              <strong>{m.role === "pessoa" ? "Você" : "IA"}:</strong>
-              <pre className="wrap">{m.text}</pre>
-              {m.proposal?.state === "pendente" && (
-                <ProposedChanges
-                  db={db}
-                  changes={m.proposal.changes}
-                  onAccept={() => resolve(m.id, true)}
-                  onReject={() => resolve(m.id, false)}
-                />
-              )}
-              {m.proposal !== undefined && m.proposal.state !== "pendente" && (
-                <p>
-                  <small>Proposta {m.proposal.state}.</small>
-                </p>
-              )}
-            </li>
-          ))}
-        </ol>
-        <form onSubmit={onSubmit}>
-          {selected !== null && (
-            <p>
-              <small>Contexto: {selected.title}</small>{" "}
-              <button type="button" onClick={() => setSelectedId(null)}>
-                Limpar contexto
-              </button>
-            </p>
-          )}
-          <label>
-            Pedido
-            <br />
-            <textarea
-              rows={2}
-              cols={36}
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-            />
-          </label>
-          <br />
-          <button type="submit">Enviar</button>
-        </form>
-        <PromptChips prompts={prompts} onPick={send} />
-      </section>
-
-      <section className="col" aria-label="Canvas">
+      <section className="col canvas-full" aria-label="Canvas">
         <nav aria-label="Vistas do canvas">
           {(["lista", "mapa", "dossier"] as const).map((v) => (
             <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)}>
@@ -169,7 +120,7 @@ export function VariantChatCanvas({ db, apply }: VariantProps) {
           ))}
           {preview !== undefined && (
             <p>
-              <mark>A pré-visualizar uma proposta da IA — aceite ou rejeite no chat.</mark>
+              <mark>A pré-visualizar uma proposta da IA — aceite ou rejeite abaixo.</mark>
             </p>
           )}
         </nav>
@@ -261,6 +212,60 @@ export function VariantChatCanvas({ db, apply }: VariantProps) {
             </article>
           ))}
       </section>
+      <CenterComposer
+        hero={hero}
+        title="Em que posso ajudar com as obras?"
+        label="Pedido"
+        placeholder="Peça uma pesquisa, uma revisão de requisitos ou uma decisão…"
+        value={draft}
+        onChange={setDraft}
+        onSubmit={() => send(draft)}
+        prompts={prompts}
+        onPrompt={send}
+        note={
+          selected !== null && (
+            <p className="composer-note">
+              <small>Contexto: {selected.title}</small>{" "}
+              <button type="button" onClick={() => setSelectedId(null)}>
+                Limpar contexto
+              </button>
+            </p>
+          )
+        }
+        above={
+          last !== undefined && (
+            <div className="composer-reply">
+              <strong>IA</strong>
+              <pre className="wrap">{last.text}</pre>
+              {last.proposal?.state === "pendente" && (
+                <ProposedChanges
+                  db={db}
+                  changes={last.proposal.changes}
+                  onAccept={() => resolve(last.id, true)}
+                  onReject={() => resolve(last.id, false)}
+                />
+              )}
+              {last.proposal !== undefined && last.proposal.state !== "pendente" && (
+                <p>
+                  <small>Proposta {last.proposal.state}.</small>
+                </p>
+              )}
+              <details>
+                <summary>Histórico ({messages.length})</summary>
+                <ol className="chat-log" ref={logRef}>
+                  {messages.map((m) => (
+                    <li key={m.id}>
+                      <strong>{m.role === "pessoa" ? "Você" : "IA"}:</strong>
+                      <pre className="wrap">{m.text}</pre>
+                    </li>
+                  ))}
+                </ol>
+              </details>
+              <PromptChips prompts={prompts} onPick={send} />
+            </div>
+          )
+        }
+      />
     </div>
   );
 }
