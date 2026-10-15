@@ -8,7 +8,7 @@ Este documento regista o âmbito acordado; não afirma que o protótipo já exis
 
 ## Cobertura e prioridades
 
-- Cobrir todas as funcionalidades documentadas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md): N01–N10 e N12, L01–L09 e M01–M12.
+- Cobrir todas as funcionalidades documentadas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md): N01–N10 e N12, L01–L09 e M01–M13.
 - [Never](../never/funcionalidades.md) permanece vazio; não inventar exclusões nem ecrãs para preencher este nível.
 - Representar a experiência completa: ecrãs, navegação, campos, controlos, interações, validações, alterações de estado, resultados vazios, informação em falta, erros e correção/regresso quando aplicáveis.
 - Later e Maybe não se limitam a um painel estático de âmbito. Devem demonstrar as respetivas experiências; isso não altera a prioridade nem confirma viabilidade técnica, valor ou regras de negócio.
@@ -72,7 +72,7 @@ Demonstrar fornecedores/cotações, registos de obras/clientes, acompanhamento p
 
 ### Capacidades a validar
 
-Demonstrar as experiências propostas em Maybe: planeamento tipo Project/Gantt, pesquisa assistida, análise de concorrentes, perguntas sobre finanças, pesquisa de fornecedores por IA, extração de cotações, histórico/validade de preços, referências/margens, previsão de materiais, waterfall, edição/importação/exportação avançada e padrões de contratos públicos. Resultados são fictícios; não demonstram fraude, cobertura de fontes, previsões reais ou respostas de IA verificadas.
+Demonstrar as experiências propostas em Maybe: planeamento tipo Project/Gantt, pesquisa assistida, navegação semântica pelas páginas, análise de concorrentes, perguntas sobre finanças, pesquisa de fornecedores por IA, extração de cotações, histórico/validade de preços, referências/margens, previsão de materiais, waterfall, edição/importação/exportação avançada e padrões de contratos públicos. Resultados são fictícios; não demonstram fraude, cobertura de fontes, previsões reais ou respostas de IA verificadas.
 
 ## Revisão e aprendizagem para o backend
 
