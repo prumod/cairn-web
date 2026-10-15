@@ -73,6 +73,14 @@ function tenderLabelProps(place: string, x: number, y: number) {
     ? { x: x + 12, y: y + 18 }
     : { x: x + custom.dx, y: y + custom.dy, textAnchor: custom.anchor };
 }
+// Where a ring sits under a tender dot, keep a band of ring (at least 8 px) outside the dot so
+// the ring stays easy to click.
+function tenderRadius(value: number, place: string, layer: Layer, workType: WorkType | "todos") {
+  const dot = dotRadius(value);
+  if (layer === "abertos") return dot;
+  const contracts = summarizeBuyer(place, workType).contracts;
+  return contracts === 0 ? dot : Math.min(dot, ringRadius(contracts) - 8);
+}
 const dotRadius = (value: number) => 4 + Math.sqrt(value / 1_000_000) * 9;
 const ringRadius = (contracts: number) => 5 + Math.sqrt(contracts) * 4.5;
 const statusLegend = [
@@ -160,6 +168,16 @@ export function VariantVizSymbols({ db, apply }: VariantProps) {
                       r={ringRadius(summary.contracts)}
                       strokeWidth={focus ? 4 : 2}
                     />
+                    {/* Wide invisible stroke: a forgiving click target around the ring's edge. */}
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={ringRadius(summary.contracts)}
+                      fill="none"
+                      stroke="transparent"
+                      strokeWidth="14"
+                      pointerEvents="stroke"
+                    />
                     {(ringLabel(b.name)?.dy ?? 0) > 40 && (
                       <line
                         className="map-leader"
@@ -202,7 +220,7 @@ export function VariantVizSymbols({ db, apply }: VariantProps) {
                       data-outside={outside}
                       cx={x}
                       cy={y}
-                      r={dotRadius(p.announcedValue)}
+                      r={tenderRadius(p.announcedValue, p.place, layer, workType)}
                       strokeWidth={focus || selectedId === p.id ? 4 : 1.5}
                     />
                     <text
