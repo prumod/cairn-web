@@ -732,3 +732,49 @@ body {
 .split-d ol > li {
   justify-content: space-between;
 }
+
+/* Semantic page search (M13 idea) */
+.page-nav {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.split-c.has-nav {
+  height: calc(100vh - 176px);
+}
+.span-2 {
+  grid-column: 1 / -1;
+}
+.deadline-list {
+  padding-left: 0;
+  list-style: none;
+}
+.deadline-list li {
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.page-results {
+  margin: 4px 0;
+  padding: 0;
+  list-style: none;
+}
+.page-results button {
+  display: grid;
+  width: 100%;
+  gap: 2px;
+  padding: 8px 10px;
+  margin: 3px 0;
+  text-align: left;
+}
+.score {
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  background: var(--line);
+  border-radius: 4px;
+}
+.score > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
