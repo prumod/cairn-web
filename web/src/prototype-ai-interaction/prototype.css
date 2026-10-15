@@ -449,3 +449,286 @@
 body {
   margin: 0;
 }
+
+/* ---- Refinement pass ---- */
+.proto-root {
+  --bg: #eef0f6;
+  --accent: #5b4bf0;
+  --accent-soft: #eeecff;
+  --shadow: 0 1px 2px rgb(16 24 40 / 6%), 0 4px 16px rgb(16 24 40 / 5%);
+  background:
+    radial-gradient(900px 400px at 10% -10%, #e4e1ff 0%, transparent 60%),
+    radial-gradient(700px 360px at 100% 0%, #dff3ff 0%, transparent 55%), var(--bg);
+}
+
+.brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.brand strong {
+  color: var(--ink);
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+.brand-mark {
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, #7c6cff, #3ac4ff);
+  border-radius: 7px 7px 7px 2px;
+  box-shadow: 0 2px 8px rgb(91 75 240 / 40%);
+}
+
+.split {
+  height: calc(100vh - 128px);
+}
+.col {
+  box-shadow: var(--shadow);
+  border-color: transparent;
+}
+.col h1 {
+  display: none;
+}
+.proto-root h2 {
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+.proto-state {
+  background: #fbfbfe;
+}
+
+/* Status pills */
+.pill {
+  display: inline-block;
+  padding: 1px 9px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #475467;
+  background: #eef0f4;
+  border-radius: 999px;
+}
+.pill[data-status="em-analise"] {
+  color: #175cd3;
+  background: #e5f0ff;
+}
+.pill[data-status="em-preparacao"] {
+  color: #067647;
+  background: #e0f5ea;
+}
+.pill[data-status="nao-concorrer"] {
+  color: #b42318;
+  background: #fdeceb;
+}
+.pill-change del,
+.pill-change ins {
+  padding: 0;
+  background: none;
+}
+.pill-change del .pill {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+.pill-change ins .pill {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.deadline {
+  padding: 1px 8px;
+  font-size: 12px;
+  color: #475467;
+  background: #eef0f4;
+  border-radius: 999px;
+}
+.deadline[data-urgent="true"] {
+  color: #b54708;
+  background: #fff1d6;
+  font-weight: 600;
+}
+
+/* Tables and lists */
+.proto-root tbody tr {
+  transition: background 0.12s;
+}
+.proto-root tbody tr:hover td {
+  background: #f7f7fc;
+}
+.proto-root td {
+  padding: 10px 8px;
+}
+.proto-root th {
+  background: transparent;
+}
+
+.facts {
+  background: linear-gradient(180deg, #f7f8fc, #f1f3f9);
+  border: 1px solid var(--line);
+}
+.checklist > li {
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.checklist > li:has(input:checked) {
+  background: var(--ok-soft);
+  border-color: #b7e4cb;
+}
+.checklist > li:has(input:checked) label {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+/* Buttons */
+.proto-root button {
+  box-shadow: 0 1px 1px rgb(16 24 40 / 5%);
+}
+.proto-root button[type="submit"],
+.proto-root fieldset button:first-of-type {
+  background: linear-gradient(180deg, #6a5bff, #5242e6);
+  box-shadow: 0 2px 6px rgb(91 75 240 / 35%);
+}
+.chips button {
+  box-shadow: none;
+}
+.chat-log > li:nth-child(odd) {
+  background: var(--bg);
+}
+.chat-log > li:nth-child(even) {
+  background: var(--accent-soft);
+  border-radius: 12px 12px 2px 12px;
+  margin-left: auto;
+}
+.chat-log > li {
+  width: fit-content;
+}
+
+/* Proposals and cards */
+.proto-root fieldset {
+  background: #f6f5ff;
+  border: 1px solid #cfc9ff;
+  box-shadow: 0 0 0 3px rgb(91 75 240 / 8%);
+}
+.card {
+  position: relative;
+  padding-left: 18px;
+  border-color: transparent;
+  box-shadow: var(--shadow);
+}
+.card::before {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 6px;
+  width: 4px;
+  content: "";
+  background: var(--accent);
+  border-radius: 4px;
+}
+.card[data-kind="prazo"]::before {
+  background: #f79009;
+}
+.card[data-kind="incompativel"]::before {
+  background: #f04438;
+}
+.card[data-kind="raio"]::before {
+  background: #12b76a;
+}
+.card[data-kind="arquivo"]::before {
+  background: #06aed4;
+}
+
+/* Agent steps */
+.split-d ol {
+  padding-left: 0;
+  list-style: none;
+}
+.split-d ol > li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: baseline;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.split-d ol > li[aria-current="step"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.step-badge {
+  margin-left: auto;
+  padding: 1px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475467;
+  background: #eef0f4;
+  border-radius: 999px;
+}
+.step-badge[data-state="feito"] {
+  color: #067647;
+  background: #e0f5ea;
+}
+.step-badge[data-state="aguarda aprovação"] {
+  color: #b54708;
+  background: #fff1d6;
+}
+.step-badge[data-state="ignorado"] {
+  color: #b42318;
+  background: #fdeceb;
+}
+.step-badge[data-state="a executar…"] {
+  color: #fff;
+  background: var(--accent);
+}
+.split-d ol > li > pre {
+  flex-basis: 100%;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Map */
+.map-wrap svg {
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f3fb 100%);
+  border: 1px solid var(--line);
+}
+.map-wrap g[role="button"]:hover circle {
+  filter: drop-shadow(0 0 4px rgb(91 75 240 / 60%));
+}
+
+/* Command bar and switcher */
+.command-bar {
+  border: 0;
+  border-radius: 18px;
+}
+.command-bar input {
+  box-shadow: 0 0 0 4px rgb(91 75 240 / 12%);
+}
+.switcher {
+  background: rgb(27 31 42 / 92%);
+  backdrop-filter: blur(8px);
+}
+.switcher span {
+  font-weight: 600;
+}
+
+.proto-root .proto-state h2 {
+  margin: 16px 0 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.proto-root td:nth-child(2) {
+  white-space: nowrap;
+}
+.proto-root td button {
+  border-bottom: 0;
+  box-shadow: none;
+}
+.split-d ol > li {
+  justify-content: space-between;
+}

@@ -6,7 +6,9 @@ import {
   type Change,
   type ChangeSource,
   type Db,
+  type ParticipationStatus,
   type Procedure,
+  daysUntilDeadline,
   deadlineNote,
   describeChange,
   euro,
@@ -49,7 +51,10 @@ export function ProcedureFacts({ procedure }: { procedure: Procedure }) {
       <dd>{euro.format(procedure.announcedValue)}</dd>
       <dt>Prazo de submissão</dt>
       <dd>
-        {formatDateTime(procedure.deadline)} — {deadlineNote(procedure)}
+        {formatDateTime(procedure.deadline)}{" "}
+        <span className="deadline" data-urgent={daysUntilDeadline(procedure) <= 3}>
+          {deadlineNote(procedure)}
+        </span>
       </dd>
       <dt>Prazo de execução</dt>
       <dd>{procedure.executionDays} dias</dd>
@@ -63,6 +68,14 @@ export function ProcedureFacts({ procedure }: { procedure: Procedure }) {
   );
 }
 
+export function StatusPill({ status }: { status: ParticipationStatus }) {
+  return (
+    <span className="pill" data-status={status}>
+      {statusLabel[status]}
+    </span>
+  );
+}
+
 export function StatusCell({
   db,
   preview,
@@ -72,9 +85,19 @@ export function StatusCell({
   preview?: Db;
   procedureId: string;
 }) {
-  const before = statusLabel[participationOf(db, procedureId).status];
-  const after = statusLabel[participationOf(preview ?? db, procedureId).status];
-  return <Diffed before={before} after={after} />;
+  const before = participationOf(db, procedureId).status;
+  const after = participationOf(preview ?? db, procedureId).status;
+  if (before === after) return <StatusPill status={after} />;
+  return (
+    <span className="pill-change">
+      <del>
+        <StatusPill status={before} />
+      </del>{" "}
+      <ins>
+        <StatusPill status={after} />
+      </ins>
+    </span>
+  );
 }
 
 export function Checklist({
@@ -284,7 +307,9 @@ export function StatePanel({ db, onReset }: { db: Db; onReset: () => void }) {
             return (
               <tr key={p.id}>
                 <td>{p.place}</td>
-                <td>{statusLabel[participation.status]}</td>
+                <td>
+                  <StatusPill status={participation.status} />
+                </td>
                 <td>
                   {participation.preparedDocumentIds.length}/{p.documents.length}
                 </td>

@@ -34,7 +34,7 @@ export function VariantInbox({ db, apply }: VariantProps) {
         <h2>Caixa de sugestões ({inbox.length})</h2>
         {inbox.length === 0 && <p>Sem sugestões. A IA volta a sugerir quando os dados mudarem.</p>}
         {inbox.map((suggestion) => (
-          <article key={suggestion.id} className="card">
+          <article key={suggestion.id} className="card" data-kind={suggestion.id.split("-")[0]}>
             <h3>{suggestion.title}</h3>
             <p>
               <strong>Porquê:</strong> {suggestion.reason}

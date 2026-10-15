@@ -140,8 +140,10 @@ export function VariantAgent({ db, apply }: VariantProps) {
               {plan.steps.map((step, index) => (
                 <li key={step.id} aria-current={index === cursor && running ? "step" : undefined}>
                   {step.title}
-                  {step.needsApproval ? " (requer aprovação)" : ""} —{" "}
-                  <em>{displayStatus(index)}</em>
+                  {step.needsApproval ? " (requer aprovação)" : ""}
+                  <span className="step-badge" data-state={displayStatus(index)}>
+                    {displayStatus(index)}
+                  </span>
                 </li>
               ))}
             </ol>

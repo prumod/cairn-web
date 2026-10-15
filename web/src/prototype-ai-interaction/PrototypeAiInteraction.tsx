@@ -48,6 +48,11 @@ export function PrototypeAiInteraction() {
   return (
     <div className="proto-root">
       <main className="proto-main">
+        <header className="brand">
+          <span className="brand-mark" aria-hidden="true" />
+          <strong>Cairn</strong>
+          <span>Protótipo · mecanismos de interação com IA</span>
+        </header>
         <Component key={`${variant.key}-${resetCount}`} db={db} apply={apply} />
       </main>
       <StatePanel
