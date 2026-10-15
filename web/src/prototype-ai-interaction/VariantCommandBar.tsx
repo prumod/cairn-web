@@ -59,7 +59,7 @@ export function VariantCommandBar({ db, apply }: VariantProps) {
     setQuery("");
     setPageMatches([]);
     setAnswer(null);
-    dialogRef.current?.showModal();
+    dialogRef.current?.show();
   };
   const close = () => dialogRef.current?.close();
 
@@ -280,7 +280,14 @@ export function VariantCommandBar({ db, apply }: VariantProps) {
           </>
         )}
 
-        <dialog ref={dialogRef} className="command-bar" aria-label="Barra de comandos da IA">
+        <dialog
+          ref={dialogRef}
+          className="command-bar"
+          aria-label="Barra de comandos da IA"
+          onKeyDown={(event) => {
+            if (event.key === "Escape") close();
+          }}
+        >
           <form onSubmit={onSubmit}>
             <input
               aria-label="Comando em linguagem natural"
@@ -322,7 +329,7 @@ export function VariantCommandBar({ db, apply }: VariantProps) {
             <section>
               <h2>Páginas (classificação aproximada)</h2>
               <ul className="page-results">
-                {pageMatches.map((m, index) => (
+                {pageMatches.slice(0, 3).map((m, index) => (
                   <li key={m.page.id}>
                     <button type="button" onClick={() => openPage(m.page.id)}>
                       <strong>{m.page.title}</strong>

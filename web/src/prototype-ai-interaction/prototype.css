@@ -793,28 +793,9 @@ body {
   width: min(720px, 92%);
   pointer-events: auto;
 }
-.composer.is-hero {
-  top: 0;
-  bottom: 0;
-  align-items: center;
-  background: rgb(238 240 246 / 72%);
-  backdrop-filter: blur(6px);
-}
-.is-hero .composer-inner {
-  padding: 28px;
-  background: var(--panel);
-  border-radius: 22px;
-  box-shadow: 0 24px 60px rgb(16 24 40 / 18%);
-}
-.composer.is-docked {
+.composer {
   bottom: 72px;
   align-items: flex-end;
-}
-.composer-title {
-  margin: 0 0 14px;
-  font-size: 24px;
-  text-align: center;
-  letter-spacing: -0.02em;
 }
 .composer-box {
   display: flex;
@@ -851,10 +832,6 @@ body {
   border-radius: 16px;
   box-shadow: 0 12px 36px rgb(16 24 40 / 16%);
 }
-.is-hero .chips {
-  justify-content: center;
-  margin-top: 14px;
-}
 .canvas-full {
   grid-column: 1 / -1;
   padding-bottom: 240px;
@@ -865,4 +842,31 @@ body {
 
 .split-d .col {
   padding-bottom: 130px;
+}
+
+.composer .chips {
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.composer-reply {
+  position: relative;
+  max-height: 24vh;
+}
+.proto-root .reply-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  padding: 0 8px;
+  line-height: 1.4;
+}
+
+/* Non-modal command bar: the app behind it stays visible and usable. */
+.command-bar {
+  position: fixed;
+  top: 84px;
+  left: 50%;
+  max-height: 70vh;
+  margin: 0;
+  overflow: auto;
+  transform: translateX(-50%);
 }

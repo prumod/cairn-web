@@ -77,6 +77,7 @@ export function VariantChatCanvas({ db, apply }: VariantProps) {
           : {}),
       },
     ]);
+    setReplyOpen(true);
     setHighlightIds(reply.focusIds);
     const [onlyFocus] = reply.focusIds;
     if (reply.focusIds.length === 1 && onlyFocus !== undefined) {
@@ -107,7 +108,7 @@ export function VariantChatCanvas({ db, apply }: VariantProps) {
   };
 
   const last = messages.at(-1);
-  const hero = messages.length <= 1;
+  const [replyOpen, setReplyOpen] = useState(false);
 
   return (
     <div className="split split-a">
@@ -213,8 +214,6 @@ export function VariantChatCanvas({ db, apply }: VariantProps) {
           ))}
       </section>
       <CenterComposer
-        hero={hero}
-        title="Em que posso ajudar com as obras?"
         label="Pedido"
         placeholder="Peça uma pesquisa, uma revisão de requisitos ou uma decisão…"
         value={draft}
@@ -233,8 +232,17 @@ export function VariantChatCanvas({ db, apply }: VariantProps) {
           )
         }
         above={
-          last !== undefined && (
+          last !== undefined &&
+          replyOpen && (
             <div className="composer-reply">
+              <button
+                type="button"
+                className="reply-close"
+                aria-label="Fechar resposta"
+                onClick={() => setReplyOpen(false)}
+              >
+                ×
+              </button>
               <strong>IA</strong>
               <pre className="wrap">{last.text}</pre>
               {last.proposal?.state === "pendente" && (

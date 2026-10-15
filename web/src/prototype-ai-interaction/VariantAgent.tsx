@@ -196,8 +196,6 @@ export function VariantAgent({ db, apply }: VariantProps) {
         )}
       </section>
       <CenterComposer
-        hero={plan === null}
-        title="Que objetivo quer que o agente cumpra?"
         label="Objetivo"
         placeholder="Ex.: prepara a participação na escola…"
         value={draft}

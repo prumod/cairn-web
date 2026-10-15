@@ -400,10 +400,9 @@ export function PromptChips({
   );
 }
 
-// The main AI input: centred on screen until the first request, then docked bottom-centre.
+// The main AI input: a non-modal bar at the horizontal centre of the screen. It never
+// dims or covers the app; the content above reserves room for it.
 export function CenterComposer({
-  hero,
-  title,
   value,
   onChange,
   onSubmit,
@@ -414,8 +413,6 @@ export function CenterComposer({
   above,
   label,
 }: {
-  hero: boolean;
-  title: string;
   value: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
@@ -427,9 +424,9 @@ export function CenterComposer({
   label: string;
 }) {
   return (
-    <div className={hero ? "composer is-hero" : "composer is-docked"}>
+    <div className="composer">
       <div className="composer-inner">
-        {hero ? <h2 className="composer-title">{title}</h2> : above}
+        {above || <PromptChips prompts={prompts} onPick={onPrompt} />}
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -440,7 +437,7 @@ export function CenterComposer({
           <div className="composer-box">
             <textarea
               aria-label={label}
-              rows={hero ? 3 : 2}
+              rows={1}
               value={value}
               placeholder={placeholder}
               onChange={(event) => onChange(event.target.value)}
@@ -454,7 +451,6 @@ export function CenterComposer({
             <button type="submit">Enviar</button>
           </div>
         </form>
-        {hero && <PromptChips prompts={prompts} onPick={onPrompt} />}
       </div>
     </div>
   );
