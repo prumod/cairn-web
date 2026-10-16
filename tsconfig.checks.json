@@ -3,5 +3,10 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["vitest.config.ts", "playwright.config.ts", "web/tests/**/*.ts"]
+  "include": [
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "playwright.deployed.config.ts",
+    "web/tests/**/*.ts"
+  ]
 }

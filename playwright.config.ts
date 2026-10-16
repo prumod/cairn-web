@@ -3,7 +3,7 @@ import { defineBddConfig } from "playwright-bdd";
 
 export default defineConfig({
   testDir: defineBddConfig({
-    features: "features/**/*.feature",
+    features: "features/{company,access}/**/*.feature",
     steps: "web/tests/acceptance/e2e/**/*.steps.ts",
     outputDir: ".features-gen",
     missingSteps: "fail-on-gen",

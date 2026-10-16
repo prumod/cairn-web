@@ -26,6 +26,7 @@
     "test": "bash scripts/test.sh",
     "test:fast": "node scripts/with-test-postgres.mjs node scripts/run-tests.mjs fast",
     "test:browser": "node scripts/run-tests.mjs browser",
+    "test:deployed": "node scripts/run-tests.mjs deployed",
     "check": "bash scripts/check.sh full"
   },
   "devDependencies": {
