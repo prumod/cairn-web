@@ -246,9 +246,10 @@ Given("the exact testing candidate is live", async () => {
     status?: unknown;
     revision?: unknown;
   };
-  expect(response.ok && health.status === "ready" && health.revision === expectedRevision).toBe(
-    true,
-  );
+  expect(
+    response.ok && health.status === "ready" && health.revision === expectedRevision,
+    `Testing health: HTTP ${response.status}, status ${String(health.status)}, revision ${String(health.revision)}, expected ${expectedRevision}`,
+  ).toBe(true);
 });
 
 Given("the administrator and approved member have signed in with Google", async ({ scenario }) => {
