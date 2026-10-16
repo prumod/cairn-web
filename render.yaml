@@ -11,7 +11,7 @@ services:
       NODE_ENV=development bun install --frozen-lockfile && bun run build
     startCommand: bun run start
     healthCheckPath: /healthz
-    autoDeployTrigger: checksPass
+    autoDeployTrigger: off
     envVars:
       - key: NODE_ENV
         value: production

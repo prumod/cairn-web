@@ -27,7 +27,7 @@ export function validateBlueprint(source, environment) {
         buildCommand: "NODE_ENV=development bun install --frozen-lockfile && bun run build",
         startCommand: "bun run start",
         healthCheckPath: "/healthz",
-        autoDeployTrigger: testing ? "checksPass" : "off",
+        autoDeployTrigger: "off",
         envVars: [
           { key: "NODE_ENV", value: "production" },
           { key: "NODE_VERSION", value: "22.23.2" },

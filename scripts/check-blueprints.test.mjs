@@ -11,9 +11,9 @@ for (const [index, path] of blueprintPaths.entries()) {
     validateBlueprint(source(), environment);
   });
   if (environment === "testing") {
-    test("testing deploys only after CI checks pass", () => {
+    test("testing disables automatic deploys for serialized candidate validation", () => {
       const blueprint = YAML.parse(source());
-      blueprint.services[0].autoDeployTrigger = "checksPass";
+      blueprint.services[0].autoDeployTrigger = "off";
       assert.doesNotThrow(() => validateBlueprint(YAML.stringify(blueprint), environment));
     });
   }
@@ -27,10 +27,7 @@ for (const [index, path] of blueprintPaths.entries()) {
       (b) => (b.services[0].privateValue = "DUMMY-PRIVATE-VALUE"),
     ],
     ["deploys before CI passes", (b) => (b.services[0].autoDeployTrigger = "commit")],
-    [
-      "wrong CI deployment trigger",
-      (b) => (b.services[0].autoDeployTrigger = environment === "testing" ? "off" : "checksPass"),
-    ],
+    ["wrong CI deployment trigger", (b) => (b.services[0].autoDeployTrigger = "checksPass")],
     ["extra services", (b) => b.services.push(structuredClone(b.services[0]))],
     ["Render databases", (b) => (b.databases = [{ name: "database", plan: "free" }])],
     ["preview environments", (b) => (b.previews = { generation: "automatic" })],
