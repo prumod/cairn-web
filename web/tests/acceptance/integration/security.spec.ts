@@ -89,6 +89,17 @@ test("the built authentication route returns a JSON session response", async () 
   expect(await response.json()).toBeNull();
 });
 
+test("JSON sign-out invalidates the server-side session even when its cookie is reused", async () => {
+  const identity = await app.identity("member@example.test");
+  expect(await (await app.request("/api/auth/get-session", identity.cookie)).json()).not.toBeNull();
+
+  const response = await app.request("/api/auth/sign-out", identity.cookie, "POST", {});
+
+  expect(response.status).toBe(200);
+  expect(await (await app.request("/api/auth/get-session", identity.cookie)).json()).toBeNull();
+  expect((await app.request("/api/company-profile", identity.cookie)).status).toBe(401);
+});
+
 test("the production application does not expose a controlled-identity endpoint", async () => {
   // result verification
   expect((await app.request("/api/__test/session", "", "POST", { identity: "admin" })).status).toBe(

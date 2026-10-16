@@ -337,11 +337,11 @@ export const test = base.extend<{ scenario: Scenario }>({
 
     await use(scenario);
 
-    let cleanupFailed = false;
+    const cleanupFailures: string[] = [];
     try {
       await restoreBaseline(scenario);
     } catch {
-      cleanupFailed = true;
+      cleanupFailures.push("Baseline restoration or read-back failed.");
     }
     for (const [page, signedIn] of [
       [scenario.memberPage, scenario.memberSignedIn],
@@ -349,15 +349,21 @@ export const test = base.extend<{ scenario: Scenario }>({
     ] as const) {
       if (!signedIn) continue;
       try {
-        if ((await apiRequest(page, "/api/auth/sign-out", "POST")).status !== 200)
-          cleanupFailed = true;
+        const role = page === scenario.adminPage ? "Administrator" : "Member";
+        const signOut = await apiRequest(page, "/api/auth/sign-out", "POST", {});
+        if (signOut.status !== 200) {
+          cleanupFailures.push(`${role} sign-out returned HTTP ${signOut.status}.`);
+          continue;
+        }
+        const session = await apiRequest(page, "/api/auth/get-session");
+        if (session.status !== 200 || session.data !== null)
+          cleanupFailures.push(`${role} session invalidation was not verified.`);
       } catch {
-        cleanupFailed = true;
+        cleanupFailures.push("Session cleanup request failed.");
       }
     }
     await Promise.all([adminContext.close(), memberContext.close()]);
-    if (cleanupFailed)
-      throw new Error("E2E cleanup could not verify baseline restoration and session sign-out.");
+    if (cleanupFailures.length > 0) throw new Error(cleanupFailures.join(" "));
   },
 });
 
