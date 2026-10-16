@@ -16,7 +16,7 @@ Use the commands in the root `package.json` as the source of truth. `bun run tes
 
 ## Deployed functional E2E
 
-`bun run test:deployed` runs `features/deployed/verify-company-profile.feature` against `https://cairn-testing.onrender.com`. It requires `GITHUB_SHA` and the `CAIRN_E2E_*` Google inputs, and fails closed when any are missing. It exchanges offline refresh tokens for Google ID tokens, validates identity, audience, issuer and expiry, then creates application sessions through Better Auth's ID-token sign-in. It does not test the browser redirect, state or PKCE flow; manual browser OAuth evidence stays separate.
+`bun run test:deployed` runs `features/deployed/verify-company-profile.feature` against `https://cairn-testing.onrender.com`. It requires `CAIRN_CANDIDATE_SHA` (the candidate commit; not `GITHUB_SHA`, which the runner sets to the checked-out default-branch commit) and the `CAIRN_E2E_*` Google inputs, and fails closed when any are missing. It exchanges offline refresh tokens for Google ID tokens, validates identity, audience, issuer and expiry, then creates application sessions through Better Auth's ID-token sign-in. It does not test the browser redirect, state or PKCE flow; manual browser OAuth evidence stays separate.
 
 `.github/workflows/deployed-e2e.yml` runs through `workflow_run` after a successful `Agent checks` push to `feat/63-company-profile`. It runs default-branch code, waits for Render to serve the exact SHA, runs one serialized test in the `cairn-testing-e2e` environment (restricted to `main`), and then publishes the `Deployed company profile E2E` commit status. It never checks out the triggering commit or downloads its artifacts. The workflow runs only after it exists on the default branch.
 

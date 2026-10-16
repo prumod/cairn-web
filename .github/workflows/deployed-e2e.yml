@@ -72,7 +72,7 @@ jobs:
         run: bunx --no-install playwright install --with-deps chromium
       - name: Run deployed Google-authenticated company-profile scenario
         env:
-          GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
+          CAIRN_CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
           CAIRN_E2E_GOOGLE_CLIENT_ID: ${{ secrets.CAIRN_E2E_GOOGLE_CLIENT_ID }}
           CAIRN_E2E_GOOGLE_CLIENT_SECRET: >-
             ${{ secrets.CAIRN_E2E_GOOGLE_CLIENT_SECRET }}
