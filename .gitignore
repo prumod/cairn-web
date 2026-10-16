@@ -3,6 +3,7 @@ node_modules/
 dist/
 .tools/
 .features-gen/
+.vitest/
 test-results/
 playwright-report/
 
