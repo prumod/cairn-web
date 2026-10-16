@@ -355,8 +355,7 @@ When("the member saves a company profile and reloads the page", async ({ scenari
     .getByRole("spinbutton", { name: "Raio de pesquisa (km)" })
     .fill(String(savedProfile.radiusKm));
   await scenario.memberPage.getByRole("button", { name: "Guardar perfil" }).click();
-  const status = await scenario.memberPage.getByRole("status").textContent();
-  expect(status === "Perfil guardado.").toBe(true);
+  await expect(scenario.memberPage.getByRole("status")).toHaveText("Perfil guardado.");
   await scenario.memberPage.reload();
 });
 
