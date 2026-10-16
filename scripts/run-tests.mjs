@@ -37,7 +37,7 @@ if (suite === "fast") {
   }
 } else if (suite === "deployed") {
   const required = [
-    "GITHUB_SHA",
+    "CAIRN_CANDIDATE_SHA",
     "CAIRN_E2E_GOOGLE_CLIENT_ID",
     "CAIRN_E2E_GOOGLE_CLIENT_SECRET",
     "CAIRN_E2E_ADMIN_EMAIL",
@@ -47,8 +47,8 @@ if (suite === "fast") {
   ];
   const missing = required.filter((name) => !process.env[name]?.trim());
   if (missing.length > 0) throw new Error(`Missing deployed E2E inputs: ${missing.join(", ")}`);
-  if (!/^[a-f0-9]{40}$/i.test(process.env.GITHUB_SHA))
-    throw new Error("GITHUB_SHA must be a full commit SHA.");
+  if (!/^[a-f0-9]{40}$/i.test(process.env.CAIRN_CANDIDATE_SHA))
+    throw new Error("CAIRN_CANDIDATE_SHA must be a full commit SHA.");
   run("bddgen", ["--config", "playwright.deployed.config.ts"]);
   run("playwright", ["test", "--config", "playwright.deployed.config.ts"]);
 } else {

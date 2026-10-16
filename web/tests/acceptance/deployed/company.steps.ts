@@ -238,9 +238,9 @@ export const test = base.extend<{ scenario: Scenario }>({
 const { Given, When, Then } = createBdd(test);
 
 Given("the exact testing candidate is live", async () => {
-  const expectedRevision = required("GITHUB_SHA");
+  const expectedRevision = required("CAIRN_CANDIDATE_SHA");
   if (!/^[a-f0-9]{40}$/i.test(expectedRevision))
-    throw new Error("GITHUB_SHA must be a full commit SHA.");
+    throw new Error("CAIRN_CANDIDATE_SHA must be a full commit SHA.");
   const response = await fetch(`${testingOrigin}/healthz`, { cache: "no-store" });
   const health = (await response.json().catch(() => ({}))) as {
     status?: unknown;
