@@ -45,12 +45,15 @@ export async function validateCandidate(api, { pr, sha, actor }) {
     throw new Error(
       "The checked merge candidate must have the exact head tree and current parents.",
     );
-  const checks = await api.checks(pull.merge_commit_sha);
+  // GitHub attaches pull_request check runs to the head SHA, although the
+  // workflow checks out the synthetic merge. Current main is an ancestor of
+  // this immutable head, so the verified identical tree is also what CI tests.
+  const checks = await api.checks(sha);
   const check = checks.check_runs?.find(
     (item) => item.name === "Agent checks" && item.app?.slug === "github-actions",
   );
   if (!check || check.status !== "completed" || check.conclusion !== "success")
-    throw new Error("Agent checks must pass on the current merge candidate.");
+    throw new Error("Agent checks must pass for the current candidate PR head.");
   const runId = check.details_url?.match(
     /^https:\/\/github\.com\/prumod\/cairn-web\/actions\/runs\/(\d+)(?:\/|$)/,
   )?.[1];

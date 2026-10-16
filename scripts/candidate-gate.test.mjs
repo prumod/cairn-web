@@ -65,7 +65,8 @@ function fixture() {
       tree: { sha: tree },
       parents: id === merge ? [{ sha: base }, { sha }] : [],
     }),
-    checks: async () => checks,
+    // Mirrors GitHub: the PR's check run is attached to its head, not merge SHA.
+    checks: async (revision) => (revision === sha ? checks : { check_runs: [] }),
     run: async () => run,
     service: async () => service,
     health: async () => ({ status: "ready", revision: sha }),
