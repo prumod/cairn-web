@@ -148,17 +148,19 @@ async function getUsers(page: Page) {
 
 async function setMemberApproval(scenario: Scenario, approved: boolean) {
   const memberId = scenario.memberId;
-  if (!memberId) throw new Error("The member session was not initialized.");
+  if (!memberId) throw new Error("The testing member was not initialized.");
   const users = await getUsers(scenario.adminPage);
   const rowIndex = users.findIndex((user) => user.id === memberId);
-  expect(rowIndex >= 0).toBe(true);
+  const member = users[rowIndex];
+  if (!member) throw new Error("The testing member is missing from the access list.");
+  if (member.approved === approved) return;
 
   await scenario.adminPage.goto("/access");
   const row = scenario.adminPage
     .getByRole("table")
     .getByRole("row")
     .nth(rowIndex + 1);
-  const currentAction = approved ? "Aprovar" : "Revogar";
+  const currentAction = member.approved ? "Revogar" : "Aprovar";
   const resultingAction = approved ? "Revogar" : "Aprovar";
   await expect(row.getByRole("button", { name: currentAction, exact: true })).toBeVisible();
   await row.getByRole("button", { name: currentAction, exact: true }).click();
@@ -195,6 +197,130 @@ async function restoreBaseline(scenario: Scenario) {
     member?.approved !== approved
   )
     throw new Error("The restored testing baseline could not be verified.");
+}
+
+async function signInAdministrator(scenario: Scenario) {
+  const adminEmail = required("CAIRN_E2E_ADMIN_EMAIL");
+  const adminToken = await refreshGoogleIdToken(
+    required("CAIRN_E2E_ADMIN_REFRESH_TOKEN"),
+    adminEmail,
+  );
+  await signInWithGoogleIdToken(scenario.adminPage, adminToken);
+  scenario.adminSignedIn = true;
+
+  const admin = await apiRequest(scenario.adminPage, "/api/me");
+  const adminMe = admin.data as { email?: unknown; approved?: unknown; administrator?: unknown };
+  expect(
+    admin.status === 200 &&
+      typeof adminMe.email === "string" &&
+      adminMe.email.toLowerCase() === adminEmail.toLowerCase() &&
+      adminMe.approved === true &&
+      adminMe.administrator === true,
+  ).toBe(true);
+
+  const users = await getUsers(scenario.adminPage);
+  const adminRows = users.filter((user) => user.email.toLowerCase() === adminEmail.toLowerCase());
+  const memberRows = users.filter(
+    (user) => user.email.toLowerCase() === required("CAIRN_E2E_MEMBER_EMAIL").toLowerCase(),
+  );
+  expect(adminRows.length === 1 && adminRows[0]?.administrator && adminRows[0]?.approved).toBe(
+    true,
+  );
+  expect(memberRows.length === 1 && !memberRows[0]?.administrator).toBe(true);
+  scenario.memberId = memberRows[0]!.id;
+}
+
+async function recordBaseline(scenario: Scenario) {
+  const profile = await apiRequest(scenario.adminPage, "/api/company-profile");
+  const users = await getUsers(scenario.adminPage);
+  const member = users.find((user) => user.id === scenario.memberId);
+  if (profile.status !== 200 || !isProfile(profile.data) || !member || member.administrator)
+    throw new Error("The required testing baseline is unavailable.");
+
+  scenario.originalProfile = {
+    name: profile.data.name,
+    address: profile.data.address,
+    radiusKm: profile.data.radiusKm,
+  };
+  scenario.originalMemberApproval = member.approved;
+  scenario.baselineCaptured = true;
+}
+
+async function prepareAdministrator(scenario: Scenario, memberApproved: boolean) {
+  await signInAdministrator(scenario);
+  await recordBaseline(scenario);
+  await setMemberApproval(scenario, memberApproved);
+}
+
+async function signInMember(scenario: Scenario, approved: boolean) {
+  const memberEmail = required("CAIRN_E2E_MEMBER_EMAIL");
+  const memberToken = await refreshGoogleIdToken(
+    required("CAIRN_E2E_MEMBER_REFRESH_TOKEN"),
+    memberEmail,
+  );
+  await signInWithGoogleIdToken(scenario.memberPage, memberToken);
+  scenario.memberSignedIn = true;
+
+  const member = await apiRequest(scenario.memberPage, "/api/me");
+  const memberMe = member.data as { email?: unknown; approved?: unknown; administrator?: unknown };
+  expect(
+    member.status === 200 &&
+      typeof memberMe.email === "string" &&
+      memberMe.email.toLowerCase() === memberEmail.toLowerCase() &&
+      memberMe.approved === approved &&
+      memberMe.administrator === false,
+  ).toBe(true);
+}
+
+async function expectMemberPending(scenario: Scenario) {
+  await scenario.memberPage.goto("/");
+  await expect(
+    scenario.memberPage.getByRole("heading", { name: "Acesso à empresa" }),
+  ).toBeVisible();
+  await expect(scenario.memberPage.getByText("A sua conta aguarda aprovação.")).toBeVisible();
+
+  const current = await apiRequest(scenario.memberPage, "/api/me");
+  const currentMe = current.data as {
+    email?: unknown;
+    approved?: unknown;
+    administrator?: unknown;
+  };
+  const memberEmail = required("CAIRN_E2E_MEMBER_EMAIL");
+  expect(
+    current.status === 200 &&
+      typeof currentMe.email === "string" &&
+      currentMe.email.toLowerCase() === memberEmail.toLowerCase() &&
+      currentMe.approved === false &&
+      currentMe.administrator === false,
+  ).toBe(true);
+
+  const read = await apiRequest(scenario.memberPage, "/api/company-profile");
+  const write = await apiRequest(scenario.memberPage, "/api/company-profile", "PUT", savedProfile);
+  expect(read.status === 403 && write.status === 403).toBe(true);
+}
+
+async function expectMemberCanAccessProfile(scenario: Scenario) {
+  const originalProfile = scenario.originalProfile;
+  if (!originalProfile) throw new Error("The testing profile baseline was not recorded.");
+
+  await scenario.memberPage.goto("/");
+  const current = await apiRequest(scenario.memberPage, "/api/me");
+  const currentMe = current.data as {
+    email?: unknown;
+    approved?: unknown;
+    administrator?: unknown;
+  };
+  const memberEmail = required("CAIRN_E2E_MEMBER_EMAIL");
+  const profile = await apiRequest(scenario.memberPage, "/api/company-profile");
+  expect(
+    current.status === 200 &&
+      typeof currentMe.email === "string" &&
+      currentMe.email.toLowerCase() === memberEmail.toLowerCase() &&
+      currentMe.approved === true &&
+      currentMe.administrator === false,
+  ).toBe(true);
+  expect(profile.status === 200 && sameProfile(profile.data, originalProfile)).toBe(true);
+  await expect(scenario.memberPage.getByRole("textbox", { name: "Nome da empresa" })).toBeVisible();
 }
 
 export const test = base.extend<{ scenario: Scenario }>({
@@ -252,67 +378,35 @@ Given("the exact testing candidate is live", async () => {
   ).toBe(true);
 });
 
-Given("the administrator and approved member have signed in with Google", async ({ scenario }) => {
-  const adminEmail = required("CAIRN_E2E_ADMIN_EMAIL");
-  const memberEmail = required("CAIRN_E2E_MEMBER_EMAIL");
-  const adminToken = await refreshGoogleIdToken(
-    required("CAIRN_E2E_ADMIN_REFRESH_TOKEN"),
-    adminEmail,
-  );
-  await signInWithGoogleIdToken(scenario.adminPage, adminToken);
-  scenario.adminSignedIn = true;
-  const admin = await apiRequest(scenario.adminPage, "/api/me");
-  const adminMe = admin.data as { email?: unknown; approved?: unknown; administrator?: unknown };
-  expect(
-    admin.status === 200 &&
-      typeof adminMe.email === "string" &&
-      adminMe.email.toLowerCase() === adminEmail.toLowerCase() &&
-      adminMe.approved === true &&
-      adminMe.administrator === true,
-  ).toBe(true);
+Given(
+  "the administrator has recorded the baseline and marked the member pending",
+  async ({ scenario }) => {
+    await prepareAdministrator(scenario, false);
+  },
+);
 
-  const users = await getUsers(scenario.adminPage);
-  const adminRows = users.filter((user) => user.email.toLowerCase() === adminEmail.toLowerCase());
-  const memberRows = users.filter((user) => user.email.toLowerCase() === memberEmail.toLowerCase());
-  expect(adminRows.length === 1 && adminRows[0]?.administrator && adminRows[0]?.approved).toBe(
-    true,
-  );
-  expect(memberRows.length === 1 && memberRows[0]?.approved && !memberRows[0]?.administrator).toBe(
-    true,
-  );
-  scenario.memberId = memberRows[0]!.id;
+Given(
+  "the administrator and pending member have signed in with Google after the baseline was recorded",
+  async ({ scenario }) => {
+    await prepareAdministrator(scenario, false);
+    await signInMember(scenario, false);
+  },
+);
 
-  const memberToken = await refreshGoogleIdToken(
-    required("CAIRN_E2E_MEMBER_REFRESH_TOKEN"),
-    memberEmail,
-  );
-  await signInWithGoogleIdToken(scenario.memberPage, memberToken);
-  scenario.memberSignedIn = true;
-  const member = await apiRequest(scenario.memberPage, "/api/me");
-  const memberMe = member.data as { email?: unknown; approved?: unknown; administrator?: unknown };
-  expect(
-    member.status === 200 &&
-      typeof memberMe.email === "string" &&
-      memberMe.email.toLowerCase() === memberEmail.toLowerCase() &&
-      memberMe.approved === true &&
-      memberMe.administrator === false,
-  ).toBe(true);
+Given(
+  "the administrator and approved member have signed in with Google after the baseline was recorded",
+  async ({ scenario }) => {
+    await prepareAdministrator(scenario, true);
+    await signInMember(scenario, true);
+  },
+);
+
+When("the pending member signs in with Google", async ({ scenario }) => {
+  await signInMember(scenario, false);
 });
 
-Given("the original profile and approval state are recorded", async ({ scenario }) => {
-  const profile = await apiRequest(scenario.adminPage, "/api/company-profile");
-  const users = await getUsers(scenario.adminPage);
-  const member = users.find((user) => user.id === scenario.memberId);
-  const value = profile.data;
-  if (profile.status !== 200 || !isProfile(value) || member?.approved !== true)
-    throw new Error("The required testing baseline is unavailable.");
-  scenario.originalProfile = {
-    name: value.name,
-    address: value.address,
-    radiusKm: value.radiusKm,
-  };
-  scenario.originalMemberApproval = member.approved;
-  scenario.baselineCaptured = true;
+When("the administrator approves the member", async ({ scenario }) => {
+  await setMemberApproval(scenario, true);
 });
 
 When("the administrator revokes the member's access", async ({ scenario }) => {
@@ -322,25 +416,19 @@ When("the administrator revokes the member's access", async ({ scenario }) => {
 Then(
   "the member sees the pending approval state and profile reads and edits are denied",
   async ({ scenario }) => {
-    await scenario.memberPage.goto("/");
-    await expect(
-      scenario.memberPage.getByRole("heading", { name: "Acesso à empresa" }),
-    ).toBeVisible();
-    await expect(scenario.memberPage.getByText("A sua conta aguarda aprovação.")).toBeVisible();
-
-    const read = await apiRequest(scenario.memberPage, "/api/company-profile");
-    const write = await apiRequest(
-      scenario.memberPage,
-      "/api/company-profile",
-      "PUT",
-      savedProfile,
-    );
-    expect(read.status === 403 && write.status === 403).toBe(true);
+    await expectMemberPending(scenario);
   },
 );
 
-When("the administrator approves the member again", async ({ scenario }) => {
-  await setMemberApproval(scenario, true);
+Then("the original company profile remains unchanged", async ({ scenario }) => {
+  const originalProfile = scenario.originalProfile;
+  if (!originalProfile) throw new Error("The testing profile baseline was not recorded.");
+  const current = await apiRequest(scenario.adminPage, "/api/company-profile");
+  expect(current.status === 200 && sameProfile(current.data, originalProfile)).toBe(true);
+});
+
+Then("the member can access the company profile", async ({ scenario }) => {
+  await expectMemberCanAccessProfile(scenario);
 });
 
 When("the member saves a company profile and reloads the page", async ({ scenario }) => {
@@ -370,24 +458,6 @@ Then("the saved profile remains available after reloading", async ({ scenario })
       values[1] === savedProfile.address &&
       values[2] === String(savedProfile.radiusKm),
   ).toBe(true);
-});
-
-When("the administrator revokes the member's access again", async ({ scenario }) => {
-  await setMemberApproval(scenario, false);
-});
-
-Then("further profile reads and edits are denied in that same session", async ({ scenario }) => {
-  const read = await apiRequest(scenario.memberPage, "/api/company-profile");
-  const write = await apiRequest(scenario.memberPage, "/api/company-profile", "PUT", {
-    name: "Denied E2E write",
-    address: "This value must not be saved",
-    radiusKm: 9,
-  });
-  expect(read.status === 403 && write.status === 403).toBe(true);
   const saved = await apiRequest(scenario.adminPage, "/api/company-profile");
   expect(saved.status === 200 && sameProfile(saved.data, savedProfile)).toBe(true);
-});
-
-Then("the original profile and approval state are restored", async ({ scenario }) => {
-  await restoreBaseline(scenario);
 });

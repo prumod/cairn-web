@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { readConfig } from "./config.js";
+import { readConfig } from "./config.server.js";
 
 test("invalid origins stop startup with a configuration error", () => {
   // result verification

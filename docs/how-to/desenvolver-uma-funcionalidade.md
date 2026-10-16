@@ -31,7 +31,7 @@ Leia a descrição, os critérios de aceitação e os comentários da Issue. Ant
 - Que partes estão dentro e fora do pedido?
 - Como se pode verificar cada critério de aceitação?
 
-Se faltar uma resposta ou houver interpretações possíveis, pergunte na Issue ao sénior ou ao programador intermédio. Espere pela clarificação antes de implementar. Se o pedido depender do backend, confirme o âmbito com essa pessoa. O backend é um projeto separado.
+Se faltar uma resposta ou houver interpretações possíveis, pergunte na Issue ao sénior ou ao programador intermédio. Espere pela clarificação antes de implementar. Se o pedido afetar autenticação, autorização, persistência ou outro comportamento no servidor, confirme o âmbito com essa pessoa. A aplicação full-stack fica em `web/`; o código de servidor está em `web/src/server/` e não existe um backend Express separado.
 
 ## 3. Atualize `main` e crie uma branch
 
@@ -60,7 +60,7 @@ Use `fix/` para uma correção ou `chore/` para uma tarefa técnica. Substitua `
 
 ## 4. Encontre o código relacionado
 
-A aplicação frontend fica em `web/`. Use a pesquisa do editor para encontrar o texto, componente ou rota mencionado na Issue. Leia o código relacionado e os componentes que o chamam antes de decidir onde fazer a alteração.
+A aplicação full-stack TanStack Start fica em `web/`. As rotas estão em `web/src/routes/`, as páginas client em `web/src/pages/` e os handlers, módulos de domínio e infraestrutura de servidor em `web/src/server/`. Use a pesquisa do editor para encontrar o texto, componente ou rota mencionado na Issue. Leia o código relacionado e os componentes que o chamam antes de decidir onde fazer a alteração.
 
 Mantenha a alteração limitada ao pedido. Não reformate nem reorganize ficheiros sem relação com a funcionalidade. Se a estrutura existente não for clara, peça orientação antes de introduzir um padrão novo.
 
@@ -68,25 +68,19 @@ Mantenha a alteração limitada ao pedido. Não reformate nem reorganize ficheir
 
 Implemente os critérios da Issue, um de cada vez. Para cada critério, identifique o resultado observável e acrescente ou atualize um teste automatizado que o verifique.
 
-O projeto tem três padrões de teste configurados:
-
-- Testes unitários em `tests/unit/**/*.test.ts`.
-- Testes de comportamento em `tests/behavior/**/*.feature`, com um ficheiro `.test.ts` no mesmo caminho. Estes usam `loadFeature` e `describeFeature` de `@amiceli/vitest-cucumber`.
-- Testes de browser em `tests/browser/**/*.feature`, com bindings `*.steps.ts` que usam `createBdd` de `playwright-bdd`.
-
-Ainda não existem testes nem cenários da aplicação. Uma suite vazia indica que não há testes a executar, não que o comportamento foi verificado. Se não souber qual padrão usar ou como criar o primeiro teste, peça orientação ao sénior ou ao programador intermédio.
+O projeto tem testes unitários colocados junto ao código, testes de integração HTTP/PostgreSQL em `web/tests/acceptance/integration/` e cenários Playwright-BDD em `features/`, com bindings em `web/tests/acceptance/e2e/`. Os testes de integração e de browser usam o servidor Node compilado do Start e PostgreSQL descartável. As identidades controladas do browser usam um proxy de teste isolado; não são contas Google reais. Uma suite vazia indica que não há testes a executar, não que o comportamento foi verificado. Se não souber qual padrão usar ou como criar um teste, peça orientação ao sénior ou ao programador intermédio.
 
 ## 6. Verifique a funcionalidade no browser
 
-Inicie o frontend na raiz do repositório:
+Inicie a aplicação full-stack na raiz do repositório:
 
 ```sh
 bun run dev
 ```
 
-Abra o endereço local indicado pelo Vite, normalmente `http://localhost:5173`. Percorra o fluxo afetado e confirme os critérios da Issue. Verifique também os estados relevantes, como listas vazias, dados inválidos e carregamento, quando se aplicarem.
+Abra `http://localhost:5173`. Para testar rotas de servidor, configure as variáveis locais e PostgreSQL conforme [Executar o perfil da empresa](run-company-profile.md). Percorra o fluxo afetado e confirme os critérios da Issue. Verifique também os estados relevantes, como listas vazias, dados inválidos e carregamento, quando se aplicarem.
 
-O frontend é um protótipo com dados fictícios e ações simuladas. Não trate uma ação simulada como uma integração real com o backend.
+Os testes automatizados usam identidades locais controladas; isso não comprova a autenticação real com Google. Não exponha a infraestrutura de teste nem use os seus endpoints em produção.
 
 ## 7. Execute as verificações e reveja as alterações
 

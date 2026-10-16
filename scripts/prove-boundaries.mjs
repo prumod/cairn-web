@@ -10,8 +10,8 @@ const sandbox = mkdtempSync(join(tmpdir(), "cairn-boundaries-"));
 const roots = [
   "web/src/pages",
   "web/src/shared",
-  "backend/src/modules",
-  "backend/src/shared",
+  "web/src/server/modules",
+  "web/src/server/shared",
   "shared/src",
 ];
 
@@ -35,7 +35,6 @@ function cruise(expectedRule) {
       "--config",
       join(repository, ".dependency-cruiser.cjs"),
       "web",
-      "backend",
       "shared",
     ],
     { cwd: sandbox, encoding: "utf8" },
@@ -77,23 +76,24 @@ try {
   }
   write("web/src/main.ts", importing("web/src/main.ts", "web/src/pages/one/entry.ts"));
   write(
-    "backend/tests/acceptance/integration/example.spec.ts",
+    "web/tests/acceptance/integration/example.spec.ts",
     importing(
-      "backend/tests/acceptance/integration/example.spec.ts",
-      "backend/src/modules/one/entry.ts",
+      "web/tests/acceptance/integration/example.spec.ts",
+      "web/src/server/modules/one/entry.ts",
     ),
+  );
+  write(
+    "web/src/routes/index.ts",
+    importing("web/src/routes/index.ts", "web/src/server/modules/one/entry.ts"),
   );
   cruise();
   console.log(
-    "PASS: public entry points, own-module private unit imports, and non-unit public imports.",
+    "PASS: public entry points, route-to-server imports, own-module tests, and integration tests.",
   );
 
   for (const root of roots) {
-    prove(
-      `${root}/two/probe.ts`,
-      `${root}/one/implementation/value.ts`,
-      `entrypoint-boundary-${root.replaceAll("/", "-")}`,
-    );
+    const ruleName = `entrypoint-boundary-${root.replaceAll("/", "-")}`;
+    prove(`${root}/two/probe.ts`, `${root}/one/implementation/value.ts`, ruleName);
     prove(
       `${root}/two/probe.spec.ts`,
       `${root}/one/entry.spec.ts`,
@@ -106,8 +106,8 @@ try {
     "entrypoint-boundary-from-app",
   );
   prove(
-    "backend/tests/acceptance/integration/example.spec.ts",
-    "backend/src/modules/one/implementation/value.ts",
+    "web/tests/acceptance/integration/example.spec.ts",
+    "web/src/server/modules/one/implementation/value.ts",
     "entrypoint-boundary-from-app",
   );
   prove(
@@ -116,19 +116,19 @@ try {
     "production-cannot-import-tests",
   );
   prove(
-    "backend/tests/acceptance/integration/example.spec.ts",
-    "backend/src/modules/one/entry.spec.ts",
+    "web/tests/acceptance/integration/example.spec.ts",
+    "web/src/server/modules/one/entry.spec.ts",
     "app-cannot-import-module-tests",
   );
   prove(
     "web/src/pages/two/probe.ts",
-    "backend/src/modules/one/entry.ts",
-    "frontend-cannot-import-backend",
+    "web/src/server/modules/one/entry.ts",
+    "client-cannot-import-server",
   );
   prove(
-    "backend/src/modules/two/probe.ts",
+    "web/src/server/modules/two/probe.ts",
     "web/src/pages/one/entry.ts",
-    "backend-cannot-import-frontend",
+    "server-cannot-import-client",
   );
   prove(
     "shared/src/two/probe.ts",
@@ -137,7 +137,7 @@ try {
   );
   prove(
     "shared/src/two/probe.ts",
-    "backend/src/modules/one/entry.ts",
+    "web/src/server/modules/one/entry.ts",
     "cross-application-shared-is-independent",
   );
   prove(
@@ -146,9 +146,9 @@ try {
     "frontend-shared-cannot-import-pages",
   );
   prove(
-    "backend/src/shared/two/probe.ts",
-    "backend/src/modules/one/entry.ts",
-    "backend-shared-cannot-import-domain-modules",
+    "web/src/server/shared/two/probe.ts",
+    "web/src/server/modules/one/entry.ts",
+    "server-shared-cannot-import-domain-modules",
   );
   write(
     "web/src/pages/two/cycle.ts",
