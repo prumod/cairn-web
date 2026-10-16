@@ -12,6 +12,12 @@ playwright-report/
 .env.*
 !.env.example
 
+# OpenTofu local state and plugins may contain secrets or provider caches
+infra/**/.terraform/
+infra/**/*.tfstate
+infra/**/*.tfstate.*
+infra/**/*.tfplan
+
 # Local editor and operating-system files
 .lavish/
 .DS_Store
