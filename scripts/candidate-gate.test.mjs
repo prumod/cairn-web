@@ -89,6 +89,81 @@ test("approved current PR prepares a pending status on its immutable head, not m
   assert.deepEqual(f.deployments, []);
 });
 
+function bootstrapFixture() {
+  const f = fixture();
+  const candidate = "7b1687cd39bb45e4a03cef586302fcf96038e06f";
+  f.env.GITHUB_REF = "refs/heads/bootstrap/63-reviewed-runner";
+  f.env.GITHUB_SHA = "e".repeat(40);
+  f.env.CAIRN_REVIEWED_RUNNER_SHA = f.env.GITHUB_SHA;
+  f.env.CAIRN_PR_NUMBER = "79";
+  f.env.CAIRN_CANDIDATE_SHA = candidate;
+  f.pull.head.sha = candidate;
+  f.run.head_sha = candidate;
+  f.api.checks = async (revision) => (revision === candidate ? f.checks : { check_runs: [] });
+  f.api.commit = async (id) => ({
+    tree: { sha: tree },
+    parents: id === merge ? [{ sha: base }, { sha: candidate }] : [],
+  });
+  f.api.health = async () => ({ status: "ready", revision: candidate });
+  f.api.deployment = async () => ({ status: "live", commit: { id: candidate } });
+  return f;
+}
+
+test("an explicitly reviewed bootstrap runner may only prepare the pinned repair candidate", async () => {
+  const f = bootstrapFixture();
+  const result = await runGate("prepare", f.env, f.api);
+  assert.equal(result.pr, "79");
+  assert.equal(result.sha, f.env.CAIRN_CANDIDATE_SHA);
+  assert.deepEqual(f.statuses, [{ revision: result.sha, state: "pending" }]);
+  assert.deepEqual(f.deployments, []);
+});
+
+test("bootstrap only publishes success after genuine deployment and unchanged candidate checks", async () => {
+  const f = bootstrapFixture();
+  await runGate("prepare", f.env, f.api);
+  await runGate("deploy", f.env, f.api);
+  await runGate("finish", f.env, f.api);
+  assert.deepEqual(f.deployments, [f.env.CAIRN_CANDIDATE_SHA]);
+  assert.deepEqual(
+    f.statuses.map(({ state }) => state),
+    ["pending", "success"],
+  );
+});
+
+test("bootstrap publishes failure when the deployed revision drifts", async () => {
+  const f = bootstrapFixture();
+  f.api.health = async () => ({ status: "ready", revision: "f".repeat(40) });
+  await assert.rejects(runGate("finish", f.env, f.api));
+  assert.deepEqual(f.statuses, [{ revision: f.env.CAIRN_CANDIDATE_SHA, state: "failure" }]);
+});
+
+for (const [name, mutate] of [
+  ["a different repository", (env) => (env.GITHUB_REPOSITORY = "other/repo")],
+  ["an automatic event", (env) => (env.GITHUB_EVENT_NAME = "pull_request")],
+  ["a missing review SHA", (env) => delete env.CAIRN_REVIEWED_RUNNER_SHA],
+  ["a different review SHA", (env) => (env.CAIRN_REVIEWED_RUNNER_SHA = "f".repeat(40))],
+  [
+    "an abbreviated runner SHA",
+    (env) => {
+      env.CAIRN_REVIEWED_RUNNER_SHA = "eeeeeee";
+      env.GITHUB_SHA = "eeeeeee";
+    },
+  ],
+  ["an unreviewed branch", (env) => (env.GITHUB_REF = "refs/heads/other")],
+  ["another PR", (env) => (env.CAIRN_PR_NUMBER = "75")],
+  ["another candidate", (env) => (env.CAIRN_CANDIDATE_SHA = "a".repeat(40))],
+]) {
+  test(`bootstrap rejects ${name} before any status or deployment`, async () => {
+    for (const command of ["prepare", "deploy", "finish"]) {
+      const f = bootstrapFixture();
+      mutate(f.env);
+      await assert.rejects(runGate(command, f.env, f.api));
+      assert.deepEqual(f.statuses, []);
+      assert.deepEqual(f.deployments, []);
+    }
+  });
+}
+
 const rejected = [
   [
     "a dispatch from candidate code",

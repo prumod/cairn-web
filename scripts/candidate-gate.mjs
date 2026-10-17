@@ -189,12 +189,20 @@ function liveAPI(env) {
 }
 
 export async function runGate(command, env, api = liveAPI(env)) {
+  // Proposed one-off bootstrap branch only; never merge this exception into main.
+  // The protected environment must separately authorize this exact reviewed runner.
+  const reviewedBootstrap =
+    env.GITHUB_REF === "refs/heads/bootstrap/63-reviewed-runner" &&
+    /^[a-f0-9]{40}$/.test(env.CAIRN_REVIEWED_RUNNER_SHA ?? "") &&
+    env.GITHUB_SHA === env.CAIRN_REVIEWED_RUNNER_SHA &&
+    env.CAIRN_PR_NUMBER === "79" &&
+    env.CAIRN_CANDIDATE_SHA === "7b1687cd39bb45e4a03cef586302fcf96038e06f";
   if (
     env.GITHUB_REPOSITORY !== repository ||
     env.GITHUB_EVENT_NAME !== "workflow_dispatch" ||
-    env.GITHUB_REF !== "refs/heads/main"
+    (env.GITHUB_REF !== "refs/heads/main" && !reviewedBootstrap)
   )
-    throw new Error("The candidate gate must be dispatched from this repository's main branch.");
+    throw new Error("The gate requires main or the explicitly reviewed pinned bootstrap runner.");
   if (command === "prepare") {
     const candidate = await validateCandidate(api, {
       pr: env.CAIRN_PR_NUMBER,

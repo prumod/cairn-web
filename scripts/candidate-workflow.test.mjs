@@ -16,6 +16,15 @@ test("candidate gate requires an explicit dispatch with an immutable approval", 
   assert.equal(job.environment.name, "cairn-testing-e2e");
 });
 
+test("bootstrap requires the reviewed runner SHA and pinned repair PR and candidate", () => {
+  assert.equal(workflow.on.workflow_dispatch.inputs.reviewed_runner_sha.required, false);
+  assert.equal(job.env.CAIRN_REVIEWED_RUNNER_SHA, "${{ inputs.reviewed_runner_sha }}");
+  assert.match(job.if, /github.ref == 'refs\/heads\/bootstrap\/63-reviewed-runner'/);
+  assert.match(job.if, /inputs.reviewed_runner_sha == github.sha/);
+  assert.match(job.if, /inputs.pr_number == '79'/);
+  assert.match(job.if, /inputs.candidate_sha == '7b1687cd39bb45e4a03cef586302fcf96038e06f'/);
+});
+
 test("one global lock covers deployment, authenticated tests, and final publication", () => {
   assert.equal(workflow.concurrency.group, "cairn-testing-candidate");
   assert.equal(workflow.concurrency["cancel-in-progress"], false);
