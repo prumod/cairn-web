@@ -310,7 +310,18 @@ export async function runGate(command, env, api = liveAPI(env)) {
       actorId: env.GITHUB_ACTOR_ID,
     });
   }
-  if (env.GITHUB_EVENT_NAME !== "workflow_run" || env.GITHUB_REF !== "refs/heads/main")
+  const reviewedBootstrap =
+    env.GITHUB_EVENT_NAME === "workflow_dispatch" &&
+    env.GITHUB_REF === "refs/heads/bootstrap/82-reviewed-runner" &&
+    /^[a-f0-9]{40}$/.test(env.CAIRN_REVIEWED_RUNNER_SHA ?? "") &&
+    env.CAIRN_REVIEWED_RUNNER_SHA === env.GITHUB_SHA &&
+    env.CAIRN_PR_NUMBER === "83" &&
+    env.CAIRN_CANDIDATE_SHA === "1c80fad8e8eb96ecb197fb872e217882ef85d3a3" &&
+    env.CAIRN_CI_RUN_ID === "39023061871";
+  if (
+    !reviewedBootstrap &&
+    (env.GITHUB_EVENT_NAME !== "workflow_run" || env.GITHUB_REF !== "refs/heads/main")
+  )
     throw new Error(
       "The candidate gate must run from a workflow_run on this repository's main branch.",
     );

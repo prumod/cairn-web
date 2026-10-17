@@ -226,6 +226,33 @@ test("a stale or draft PR cannot receive a trusted submission status", async () 
   }
 });
 
+test("reviewed bootstrap admits only the exact branch, runner, PR, candidate and CI tuple", async () => {
+  const approved = {
+    GITHUB_REPOSITORY: "prumod/cairn-web",
+    GITHUB_EVENT_NAME: "workflow_dispatch",
+    GITHUB_REF: "refs/heads/bootstrap/82-reviewed-runner",
+    GITHUB_SHA: "e".repeat(40),
+    CAIRN_REVIEWED_RUNNER_SHA: "e".repeat(40),
+    CAIRN_PR_NUMBER: "83",
+    CAIRN_CANDIDATE_SHA: "1c80fad8e8eb96ecb197fb872e217882ef85d3a3",
+    CAIRN_CI_RUN_ID: "39023061871",
+  };
+  let calls = 0;
+  const probe = {
+    pull: async () => {
+      calls += 1;
+      throw new Error("admitted-probe");
+    },
+  };
+  await assert.rejects(runGate("prepare", approved, probe), /admitted-probe/);
+  assert.equal(calls, 1);
+  for (const field of Object.keys(approved)) {
+    calls = 0;
+    await assert.rejects(runGate("prepare", { ...approved, [field]: "unapproved" }, probe));
+    assert.equal(calls, 0, field);
+  }
+});
+
 const rejected = [
   [
     "a workflow run from candidate code",

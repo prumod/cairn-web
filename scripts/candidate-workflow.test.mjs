@@ -11,16 +11,14 @@ const attestationWorkflow = YAML.parse(
 );
 const job = workflow.jobs.candidate;
 
-test("the deployed gate starts automatically after Agent checks and filters PRs", () => {
-  assert.deepEqual(workflow.on.workflow_run.workflows, ["Agent checks"]);
-  assert.deepEqual(workflow.on.workflow_run.types, ["completed"]);
-  assert.match(job.if, /github.event.workflow_run.conclusion == 'success'/);
-  assert.match(job.if, /github.event.workflow_run.event == 'pull_request'/);
-  assert.match(job.if, /github.event.workflow_run.head_repository.full_name/);
-  assert.match(job.if, /pull_requests\[0\]\.base\.ref == 'main'/);
-  assert.equal(job.env.CAIRN_PR_NUMBER, "${{ github.event.workflow_run.pull_requests[0].number }}");
-  assert.equal(job.env.CAIRN_CANDIDATE_SHA, "${{ github.event.workflow_run.head_sha }}");
-  assert.equal(job.env.CAIRN_CI_RUN_ID, "${{ github.event.workflow_run.id }}");
+test("the one-time bootstrap binds immutable runner and only the reviewed PR83 head", () => {
+  assert.deepEqual(Object.keys(workflow.on), ["workflow_dispatch"]);
+  assert.equal(workflow.on.workflow_dispatch.inputs.reviewed_runner_sha.required, true);
+  assert.match(job.if, /inputs.reviewed_runner_sha == github.sha/);
+  assert.match(job.if, /refs\/heads\/bootstrap\/82-reviewed-runner/);
+  assert.equal(job.env.CAIRN_PR_NUMBER, "83");
+  assert.equal(job.env.CAIRN_CANDIDATE_SHA, "1c80fad8e8eb96ecb197fb872e217882ef85d3a3");
+  assert.equal(job.env.CAIRN_CI_RUN_ID, "39023061871");
   assert.equal(job.environment.name, "cairn-testing-e2e");
   const prepare = job.steps.find((step) => step.run === "node scripts/candidate-gate.mjs prepare");
   assert.ok(!prepare.env.CAIRN_RENDER_API_KEY);

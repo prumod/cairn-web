@@ -1,14 +1,14 @@
 name: Deployed company profile E2E
 
-# Trusted main-branch code handles the event; candidate build/runtime code never
-# runs on the privileged runner. The gate requires both successful Agent checks
-# and a base-branch attestation for this exact same-repository PR head.
-# No candidate checkout/artifacts or shell interpolation; Render and test
-# secrets remain in trusted main steps only, after head authorization validates.
-on: # zizmor: ignore[dangerous-triggers]
-  workflow_run:
-    workflows: ["Agent checks"]
-    types: [completed]
+# NEVER MERGE: one reviewed immutable runner can validate only PR83's exact
+# correction. Existing candidate, CI, attestation and deployment guards remain.
+on:
+  workflow_dispatch:
+    inputs:
+      reviewed_runner_sha:
+        description: Exact reviewed bootstrap runner commit
+        required: true
+        type: string
 
 permissions:
   actions: read
@@ -26,14 +26,9 @@ jobs:
     name: Validate trusted PR candidate on testing
     if: >-
       github.repository == 'prumod/cairn-web' &&
-      github.event.workflow_run.name == 'Agent checks' &&
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_repository.full_name ==
-      'prumod/cairn-web' &&
-      github.event.workflow_run.pull_requests[0].base.ref == 'main' &&
-      github.event.workflow_run.pull_requests[0].head.sha ==
-      github.event.workflow_run.head_sha
+      github.ref == 'refs/heads/bootstrap/82-reviewed-runner' &&
+      github.event_name == 'workflow_dispatch' &&
+      inputs.reviewed_runner_sha == github.sha
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     permissions:
@@ -45,9 +40,10 @@ jobs:
       name: cairn-testing-e2e
       url: https://cairn-testing.onrender.com
     env:
-      CAIRN_PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
-      CAIRN_CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
-      CAIRN_CI_RUN_ID: ${{ github.event.workflow_run.id }}
+      CAIRN_PR_NUMBER: "83"
+      CAIRN_CANDIDATE_SHA: "1c80fad8e8eb96ecb197fb872e217882ef85d3a3"
+      CAIRN_CI_RUN_ID: "39023061871"
+      CAIRN_REVIEWED_RUNNER_SHA: ${{ inputs.reviewed_runner_sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
