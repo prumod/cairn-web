@@ -126,22 +126,20 @@ async function validateTrustedSubmission(api, { pr, sha, base }) {
       )
         throw new Error("No trusted submission record authorizes this PR head and base.");
       const run = await api.run(runId);
-      // pull_request_target head_sha is the trusted base, not the PR head.
-      // The status description binds PR + head + base; the API's pull_requests
-      // array is not reliable for this event type.
+      // REST run.head_sha is the PR head, even though the pull_request_target
+      // runner's github.sha is the trusted base. Bind the API head to the
+      // candidate; the main-defined status description separately binds base.
       if (
         run.id !== Number(runId) ||
         run.path !== ".github/workflows/trusted-pr-submission.yml" ||
         run.event !== "pull_request_target" ||
         run.actor?.id !== trustedContributorId ||
         run.display_title !== `Trusted PR ${pr} at ${sha}` ||
-        !/^[a-f0-9]{40}$/.test(run.head_sha ?? "")
+        run.head_sha !== sha
       )
         throw new Error("Trusted submission record does not match this PR head and contributor.");
       if (run.status === "completed") {
-        const ancestry = await api.compare(run.head_sha, base);
-        if (run.conclusion !== "success" || !["ahead", "identical"].includes(ancestry.status))
-          throw new Error("Trusted submission did not succeed on main's history.");
+        if (run.conclusion !== "success") throw new Error("Trusted submission did not succeed.");
         return;
       }
     }

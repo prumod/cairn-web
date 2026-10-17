@@ -54,9 +54,10 @@ function fixture() {
     id: 43,
     path: ".github/workflows/trusted-pr-submission.yml",
     event: "pull_request_target",
-    head_sha: base,
+    // REST run metadata reports the PR head, unlike the runner's GITHUB_SHA.
+    head_sha: sha,
     display_title: `Trusted PR 73 at ${sha}`,
-    pull_requests: [],
+    pull_requests: [{ number: 73, head: { sha }, base: { ref: "main", sha: base } }],
     status: "completed",
     conclusion: "success",
     actor: { id: 99197066, login: "TiagoJacinto" },
@@ -123,8 +124,13 @@ function fixture() {
   };
 }
 
-test("trusted submission attestation authorizes only its exact PR head", async () => {
+test("observed PR-target REST head SHA authorizes the candidate without comparing it backwards to main", async () => {
   const f = fixture();
+  f.api.compare = async (from, to) => {
+    assert.equal(from, base);
+    assert.equal(to, sha);
+    return { status: "ahead" };
+  };
   assert.deepEqual(await runGate("prepare", f.env, f.api), { pr: "73", sha, base });
   assert.deepEqual(f.statuses, [{ revision: sha, state: "pending" }]);
   assert.deepEqual(f.deployments, []);
@@ -438,10 +444,9 @@ const rejected = [
     },
   ],
   [
-    "a trusted submission outside main history",
+    "a trusted submission run for another head SHA",
     (f) => {
       f.submissionRun.head_sha = "e".repeat(40);
-      f.api.compare = async (from) => ({ status: from === base ? "ahead" : "diverged" });
     },
   ],
   [
