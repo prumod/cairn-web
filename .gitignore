@@ -25,3 +25,4 @@ infra/**/*.tfplan
 .DS_Store
 .idea/
 .vscode/
+.wrangler/

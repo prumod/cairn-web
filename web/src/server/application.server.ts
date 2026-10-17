@@ -37,7 +37,7 @@ export function getHealth() {
   return protect(async () => {
     const runtime = await getRuntime();
     try {
-      await runtime.db.execute(sql.raw("SELECT 1"));
+      await runtime.db.run(sql.raw("SELECT 1"));
       return json({ status: "ready", revision: runtime.config.revision });
     } catch {
       return json({ status: "unavailable" }, 503);
