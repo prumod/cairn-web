@@ -2,8 +2,8 @@
 const roots = [
   "web/src/pages",
   "web/src/shared",
-  "backend/src/modules",
-  "backend/src/shared",
+  "web/src/server/modules",
+  "web/src/server/shared",
   "shared/src",
 ];
 const modulePath = `^(?:${roots.join("|")})/[^/]+/`;
@@ -45,22 +45,22 @@ module.exports = {
       to: { path: tests },
     },
     {
-      name: "frontend-cannot-import-backend",
+      name: "client-cannot-import-server",
       severity: "error",
-      from: { path: "^web/" },
-      to: { path: "^backend/" },
+      from: { path: "^web/src/(?:pages|shared)/" },
+      to: { path: "^web/src/server/" },
     },
     {
-      name: "backend-cannot-import-frontend",
+      name: "server-cannot-import-client",
       severity: "error",
-      from: { path: "^backend/" },
-      to: { path: "^web/" },
+      from: { path: "^web/src/server/" },
+      to: { path: "^web/src/(?:pages|shared)/" },
     },
     {
       name: "cross-application-shared-is-independent",
       severity: "error",
       from: { path: "^shared/" },
-      to: { path: "^(web|backend)/" },
+      to: { path: "^web/" },
     },
     {
       name: "frontend-shared-cannot-import-pages",
@@ -69,10 +69,10 @@ module.exports = {
       to: { path: "^web/src/pages/" },
     },
     {
-      name: "backend-shared-cannot-import-domain-modules",
+      name: "server-shared-cannot-import-domain-modules",
       severity: "error",
-      from: { path: "^backend/src/shared/" },
-      to: { path: "^backend/src/modules/" },
+      from: { path: "^web/src/server/shared/" },
+      to: { path: "^web/src/server/modules/" },
     },
     {
       name: "no-circular",

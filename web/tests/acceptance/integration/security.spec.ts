@@ -1,11 +1,14 @@
-import { afterEach, beforeEach, expect, test } from "vitest";
+import { afterAll, beforeAll, beforeEach, expect, test } from "vitest";
 import { createTestApplication, type TestApplication } from "./testSupport.js";
 
 let app: TestApplication;
-beforeEach(async () => {
+beforeAll(async () => {
   app = await createTestApplication();
 });
-afterEach(async () => {
+beforeEach(async () => {
+  await app.reset();
+});
+afterAll(async () => {
   await app?.close();
 });
 
@@ -79,9 +82,27 @@ test("anonymous users cannot read, edit, or administer company data", async () =
   ).toBe(401);
 });
 
-test("production application has no controlled-identity endpoint", async () => {
+test("the built authentication route returns a JSON session response", async () => {
+  const response = await app.request("/api/auth/get-session");
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("application/json");
+  expect(await response.json()).toBeNull();
+});
+
+test("JSON sign-out invalidates the server-side session even when its cookie is reused", async () => {
+  const identity = await app.identity("member@example.test");
+  expect(await (await app.request("/api/auth/get-session", identity.cookie)).json()).not.toBeNull();
+
+  const response = await app.request("/api/auth/sign-out", identity.cookie, "POST", {});
+
+  expect(response.status).toBe(200);
+  expect(await (await app.request("/api/auth/get-session", identity.cookie)).json()).toBeNull();
+  expect((await app.request("/api/company-profile", identity.cookie)).status).toBe(401);
+});
+
+test("the production application does not expose a controlled-identity endpoint", async () => {
   // result verification
-  expect((await app.request("/__test/session", "", "POST", { identity: "admin" })).status).toBe(
+  expect((await app.request("/api/__test/session", "", "POST", { identity: "admin" })).status).toBe(
     404,
   );
 });

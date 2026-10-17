@@ -1,6 +1,8 @@
 # Dependencies and generated output
 node_modules/
 dist/
+.output/
+web/.tanstack/
 .tools/
 .features-gen/
 .vitest/

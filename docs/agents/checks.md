@@ -22,7 +22,7 @@ For test boundaries and coverage limits, see [Testing](../../TESTING.md). Packag
 
 ## Local application and test process cautions
 
-When Express serves the compiled SPA, use `res.sendFile("index.html", { root: directory })`; avoid passing a path derived from the checkout's absolute location, which can break under hidden `.worktrees` paths. The disposable PostgreSQL process is detached by `pg_ctl`; Playwright's server wrapper needs graceful `SIGTERM` handling and async shutdown, followed by a checked `pg_ctl stop` before removing its temporary directory. Default `SIGKILL` or signal forwarding alone can leave PostgreSQL running.
+Integration and browser acceptance use the built Nitro Node server at `web/.output/server/index.mjs`, with `web/` as its working directory. Runtime migration lookup depends on this directory because committed SQL files live in `web/migrations/`. The browser fixture's controlled-identity endpoint runs on a separate test-only HTTP proxy; do not add it to the Start application. The disposable PostgreSQL process is detached by `pg_ctl`; Playwright's server wrapper needs graceful `SIGTERM` handling and async shutdown, followed by a checked `pg_ctl stop` before removing its temporary directory. Default `SIGKILL` or signal forwarding alone can leave PostgreSQL running.
 
 ## Shared enforcement
 

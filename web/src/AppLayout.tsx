@@ -1,19 +1,13 @@
-import { StrictMode, useEffect, useState } from "react";
-import { CompanyProfilePage } from "./pages/companyProfile/companyProfile.page";
-import { request } from "./shared/api/client";
-import { BackofficePage } from "./pages/backoffice/backoffice.page";
-import "./style.css";
-import { createRoot } from "react-dom/client";
-
-const container = document.getElementById("root");
-if (container === null) throw new Error("The app root element is missing.");
+import { Link, Outlet } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { request } from "./shared/api/client.js";
 
 type CurrentUser = { id: string; email: string; approved: boolean; administrator: boolean };
 
-function App() {
+export function AppLayout() {
   const [user, setUser] = useState<CurrentUser | null | undefined>();
   const [error, setError] = useState("");
-  const [signingIn, setSigningIn] = useState(false);
+
   useEffect(() => {
     request<CurrentUser | null>("/api/me")
       .then(setUser)
@@ -21,8 +15,8 @@ function App() {
         setError("Não foi possível carregar a sessão. Atualize a página para tentar novamente."),
       );
   }, []);
+
   async function signIn() {
-    setSigningIn(true);
     setError("");
     try {
       const result = await request<{ url: string }>("/api/auth/sign-in/social", {
@@ -33,9 +27,9 @@ function App() {
       window.location.assign(result.url);
     } catch {
       setError("Não foi possível iniciar sessão. Tente novamente.");
-      setSigningIn(false);
     }
   }
+
   async function signOut() {
     try {
       await request("/api/auth/sign-out", {
@@ -48,16 +42,17 @@ function App() {
       setError("Não foi possível terminar a sessão. Tente novamente.");
     }
   }
+
   return (
     <>
       <header>
-        <a className="brand" href="/">
+        <Link className="brand" to="/">
           Cairn
-        </a>
+        </Link>
         {user && (
           <nav aria-label="Navegação">
-            <a href="/">Perfil da empresa</a>
-            {user.administrator && user.approved && <a href="/access">Gerir acessos</a>}
+            <Link to="/">Perfil da empresa</Link>
+            {user.administrator && user.approved && <Link to="/access">Gerir acessos</Link>}
             <button onClick={signOut}>Sair</button>
           </nav>
         )}
@@ -65,27 +60,19 @@ function App() {
       <main>
         {error && <p role="alert">{error}</p>}
         {user === undefined && !error && <p>A carregar…</p>}
-        {user === null && (
+        {user === null ? (
           <section>
             <h1>Entre no Cairn</h1>
             <p>
               Use a sua conta Google. O acesso aos dados da empresa exige aprovação de um
               administrador.
             </p>
-            <button disabled={signingIn} onClick={signIn}>
-              {signingIn ? "A entrar…" : "Entrar com Google"}
-            </button>
+            <button onClick={signIn}>Entrar com Google</button>
           </section>
+        ) : (
+          user && <Outlet />
         )}
-        {user &&
-          (window.location.pathname === "/access" ? <BackofficePage /> : <CompanyProfilePage />)}
       </main>
     </>
   );
 }
-
-createRoot(container).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);

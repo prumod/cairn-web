@@ -19,7 +19,7 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
     command:
-      "exec node scripts/with-test-postgres.mjs node --import tsx backend/tests/acceptance/e2e/server.ts",
+      "exec node scripts/with-test-postgres.mjs node --import tsx scripts/start-browser-test-server.ts",
     gracefulShutdown: { signal: "SIGTERM", timeout: 10000 },
     env: { NODE_ENV: "test", TEST_IDENTITY_KEY: "isolated-local-browser-test" },
     url: "http://127.0.0.1:4173",

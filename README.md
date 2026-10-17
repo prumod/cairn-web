@@ -1,6 +1,6 @@
 # Cairn Web
 
-Este repositório contém a aplicação web Cairn: frontend React, backend Express, autenticação Google e perfil de empresa partilhado com controlo de acesso. Existe um deployment de teste com verificações históricas de OAuth; a adoção dos Blueprints e a publicação de produção ainda não estão concluídas.
+Este repositório contém a aplicação web full-stack Cairn, construída com React e TanStack Start em modo SPA, Better Auth/Google, PostgreSQL e um perfil de empresa partilhado com controlo de acesso. Não existe um backend Express separado. O deployment de teste e as provas de OAuth existentes são anteriores à migração para Start; a nova implementação ainda precisa de validação exata no ambiente de teste. A adoção dos Blueprints e a publicação de produção continuam por concluir.
 
 Leia este ficheiro antes de começar. Se as instruções de configuração mudarem, atualize este README no mesmo pull request.
 
@@ -53,7 +53,7 @@ bun run setup
 
 `bun run setup` instala as dependências a partir do ficheiro de lock. Confirme que o terminal reconhece Bun 1.3.14 com `bun --version`. Depois de atualizar o repositório, `bun run update` instala as dependências desse ficheiro. Altere `bun.lock` apenas quando mudar intencionalmente as dependências.
 
-Para executar apenas a interface em desenvolvimento não precisa de configurar autenticação. Para executar a aplicação completa com backend e PostgreSQL, consulte [Executar o perfil da empresa](docs/how-to/run-company-profile.md). Não configure credenciais reais em ficheiros versionados.
+Para executar a aplicação full-stack localmente, configure PostgreSQL e as variáveis de autenticação conforme [Executar o perfil da empresa](docs/how-to/run-company-profile.md). Não configure credenciais reais em ficheiros versionados.
 
 ## Como executar o projeto
 
@@ -67,7 +67,7 @@ export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"
 
 No Windows, abra um novo terminal PowerShell na raiz do repositório para carregar o `PATH` atualizado pelo assistente.
 
-Para trabalhar apenas na interface, inicie o Vite com `bun run dev` e abra `http://localhost:5173`. As chamadas `/api` são encaminhadas para `http://127.0.0.1:3000`; sem backend e configuração válida, a aplicação completa não funciona. Para executar a aplicação integrada, consulte [Executar o perfil da empresa](docs/how-to/run-company-profile.md).
+Inicie o servidor full-stack de desenvolvimento com `bun run dev` e abra `http://localhost:5173`. TanStack Start serve as rotas da interface e os handlers de servidor na mesma aplicação; não existe proxy para um backend Express. Para configurar autenticação e PostgreSQL ou executar a compilação Node integrada, consulte [Executar o perfil da empresa](docs/how-to/run-company-profile.md).
 
 ## Como contribuir
 
@@ -127,24 +127,23 @@ Os scripts executáveis estão em `scripts/`. Cada script encontra a raiz do rep
 | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bun run setup`            | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                                                                                         |
 | `bun run update`           | Instala as dependências depois de atualizar uma cópia existente.                                                                                                     |
-| `bun run dev`              | Inicia o Vite; encaminha `/api` para o backend local na porta 3000.                                                                                                  |
-| `bun run dev:backend`      | Inicia o backend Express em modo de desenvolvimento (requer ambiente e PostgreSQL).                                                                                  |
-| `bun run build`            | Compila o frontend para `web/dist` e o backend para `backend/dist`.                                                                                                  |
-| `bun run start`            | Inicia o backend compilado, servindo API e frontend na mesma origem.                                                                                                 |
+| `bun run dev`              | Inicia o servidor Vite/TanStack Start full-stack para desenvolvimento.                                                                                               |
+| `bun run build`            | Compila a aplicação TanStack Start/Nitro para `web/.output`.                                                                                                         |
+| `bun run start`            | Inicia o servidor Node compilado com o diretório de trabalho `web/`.                                                                                                 |
 | `bun run db:migrate`       | Aplica as migrações SQL committed ao banco configurado.                                                                                                              |
-| `bun run preview`          | Serve apenas os assets Vite; não substitui o backend integrado.                                                                                                      |
+| `bun run preview`          | Inicia o servidor integrado compilado, igual a `bun run start`.                                                                                                      |
 | `bun run format`           | Formata os ficheiros suportados em todo o repositório com Oxfmt.                                                                                                     |
 | `bun run format:check`     | Verifica a formatação sem alterar ficheiros.                                                                                                                         |
 | `bun run lint`             | Analisa o código-fonte e a configuração do repositório com Oxlint.                                                                                                   |
 | `bun run lint:boundaries`  | Verifica as fronteiras de módulos e dependências.                                                                                                                    |
 | `bun run test:boundaries`  | Prova que as regras de fronteira aceitam e rejeitam exemplos esperados.                                                                                              |
 | `bun run check:blueprints` | Analisa o Blueprint de teste e o template de produção e verifica a política local, sem contactar o Render.                                                           |
-| `bun run typecheck`        | Verifica os tipos do frontend, das configurações de teste e das ligações dos testes.                                                                                 |
+| `bun run typecheck`        | Verifica os tipos da aplicação web, das configurações de teste e das ligações dos testes.                                                                            |
 | `bun run audit`            | Audita as dependências bloqueadas, incluindo as ferramentas de desenvolvimento.                                                                                      |
 | `bun run test`             | Executa os testes rápidos, compila a aplicação e executa os cenários no navegador.                                                                                   |
 | `bun run check`            | Executa a formatação, a análise estática, as verificações de fronteiras e Blueprints, a verificação de tipos, a auditoria de dependências, os testes e a compilação. |
 
-Consulte [Estrutura do projeto](docs/reference/project-structure.md) para as regras de módulos e testes. O conjunto atual inclui testes de configuração, integração HTTP/PostgreSQL e cenários Playwright-BDD. `bun run test:fast` requer PostgreSQL local instalado ou `TEST_DATABASE_URL` para um servidor de teste dedicado com permissão `CREATEDB`. A CI de pull requests usa PostgreSQL 18.6 efémero. `Agent checks` e `Deployed company profile E2E` são obrigatórios na proteção de `main`, com verificações estritas e aplicação a administradores; a proteção exige zero aprovações de revisão.
+Consulte [Estrutura do projeto](docs/reference/project-structure.md) para as regras de módulos e testes. O conjunto inclui testes unitários de configuração, integração HTTP/PostgreSQL contra o servidor Start compilado e cenários Playwright-BDD. `bun run test:fast` requer PostgreSQL local instalado ou `TEST_DATABASE_URL` para um servidor de teste dedicado com permissão `CREATEDB`; `bun run test:browser` compila primeiro a aplicação e usa PostgreSQL descartável e identidades controladas por um proxy de teste isolado. A CI de pull requests usa PostgreSQL 18.6 efémero. `Agent checks` e `Deployed company profile E2E` são obrigatórios na proteção de `main`, com verificações estritas e aplicação a administradores; a proteção exige zero aprovações de revisão.
 
 Para saber como funcionam as verificações de commit e push, a instalação do Gitleaks e do navegador, e a recuperação de falhas, consulte [Verificações dos agentes](docs/agents/checks.md).
 
@@ -152,17 +151,17 @@ Para saber como funcionam as verificações de commit e push, a instalação do 
 
 `render.yaml` tem uma definição de teste que visa o nome de serviço `cairn-testing`, na branch `feat/63-company-profile`, com a origem existente `https://cairn-testing.onrender.com`. A adoção do serviço pelo Blueprint ainda não foi verificada. `deploy/render.production.template.yaml` descreve separadamente o futuro serviço `cairn-production`, na branch `main`, mas mantém a decisão de plano em aberto: `plan: __APPROVED_PRODUCTION_PLAN_REQUIRED__`. Não submeta este template até aprovar um plano não-Free e validar o ficheiro contra o Render. Nenhum plano pago está aprovado. A produção não está aprovada nem provisionada; o ficheiro não autoriza operações no Render. O teste usa Free em Frankfurt; ambos os ficheiros excluem bases de dados Render e previews.
 
-O E2E funcional de teste passou na revisão exata `eb8f66a54dbd6265440f72ffebe4a6be4c900224`, com sessões Google reais por ID token, persistência e revogação na mesma sessão. Consulte [Testes](TESTING.md) para a evidência e os limites; isto não comprova o novo gate nem produção. Mantenha bases de dados PostgreSQL, clientes OAuth e segredos separados entre local, teste e produção.
+O E2E funcional de teste na revisão `eb8f66a54dbd6265440f72ffebe4a6be4c900224` usou a implementação Express anterior. A execução, a evidência do gate e a proteção de `main` são históricas e não certificam a migração Start. A substituição Start só pode ser aceite depois de passar CI, de ser implantada pela revisão exata e de passar E2E funcional com Google nessa mesma revisão. Consulte [Testes](TESTING.md) para os limites. Mantenha bases de dados PostgreSQL, clientes OAuth e segredos separados entre local, teste e produção.
 
-Consulte [Gerir os Blueprints Render](docs/how-to/manage-render-blueprints.md) antes de qualquer operação autorizada. O YAML de teste e o serviço live usam `autoDeployTrigger: off`. O novo fluxo de `.github/workflows/deployed-e2e.yml` inicia após `Agent checks` terminar com sucesso para um PR aberto, não draft, do mesmo repositório para `main`; antes de usar o Render, valida o PR, CI e uma atestação confiável para o SHA exato. `.github/workflows/trusted-pr-submission.yml` usa `pull_request_target` na branch base, apenas para `opened`/`synchronize`, e filtra pelo ID estável de conta do ator autorizado (TiagoJacinto). Faz checkout apenas de `github.sha` (código da base), não executa código candidato nem recebe segredos Render/teste, e publica `Trusted PR submission` para o head atual. O gate espera até 10 minutos por esse status para acomodar filas dos runners e só usa a chave Render depois da validação. Forks, outros atores, PRs fechados e drafts não são implantados; para um draft, é necessário um novo push depois de o tornar pronto. A produção não é alterada. Este fluxo novo só começa a ter efeito depois de ser integrado em `main`, porque `pull_request_target` usa o workflow da branch base; o PR de bootstrap pode ainda precisar do check manual atualmente existente para satisfazer a proteção de branches. Não há aqui afirmação de execução ou deployment live do novo fluxo. **Auto Sync** é separado e não foi alterado; confirme-o antes de qualquer adoção autorizada. O plano Free tem cold starts e limites partilhados; não garante ausência de despesa e o Render desaconselha-o para produção. Não altere faturação nem provisione produção sem autorização. Consulte [Arquitetura](ARCHITECTURE.md) e [Executar o perfil da empresa](docs/how-to/run-company-profile.md) para os restantes limites.
+Consulte [Gerir os Blueprints Render](docs/how-to/manage-render-blueprints.md) antes de qualquer operação autorizada. O YAML de teste e o serviço live usam `autoDeployTrigger: off`. O novo fluxo de `.github/workflows/deployed-e2e.yml` inicia após `Agent checks` terminar com sucesso para um PR aberto, não draft, do mesmo repositório para `main`; antes de usar o Render, valida o PR, CI e uma atestação confiável para o SHA exato. `.github/workflows/trusted-pr-submission.yml` usa `pull_request_target` na branch base, apenas para `opened`/`synchronize`, e filtra pelo ID estável de conta do ator autorizado (TiagoJacinto). Faz checkout apenas de `github.sha` (código da base), não executa código candidato nem recebe segredos Render/teste, e publica `Trusted PR submission` para o head atual. O gate espera até 10 minutos por esse status para acomodar filas dos runners e só usa a chave Render depois da validação. Forks, outros atores, PRs fechados e drafts não são implantados; para um draft, é necessário um novo push depois de o tornar pronto. A produção não é alterada. O PR #81 integrou este fluxo em `main` na revisão `349514a10bc65eaa50ab3d7c5761210c428d7dae`; o primeiro deployment automático ainda não foi verificado. A migração Start continua a precisar de CI e E2E Google na sua revisão exata. Não há aqui afirmação de execução ou deployment live do novo fluxo. **Auto Sync** é separado e não foi alterado; confirme-o antes de qualquer adoção autorizada. O plano Free tem cold starts e limites partilhados; não garante ausência de despesa e o Render desaconselha-o para produção. Não altere faturação nem provisione produção sem autorização. Consulte [Arquitetura](ARCHITECTURE.md) e [Executar o perfil da empresa](docs/how-to/run-company-profile.md) para os restantes limites.
 
 ## Integrações opcionais com Pi
 
-Estas integrações são opcionais. Não são necessárias para instalar ou executar o frontend.
+Estas integrações são opcionais. Não são necessárias para instalar ou executar a aplicação.
 
 ### Acesso local ao WhatsApp
 
-Na estação Ubuntu configurada, Pi carrega o WhatsApp apenas a partir de `.pi/mcp.json` deste repositório. O ficheiro é local, específico da máquina e ignorado pelo Git. Não é necessário para executar o frontend. Não existe uma entrada WhatsApp ao nível do utilizador.
+Na estação Ubuntu configurada, Pi carrega o WhatsApp apenas a partir de `.pi/mcp.json` deste repositório. O ficheiro é local, específico da máquina e ignorado pelo Git. Não é necessário para executar a aplicação. Não existe uma entrada WhatsApp ao nível do utilizador.
 
 O serviço local `whatsapp-bridge.service` tem de estar em execução. A partir da raiz do repositório, execute `pi mcp list` para verificar a ligação ou use `/mcp` no Pi. Depois de alterar a configuração, use `/reload` nas sessões Pi abertas. Pi exige que confie na configuração MCP local do projeto antes de a carregar.
 
@@ -191,7 +190,7 @@ pi
 
 ## Origem e arquitetura
 
-O frontend React/Vite está em `web/`; o backend Node/Express está em `backend/` e serve o frontend compilado e a API na mesma origem. A autenticação Better Auth/Google, PostgreSQL via Drizzle e migrações SQL estão implementados. Oxlint e Oxfmt são executados a partir da raiz. Consulte [Arquitetura](ARCHITECTURE.md) para comportamento atual e limites.
+A aplicação React/TanStack Start está em `web/`: as rotas e páginas ficam em `web/src/routes/` e `web/src/pages/`; os handlers, módulos de domínio, Better Auth, PostgreSQL via Drizzle e migrações SQL ficam em `web/src/server/` e `web/migrations/`. Nitro compila o servidor Node integrado. Oxlint e Oxfmt são executados a partir da raiz. Consulte [Arquitetura](ARCHITECTURE.md) para comportamento atual e limites.
 
 A base foi gerada com `create-better-agent-stack@2.0.0`, através da seleção de funcionalidades em vez de um preset:
 
@@ -201,4 +200,4 @@ bunx create-better-agent-stack@2.0.0 --name cairn-web-features \
   --package-manager bun --no-interactive
 ```
 
-Este comando serve de referência para uma pasta temporária vazia. Não o use para configurar este repositório. O frontend gerado foi movido para `web/`. As dependências e os comandos de formatação e análise estática foram mantidos na raiz. `.agent-stack/manifest.json` regista as funcionalidades selecionadas. Não foram selecionados um preset, ESLint, Ultracite, Anti-slop, um framework de testes ou um workflow de CI. O compilador Oxc está ativado com `react({ compiler: true })` em `web/vite.config.ts`. É experimental.
+Este comando serve de referência para uma pasta temporária vazia. Não o use para configurar este repositório. O frontend React inicial foi movido para `web/` e posteriormente integrado com TanStack Start. As dependências e os comandos de formatação e análise estática foram mantidos na raiz. `.agent-stack/manifest.json` regista as funcionalidades selecionadas. Não foram selecionados um preset, ESLint, Ultracite, Anti-slop, um framework de testes ou um workflow de CI. O compilador Oxc está ativado com `react({ compiler: true })` em `web/vite.config.ts`. É experimental.
