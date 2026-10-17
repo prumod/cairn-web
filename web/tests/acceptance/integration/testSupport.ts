@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { spawn, type ChildProcess } from "node:child_process";
+import { spawn, spawnSync, type ChildProcess } from "node:child_process";
+import { existsSync, mkdtempSync, readdirSync, rmSync, statSync } from "node:fs";
 import {
   createServer as createHttpServer,
   request as httpRequest,
@@ -7,38 +8,32 @@ import {
   type Server,
 } from "node:http";
 import { createServer as createNetServer } from "node:net";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
-import pg from "pg";
+import { drizzle } from "drizzle-orm/sqlite-proxy";
 import { betterAuth } from "better-auth";
 import { testUtils } from "better-auth/plugins";
 import { authOptions } from "../../../src/server/shared/auth/auth.js";
-import { createDatabase, migrateDatabase } from "../../../src/server/shared/database/database.js";
 
-const environmentKeys = [
-  "APP_ORIGIN",
-  "BETTER_AUTH_SECRET",
-  "BOOTSTRAP_ADMIN_EMAIL",
-  "DATABASE_URL",
-  "GOOGLE_CLIENT_ID",
-  "GOOGLE_CLIENT_SECRET",
-  "NODE_ENV",
-  "TEST_IDENTITY_KEY",
-] as const;
+// Prototype fixture: runs the built Worker under workerd with a local D1 database.
+// Node opens the same persisted SQLite file for identity setup and per-test resets.
 
-async function findAvailablePort(requested: number) {
-  if (requested !== 0) return requested;
-  const server = createNetServer();
-  await new Promise<void>((resolve, reject) => {
+function findAvailablePort(requested: number) {
+  if (requested !== 0) return Promise.resolve(requested);
+  return new Promise<number>((resolve, reject) => {
+    const server = createNetServer();
     server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolve);
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      server.close(() => {
+        if (!address || typeof address === "string") reject(new Error("No available test port."));
+        else resolve(address.port);
+      });
+    });
   });
-  const address = server.address();
-  if (!address || typeof address === "string") throw new Error("No available test port.");
-  await new Promise<void>((resolve, reject) =>
-    server.close((error) => (error ? reject(error) : resolve())),
-  );
-  return address.port;
 }
 
 function captureOutput(child: ChildProcess) {
@@ -55,7 +50,12 @@ function captureOutput(child: ChildProcess) {
 async function stop(child: ChildProcess | undefined) {
   if (!child || child.exitCode !== null || child.signalCode !== null) return;
   const closed = new Promise<void>((resolve) => child.once("close", () => resolve()));
-  child.kill("SIGTERM");
+  // wrangler starts workerd as a child process; signal the whole process group.
+  try {
+    process.kill(-child.pid!, "SIGTERM");
+  } catch {
+    child.kill("SIGTERM");
+  }
   let timer: NodeJS.Timeout | undefined;
   const stopped = await Promise.race([
     closed.then(() => true),
@@ -65,16 +65,13 @@ async function stop(child: ChildProcess | undefined) {
   ]);
   if (timer) clearTimeout(timer);
   if (!stopped) {
-    child.kill("SIGKILL");
+    try {
+      process.kill(-child.pid!, "SIGKILL");
+    } catch {
+      child.kill("SIGKILL");
+    }
     await closed;
   }
-}
-
-async function closeServer(server: Server | undefined) {
-  if (!server?.listening) return;
-  await new Promise<void>((resolve, reject) =>
-    server.close((error) => (error ? reject(error) : resolve())),
-  );
 }
 
 async function readJson(request: IncomingMessage) {
@@ -89,62 +86,99 @@ async function readJson(request: IncomingMessage) {
   return JSON.parse(Buffer.concat(chunks).toString("utf8")) as unknown;
 }
 
+async function closeServer(server: Server | undefined) {
+  if (!server?.listening) return;
+  await new Promise<void>((resolve, reject) =>
+    server.close((error) => (error ? reject(error) : resolve())),
+  );
+}
+
+function findD1Database(persistTo: string) {
+  const root = join(persistTo, "v3", "d1");
+  if (!existsSync(root)) return undefined;
+  const files = readdirSync(root, { recursive: true, withFileTypes: false })
+    .map(String)
+    .filter((name) => name.endsWith(".sqlite"))
+    .map((name) => join(root, name))
+    .filter((path) => statSync(path).size > 0);
+  return files[0];
+}
+
 export async function createTestApplication(
   requestedPort = 0,
   { testControlProxy = false }: { testControlProxy?: boolean } = {},
 ) {
-  const connectionString = process.env.TEST_DATABASE_URL;
-  if (!connectionString) throw new Error("Run tests via the PostgreSQL test wrapper.");
-
-  const previousEnvironment = new Map(
-    environmentKeys.map((key) => [key, process.env[key]] as const),
-  );
-  const name = "cairn_test_" + randomUUID().replaceAll("-", "");
-  const identifier = pg.escapeIdentifier(name);
-  const rootPool = new pg.Pool({ connectionString });
-  let pool: pg.Pool | undefined;
+  const webRoot = fileURLToPath(new URL("../../../", import.meta.url));
+  const persistTo = mkdtempSync(join(tmpdir(), "cairn-d1-test-"));
+  const wranglerConfig = join(webRoot, "dist/server/wrangler.json");
+  const wrangler = join(webRoot, "node_modules/wrangler/bin/wrangler.js");
+  const wranglerEnvironment = { ...process.env, WRANGLER_SEND_METRICS: "false" };
   let appServer: ChildProcess | undefined;
+  let sqlite: DatabaseSync | undefined;
   let proxyServer: Server | undefined;
-  let databaseCreated = false;
-
-  async function restoreEnvironment() {
-    for (const key of environmentKeys) {
-      const value = previousEnvironment.get(key);
-      if (value === undefined) delete process.env[key];
-      else process.env[key] = value;
-    }
-  }
 
   async function cleanup() {
     const errors: unknown[] = [];
-    async function attempt(operation: () => Promise<void>) {
-      try {
-        await operation();
-      } catch (error) {
-        errors.push(error);
-      }
+    try {
+      await closeServer(proxyServer);
+    } catch (error) {
+      errors.push(error);
     }
-    await attempt(() => closeServer(proxyServer));
-    await attempt(() => stop(appServer));
-    if (pool) await attempt(() => pool!.end());
-    if (databaseCreated) {
-      await attempt(async () => {
-        await rootPool.query({ text: "DROP DATABASE " + identifier });
-      });
+    try {
+      await stop(appServer);
+    } catch (error) {
+      errors.push(error);
     }
-    await attempt(() => rootPool.end());
-    await attempt(restoreEnvironment);
+    try {
+      sqlite?.close();
+    } catch (error) {
+      errors.push(error);
+    }
+    try {
+      rmSync(persistTo, { recursive: true, force: true });
+    } catch (error) {
+      errors.push(error);
+    }
     if (errors.length > 0) throw new AggregateError(errors, "Test application cleanup failed.");
   }
 
   try {
-    await rootPool.query({ text: "CREATE DATABASE " + identifier });
-    databaseCreated = true;
-    const url = new URL(connectionString);
-    url.pathname = "/" + name;
-    const { db, pool: applicationPool } = createDatabase(url.toString());
-    pool = applicationPool;
-    await migrateDatabase(db, fileURLToPath(new URL("../../../migrations", import.meta.url)));
+    const migrated = spawnSync(
+      process.execPath,
+      [
+        wrangler,
+        "d1",
+        "migrations",
+        "apply",
+        "DB",
+        "--local",
+        "--persist-to",
+        persistTo,
+        "--config",
+        wranglerConfig,
+      ],
+      { cwd: webRoot, env: wranglerEnvironment, encoding: "utf8" },
+    );
+    if (migrated.status !== 0) {
+      throw new Error("D1 migrations failed: " + migrated.stdout + migrated.stderr);
+    }
+
+    const databaseFile = findD1Database(persistTo);
+    if (!databaseFile) throw new Error("Local D1 database file was not created.");
+    sqlite = new DatabaseSync(databaseFile);
+    sqlite.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;");
+    const rawSqlite = sqlite;
+
+    // Node-side Drizzle proxy for identity setup. The Worker still uses its own D1 binding.
+    const db = drizzle(async (sql, params, method) => {
+      const statement = rawSqlite.prepare(sql);
+      if (method === "run") {
+        statement.run(...(params as never[]));
+        return { rows: [] };
+      }
+      const rows = statement.all(...(params as never[])) as Record<string, unknown>[];
+      return { rows: rows.map((row) => Object.values(row)) };
+    });
 
     const secret = randomUUID();
     const googleClientId = "controlled-test-client";
@@ -158,21 +192,13 @@ export async function createTestApplication(
       APP_ORIGIN: origin,
       BETTER_AUTH_SECRET: secret,
       BOOTSTRAP_ADMIN_EMAIL: "admin@example.test",
-      DATABASE_URL: url.toString(),
       GOOGLE_CLIENT_ID: googleClientId,
       GOOGLE_CLIENT_SECRET: googleClientSecret,
-      HOST: "127.0.0.1",
-      NODE_ENV: "test",
-      PORT: String(appPort),
-      TEST_IDENTITY_KEY: key,
-      ...(process.env.HOME === undefined ? {} : { HOME: process.env.HOME }),
-      ...(process.env.PATH === undefined ? {} : { PATH: process.env.PATH }),
     };
-    Object.assign(process.env, environment);
 
     const utils = testUtils();
     const auth = betterAuth({
-      ...authOptions(db, { origin, secret, googleClientId, googleClientSecret }),
+      ...authOptions(db as never, { origin, secret, googleClientId, googleClientSecret }),
       // The upstream helper returns options: undefined, which violates exactOptionalPropertyTypes.
       plugins: [
         {
@@ -208,41 +234,44 @@ export async function createTestApplication(
 
     type Identity = Awaited<ReturnType<typeof createIdentity>>;
     const identities = new Map<string, Identity>();
-    const webRoot = fileURLToPath(new URL("../../../", import.meta.url));
-    const serverEntry = fileURLToPath(
-      new URL("../../../.output/server/index.mjs", import.meta.url),
+
+    appServer = spawn(
+      process.execPath,
+      [
+        wrangler,
+        "dev",
+        "--config",
+        wranglerConfig,
+        "--local",
+        "--persist-to",
+        persistTo,
+        "--ip",
+        "127.0.0.1",
+        "--port",
+        String(appPort),
+        ...Object.entries(environment).flatMap(([key, value]) => ["--var", key + ":" + value]),
+      ],
+      { cwd: webRoot, env: wranglerEnvironment, stdio: ["ignore", "pipe", "pipe"], detached: true },
     );
-    appServer = spawn(process.execPath, [serverEntry], {
-      cwd: webRoot,
-      env: environment,
-      stdio: ["ignore", "pipe", "pipe"],
-    });
     const output = captureOutput(appServer);
     const exited = new Promise<never>((_resolve, reject) => {
       appServer!.once("error", reject);
       appServer!.once("close", (code, signal) => {
-        reject(new Error(`TanStack Start server exited (${String(code ?? signal)}): ${output()}`));
+        reject(new Error(`Worker dev server exited (${String(code ?? signal)}): ${output()}`));
       });
     });
 
     let ready = false;
     let lastObservation = "no response";
-    const deadline = Date.now() + 25_000;
+    const deadline = Date.now() + 60_000;
     while (!ready && Date.now() < deadline) {
       const response = await Promise.race([
-        fetch(appOrigin + "/healthz", {
-          headers: { Origin: origin },
-          signal: AbortSignal.timeout(1_500),
-        }).catch(() => null),
+        fetch(appOrigin + "/healthz", { signal: AbortSignal.timeout(1_500) }).catch(() => null),
         exited,
       ]);
       if (response) {
-        const contentType = response.headers.get("content-type") ?? "unknown content type";
         const body = await response.text().catch(() => "unreadable response");
-        lastObservation = `HTTP ${response.status} (${contentType}): ${body.slice(0, 160)}`;
-        if (response.status >= 500 && response.status !== 503) {
-          throw new Error(`TanStack Start returned ${lastObservation}: ${output()}`);
-        }
+        lastObservation = `HTTP ${response.status}: ${body.slice(0, 160)}`;
         try {
           const health: unknown = JSON.parse(body);
           if (
@@ -256,13 +285,13 @@ export async function createTestApplication(
             break;
           }
         } catch {
-          // Continue until the app responds with its database-backed readiness state.
+          // Continue until the Worker responds with its database-backed readiness state.
         }
       }
-      await delay(100);
+      await delay(200);
     }
     if (!ready) {
-      throw new Error(`TanStack Start server was not ready (${lastObservation}): ${output()}`);
+      throw new Error(`Worker was not ready (${lastObservation}): ${output()}`);
     }
 
     if (testControlProxy) {
@@ -353,9 +382,10 @@ export async function createTestApplication(
         });
       },
       async reset() {
-        await pool!.query({
-          text: 'TRUNCATE TABLE company_profile, session, account, verification, user_access, "user" RESTART IDENTITY CASCADE',
-        });
+        // SQLite has no TRUNCATE; delete children before parents to honor foreign keys.
+        rawSqlite.exec(
+          'DELETE FROM company_profile; DELETE FROM session; DELETE FROM account; DELETE FROM verification; DELETE FROM user_access; DELETE FROM "user";',
+        );
       },
       close: cleanup,
     };
