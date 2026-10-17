@@ -1,19 +1,14 @@
 name: Deployed company profile E2E
 
-# Dispatching approves this exact PR head's build/runtime code for testing.
-# The app itself receives testing credentials on Render: runner isolation alone
-# is not a reason to deploy untrusted PRs. Only main supplies privileged code.
-on:
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: Trusted same-repository PR to main
-        required: true
-        type: string
-      candidate_sha:
-        description: Full PR head SHA approved for testing
-        required: true
-        type: string
+# Trusted main-branch code handles the event; candidate build/runtime code never
+# runs on the privileged runner. The gate requires both successful Agent checks
+# and a base-branch attestation for this exact same-repository PR head.
+# No candidate checkout/artifacts or shell interpolation; Render and test
+# secrets remain in trusted main steps only, after head authorization validates.
+on: # zizmor: ignore[dangerous-triggers]
+  workflow_run:
+    workflows: ["Agent checks"]
+    types: [completed]
 
 permissions:
   actions: read
@@ -30,8 +25,15 @@ jobs:
   candidate:
     name: Validate trusted PR candidate on testing
     if: >-
-      github.ref == 'refs/heads/main' &&
-      github.repository == 'prumod/cairn-web'
+      github.repository == 'prumod/cairn-web' &&
+      github.event.workflow_run.name == 'Agent checks' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name ==
+      'prumod/cairn-web' &&
+      github.event.workflow_run.pull_requests[0].base.ref == 'main' &&
+      github.event.workflow_run.pull_requests[0].head.sha ==
+      github.event.workflow_run.head_sha
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     permissions:
@@ -43,8 +45,9 @@ jobs:
       name: cairn-testing-e2e
       url: https://cairn-testing.onrender.com
     env:
-      CAIRN_PR_NUMBER: ${{ inputs.pr_number }}
-      CAIRN_CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+      CAIRN_PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+      CAIRN_CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+      CAIRN_CI_RUN_ID: ${{ github.event.workflow_run.id }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -53,13 +56,12 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22.23.2"
-      - name: Validate PR, CI, and exclusive testing service
+      - name: Validate PR, trusted submission record, and testing service
         id: prepare
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          CAIRN_RENDER_API_KEY: ${{ secrets.CAIRN_RENDER_API_KEY }}
         run: node scripts/candidate-gate.mjs prepare
-      - name: Deploy approved immutable candidate after CI
+      - name: Deploy the exact trusted candidate after CI
         env:
           GITHUB_TOKEN: ${{ github.token }}
           CAIRN_RENDER_API_KEY: ${{ secrets.CAIRN_RENDER_API_KEY }}
