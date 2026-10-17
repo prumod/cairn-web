@@ -6,14 +6,49 @@ import { test } from "node:test";
 const workflow = YAML.parse(
   readFileSync(new URL("../.github/workflows/deployed-e2e.yml", import.meta.url), "utf8"),
 );
+const attestationWorkflow = YAML.parse(
+  readFileSync(new URL("../.github/workflows/trusted-pr-submission.yml", import.meta.url), "utf8"),
+);
 const job = workflow.jobs.candidate;
 
-test("candidate gate requires an explicit dispatch with an immutable approval", () => {
-  assert.deepEqual(Object.keys(workflow.on), ["workflow_dispatch"]);
-  assert.equal(workflow.on.workflow_dispatch.inputs.pr_number.required, true);
-  assert.equal(workflow.on.workflow_dispatch.inputs.candidate_sha.required, true);
-  assert.match(job.if, /github.ref == 'refs\/heads\/main'/);
+test("the deployed gate starts automatically after Agent checks and filters PRs", () => {
+  assert.deepEqual(workflow.on.workflow_run.workflows, ["Agent checks"]);
+  assert.deepEqual(workflow.on.workflow_run.types, ["completed"]);
+  assert.match(job.if, /github.event.workflow_run.conclusion == 'success'/);
+  assert.match(job.if, /github.event.workflow_run.event == 'pull_request'/);
+  assert.match(job.if, /github.event.workflow_run.head_repository.full_name/);
+  assert.match(job.if, /pull_requests\[0\]\.base\.ref == 'main'/);
+  assert.equal(job.env.CAIRN_PR_NUMBER, "${{ github.event.workflow_run.pull_requests[0].number }}");
+  assert.equal(job.env.CAIRN_CANDIDATE_SHA, "${{ github.event.workflow_run.head_sha }}");
+  assert.equal(job.env.CAIRN_CI_RUN_ID, "${{ github.event.workflow_run.id }}");
   assert.equal(job.environment.name, "cairn-testing-e2e");
+  const prepare = job.steps.find((step) => step.run === "node scripts/candidate-gate.mjs prepare");
+  assert.ok(!prepare.env.CAIRN_RENDER_API_KEY);
+});
+
+test("the trusted submission event is main-defined and limited to opened/synchronize", () => {
+  assert.deepEqual(attestationWorkflow.on.pull_request_target.types, ["opened", "synchronize"]);
+  assert.deepEqual(attestationWorkflow.on.pull_request_target.branches, ["main"]);
+  assert.equal(attestationWorkflow.permissions.contents, undefined);
+  assert.match(attestationWorkflow.jobs.record.if, /github.actor_id == '99197066'/);
+  assert.match(attestationWorkflow.jobs.record.if, /head\.repo\.full_name == github\.repository/);
+  assert.equal(attestationWorkflow.jobs.record.permissions.statuses, "write");
+  assert.ok(!attestationWorkflow.jobs.record.env?.CAIRN_RENDER_API_KEY);
+  const checkout = attestationWorkflow.jobs.record.steps.find((step) =>
+    step.uses?.startsWith("actions/checkout@"),
+  );
+  assert.equal(checkout.with.ref, "${{ github.sha }}");
+  assert.equal(checkout.with["persist-credentials"], false);
+  assert.ok(
+    attestationWorkflow.jobs.record.steps.some(
+      (step) => step.run === "node scripts/candidate-gate.mjs attest",
+    ),
+  );
+  assert.ok(
+    attestationWorkflow.jobs.record.steps.every(
+      (step) => !Object.values(step.env ?? {}).some((value) => String(value).includes("secrets.")),
+    ),
+  );
 });
 
 test("one global lock covers deployment, authenticated tests, and final publication", () => {
@@ -46,7 +81,6 @@ test("only trusted workflow code is checked out; candidate artifacts are not dow
 });
 
 test("the exact candidate drives health and E2E without overriding GITHUB_SHA", () => {
-  assert.equal(job.env.CAIRN_CANDIDATE_SHA, "${{ inputs.candidate_sha }}");
   const health = job.steps.find((step) => step.run === "node scripts/wait-for-render-revision.mjs");
   assert.equal(health.env.DEPLOYED_SHA, "${{ steps.prepare.outputs.sha }}");
   assert.equal(health.env.CAIRN_TESTING_HEALTH_URL, "https://cairn-testing.onrender.com/healthz");
