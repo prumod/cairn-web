@@ -1,0 +1,515 @@
+CRONOLOGIA UNIFICADA: ÁUDIO + VISÃO
+Vídeo de origem: 2026-10-15 19-18-41 (duração 01:39:26; 1920 x 1080; 30 fps)
+
+Legenda dos tipos de registo:
+  [ÁUDIO]  transcrição da fala. Tem um único instante de início: [hh:mm:ss].
+  [VISÃO]  descrição visual do que se vê no ecrã/na câmara. Tem um intervalo: [início - fim].
+
+Notas:
+  - Os registos estão ordenados pelo instante de início. Quando coincidem, o registo de VISÃO aparece antes do de ÁUDIO.
+  - Os tempos são do vídeo original, arredondados ao segundo (incerteza de cerca de um segundo).
+  - O texto de ÁUDIO é a transcrição original (alguns registos foram encurtados; ver nota abaixo). O texto de VISÃO é a tradução para português europeu da descrição visual original em inglês.
+  - Texto que aparece no ecrã, entre aspas, mantém-se na língua original.
+  - A descrição visual não inclui inferências sobre a fala, e a transcrição de áudio pode conter erros de reconhecimento de voz.
+  - Nesta versão foram removidos os registos sem relação com o projeto Cairn (conversas paralelas, assuntos de aulas e trabalhos, problemas técnicos de gravação/Discord/Wi-Fi, a tela de desenho vazia e gestos sem conteúdo). A lista completa dos removidos está em removidos.txt.
+  - Nesta versão, os registos de VISÃO só ficam se o que mostram for tratado em algum registo de ÁUDIO que começa no mesmo instante ou depois. Os removidos estão em removidos_visao.txt.
+
+[00:00:01 - 00:00:23] [VISÃO] O Chrome ocupa o ecrã com um protótipo em português chamado Cairn. O cabeçalho diz «Cairn» e «Protótipo · mecanismos de interação com IA». O separador ativo «Lista» está ao lado de «Mapa» e «Dossier». Sob «Obras no raio de 50 km», uma tabela tem as colunas «Obra», «Local», «Prazo» e «Estado». Os quatro projetos, em azul e com ligação, são «Pavimentação da Rua do Moinho» (Batalha, 18 km, 2026-10-17), «Muro de suporte na EN 356» (Alcobaça, 27 km, 2026-10-22), «Requalificação da Escola Básica de Marrazes» (Leiria, 4 km, 2026-10-28) e «Reabilitação do Mercado Municipal de Pombal» (Pombal, 31 km, 2026-11-10). Todos mostram «Sem decisão». Por baixo há sugestões com contorno roxo: «Mostra obras até 30 km», «Quais os prazos mais urgentes?», «Posso concorrer à escola?», «Vamos participar na escola», «Marca os documentos que já temos no arquivo» e «O que falta na escola?». Um campo de texto termina num botão roxo «Enviar». Uma barra lateral fixa à direita diz «Demonstração. Dados fictícios; a IA é simulada; nada é enviado.», com «Reiniciar demonstração», uma caixa «Rever termos», dados fictícios da empresa, uma tabela de cinco linhas de documentos/estado e «Registo de alterações / Sem alterações». A navegação inferior identifica «A (Chat + canvas)» entre «Anterior» e «Seguinte». Os separadores escuros e os marcadores do navegador mantêm-se no topo; não se vê nenhuma pessoa nem cena física de câmara.
+
+[00:00:23 - 00:00:25] [VISÃO] O protótipo muda para um esquema convencional com vários separadores: «Obras», «Prazos», «Mapa», «Perfil da empresa» e «Documentos de proposta». Uma tabela estreita de trabalho fica à esquerda; uma área de detalhe em branco pede ao utilizador que selecione um projeto. A barra lateral de demonstração mantém-se à direita.
+
+[00:01:31 - 00:01:32] [VISÃO] A página muda para um esquema de caixa de entrada, com cartões de notificação empilhados à esquerda e a tabela dos quatro projetos à direita.
+
+[00:01:32 - 00:01:36] [VISÃO] Um esquema de comparação de concursos substitui a caixa de entrada: linhas de projetos e colunas numéricas/de estado enchem o painel esquerdo, enquanto um painel de IA com sugestões e campo de texto ocupa a direita da área principal.
+
+[00:01:36 - 00:01:43] [VISÃO] Surge um esquema com mapa esquemático e lista de obras. O mapa, à esquerda, tem uma faixa costeira turquesa, marcadores coloridos de localização, linhas de percurso e um círculo roxo tracejado que delimita a pesquisa; a legenda fica por baixo. Uma tabela de quatro linhas ocupa o centro-direita.
+
+[00:01:43 - 00:01:51] [VISÃO] A caixa «Rever termos» está agora marcada na barra lateral, o que expõe uma longa explicação de «Termos de redação» e notas em caixas. A página é reposicionada na vertical, expondo alternadamente mais da legenda do mapa e da explicação lateral. Surgem breves etiquetas ao passar junto dos marcadores do mapa. Alterações de zoom do navegador ampliam brevemente a página por volta dos 00:01:51 e depois restauram o esquema mais pequeno.
+
+[00:01:46] [ÁUDIO] tem que uma visualização
+
+[00:01:51 - 00:02:14] [VISÃO] O ecrã de mapa/tabela mantém-se, com a barra lateral de terminologia expandida. Uma pequena dica escura aparece junto aos marcadores inferiores do mapa por volta de 00:02:07–00:02:08 e desaparece.
+
+[00:01:51] [ÁUDIO] Se queres ver alguma coisa deste ano? faz sentido ver alguma coisa fora do Rei? Não, interessante. Tu configuras este valor, 50 km. Se às vezes queres mais, às vezes queres menos. 50 50 km. Não, mas se às vezes mudas. Ah, sim, sim, sim. É mesmo? E às vezes estás à procura de...
+
+[00:02:16] [ÁUDIO] Menos ou mais? Não, a tem uma limitação meio alhada, mas com o ímpar já é longe. Então a tem a noção. Só que a ideia do programa é que servir para uma empresa ou para outra. Para uma empresa pode ser 30 e para outra pode ser 50. Sim, isso.
+
+[00:02:24 - 00:02:27] [VISÃO] A caixa de entrada de notificações regressa, com cartões com botões de ação, incluindo «Aceitar», «Dispensar» e «Ver obra», ao lado da tabela de obras.
+
+[00:02:37 - 00:02:40] [VISÃO] Surge um esquema de chatbot a três colunas: cartões de projetos à esquerda, a conversa com a IA e os botões de sugestão ao centro, e um painel «Dossier» praticamente vazio à direita.
+
+[00:02:40 - 00:02:49] [VISÃO] O esquema de mapa/tabela regressa. A barra lateral de terminologia desloca-se para mais títulos e parágrafos.
+
+[00:02:42] [ÁUDIO] Podia definir alguns termos, não sei se...
+
+[00:02:47] [ÁUDIO] começar por alguns termos primeiro, ser mais fácil de falar
+
+[00:02:57] [ÁUDIO] e mostrar também como é que no programa.
+
+[00:03:04 - 00:03:08] [VISÃO] Abre-se um documento de texto no editor. Títulos e listas com marcadores em português enchem o painel principal. O Explorador estreita-se e o documento desce; o texto pequeno do documento não é totalmente legível na amostragem geral.
+
+[00:03:22] [ÁUDIO] Já temos o projeto?
+
+[00:04:26] [ÁUDIO] Já fizeram? Esta parte está pronta? Ok. A parte da modulação... Não, mas está resolvendo. fazendo. Então vamos ver com outro grupo. Então vamos ver a parte mais tecnológica. Vai fazendo paralelo assim, uma coisa e outra e vai discutindo as ideias. sim. Vamos ver como que criamos o modelo. O que eu gostei mais foi o chatbot central.
+
+[00:04:40 - 00:04:46] [VISÃO] O separador «Dossier» abre para «Pavimentação da Rua do Moinho». Um painel de detalhes claro contém os campos de entidade adjudicante, local, valor, prazo, plataforma e qualificação, com um aviso amarelo de prazo. Ao descer, surge uma lista de verificação da proposta com caixas vazias. Os botões de sugestão e o campo de conversa mantêm-se sobre a parte inferior.
+
+[00:04:46 - 00:04:47] [VISÃO] Surge um painel de controlo «Painel», com quatro cartões-resumo no topo e barras horizontais roxas por baixo; um painel de IA ocupa a coluna adjacente.
+
+[00:04:59] [ÁUDIO] Então, vocês... Estão de obras.
+
+[00:05:09 - 00:05:10] [VISÃO] O separador «Prazos» mostra uma lista de prazos datados de projetos, com um distintivo amarelo de urgência na primeira entrada.
+
+[00:05:11 - 00:05:13] [VISÃO] O separador «Perfil da empresa» mostra os dados da empresa e as opções de raio; o botão do meio está roxo.
+
+[00:05:13 - 00:05:14] [VISÃO] O separador «Documentos de proposta» mostra uma área de documentos quase vazia e a mensagem «Nenhuma participação em preparação».
+
+[00:05:47 - 00:05:48] [VISÃO] A conversa central contém agora uma mensagem roxa do utilizador e um cartão claro de resposta da IA sobre o projeto da escola, com um cartão de projeto ligado por baixo. O texto exato da mensagem não é legível com fiabilidade ao tamanho da vista geral.
+
+[00:05:48] [ÁUDIO] Tem uma navegação, dá para fazer com um classificador, com um modelo classificador. Se o Dernan quiser encontrar uma página, por vezes dá para fazer uma pesquisa do conteúdo, por vezes também dá para fazer com um classificador, com um modelo classificador. Essa é a primeira ideia, mas...
+
+[00:05:49 - 00:06:12] [VISÃO] O esquema de caixa de entrada/tabela de obras é mostrado. O primeiro cartão refere uma oportunidade compatível para a escola; outro refere o prazo a aproximar-se do projeto de pavimentação. A página mantém-se praticamente inalterada durante este intervalo.
+
+[00:06:14] [ÁUDIO] Criamos para depois. É para depois. Estamos só a tentar identificar o que é quem luzência artificial.
+
+[00:06:28] [ÁUDIO] como é que ela interage com o modelo à volta, que tipo de visualização é que queríamos, que tipo de informações é que são importantes para depois saber que dados é que devemos alterar. pronto, se é preciso mostrar algum tipo de tabela, mapa...
+
+[00:06:46 - 00:06:51] [VISÃO] Uma sugestão de IA recebe destaque roxo. Uma linha de contexto/estado e um controlo «Limpar contexto» ficam visíveis junto ao campo de conversa; a tabela principal permanece inalterada.
+
+[00:06:55] [ÁUDIO] Qual motor você pode utilizar? O gratuito, né? Eu não sei se ele é gratuito, mas ele é O motor é para se modificar. Em princípio, vai ser o gratuito, vai ser o cláudio. Ah, ok. O estudante é quebrado.
+
+[00:06:56 - 00:07:17] [VISÃO] Surge um modelo de chatbot com «Pedidos prontos» à esquerda e «Resultado» à direita. Os pedidos preparados estão agrupados sob títulos de pesquisa, decisão e preparação. A coluna do meio contém a saudação da IA, sugestões com contorno e o campo de texto. A coluna da direita lista municípios com estados de «sem decisão» inalterados e uma área de alterações aplicadas. O ponteiro move-se sobre os controlos sem grande alteração de conteúdo.
+
+[00:07:17 - 00:07:30] [VISÃO] Surge um esquema de tarefa de agente maioritariamente em branco. Uma caixa de seleção e um texto explicativo ocupam a coluna esquerda; o centro pede um objetivo, com botões de sugestão relacionados com a participação e um campo de mensagem por baixo. O painel «Atividade» à direita diz «Sem atividade».
+
+[00:07:19] [ÁUDIO] Não, o outro também é os colegas do ano passado que disseram com o Studio. Eu não sei se ainda continua a gratuito. Eles ainda vão tentar alterar umas coisas. Vamos ver se alguma coisa fazia sentido. Eu gosto desta ideia do chatbot central. alterar, por exemplo, mostra obras. Isto, vai ser estático, vai ser configurado.
+
+[00:07:30 - 00:07:33] [VISÃO] Surge uma visualização de relações intitulada «Quem ganha onde». Um mapa costeiro contém nós quadrados laranja/vermelhos, marcadores azuis e linhas curvas de ligação; filtros de município e tipo de projeto estão por cima. Um painel de IA fica adjacente.
+
+[00:07:33 - 00:07:35] [VISÃO] Uma vista «Mapa» mostra círculos de vários tamanhos em torno de pontos geográficos, com contornos coloridos e percursos no interior e em redor do limite de pesquisa.
+
+[00:07:35 - 00:08:00] [VISÃO] Surge a vista «Pipeline»: cartões de projetos «Sem decisão» formam uma coluna à esquerda, com categorias vazias por baixo, um painel de IA/conversa ao centro e o mapa esquemático com legenda à direita. Os mesmos quatro projetos estão listados; a barra lateral de terminologia mantém-se no extremo direito.
+
+[00:07:49] [ÁUDIO] Ah, que são protestados, que o chefe carrega, isso?
+
+[00:07:52] [ÁUDIO] A configuração do raio é configurado uma vez e depois já não se muda. É porque a empresa tem empresa que trabalha padrão. Chega assim um raio de 30 km. Então o que ele fala que é estático é isso. Mas depois já há ideias, há informações que até aqui, até como prontos, até são interessantes. Quais é que são os prazos mais urgentes. Portanto também tínhamos pensado com a visualização do tempo.
+
+[00:08:21] [ÁUDIO] talvez por cima do mapa, tempo e geográfico também. Ok, com o mapa geográfico. Garanto isso que concorrer. A gente teve, não sei se ficou o ciente, na primeira vez a gente só falou de uma situação, a gente abriu um leque para o portal base.
+
+[00:08:43] [ÁUDIO] e também o Diário da República. tem que falar disso não, tem que falar disso. Só falando do Portal Base. O Diário da é o seguinte, por exemplo. Mas você está com da República através de que a gente queria... API. Ah, que eu uma API. Eu já tenho uma E é gratuito. Eu sabia. Você tem uma API gratuito, eu voto em profeito. Porque assim, às vezes você está na empresa e você está procurando os concursos. E ali você perde muito tempo. E lançando uma inteligência artificial com o raio de uns 30 km e agora, não, hoje tem concursos em Aveiro, em Rádio...
+
+[00:09:06 - 00:09:27] [VISÃO] O painel esquerdo do pipeline desloca-se para baixo. O título sai de vista e as categorias inferiores, incluindo «Em análise», «Em preparação» e «Não concorrer», ficam mais visíveis. O painel central de IA e o mapa à direita mantêm-se no lugar.
+
+[00:09:13] [ÁUDIO] você já maximiza tempo na empresa, já ganha tempo e como vocês estão a indicar exatamente o sítio onde é a procurar, vai ser aleatório porque eu vou a procurar no sítio que é controlado por vocês e se calhar isto é uma ideia interessante ter uma uma pipeline de fases de obra porque há várias fases e então depois o próprio concurso
+
+[00:09:42] [ÁUDIO] ou própria... É o concurso público, neste caso. Depois tem várias fases que podemos movimentar fase em fase. Se calhar dá para escolher... Pouso filtrar os concursos Está aqui uma ideia, escolher o concurso e falar com a Inteligencia Social sobre o concurso ou a seleção, caso podemos selecionar várias.
+
+[00:09:50 - 00:10:00] [VISÃO] O cartão «Pavimentação da Rua do Moinho» fica roxo sólido, indicando seleção. Uma linha de contexto do projeto e um controlo «Limpar contexto» aparecem acima do campo de conversa. O mapa e os restantes cartões de projeto continuam visíveis.
+
+[00:10:03] [ÁUDIO] É só um deles ou um conjunto? É, ser um conjunto.
+
+[00:10:16 - 00:10:20] [VISÃO] O painel de controlo aparece com quatro cartões-resumo, uma longa barra roxa em valor por estado e barras mais curtas em dias até ao prazo. O painel desce para revelar um gráfico de linhas roxo com pontos circulares e depois volta a subir para os cartões-resumo.
+
+[00:10:17] [ÁUDIO] Depois já... aqui não sei se é interessante... Não sei se... Depois vamos ter um modelo classificador, vai classificar os concursos públicos, porque é que não dá para filtrar o programa, porque ele não tem as categorias. É preciso classificar. Quem é vai fazer esse classificador? São vocês?
+
+[00:10:38] [ÁUDIO] Já existe o Ah ok, já está? Sim, podemos usar um... Não mexer lá, nem mexer lá, lá... Podemos usar. Hoje em dia já temos o Geo, o modelo classificador, já tem o mapa e é fácil configurar. Só não sei é se... Porque o modelo tem um limite de informação que pode receber, portanto... Se não der esse, dá outro. Ok, ok. Também não é preciso mudar muito rápido.
+
+[00:11:06] [ÁUDIO] Completamente sim. seja, não gosto de não gosto de não querer treinar nada disso no passejeio mesmo. Algo já existe e utiliza como API e ponto final, não é? Sim. Sim. o tempo perfeito. Sim, sim, sim. Até.
+
+[00:11:24 - 00:13:06] [VISÃO] O dossier mantém-se praticamente na mesma posição de deslocamento inferior. Três caixas de verificação vazias estão visíveis, juntamente com o aviso amarelo de prazo por cima. O ponteiro muda de posição; não se verifica visualmente nenhuma alteração de caixa ou de estado neste intervalo.
+
+[00:11:25] [ÁUDIO] Por exemplo, ter...
+
+[00:11:30] [ÁUDIO] O check list da proposta. Sim, faz sentido. para mim, para as empresas, mas é interessante... Eu, para mim, até era o check list em que a Inteligencia Arceal analisava e dizia, previamente, que acho que está quase... Estás a perceber a proposta? Eu entendi.
+
+[00:11:56] [ÁUDIO] Neste caso está quase. Ela vai ler os documentos quais são da proposta. quase pronto. vez de você clicar, ela já diz, olha, previamente já está quase. Só precisa de confirmação. E aí você vai ter o cheque lixo e aí ela vai confrontar.
+
+[00:12:16] [ÁUDIO] o que é pedido na proposta, com o que você tem. E aí pra saber, ó, tá ok, ó, não, tá faltando tal documento. Até porque se faltar um documento você...
+
+[00:12:27] [ÁUDIO] não ganha o concurso. Então é uma coisa que abre os olhos. É importante. ajuda. Sim, com certeza. Mas é que isso me automata. E ao se ele próprio dizer, olha, já tenho isto, já tenho aquilo. Já diz, olha, já tens mais ou menos isto. Se calhar falta-te isto.
+
+[00:12:49] [ÁUDIO] Sim, deixarem imigrante a abertura. Está tudo 100%, não é pá? Dá uma sugestão. E depois quando estiver completo diz, pelo que eu vejo está completo, mas agora tens que confirmar se realmente... que confirmar, já pensaste trabalho todo de ajuda, porque agora a mais vai assim. Porque a gente também não pode confiar 100 % na inteligência artificial. Não é? Não é? Não Não Não Não
+
+[00:13:19] [ÁUDIO] e tinha a ver com a interpretação, não era o da República mas também era a interpretação de leis. Achei que tínhamos a imposta. Até era a imposta. Era o IRS. E ele errou reclamorosamente.
+
+[00:13:27 - 00:13:33] [VISÃO] Os detalhes do projeto da escola expandem-se por baixo da tabela de obras à direita. Um painel claro de dossier mostra o título da escola e os campos de entidade/local/valor. Os cartões de notificação mantêm-se à esquerda.
+
+[00:13:33] [ÁUDIO] tranquilosamente, porque junta lá está, juntou os dois documentos e faz uma resposta otimizando, se só você saber como é que funciona a coisa, a estatística das palavras, ele juntou aquela coisa que não bate certo, que não está efetivamente dito na lei, está lá e precisa ver os ditos, só que ele, eu sei como é que funciona, é? Vai com a maior probabilidade das palavras, juntou, faz não sei quanto e tal, é possível, e está lá a pregui... não é possível, fica maluco, vai tão mal, fica tão mal, que mandei aquilo e foi assim, que merda eu fiz!
+
+[00:14:02] [ÁUDIO] O que documento é rei de inserção para que é maior? Para que? Ou seja, devia ter pedido pesquisa dele e depois devia ter confronto. seja, devia ter eu indo ler os documentos que ele me apanhou. Mas eu não fiz isso, mas foi a força bruta, portanto... portanto, com a corrupção, sim. Mas aquele primeiro passo já é muito importante, porque eu tenho que tirar algum trabalho. Depois eu preciso de espírito e que eu me analise. Mídola e de Médola.
+
+[00:14:35] [ÁUDIO] A próxima semana a gente já pode trazer a modelo.
+
+[00:14:48] [ÁUDIO] Eu vou precisar de alguma forma, podem não precisar nenhuma coisa, é assim, precisarem para vos ajudar na parte da implementação, tudo bem, para estar a construir diagramas todos, os diagramas de atividades e de sequência, só se vocês forem utilizar na prática. Porquê que eu preciso utilizar? Porque há coisas que vocês não podem utilizar, se vocês não fizeres algum atamento, não isso que os requisitos. Só que falta implementar, até para vocês controlarem, isto o tempo é infinito.
+
+[00:15:05 - 00:15:09] [VISÃO] O mapa de bolhas regressa. Um menu pendente acima dele abre-se para mostrar opções de camadas, fecha-se, e outro filtro recebe foco. O mapa apresentado mantém-se substancialmente igual.
+
+[00:15:14] [ÁUDIO] Não vai dar para fazer tudo o que vocês querem, ok? Isso, tem de saber se tudo é vai acontecer. É, mas é a amadeção também nasce isto, É, para semana os coelhos vão escolher uma coisa igual, não É o relatório. Ah, mas é o relatório, não Não é teste, não? Não, é um relatório.
+
+[00:15:49] [ÁUDIO] Depois agora é confirmar o que é que o Verlan quer fazer com a inteligência. Já sabemos mais ou menos o que a inteligência pode fazer proativamente e depois agora temos de saber que tipo de perguntas é que o Verlan gostaria de fazer. Em princípio ele nem sequer vai configurar muito com botões. Por exemplo, se ele quiser configurar um evento, alguma coisa acontece. A inteligência depois vê que tem o contexto e depois produz algum tipo de relatório.
+
+[00:15:50 - 00:16:24] [VISÃO] O mapa de bolhas regressa. Círculos coloridos e percursos de ligação assentam numa área de terra clara junto a uma costa turquesa, rodeados pelo limite de pesquisa roxo tracejado. O ponteiro move-se sobre o mapa e os controlos sem alteração verificada do resultado dos filtros.
+
+[00:16:19] [ÁUDIO] Depois vai ser tudo pela inteligência.
+
+[00:16:23] [ÁUDIO] Você não tem alguma opinião a dar para você? E a cor de você estar vendo isso? Não, é sim. A opinião, isto agora, como isto é um caso concreto, é exatamente para ver, de acordo com os requisitos e as funcionalidades que o corte dentro, o que estou a ver, acho que quem vai utilizar depois é que efetivamente pode dizer hoje, porque é é acontecimento útil, é? Porque uma coisa fazer para aqui para o projeto, é? Outra coisa é algo que seja útil, prático, é? Sim. a não pode estar fazer coisas, claro, para o projeto, mas que não seja prático ou que seja útil sequer, às vezes pode ser prático, mas...
+
+[00:17:00] [ÁUDIO] É uma das coisas que eu falei aos meninos que assim, isso hoje é um trabalho mas amanhã pode render frutos. Exatamente. E é fácil perceber que vai levar, não é para escolher pessoas mas que o preto imenso vai conseguir fazer muito mais coisas e agora para confirmar que o preto imenso não era um erro aí custa dinheiro. Sim, com certeza e muito.
+
+[00:17:02 - 00:17:08] [VISÃO] A etiqueta do mapa diz «Condeixa - 68» à escala da vista geral, sendo os caracteres seguintes demasiado pequenos para confirmar. O ponto selecionado fica realçado e uma linha de contexto de projeto correspondente aparece por baixo das sugestões de IA. O painel do mapa e a coluna de IA adjacente deslocam-se ligeiramente.
+
+[00:17:30] [ÁUDIO] concursos, mas é claro que gente tem que ser de forma controlada e consegue ajudar bastante. Então é bom ter avaliações, como se fossem testes à inteligência para garantir que ela na maioria das vezes dá a resposta certa.
+
+[00:17:48] [ÁUDIO] Avaliações como? Não me explico como é você faz essas avaliações. Evaluations, em inglês conheço. Sim, mas por que que vão fazer em inglês? Que sentido? Evaluações como? Agradeço. Eles vão fazer evaluations de Das postas que são drop-out. Sim, sim. Mas que é o número que vai validar? isso que vocês estão a dizer? Não, não. É como se fosse um teste. Qual é a porcentagem de vezes que ela acerta com o tipo de mediante um certo input.
+
+[00:18:15] [ÁUDIO] Ah, ok, ok. Mas isso é feito por vocês? Sim, sim. Na pronta, vocês a dizer isso e depois perceberam a estatística sobre a qualidade e o valor da metodologia. E vocês tem que dar esse input, Esse input é só de puto, porque depois ela perceberam que é também por centrado. Para ter a noção de acerto. A pessoa sabe mais ou menos o que é. Porque isto não é um mapa normal. Não. foi tirado até as opressoras do aluno.
+
+[00:18:45] [ÁUDIO] é uma visualização um pouco diferente. Qual o teste? O de Daniel? Tiramos algumas visualizações. Eu é que tirei, são um pouco complexas. Se o professor conheça, já não me lembro dessa visualização.
+
+[00:19:03] [ÁUDIO] tem símbolos a mais, tem círculos a mais, depois entram mais ou menos. Pois, porque é assim. E a pessoa que consegue olhar para isto e que consegue identificar algo, uma coisa que já, ou se já usou isto, ou este tipo de visualização. Não, eu já não estou lembrar desta visualização, porque é pior ainda. Eu não estou lembrar de ter feito esta visualização. Sim, isto de se calhar, isto é complexo. Esta se calhar nem vai.
+
+[00:19:34] [ÁUDIO] Como que vocês vão pedir para esses gráficos também serem tirados com interesse oficial? Ou não? Ou só vocês construtos? É um modelo de dados que vai ser criado na base de Já a medida que falamos, ela depois vai alterando a base de dados. E depois o modelo, atualiza. A gente percebe que isto é complexo. Sim, eu estava na questão de lembrar.
+
+[00:20:02] [ÁUDIO] Em certas zonas chama-se uma época de símbolos. Não tinha legenda? Ninguém o programou, mas não...
+
+[00:20:26] [ÁUDIO] Mas está também assim. Fácil é que for útil. sim, sim. Só estava a ver a utilidade daquele. Tem símbolos à volta de símbolos. Exatamente, sim. Temos ali o raio. Não estou a perceber a simbologia daquilo que estou a ver.
+
+[00:20:49 - 00:20:55] [VISÃO] Uma conversa anterior carrega. O deslocamento passa por parágrafos explicativos, uma pergunta do utilizador, títulos, listas e marcadores de imagem azuis sobre visualizações. Os títulos legíveis incluem «So what is the root conclusion?» e «Which visualizations are the most interesting?».
+
+[00:20:55 - 00:21:02] [VISÃO] As visualizações incorporadas acabam de carregar. A página alterna entre uma imagem de painel de controlo com estatísticas-resumo, um gráfico de linhas e um mapa de rede, e uma lista numerada de miniaturas de visualizações mais pequenas. «The main dashboard (Figure 6)» está visível acima do painel maior.
+
+[00:21:01] [ÁUDIO] Não tem, É porque ele fez em cima do portal base né professor? no base, nas várias datas que saíram do portal base, fizemos o web scrapping. É uma situação que ele pode ter tipo assim, exemplo. Onde é que tem mais concursos? Porque você compara tipo Aveiro com o Céu Ed Vogan, a maior probabilidade não, a maior parte dos concursos vai ser em Aveiro, então ele fez um círculo maior, às vezes pode ter um círculo menor. esse de que é os mapas assim.
+
+[00:21:02 - 00:21:08] [VISÃO] Uma tabela intitulada «The 6 main types of visualizations» enche a área da conversa. Lista gráficos circulares, gráficos de barras, um mapa geográfico de pontos, um mapa de arcos, gráficos de séries temporais e uma tabela interativa, com colunas de explicação e de referência às figuras. Pequenos ajustes verticais reposicionam a tabela.
+
+[00:21:08 - 00:21:13] [VISÃO] A conversa desce pela imagem do painel até à secção «Which visualizations are the most interesting?», mostrando três opções ilustradas: ligações comprador-fornecedor, concentração de fornecedores e contratos ao longo do tempo/eleições.
+
+[00:21:13 - 00:21:16] [VISÃO] Um visualizador de imagem abre sobre a conversa escurecida. Um mapa alto e claro, ao centro, contém muitos pontos vermelhos dispostos ao longo de uma região com forma de país. O visualizador fecha-se depois.
+
+[00:21:31] [ÁUDIO] deve existir uma legenda deve ser uma legenda que ele criou para eu já não me recordo, confesso que já não me recordo deste mapa aqui este mapa deve estar demasiado é só aqueles mapas com as bolas
+
+[00:21:55] [ÁUDIO] Prontos. Vamos ver se definimos alguns termos. A moderação... Acho que não pronto, mas... Sim, sim, mas já no bom caminho. Pronto, estão sintonizados com os outros colegas, com o Prélio também. A gente vai bater um papo aqui.
+
+[00:22:37] [ÁUDIO] já tive a grande ideia. Que era artesanal. Imagina, tinhas tipo um mapa 3D ou o acesso ao Google Earth ou uma cena assim que a ver. Eu tinha que pensar nisso, a gente puxar do... Do Google Earth. Mas como é que ficava? Imagina, o que eu estou pensando é que tu tens o Google Earth, tu tens a inteligência artificial tipo obras, aquele bar, aquilo de direção...
+
+[00:23:07] [ÁUDIO] tipo, um raio tipo, um raio tipo de uma obra tipo, tu tens um raio já prece setado, não é? tu escolhes tipo área, que é a área, tá? de 30, 30 quilômetros e aquilo depois vai te mostrar as obras a pessoa aplica tipo no sinal de introdução aquilo vai te dar a introdução e aparece um pão para com informação, estás a ver? Acho que é melhor ver. Eu acho que pensei parecido com o Chinei, eu acho que é parecido, não sei se é, é coisa muito óbvia.
+
+[00:23:36] [ÁUDIO] Vamos gravar uns pôrios. Eu vou parar e ir para frente. Qual a ideia? Pelo menos para eu entender o meu pensamento para isso. Para que você me torne. Sim. Qual a ideia? Vamos, a gente vai pedir um raio de 30 km. Então, quando tiver dentro desse raio de 30 km, vamos dizer, sei lá, a ver.
+
+[00:24:06] [ÁUDIO] Aí saiu o concurso naquele dia para Aveiro
+
+[00:24:26] [ÁUDIO] Quando eu pedir ele vai gerar o mapa
+
+[00:24:29] [ÁUDIO] informando que naquele dia saiu concurso para esta região aqui que tem Aveiro, Meia Láter Olhe em Câmbio, seria isso? E o que estava a pensar é tipo tu fazes o pedido a Aeitas Verde, ela vai te dar o sítio, vai te dar o coisa e depois o que é que vais fazer? Aqui vai ao 3D do Google Earth tu cliques na cena da Aveiro e aparecem os dados basicamente, entendes? Os dados na localização da Aveiro, aparece uma lista das obras e era isso. Acho que era nice essa cena. Era do concurso.
+
+[00:24:59] [ÁUDIO] Nesse caso as coisas de concursos tipo tu colocas na loja onde a veio e aparece só os concursos abertos, a ver? Os concursos abertos. E há os concursos abertos, tipo só da veio? Sim, sim. Porque eu acho isso interessante. é boa. E aí Tiago, por exemplo, hoje é que dá 15, né? Isso foi dia 15. Mas amanhã gente entrou de novo e pediu a inteligência artificial. Aí vê que a inteligência artificial vai dizer aí.
+
+[00:25:29] [ÁUDIO] No dia 16 tem concurso em Águia.
+
+[00:25:43] [ÁUDIO] Ou seja, todo dia que você entrar vai mostrar um mapa, o raio, vai ser padrão, mas onde tem concurso. Vai ter dia que você vai entrar e vai pedir para gerar. E não tem concurso. E não vai ter nada. Pode ter depois uma ideia da vista, já a vista, tipo email. Quando tu clicas no email aquilo depois fica mais...
+
+[00:26:08] [ÁUDIO] Fica marcado como visto. Depois dá para arquivar, dá para apagar. Isso é interessante. Vindes marcar como... Ah, já vi. Uma porra dessa aí. Uma porra dessa aí. Fazendo arrumadinho. Dá para gente vender, Dá para a abrir uma empresa disso. Tu tens a sensação que nós estamos a pensar tipo tu fazes um pedido ao meia e ela faz-te uma coisa e vai ao Google Earth e tipo tu clicas numa área onde queres e aparece tipo os coisas, os concursos, mano. Isso é muito interessante.
+
+[00:26:38] [ÁUDIO] É, porra! Porque a parte visual, imagina, a parte visual para um cliente, tipo uma empresa, o gajo vai ver tabelas, ver baldes, tipo ele vai ficar... Estás a ver? Não, eu vou desenhar aquilo para o pessoal perceber. Desenhei. O mais que hoje seja um trabalho académico, amanhã pode ser um trabalho profissional,
+
+[00:27:10] [ÁUDIO] imagina tu clicas aqui né? alguma coisa aqui em cima ou aqui? o que eu estava a pensar era olhando ali
+
+[00:27:23] [ÁUDIO] O que eu estava a pensar é que tu clicas aqui, vai aparecer aqui a parte 3D, olha, tens aqui tipo, como é eu ia dizer, o sítio onde está o concurso, tipo a Câmara Municipal, a ver? Vai-te aparecer a parte do Google Earth em 3D, estás a ver? Câmara Municipal, isto é a Câmara, e depois aqui vai aparecer aqui os concursos, estás a ver? Uma lista de concursos, E depois, uma coisa que depois ia aparecer era ter
+
+[00:27:53] [ÁUDIO] uma outra lista ao lado dos recursos que nós temos e dos coisas tipo não essa parte dos documentos deixasse para depois mas tipo só a parte dos concursos acho que fica bom eu não colocaria essa parte clicou aqui aparecesse com o couso na janela dos colegentes mas tipo eu estava a pensar mais essa parte por exemplo por causa do poesé mas eu acho que isto aqui ia dar boa trabalho depois mas basicamente o que nós queremos é do que clica aqui
+
+[00:28:23] [ÁUDIO] e depois vamos ter que fazer depois vamos ter que mandar como é é a partida IWI porque imagina tu pedes as cenas depois nós temos o concurso depois... pode-se ter na própria lista pode-se clicar como se fosse mensagem ou pode-se falar tipo ok vou responder a isto imagina, disto aqui vai ter uma...
+
+[00:28:51] [ÁUDIO] Lista de concursos. Vivete e caligrafiante, não que é isso aí. Aqui vai gerar uma lista de concursos. Nessa lista de concursos, que que vai ter? Quais as informações que normalmente tem? Se é uma obra, vai ter parte de uma obra. Vai ter mais o quê? Os documentos necessários. Vai ter os docs. Espera aí, a lista de quê? A lista de como assistes.
+
+[00:29:21] [ÁUDIO] Nem tu entende a letra? Não, a lista de concursos. Pronto, então se a lista de concursos... Eu só sei esta letra. Sim, a lista de concursos. Sim, vai ter os fala quais são os documentos. sim. Ela não fala quais são os documentos. Ela fala qual é a obra, qual o tempo de obra. Então é que vai ter... calma aí... obra, a duração da obra, duração... calma aí... É o tempo de obra e a duração da obra, dá no meio.
+
+[00:29:57] [ÁUDIO] O custo, talvez? Não, o custo... É o valor da obra, não é custo. É valor. O custo é o que a gente vai gastar para... Valor da obra...
+
+[00:30:16] [ÁUDIO] seja, o que eu dar? O tempo em que ela vai estar enquanto tipo... estar aberta ou fechada? Qual... Qual categoria e subcategoria que você tem que ter? Ou seja, o alvará. as vezes... O alvará. O alvará é um documento que a empresa tem. Que diz que, por exemplo, sua empresa não consegue trabalhar com nada de eletricidade. Mas consegue trabalhar com escavação, com jardinagem. Então existe um código. Vai de 1 a 5.
+
+[00:30:45] [ÁUDIO] 5 é quem pode pegar obra de milhões 1 é quem pode pegar obra até 200 mil Aí você pega uma obra aqui, é torreira né? Você pega uma obra de torreira com custo de 400 mil Mas o Lucio Alvará disse que você só pode pegar obra de 200 mil Então você... concorrer eles, corta você
+
+[00:31:08] [ÁUDIO] Então, depois que nós aplicarmos uma obra, um concurso, o que é isto vai conter quando estiver dentro do concurso? Isso é o o concurso tem, Isso é o que sai naquele concurso, o que é padrão nos concursos, que geralmente essas informações vão. O que pode ser feito é...
+
+[00:31:32] [ÁUDIO] Clicou aqui, vai abrir a lista de concurso. Sim, e dá o seu concurso para pra aqui. Aí você clicou no concurso, repalificação de uma praça. Clicou, aí já abre as informações. Vai tirar o valor do obra, tempo do obra e o horário. Isso, ou seja, uma janela, quando você clica vai para uma sub janela. deixa eu ouvir. Prazo.
+
+[00:32:04] [ÁUDIO] Depois tem o prazo de execução? O prazo de execução é a mesma coisa. Existe o prazo para você colocar o concurso, a documentação, que isso você não vê no diário oficial. Isso já é no Asimgov, isso é em outro tanto. A gente tem que focar, a gente tem que esquecer um pouco do Asimgov e tem que meio que focar agora diário da república.
+
+[00:32:26] [ÁUDIO] Porque o AsimGov já existe e é uma plataforma que você não vai conseguir associar pra você procura ela ser particular, Você assina através dela, então tudo é através dela. Eu acho que isso aí é o último, entendeu? Essa questão de... Abriu a lista de concursos, pronto, eu quero esse. Nesse aqui, quais são as informações? Abriu uma sub-janela.
+
+[00:32:53] [ÁUDIO] Então vamos ter isto, e depois o que é que o AI vai ter ter uma base de dados, que neste caso é com o material que vocês têm, depois que é ela vai fazer? Depois botamos aqui, AI, que ela vai fazer o pedido.
+
+[00:32:53] [ÁUDIO] do pedido, vai para aqui
+
+[00:32:56] [ÁUDIO] depois daqui vai para aqui e vai para aqui depois isto retorna aqui depois o que que tu vais pedir ai ai vais ter que pedir o que que tu tens tipo o que é que a tua empresa tem para fazer para que a vida está só como porso correto tipo de material e afim... oxina pera ai você pensa que na sua cabeça sim você tem que ser um pouco mais claro para mim porque eu não estou na sua cabeça você é muito acelerado velho desacelera um pouquinho o que a pessoa dizer é
+
+[00:33:26] [ÁUDIO] você fazer outro pedido ai, para ela buscar os dados que você esteve em anterior se não tem os documentos que que deixam de ter material acho que não seria útil agora porque gente está na fase assim, saiu o concurso qual a próxima fase?
+
+[00:33:56] [ÁUDIO] organizar a documentação, depois da organização a coloca no concurso a gente concorreu, gente ganhou? ok, pronto, aí gente vai fazer os pedidos de materiais para poder executar a obra ainda tem as fases da proposta é isso, documento de habilitação como se fosse um cambam ou um cambam vertical então você tem que separar por ordem
+
+[00:34:21] [ÁUDIO] Por exemplo, esses dias a gente ganhou um concurso lá de server mesmo. O que aconteceu? Isso é uma informação que ninguém conhece mesmo, é fácil. O que aconteceu? Eu coloquei os documentos, gente ganhou, aí foi para os documentos de habilitação. Eu coloquei só que o das finanças estava com a pendência. Aí eu perguntei o colega, eu falei, eu mando com a pendência? Aí ele falou, não, bota um antigo.
+
+[00:34:49] [ÁUDIO] Aí eu botei um antigo cara da câmera. Vocês me mandaram um antigo, eu quero um atualizado. Aí eu e agora? Eu falei, eu vou meter um que tá indebido mesmo essa porra, passou em outros concursos. Eu vou meter. Aí eu meti e até agora o cara não rolou nada, mas também não foi aprovado. Eu tô em stand by, tô aguardando. Então nesse caso, nós temos isto e agora era fazer o que Teá tava dizendo ao estúdio que era fazer a check list dos comendos, não é?
+
+[00:35:16] [ÁUDIO] Sim, se fizer sentido ingerir os documentos, mas depois eu diria que ingerir os documentos tem que ser automático. E portanto eu não sei que ele esteja tipo a olhar para uma pasta, ou para um conjunto de pastas, ok, agora este documento apareceu nesta pasta. Vamos ver? Ô Tiago, se a gente pega assim os documentos que a gente tem... Ou por exemplo tu podes configurar uma pasta no browser e depois ela vai sempre olhar para esta pasta. Se a gente pegar os documentos...
+
+[00:35:46] [ÁUDIO] que a gente tem e pegar o documento pedido pelo concurso porque tem lá discriminação todo documento que eles querem e aí joga para a inteligência oficial e fala confira um check list. Isso acho que vai ser assim. Depois ela vai criar a check list e depois tu só clica certo e vejo os comentos.
+
+[00:36:11] [ÁUDIO] Eu tenho este checklist, que é o botão. O botão normalmente não tem nada. Tu depois quando tiveres o elemento fazes. tenho entendendo. É basicamente isto. Vamos fazer então. Mas depois vocês têm que me explicar isso aí. Não, basicamente... Eu estou começando a parte empresarial, a parte dos códigos. O que nós temos de dizer, tipo, imagina, tu tens esta informação já, não é? Sim. Depois tu vais pedir, tipo tu queres, olha, faz-me uma checklist dos documentos de tipo... Sim, do concurso de Aurel.
+
+[00:36:41] [ÁUDIO] depois ele vai te criar uma checklist, não é? Imagina, ela pode ativar, exemplo, nem sempre podes clicar no botão, ela vai ativar o botão e depois é que tu podes clicar no botão. Então ela pode verificar os documentos primeiro e depois se tu tiveres mesmo certeza que tens os documentos, consegues depois clicar ok, tenho a certeza que...
+
+[00:37:11] [ÁUDIO] Se ela não tiver a certeza, tu vais lá e confirmas. Olha, não, é mesmo, tenha certeza. Vamos ver. Basicamente o que eu posso fazer é imaginar. Tejas aqui os documentos, correto? Sim. Tu metes aqui e aí quando tu metes uma checa nisso, tipo, ela pergunta-te Se calhar pode-te perguntar, tens a certeza que tens os documentos todos? O que eu já vi foi isto e o que pode-te faltar é isto. Eu posso te falar uma coisa da Aima?
+
+[00:37:36] [ÁUDIO] Eu fiz o pedido da renovação de autorização de residência. O que acontece? Eu acho que é tipo isso que você está falando. Eles perdem o atestado de morada, por exemplo. Aí eu venho aqui, chego aqui e coloco. Atestado de morada. Ele... Ok. É isso. Só que eu posso colocar um documento.
+
+[00:38:01] [ÁUDIO] Eu não sei se ele confere, eu não ia fazer esse teste, mas vamos ver, peguei uma testada de morada, cheguei aqui e botei um...
+
+[00:38:08] [ÁUDIO] um documento de recebimento de salário. pode dizer, isto não está classificado. Pode dizer, olha, se calhar vais ter que classificar este documento e meter na categoria certa, porque eu não consegui saber. Tipo, está ok, está verde, está errado, está bem melo. E depois ela vai te enviar uma mensagem, tipo, ela vai te enviar uma mensagem, basicamente um pop-up ou uma melancinha, dizer, tipo, a certeza que está tudo correto ou, tipo, ou vai te perguntar, ou, tipo...
+
+[00:38:41] [ÁUDIO] Basicamente vai funcionar mais ou menos assim. Uma informação sendo que está errado. Tipo vai dizer que está errado e está certo e vai te mandar para verificar os documentos. Depois gente tem que... Podias dizer alguma coisa? Não, pode continuar. Depois a tem que conversa. podemos...
+
+[00:39:05] [ÁUDIO] fixar a conversa dependendo de onde é que tu estás ou ela também pode te recomendar diferentes... falar diferentes questões acerca da fase. O documento concursa em uma fase e tu dizes ok, ela mesmo adapta os prontos que tu podes dar e ela mesmo sabe ok, estamos nesta fase.
+
+[00:39:47] [ÁUDIO] E também podes ter conversas limitadas por fase. Ou podes ter meio que uma conversa completa e depois está meio que tipo uma separação que te identifica. nesta fase foi mais ou menos esta conversa. Ou proveniste por uma próxima fase e agora...
+
+[00:40:07] [ÁUDIO] tipo isso aconteceu nesta data e a dia 15 de dezembro o o shot vai ter aqui um shot assim, uma cena assim brutal tipo Gemini é basicamente isso o que nós temos ver o que é estamos a falar é tipo a cena por falsas mas eu acho que primeiro devemos ter uma cena tipo de shots mais de 10, sabes a ver, com as datas tipo de data
+
+[00:40:34] [ÁUDIO] com os outros JPEG, hoje me lembro, era assim e depois eu não sabia como é que ia ficar o visual para colocar essa parte das etapas ou será que essa parte das etapas só aparecia se estivesse raio, estás a ver? imagina temos de perceber qual é que o ponto de partida, sim até depois do... qual é o ponto de partida para depois encontrares no chat sim, se começas pelo mapa ou se faz pela data
+
+[00:41:03] [ÁUDIO] por uma site bar, em princípio vai ter duas site bars, uma na esquerda e uma na direita e o chat está no centro, só que aqui com o mapa, em princípio vais ter o mapa à esquerda, depois vais poder clicar, filtrar tipo conversa.
+
+[00:41:28] [ÁUDIO] ao mesmo tempo, ou se calhar vais ter ter a esquerda do chá e depois vais ter ter tudo à direita. Acho que fica melhor assim. À direita não, acho que melhor o chá do cera à esquerda não, ou à direita. Acho que melhor ser à direita, porque nós escrevemos a esquerda para a direita, então se calhar você tem uma atenção mais à direita.
+
+[00:42:17] [ÁUDIO] Sim, velho. Isso aí, beleza. Eu entendi que é a parte do Diário da República. E o do Portal Base tem alguma coisa? Portal Base é a ideia de buscar os concursos que já saíram, quem foi que ganhou ali, quanto foi o valor, buscar... Sim, sim. Pois é, acaba por ser diferente. É outra ideia.
+
+[00:42:44] [ÁUDIO] Para a concorrer, cai para saber quem ganhou.
+
+[00:42:50] [ÁUDIO] Sim, saber quem tem a outra, precisas saber a empresa. É porque as vezes a empresa de teatro tem o quanto naquela obra. Às vezes se compara o preço, meu preço, como é que o meu preço, como é que o preço da empresa de teatro. O problema do mapa, imagina, tu podes escolher qual é que é o tempo que tu queres. O tempo ou o distância? Tipo...
+
+[00:43:19] [ÁUDIO] O raio? Sim. Não é o raio? Tu queres os vários pontos no mapa? E tu tens um filtro? tem que ser de certa data até certa data. Ah, sim.
+
+[00:43:31] [ÁUDIO] e depois em princípio vai ter que ser muitos filtros vai ter ter filtros, ok concurso ganha e depois a data. A tica do portal base é um monte de filtro. Mas isso seria melhor então... Vai ter que filtrar o mapa. Isso seria melhor então já filtrar em tipo... E a e-polls a ser só pode te ajudar a filtrar, tu mandas a Promet e ela ajuda-te a filtrar. Tipo, tu escravas assim, olha, filtra por data ou por data não sei se está finalizado ou não finalizado. Porquê?
+
+[00:44:01] [ÁUDIO] no chat tipo de um pom-pom aí e estás sempre a pôr filtros, o que estás a ver é bocado esquisito.
+
+[00:45:19] [ÁUDIO] Aquilo interessante aqui, é que ter a inteligência social a fazer a navegação por ti. Vai-te pelo programa, abre...
+
+[00:45:49] [ÁUDIO] Agora, tu dizes, olha, quero ver isto e ela vai ao programa e dizes, olha, tens aqui um mapa e agora tens a lista, tu dizes, olha, quero na torreira e quero ver uma lista e depois ela vai fazer a navegação.
+
+[00:46:10] [ÁUDIO] porque senão eu vou escrever na modelação A, o trabalho vai estar B. Eu preciso ter as informações. isto é o protótipo e no momento em que definirmos já temos. Já sabemos o que que A ideia é assim, eu preciso ter a ideia sim, para estar coerente. Tu podes por exemplo também ver uma linha temporal.
+
+[00:46:36] [ÁUDIO] do prazo, acho que Impressive vai ser só do prazo em pote concluído. É, mas o prazo vai ter o prazo.
+
+[00:57:40] [ÁUDIO] Até porque essa cena a ser a 30 km já é um requisito inovacional na parte da regulação policial. Isto aqui são requisitos também.
+
+[00:57:52] [ÁUDIO] As funcionalidades que queríamos fazer eram estas
+
+[00:57:57] [ÁUDIO] Estás a ver? Tem algumas simples, eu em principio vou começar pela 11, pela do fim. Mas já há aqui umas que dá para fazer o back-end e tu podes fazer com o que tu quiseres. Para já como ainda não temos nada definido tipo de estrutura ou tipo de ferramentas é que queremos usar, tu podes usar a que tu quiseres e depois consigo transferir para o projeto.
+
+[00:58:23] [ÁUDIO] Aqui há algumas que... Prontos, tu podes fazer só uma só para ver como que... Como é que te saias nisso Tipo a primeira... Em principio é mais simples
+
+[00:58:39] [ÁUDIO] Até podes fazer sem base de dados
+
+[00:58:46] [ÁUDIO] Mas isso é se quiseres fazer alguma funcionalidade. Agora, claro que para fazer os diagramas para já ainda não dá. Porque nós ainda estamos a acabar... Hoje em princípio era para acabar de definir o que é. Porque eu mostrei ao professor e ao Derlan uns protótipos que também já têm disponível se quiseres o link. E agora estávamos só a acabar de dizer o que é nós queremos de facto.
+
+[00:59:15] [ÁUDIO] Porque isto é só... Os protótipos é só estrutura visual. As funcionalidades em princípio não vão mudar muito.
+
+[01:03:23] [ÁUDIO] só a única entidade se tu fores a ver. ter muitos filtros. Em princípio o dado principal que depois vais querer filtrar mais é o local, a zona. Qual a informação mais importante num concurso?
+
+[01:03:48] [ÁUDIO] É um local mesmo? Sim. Porque tu vais querer filtrar por um local. Tu vais querer escolher. Olha, Severo. Por que é este local... Por exemplo, escolhes Severo. Por que é que escolheste... Não é porque escolheste Severo, mas... Severo tem alguma limitação? tem alguma cena... Severo e Preso. Tá, se é guiada lá.
+
+[01:04:12] [ÁUDIO] É a empresa? A empresa onde eu trabalho está seguida lá. Ah, sim, sim, sim. Qual é que pode saber a distância? Também às vezes ajuda. Local.
+
+[01:04:24] [ÁUDIO] segundo. No local pode ter composto de emeren de escolar. Não é útil para a Então, obras.
+
+[01:04:38] [ÁUDIO] Aqui a cena do rádio de 50 km.
+
+[01:04:44] [ÁUDIO] E esses vão ser os filtros que vão aplicados antes da parte realista do concurso? Sim, sim. Até cedo. Mas também a interface que final, não, é um protótipo. Sim, estamos a definir agora o que é queremos. Lá está com um projeto deste tipo, acho que uma cena simples, está já bem intuitiva, chega. É, é o que nós estamos definir. O vai ser o é o mapa, o mapa e depois um shoutbot.
+
+[01:05:02 - 01:05:26] [VISÃO] A câmara da sala expande-se de repente para preencher toda a gravação. Uma vista baixa e ligeiramente inclinada mostra um grande quadro branco com diagramas manuscritos a azul, um grande círculo, linhas/setas ramificadas e uma lista numerada. O homem calvo está à esquerda; o de t-shirt azul-marinho inclina-se para o primeiro plano, à direita. Painéis do teto e iluminação fluorescente são visíveis no alto.
+
+[01:05:14] [ÁUDIO] Olha o chato bateu aquela tal questão que... que vamos diferenciar um bocado. Obras? Por acaso... acho que a ideia está muito fixa, atenção. Porque se chega aqui no local ele pode gerar um concurso de marinha escolar. Para a gente não é útil. Tem que ser da categoria obra daquilo você a falar. É que eu não sei muito bem como é que...
+
+[01:05:39] [ÁUDIO] Eu para gostar do que vocês me dizem, aqui. Isso se quiser fazer um filtro, se não quiser local e dar aquele local para ver, bater olho rápido. O é que obras? Obras é uma coisa de É um filtro. Obras é Ah ok, mas isto já vai ser o filtro principal. O filtro é dentro. Tu nem sequer vais precisar de filtro por obras, inclusive, vai ser já por origem. É porque, por exemplo, eu pedi...
+
+[01:05:39] [ÁUDIO] Sim, isso é ok. Alguma coisa que não queiras filtrar, se queiras filtrar que não seja obras. Isso, porque ele pode gerar para mim merentes colar, transporte, um concurso.
+
+[01:05:53] [ÁUDIO] Sim, sim, o que eu estou a dizer é, o que vai para o programa já são obras. Já vem obras. Depois podes até ter filtros do tipo de obras, por exemplo.
+
+[01:06:04] [ÁUDIO] Eu acho que a ideia dele dos filtros é boa, atenção. Sim, mas o que o Tiago está a dizer é tipo, por pré-definição do programa, todos os concursos já vão ser todas obras, estás a ver? Podes até depois ter filmes. Sim, sim, lá está também a verdade.
+
+[01:06:24] [ÁUDIO] Tens algum filme dentro da obra que queiras escolher? Dá para fazer um filme de ponteiro? Se for em vagos. Há muitos aí? O que pode ser? Depois o miserável falou e esqueci o que ia falar. Ah, sim, por exemplo, lá na empresa... Não, mentira, estou a ver o quadro.
+
+[01:06:57] [ÁUDIO] Está aqui uma pergunta de uma confusão, mas olha, consigo ver o quadro, vou usar o dado para escrever, é o que me interessa. Está aqui uma confusão do caralho. Tens entidade adjucante, tens origem, podes filtrar por data, podes filtrar pelo valor, prazo, isso dos tempos, claro, já tínhamos visto.
+
+[01:07:27] [ÁUDIO] Tens alguma coisa, por exemplo... Pronto, aí eu vou-lhe fazer uma pergunta. Gerou o filtro, gerou o local. A empresa que eu trabalho não costuma fazer requalificações de escola, não, certo? O forte dela é a escalação... Podes ter uma prioridade, se calhar.
+
+[01:07:50] [ÁUDIO] Ok, isto é mais prioritário porque nós escolhemos esta secção, ou categoria, como mais prioritária, se quiseres. Aqui, infraestrutura... Infraestrutura, muro, betuminoso... Mas de vez em quando fazem algum destes, não? Requalificação, raramente. É mais escavação, muro, infraestrutura, né? Basta por coisa de frequência, sim.
+
+[01:08:22] [ÁUDIO] O que eu estou falando é que pode haver isso aqui, e se eu vou aqui no local... Ah, tem este, este, este e este. Não sei se... Ah, também, velho. Sim, sim.
+
+[01:08:32] [ÁUDIO] Para não inventar demais. Mas faz sentido ter uma lista de prioridades do que vai fazer? Pelo menos para começar a filtro só. E posteriormente podemos fazer algo mais relativo.
+
+[01:09:05] [ÁUDIO] Depois tu tens algum... Imagina, tu já sabes mais ou menos quanto tempo é que a obra vai demorar? Ok, ganhaste o concurso. Agora sei quanto tempo... Antes mesmo de ganhar o concurso, antes mesmo de te inscrever... Quando sai o concurso, sabe o prazo de obra. Já sabes? Já sei.
+
+[01:09:23] [ÁUDIO] Tem algum prazo demasiado alto ou demasiado baixo? Depende do que é a obra. Você pode pegar uma obra de... Estrada. Vai ser mais de um ano.
+
+[01:09:35 - 01:10:15] [VISÃO] A câmara é reposicionada fisicamente, produzindo uma vista mais baixa e ligeiramente rodada, com o quadro branco a ocupar mais da imagem. Ambas as pessoas aparecem cortadas nas laterais. O braço do homem calvo repousa perto do canto superior esquerdo do quadro; o tronco e os braços gesticulantes do homem de t-shirt azul-marinho permanecem à direita. A exposição fica mais escura. A inspeção de um fotograma maior confirma as etiquetas «Local», «Filtros», «1º LOCAL» e uma segunda linha numerada contendo «REQUALIF», «ESCAVAÇÃO» e «MURO» separadas por traços. Um «3º» inicia uma linha, de resto, vazia. O círculo contém uma etiqueta de servidor sublinhada e pontos, com setas a entrar e a sair. A restante escrita cursiva nem sempre é suficientemente clara para uma transcrição integral com confiança.
+
+[01:09:36] [ÁUDIO] Você pode pegar uma... Uma escavação ao muro. 90 dias. Mas há algumas obras que tu dizes, olha... Vale a pena e outras que não, não é? Justo.
+
+[01:09:47] [ÁUDIO] Ou pelo menos... Tipo, por exemplo, a empresa que eu trabalho... Bate o olho em um concurso de... 900 mil, 1 milhão. Ela não pega. Agora, tem ali concurso de 300 mil, 200 mil, 100 mil... Ela já concorda.
+
+[01:10:02] [ÁUDIO] É isso que é das prioridades. Agora, se faz sentido... Ter algum tipo de visualização, se calhar não. Mas no máximo só o texto.
+
+[01:10:13] [ÁUDIO] A inteligenciar só dá-te o texto. Os filtros, ok. Tens ali uma cena para clicar.
+
+[01:10:20] [ÁUDIO] De prioridades podes ter só uma conversa, ok. Isto é um bocadinho. Mas, assim, mesmo que tenha um concurso de... Sei lá, 800 mil.
+
+[01:10:29] [ÁUDIO] Eu não mexeria nisso porque... Vai que um dia o responsável da empresa chega assim e fala... Pô, não, vou fazer essa obra com tal empresa que tem essa possibilidade. E duas empresas fazem uma obra. A empresa que eu trabalho ganhou... Que é a... Mas ela chama a B... Para fazer junto com ele.
+
+[01:10:50] [ÁUDIO] Sim. Está bem. Estas partes aqui se dá para, tipo, na parte da base de dados.
+
+[01:10:58] [ÁUDIO] Quando a EIA for divulgar a base de dados. E isso já vê preços nido com cena de coisa. Sim, sim, sim.
+
+[01:11:02] [ÁUDIO] Já vem classificado, sim. Pronto, depois isto está mais bem. Não sei se... Não, isto aqui é besteira.
+
+[01:11:09] [ÁUDIO] É só para manter o preço. Independente da obra sair de 100 mil ou de ser 800 mil. Mantém.
+
+[01:15:13] [ÁUDIO] Se quiseres ver algum tipo de tabela.
+
+[01:15:18] [ÁUDIO] Não acho necessário. Não? Não acho, não. Tabela pode ter... Distância de lado.
+
+[01:15:28] [ÁUDIO] Ok, se calhar não. Tabela não. Não.
+
+[01:15:33] [ÁUDIO] Se fosse algo de mapa está bom. Se queres ter algum tipo de... No princípio não, mas... Às vezes o raio nem sempre é... Nem sempre é o trajeto. Não, porra.
+
+[01:15:48] [ÁUDIO] O raio não. O raio é assim. Porque às vezes há trajetos que é tipo... Vens aqui, vens aqui.
+
+[01:15:53] [ÁUDIO] Ah não, mas eu não quero saber dos trajetos. Eu só quero saber mesmo do raio. Mas o raio é tipo um centro.
+
+[01:15:58] [ÁUDIO] O centro é a empresa. Porque os trajetos na verdade... Temos muitas estradas. Tens muitas estradas.
+
+[01:16:05] [ÁUDIO] Sim, mas o raio é o seguinte. O centro é a empresa. E aí vai determinar.
+
+[01:16:10] [ÁUDIO] Trinta, trinta, trinta, trinta. Porque imagina se estivesse tipo nos Estados Unidos em que só consegues ir tipo pela autostrada. E o que ele está a dizer é tipo ter os trajetos até lá.
+
+[01:16:21] [ÁUDIO] Porque as distâncias. Só tipo a distância. Mas em princípio não porque temos muitas estradas.
+
+[01:16:27] [ÁUDIO] Aí o importante é quando lançar a inteligência artificial apareceu uma bolinha daquela. Mealhada. Ah, tal, tal, tal.
+
+[01:16:36] [ÁUDIO] Pois o que é que pode ter? Pode ter tipo... Pode ter tipo fronteiras. Nem seja só tipo uma cena goia suave. Eu não colocaria isso não.
+
+[01:16:46] [ÁUDIO] Não? Eu para mim até ficava. Eu poderia colocar sim uma coisa que você viu no trabalho ali do cara. Tipo assim.
+
+[01:16:56] [ÁUDIO] Concurso de... Não sei se isso é útil e se pode. Concurso de trinta mil. Uma bolinha pequena.
+
+[01:17:02] [ÁUDIO] Concurso de quatrocentos mil. Uma bolinha um pouquinho maior. Sim.
+
+[01:17:07] [ÁUDIO] Que chama mais atenção, entendeu? Pode ter... Ou quantidade de concursos. Naquele dia saiu dois concursos para Torreira. Uma bolinha maior.
+
+[01:17:19] [ÁUDIO] Saiu cinco para... Mas se calhar a bolinha, se calhar por urgência, não? O que é que é mais urgente? Se calhar podes ter... Depende. Porque tu tens. Tu vais ter... Espera aí.
+
+[01:17:31] [ÁUDIO] Ok. Mas vocês não acham mais engraçado não ser por um raio e ser por distritos? Não, porque às vezes você pode pegar o distrito de Aveiro e não fazer obra em todo o distrito. Ok.
+
+[01:17:45] [ÁUDIO] Essa é uma dúvida. Faz sentido. Eu diria que há duas... Há se calhar duas coisas que tu queres ver no mapa.
+
+[01:17:56] [ÁUDIO] O que é que tem hoje, não é? Quantidade. Não. Onde é onde.
+
+[01:18:00] [ÁUDIO] O que é que tem hoje. Onde. E se calhar o que é que tu já te inscreveste.
+
+[01:18:08] [ÁUDIO] Inscreveste não. Não me é útil. Não queres ver... Mas tu tens que conseguir ver o que é que já inscreveste.
+
+[01:18:18] [ÁUDIO] Pronto. Mas é porque a gente vai ver... Podes ter só uma tabela simples? A gente viu hoje. Está aqui a tabela daquilo que já me inscrevi.
+
+[01:18:26] [ÁUDIO] Ou aquilo que já marquei como ok. Isto é interessante. Tu vais ter que dizer, isto é interessante.
+
+[01:18:33] [ÁUDIO] A gente já está indo mais para outro caminho aí. Eu acho que a princípio a ideia da inteligência é o quê? A gente saber o que tem no dia a dia. Sim, mas a parte da tabela que ele estava a dizer faz sentido.
+
+[01:18:49] [ÁUDIO] Pelo menos o que ele estava a dizer para eu, em vez de ficar no mapa, porque no mapa depois ia ficar com muitas coisas marcadas, já era melhor mandar os concursos que já participaram numa tabela. Estás a ver a parte? Sim, sim. Se colocar um filtro... Não pode colocar um filtro não, concursos que eu já... Tipo assim, dei ok que eu quero concorrer.
+
+[01:19:12] [ÁUDIO] Porque tu não queres ver aquilo que já marcaste. Eu quero concorrer nisto, tu não queres ver no mapa, pois não? Não. No princípio no mapa.
+
+[01:19:21] [ÁUDIO] Eu quero saber assim, o que é que tem hoje? Isto aí poderia entrar como um plus, uma mais. Aí eu vim para o filtro, quais os concursos que eu demonstrei interesse? Clicar, aí gerar um mapa aqui. Aqui, aqui, aqui, aqui, aqui, aqui.
+
+[01:19:36] [ÁUDIO] Sim. Me fez entender? Sim, era isso que eu estava a falar mais ou menos. Eu acho que aí ficaria melhor, essa ideia ficaria melhor.
+
+[01:19:44] [ÁUDIO] Mas eu acho que uma tabela aí seria melhor. Eu acho que ficava mais claro e mais intuitivo. Eu não gostei muito da ideia do mapa, não sei.
+
+[01:19:53] [ÁUDIO] Porque é que... Estavas a pensar na ideia do mapa, mas... O professor também gostou, bem. Sim, a tabela é mais simples, o mapa é mais bonito. E se calhar, como tu estás a falar com inteligência artificial, se calhar é interessante saber de onde é que está localizado.
+
+[01:20:15] [ÁUDIO] Isso. E o que é que, vamos dizer assim, que vende? Quando a gente for apresentar, a gente vai ter que vender para os professores, ou o professor, não sei. Então, o que é que venderia mais, a tabela ou o mapa? UI.
+
+[01:20:29] [ÁUDIO] É o mapa, claro. Então, é o que chama mais atenção. Você tem que pensar nesse formato.
+
+[01:20:35] [ÁUDIO] E os dois são úteis. A utilidade, vamos dizer assim, é a mesma, só que o mapa chama mais atenção. O mapa também, entretanto, dá para filtrar mais facilmente, por localização.
+
+[01:20:46] [ÁUDIO] Isso, então. Porque tu podes clicar e filtrar. É essa a ideia, se calhar.
+
+[01:20:51] [ÁUDIO] Isso. Que é o tipo de dado que depois consegues filtrar. E aí que, aí sim, clicou na cidade, gera uma tabela.
+
+[01:21:00] [ÁUDIO] Sim. Gera uma tabela de obras, e clicou naquela obra, vai entender o prazo, vai entender o valor, vai saber o valor. Na TEL, é a lista dos concursos, depois clicas nos concursos que queres, e é o que queres naquela localidade.
+
+[01:21:18] [ÁUDIO] Aí geram duas tabelas. Uma tabela e uma sub-tabela. Não, neste caso vai subir, vai uma tabela e depois aparece uma tabela.
+
+[01:21:28] [ÁUDIO] A descrição do que é os dados. Uma tabela em cima, ou assim. Ou parece-te um pop-up com uma tabela mais pequena.
+
+[01:21:38] [ÁUDIO] Porque normalmente pop-ups é tipo, tu vês... Acho que tem a tabela e depois aparece um pop-up mais ou menos pequena. Não sei se tu querias saber... Tu estavas a falar do portal base, é saber quem é que são os vencedores, não? Isso aqui, a gente estava discutindo até agora a respeito do... Diário da República. E aí eu falei, a gente está discutindo aqui sobre... Só que eu não sabia se tinha algo do portal base já montado.
+
+[01:22:09] [ÁUDIO] Porque o portal... Qual é? É o Asimgov. Não, esqueça o Asimgov. O Asimgov é particular.
+
+[01:22:16] [ÁUDIO] Sim, mas como é que... Onde é que tu vejo os vencedores? É no portal base. No portal base, tem tudo no Asimgov. É tipo assim, eu concorri, eu consigo ver o meu valor e o valor dos concorrentes.
+
+[01:22:32] [ÁUDIO] Mas se eu não concorri, eu não consigo ver. Já no portal base, depois você vê lá o contrato, o tempo, tudo isso. Tem isso aqui, alguns promos. Não sei se... Quem ganha mais em Pombal. Não sei se é interessante. Para ti deve ser, quem ganha mais.
+
+[01:22:56] [ÁUDIO] No meu caso não, mas essa ideia foi que o professor gostou, então a gente joga isso também. Como evoluiu o preço do Aço, que é pronto, é algo que tu não queres... Quem ganha mais em Pombal é um bocado substantivo. Ah, tu tens o número de concursos que ganhas.
+
+[01:23:15] [ÁUDIO] Quem ganha mais em Pombal? As empresas. Prazos urgentes, isso já sabemos. Estou a só ver os promos, se calhar tem aqui alguns promos interessantes.
+
+[01:23:29] [ÁUDIO] Mas isso aí a gente vai terminar de alinhar ainda. Devem entrar coisas novas, devem sair. Ok, isso não interessa.
+
+[01:25:43] [ÁUDIO] Onde vai ser o mapa? O mapa. O mapa.
+
+[01:26:09] [ÁUDIO] Vai ser o chat. Vai ser o concurso. Pronto, depois vai ser filtros.
+
+[01:26:38 - 01:27:11] [VISÃO] Regressa com o marcador e começa uma nova lista numerada na parte superior direita, já limpa. As costas e o braço tapam parcialmente cada linha enquanto escreve de cima para baixo.
+
+[01:26:42] [ÁUDIO] O dossier eu diria que fica para depois. Não vai ficar para... Não vai ficar para já, vai ficar para depois. O dossier, estás a ver? Os documentos.
+
+[01:26:59] [ÁUDIO] Sim, o checklist. É o checklist. Sim, o checklist fica para depois.
+
+[01:27:07] [ÁUDIO] Estes são os principais. Filtros, navegação. A inteligência pode navegar por ti.
+
+[01:27:11 - 01:27:22] [VISÃO] Continua a lista e escreve a palavra, claramente legível, «Filtros» ao lado do item 4. A palavra «Chatbot» está visível ao lado do item 2. A restante escrita está parcialmente tapada ou menos clara nesta vista.
+
+[01:27:14] [ÁUDIO] Também fica para depois. Vou tirar uma foto, deixa-me. Está para depois.
+
+[01:27:33 - 01:28:11] [VISÃO] Acrescenta mais duas linhas por baixo da nova lista, escrevendo ao longo do lado direito com curtas pausas. As palavras «Dossier» e «Navegação», seguidas de terminações abreviadas entre parênteses, tornam-se visíveis na parte inferior da lista. O corpo tapa parcialmente o fim das linhas enquanto escreve.
+
+[01:27:46] [ÁUDIO] Ficou bom? Já está, já tiro foto disso. É interessante que ela vai-te navegar e vai-te mostrar aquilo que tu queres. Vai-te navegar pelo site.
+
+[01:27:58] [ÁUDIO] Sim. Mas é para depois. Prontos, mapas, chatbot, concurso, depois de clicar e os filtros.
+
+[01:28:08] [ÁUDIO] Eu acho que o chatbot vai ser mesmo fixe. É isso? Eu falei com o professor. E depois no chatbot? O antigo coordenador, ele gostou da ideia e disse que ajuda a gente.
+
+[01:28:30 - 01:28:55] [VISÃO] O braço estende-se repetidamente da direita para apontar para cima e para baixo na nova lista, retirando-se depois. O quadro em si não muda. Um fotograma desimpedido na resolução original confirma as seis entradas: «1. Mapa», «2. Chatbot», «3. Concurso View», «4. Filtros», «5. Dossier (Later)» e «6. Navegação (Later)»; as terminações entre parênteses são abreviaturas manuscritas e não palavras claramente completas. O círculo mais antigo e as notas inferiores sobre tipos de obra permanecem à esquerda/por baixo.
+
+[01:30:00] [ÁUDIO] O que podemos ter para depois é uma troca, troca de visualização, para depois, se for preciso. Troca de visualização? Podes ter um mapa e depois se calhar podes querer ver todos os concursos por fases. Portanto, podes filtrar pelo estado do concurso.
+
+[01:30:25] [ÁUDIO] Se tu já viste o concurso, se estás interessado no concurso ou se já te inscreveste, depois podes ter uma tabela por fases, se quiseres trocar. Mas eu não sei se fica para agora. Em princípio fica para depois também.
+
+[01:30:40] [ÁUDIO] Será que não era melhor, em vez de termos várias coisas de fases, nós termos basicamente um filtro com fases e só utiliza uma única tabela? Imagina, nós temos um filtro que vai mudar, que vai acompanhar uma tabela e já está no mesmo sítio. Os filtros é para tudo, para todas as visualizações que tu queres. Eu diria que fica por último, fica aqui depois dos filtros.
+
+[01:31:19] [ÁUDIO] Que é uma outra visualização sem ser o mapa. Portanto, visualização, é melhor dizer por voz. Portanto, é o quê? Uma visualização agrupada por fases.
+
+[01:31:34] [ÁUDIO] De uma fase inicial até a fase final que deve ser que houve a inscrição do curso. Pronto, é isso. Isso fica mesmo para fim.
+
+[01:31:46] [ÁUDIO] Que é uma segunda visualização. Pronto.
+
+[01:34:46] [ÁUDIO] A gente com o plano. Pronto, depois em princípio vocês podem pegar pelas tarefas mais pequenas primeiro. Eu preciso fazer depois o mecanismo.
+
+[01:35:15] [ÁUDIO] Eu não preciso fazer nenhuma funcionalidade, mas pelo menos o mecanismo. O visual. Nem que seja só ter um ecrã.
+
+[01:35:27] [ÁUDIO] Com o chatbot e com o mapa, pelo menos o ecrã. O visual. Neste caso, o protótipo que eu dei tem várias variações e eu agora vou escolher só uma variação.
