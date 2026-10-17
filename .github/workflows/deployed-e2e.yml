@@ -2,7 +2,9 @@ name: Deployed company profile E2E
 
 # Dispatching approves this exact PR head's build/runtime code for testing.
 # The app itself receives testing credentials on Render: runner isolation alone
-# is not a reason to deploy untrusted PRs. Only main supplies privileged code.
+# is not a reason to deploy untrusted PRs. This UNMERGED bootstrap proposal also
+# requires explicit review of its immutable runner SHA and a temporary protected
+# environment exception. Never merge this branch into main.
 on:
   workflow_dispatch:
     inputs:
@@ -13,6 +15,10 @@ on:
       candidate_sha:
         description: Full PR head SHA approved for testing
         required: true
+        type: string
+      reviewed_runner_sha:
+        description: Reviewed full runner SHA (bootstrap only)
+        required: false
         type: string
 
 permissions:
@@ -30,8 +36,12 @@ jobs:
   candidate:
     name: Validate trusted PR candidate on testing
     if: >-
-      github.ref == 'refs/heads/main' &&
-      github.repository == 'prumod/cairn-web'
+      github.repository == 'prumod/cairn-web' &&
+      (github.ref == 'refs/heads/main' ||
+       (github.ref == 'refs/heads/bootstrap/63-reviewed-runner' &&
+        inputs.reviewed_runner_sha == github.sha &&
+        inputs.pr_number == '79' &&
+        inputs.candidate_sha == '7b1687cd39bb45e4a03cef586302fcf96038e06f'))
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     permissions:
@@ -45,6 +55,7 @@ jobs:
     env:
       CAIRN_PR_NUMBER: ${{ inputs.pr_number }}
       CAIRN_CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+      CAIRN_REVIEWED_RUNNER_SHA: ${{ inputs.reviewed_runner_sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:

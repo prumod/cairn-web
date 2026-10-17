@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { createBdd, test as base } from "playwright-bdd";
+import { signInWithGoogleToken } from "../../support/googleSignIn.js";
 
 const testingOrigin = "https://cairn-testing.onrender.com";
 const savedProfile = {
@@ -108,14 +109,7 @@ async function apiRequest(
 }
 
 async function signInWithGoogleIdToken(page: Page, idToken: string) {
-  const response = await page.context().request.post(`${testingOrigin}/api/auth/sign-in/social`, {
-    headers: { Origin: testingOrigin, Referer: `${testingOrigin}/` },
-    data: { provider: "google", idToken: { token: idToken } },
-    maxRedirects: 0,
-    timeout: 15_000,
-  });
-  if (response.status() !== 200)
-    throw new Error("Google ID-token sign-in did not create an application session.");
+  await signInWithGoogleToken(page.context().request, testingOrigin, idToken);
   await page.goto("/");
 }
 
