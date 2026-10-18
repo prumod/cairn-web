@@ -1,5 +1,7 @@
 # Cairn — pesquisa de mercado
 
+> Os identificadores de funcionalidades neste documento são anteriores à transcrição 3. Consultar a [correspondência de identificadores](../README.md#correspondência-de-identificadores).
+
 **Data de consulta:** 7 de outubro de 2026. **Issue:** [#5](https://github.com/prumod/cairn-web/issues/5).
 
 **Atualização de âmbito:** a pesquisa mantém as conclusões originais e as prioridades de produto. O [protótipo atual](../system/prototype.md) cobre Now, Later e Maybe como experiência completa, evoluindo de wireframe sem estilos para UI próxima da produção, sempre com dados fictícios e ações simuladas; as prioridades não aparecem na interface. O termo «mockup» no texto original abaixo designava a demonstração; para testes de tarefas, usar o protótipo interativo, não apenas uma imagem estática.

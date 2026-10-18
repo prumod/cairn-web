@@ -1,26 +1,21 @@
 # Interactive prototype coverage
 
-This is the traceability map for the current unstyled wireframe. The priority names below are documentation references only. The application does not display those labels.
+This is the traceability map for the current unstyled wireframe. The priority names below are documentation references only. The application does not display those labels. Capability identifiers follow the [identifier mapping](../README.md#correspondência-de-identificadores) after transcription 3; the screens themselves did not change.
 
-## Discovery and proposal
+## Discovery
 
-| Capability | Screen or interaction                                                                                                                                                |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| N01        | Company profile edits the reference location, search radius, class and licences.                                                                                     |
-| N02        | Opportunity search filters fictional examples by publication date, radius and text. The empty result can be corrected.                                               |
-| N03        | Opportunity screen switches between a selectable schematic map and the same results in a list.                                                                       |
-| N04        | Selected opportunity shows the buyer, description, announced value, location, work duration, delivery deadline, platform and fictional notice preview.               |
-| N05        | Deadline screen sorts fixed example dates and labels upcoming and expired delivery dates.                                                                            |
-| N06        | Invitation screen records a local intention to participate or not. No mailbox or external procedure is opened.                                                       |
-| N07        | Opportunity detail compares the fictional requirements with the company profile and records a local participation decision. The review does not certify eligibility. |
-| N08        | Proposal screen opens bundled fictional document previews.                                                                                                           |
-| N09        | Proposal checklist marks required documents as prepared or missing.                                                                                                  |
-| N10        | Proposal price table edits unit prices and calculates subtotals and total. Missing prices block review.                                                              |
-| N12        | Proposal review lists omissions, checks the fixed deadline, returns to preparation and simulates submission without sending documents.                               |
+| Capability | Screen or interaction                                                                                                                                     |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| N01        | Company profile edits the reference location, search radius, class and licences.                                                                          |
+| N02        | Opportunity search filters fictional examples by publication date, radius and text. The empty result can be corrected.                                    |
+| N03        | Opportunity screen switches between a selectable schematic map and the same results in a list.                                                            |
+| N04        | Selected opportunity shows the buyer, description, announced value, location, work duration, delivery deadline, platform and fictional notice preview.    |
+| N13        | Assisted search returns a deterministic fictional answer with links to the example opportunity list and stated source limits.                             |
+| N14        | Partly covered by N02: publication date, radius and text. Filters for value, deadline, buyer and work type, and priority categories, are not implemented. |
 
 ## Later capabilities
 
-L09 belongs to proposal preparation, not work execution. Its existing demonstration is classified as Later; it is not a requirement of the Now review or simulated submission. This documentation change does not verify or change the current frontend's readiness checks.
+L09–L16 belong to proposal preparation, not work execution. L10–L16 were moved from Now after transcription 3; their existing demonstrations remain. This documentation change does not verify or change the current frontend.
 
 | Capability | Screen or interaction                                                                                                                                                    |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -33,13 +28,21 @@ L09 belongs to proposal preparation, not work execution. Its existing demonstrat
 | L07        | Planning screen edits task completion and shows task dependencies, dates and a schematic Gantt.                                                                          |
 | L08        | Reception and warranty screen distinguishes execution, provisional reception, warranty, inspections, repairs, retention and final reception.                             |
 | L09        | Proposal screen marks the financial schedule as required or not required and records its prepared state. This capability is deferred from Now to Later.                  |
+| L10        | Deadline screen sorts fixed example dates and labels upcoming and expired delivery dates.                                                                                |
+| L11        | Invitation screen records a local intention to participate or not. No mailbox or external procedure is opened.                                                           |
+| L12        | Opportunity detail compares the fictional requirements with the company profile and records a local participation decision. The review does not certify eligibility.     |
+| L13        | Proposal screen opens bundled fictional document previews.                                                                                                               |
+| L14        | Proposal checklist marks required documents as prepared or missing.                                                                                                      |
+| L15        | Proposal price table edits unit prices and calculates subtotals and total. Missing prices block review.                                                                  |
+| L16        | Proposal review lists omissions, checks the fixed deadline, returns to preparation and simulates submission without sending documents.                                   |
+| L17        | Not implemented. The assistant does not navigate the application.                                                                                                        |
+| L18        | Not implemented. No phase-grouped view exists.                                                                                                                           |
 
 ## Capabilities to evaluate
 
 | Capability | Screen or interaction                                                                                                                                                |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | M01        | Planning screen shows task bars, dates, dependencies, resource assignments and a fixed illustrative completion estimate.                                             |
-| M02        | Assisted search returns a deterministic fictional answer with links to the example opportunity list and stated source limits.                                        |
 | M03        | Competitor screen compares fictional participations, values, outcomes and schematic locations. It warns that the examples do not establish fraud or source coverage. |
 | M04        | Finance screen answers questions from the visible example amounts and distinguishes billed from received values.                                                     |
 | M05        | Supplier screen returns fictional suppliers for a material search.                                                                                                   |
@@ -50,6 +53,13 @@ L09 belongs to proposal preparation, not work execution. Its existing demonstrat
 | M10        | Value summary shows a waterfall diagram and the same amounts in a table.                                                                                             |
 | M11        | Advanced map screen edits quantities and financial-schedule percentages and previews simulated import and export outcomes.                                           |
 | M12        | Contract-pattern screen shows a small fictional sample, its criteria and its limits. Repeated wins do not imply fraud.                                               |
+| M13        | Not implemented.                                                                                                                                                     |
+| M14        | Not implemented.                                                                                                                                                     |
+| M15        | Not implemented.                                                                                                                                                     |
+
+## Excluded capabilities
+
+X01–X03 have no screens by design.
 
 ## Prototype limits
 
@@ -62,6 +72,6 @@ L09 belongs to proposal preparation, not work execution. Its existing demonstrat
 
 ## Review status
 
-All 32 documented capabilities map to an implemented screen or interaction. A browser smoke pass visited all 21 task screens at a 390-pixel viewport; none caused horizontal page overflow. The smoke pass also exercised empty-search recovery, proposal preparation, simulated submission and reset. Axe reported no violations on the opportunity map, proposal screen, Gantt screen and initial page. Axe could not determine contrast for some text inside the SVG diagrams.
+Before transcription 3, all 32 documented capabilities mapped to an implemented screen or interaction. Of the 38 capabilities documented now, N14 is partly covered and L17, L18 and M13–M15 are not covered. A browser smoke pass visited all 21 task screens at a 390-pixel viewport; none caused horizontal page overflow. The smoke pass also exercised empty-search recovery, proposal preparation, simulated submission and reset. Axe reported no violations on the opportunity map, proposal screen, Gantt screen and initial page. Axe could not determine contrast for some text inside the SVG diagrams.
 
 `bun run check`, changed-file formatting and `git diff --check` passed. The browser smoke test does not prove that every workflow or the user experience is complete.

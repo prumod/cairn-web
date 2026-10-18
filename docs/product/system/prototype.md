@@ -8,8 +8,8 @@ Este documento regista o âmbito acordado; não afirma que o protótipo já exis
 
 ## Cobertura e prioridades
 
-- Cobrir todas as funcionalidades documentadas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md): N01–N10 e N12, L01–L09 e M01–M12.
-- [Never](../never/funcionalidades.md) permanece vazio; não inventar exclusões nem ecrãs para preencher este nível.
+- Cobrir todas as funcionalidades documentadas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md): N01–N04, N13 e N14, L01–L18 e M01 e M03–M15.
+- Não criar ecrãs para as exclusões de [Never](../never/funcionalidades.md) (X01–X03) nem inventar outras.
 - Representar a experiência completa: ecrãs, navegação, campos, controlos, interações, validações, alterações de estado, resultados vazios, informação em falta, erros e correção/regresso quando aplicáveis.
 - Later e Maybe não se limitam a um painel estático de âmbito. Devem demonstrar as respetivas experiências; isso não altera a prioridade nem confirma viabilidade técnica, valor ou regras de negócio.
 - Não mostrar etiquetas, separadores ou navegação Now/Later/Maybe/Never no frontend. A navegação deve seguir os conceitos e tarefas do utilizador.
@@ -58,13 +58,13 @@ Estes limites aplicam-se a ambas as fases, mesmo quando a interface se aproximar
 
 ### Descoberta e proposta
 
-Perfil da empresa → anúncios ou convites → mapa/lista/prazos → detalhe e revisão de requisitos → decisão de participar ou não → peças e checklist → preços unitários e total → revisão → submissão simulada. Incluir pesquisa vazia, informação de habilitação em falta/incompatível, recusa, preparação incompleta, regresso à preparação, proposta pronta e prazo ultrapassado.
+Now: perfil da empresa → anúncios de obras do dia → mapa com o raio e filtros → localidade → lista de obras → vista do concurso, com o assistente ao lado do mapa. Incluir um dia sem anúncios, filtros sem resultados e um pedido ao assistente sobre um ou vários concursos selecionados.
 
-Este é o percurso Now, não o limite do protótipo completo. A submissão simulada pode alimentar os exemplos de acompanhamento posterior.
+Later continua o percurso: convites, prazos, revisão de requisitos e decisão de participar → dossier e checklist → preços unitários e total → revisão → submissão simulada, mais a navegação pelo assistente e a vista por fases. Incluir informação de habilitação em falta/incompatível, recusa, preparação incompleta, regresso à preparação, proposta pronta e prazo ultrapassado. A submissão simulada pode alimentar os exemplos de acompanhamento posterior.
 
 ### Preparação adicional da proposta — Later
 
-O cronograma financeiro, quando exigido, pertence a Later L09. Demonstrar períodos, percentagens, valores e indicação de preparação quando se trabalhar essa prioridade. Não o implementar na fase Now nem usá-lo como condição de prontidão ou submissão simulada nesse percurso. Esta alteração de prioridade não redefine os requisitos de entrega de um concurso real.
+O cronograma financeiro, quando exigido, pertence a Later L09. Demonstrar períodos, percentagens, valores e indicação de preparação quando se trabalhar essa prioridade. Não o usar como condição de prontidão ou submissão simulada (L16). Esta alteração de prioridade não redefine os requisitos de entrega de um concurso real.
 
 ### Gestão e acompanhamento
 
@@ -72,7 +72,7 @@ Demonstrar fornecedores/cotações, registos de obras/clientes, acompanhamento p
 
 ### Capacidades a validar
 
-Demonstrar as experiências propostas em Maybe: planeamento tipo Project/Gantt, pesquisa assistida, análise de concorrentes, perguntas sobre finanças, pesquisa de fornecedores por IA, extração de cotações, histórico/validade de preços, referências/margens, previsão de materiais, waterfall, edição/importação/exportação avançada e padrões de contratos públicos. Resultados são fictícios; não demonstram fraude, cobertura de fontes, previsões reais ou respostas de IA verificadas.
+Demonstrar as experiências propostas em Maybe: planeamento tipo Project/Gantt, análise de concorrentes, mapa 3D, caixa de entrada de anúncios, conversas por fase, perguntas sobre finanças, pesquisa de fornecedores por IA, extração de cotações, histórico/validade de preços, referências/margens, previsão de materiais, waterfall, edição/importação/exportação avançada e padrões de contratos públicos. Resultados são fictícios; não demonstram fraude, cobertura de fontes, previsões reais ou respostas de IA verificadas.
 
 ## Revisão e aprendizagem para o backend
 
