@@ -1,5 +1,7 @@
 # Alerta Concursos Públicos — interfaces reais
 
+> Os identificadores de funcionalidades neste documento são anteriores à transcrição 3. Consultar a [correspondência de identificadores](../../../README.md#correspondência-de-identificadores).
+
 Capturas de 08-10-2026, obtidas por interação no browser, sem conta, subscrição ou pagamento. São interfaces públicas reais, não páginas de marketing.
 
 | Captura                                                      | Interface e origem                                                                                                                             | Relação com Now                                                                                   | Limites                                                                                                                                              |

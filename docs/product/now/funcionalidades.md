@@ -2,103 +2,67 @@
 
 ## Fontes e estatuto
 
-As prioridades foram acordadas com o utilizador; não constituem aprovação do entrevistado nem validação técnica ou jurídica. T1 e T2 referem-se às secções das [transcrições](../transcriptions/): [T1](../transcriptions/transcricao1_gestao_obras.md) e [T2](../transcriptions/transcricao2_gestao_obras.txt). Contexto adicional: [ideia inicial](../system/ideia_inicial.txt) e [notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>).
+As prioridades foram acordadas com o utilizador; não constituem aprovação do entrevistado nem validação técnica ou jurídica. T1, T2 e T3 referem-se às [transcrições](../transcriptions/): [T1](../transcriptions/transcricao1_gestao_obras.md), [T2](../transcriptions/transcricao2_gestao_obras.txt) e [T3](../transcriptions/transcricao_3_gestao_obras.txt). T1 e T2 citam secções numeradas; T3 cita instantes da gravação (`[hh:mm:ss]`). Contexto adicional: [ideia inicial](../system/ideia_inicial.txt) e [notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>).
 
 Consultar as [definições de prioridade](../README.md) e o [contrato do protótipo interativo](../system/prototype.md). A prioridade de produção não limita a cobertura do protótipo: Now, Later e Maybe são demonstrados primeiro como wireframe sem estilos e depois com UI próxima da produção, sempre com dados fictícios e ações simuladas. Os limites abaixo descrevem cada prioridade; não impedem demonstrar capacidades de outros níveis no mesmo protótipo.
+
+## Âmbito decidido na T3
+
+No fim da T3, o quadro branco lista «1. Mapa», «2. Chatbot», «3. Concurso View», «4. Filtros», «5. Dossier (Later)» e «6. Navegação (Later)» (T3 [01:26:42]–[01:28:55]). O foco passa a ser a descoberta de obras no Diário da República; a interação com AcinGov/Vortal fica para o fim (T3 [00:32:04]–[00:32:26]). Por isso, Now termina na consulta do concurso. A decisão de participar, o dossier, a checklist, os preços e a passagem à plataforma passaram para [Later](../later/funcionalidades.md) (L10–L16). A correspondência de identificadores está no [README](../README.md#correspondência-de-identificadores).
 
 ## Ordem por simplicidade de implementação e compreensão
 
 Estimativa para versões demonstrativas com dados fictícios e ações locais, sem integrações reais. Não representa a ordem cronológica do trabalho nem altera os identificadores das funcionalidades.
 
-1. **N04 — Consultar o concurso e os prazos.**
-2. **N01 — Definir a referência da empresa.** Guardar classe/licenças não equivale a verificar habilitações.
-3. **N07 — Rever requisitos e decidir participar.** Começar pela decisão humana; a comparação de habilitações exige validação adicional.
-4. **N09 — Preparar a documentação com uma checklist.**
-5. **N08 — Organizar as peças do concurso.**
-6. **N06 — Incluir oportunidades recebidas por convite.** Sem leitura de e-mails reais.
-7. **N05 — Consultar a linha temporal dos prazos de propostas.**
-8. **N10 — Preencher a lista de preços unitários e obter o total.**
-9. **N12 — Rever a proposta e simular a passagem à plataforma.** Depende dos elementos preparados nas funcionalidades anteriores.
-10. **N02 — Encontrar anúncios de obras por data e raio.**
-11. **N03 — Explorar oportunidades no mapa e na lista.**
+1. **N04 — Consultar o concurso.**
+2. **N01 — Definir a referência da empresa.** Guardar alvará/classe não equivale a verificar habilitações.
+3. **N02 — Encontrar anúncios de obras por data e raio.**
+4. **N14 — Filtrar e priorizar oportunidades.** A classificação por tipo de obra exige um classificador; na demonstração, os tipos são fixos.
+5. **N03 — Explorar oportunidades no mapa.**
+6. **N13 — Conversar com o assistente sobre as oportunidades.** As respostas são simuladas.
 
 ## Funcionalidades
 
-As referências T1 e T2 indicam as secções numeradas das transcrições 1 e 2. O comportamento de interface abaixo é uma proposta derivada das necessidades descritas, não uma interface especificada nas entrevistas. O percurso Now termina na submissão simulada; o protótipo completo continua nas funcionalidades Later e Maybe.
+O comportamento de interface abaixo é uma proposta derivada das necessidades descritas, não uma interface especificada nas entrevistas.
 
 ### N01 — Definir a referência da empresa
 
 - **Objetivo:** pesquisar a partir da localização da empresa e ter presentes as suas habilitações.
-- **Protótipo:** editar localização, raio de pesquisa, classe e licenças num perfil demonstrativo. Estes campos alimentam a pesquisa e a revisão de requisitos, sem consulta real ao IMPIC.
-- **Base:** T2 §§4, 7, 9.
-- **Limite:** não fixar limites monetários por classe nem garantir elegibilidade jurídica. Os valores da conversa eram aproximados.
+- **Protótipo:** editar localização, raio de pesquisa, alvará (categorias/subcategorias e classe) e categorias prioritárias de obra num perfil demonstrativo. Estes campos alimentam a pesquisa, o mapa e os filtros, sem consulta real ao IMPIC.
+- **Base:** T2 §§4, 7, 9; T3 [00:01:51]–[00:02:16], [00:07:52], [00:30:16]–[00:30:45], [01:07:50]–[01:08:32].
+- **Limite:** o raio é configurado uma vez por empresa (por exemplo, 30 ou 50 km) e raramente muda; o centro é a empresa. Não fixar limites monetários por classe nem garantir elegibilidade jurídica; os valores das conversas são aproximados.
 
 ### N02 — Encontrar anúncios de obras por data e raio
 
 - **Objetivo:** reduzir a leitura individual das páginas de anúncios diários do Diário da República.
-- **Protótipo:** escolher data de publicação e raio; aplicar filtros a um pequeno conjunto fictício e abrir um resultado. Incluir um exemplo sem resultados.
-- **Base:** T1 §5.1; T2 §§2, 4, 7.
-- **Limite:** sem recolha real, API, scraping ou cálculo geográfico de produção.
+- **Protótipo:** escolher data de publicação; mostrar apenas anúncios de obras dentro do raio da empresa num pequeno conjunto fictício e abrir um resultado. Incluir um dia sem anúncios.
+- **Base:** T1 §5.1; T2 §§2, 4, 7; T3 [00:08:43]–[00:09:13], [00:24:06]–[00:25:43], [01:05:39]–[01:06:04].
+- **Limite:** sem recolha real, API, scraping ou cálculo geográfico de produção. Por predefinição, só entram anúncios classificados como obras; outros contratos (por exemplo, refeições escolares ou transportes) ficam fora. A existência e as condições de uma API gratuita do Diário da República estão por verificar.
 
-### N03 — Explorar oportunidades no mapa e na lista
+### N03 — Explorar oportunidades no mapa
 
-- **Objetivo:** perceber onde estão as obras e consultar os mesmos resultados numa alternativa legível.
-- **Protótipo:** alternar mapa ilustrativo e lista; selecionar um marcador ou uma linha e mostrar os mesmos detalhes do concurso. Assinalar a localização de referência e o raio ilustrativo.
-- **Base:** T2 §§1, 4, 7, 22.
-- **Limite:** dados e posições demonstrativos; não depende de um serviço de mapas em produção.
+- **Objetivo:** perceber onde estão as obras abertas e escolher uma localidade.
+- **Protótipo:** o mapa é a vista principal. Assinala a localização da empresa e o raio. Selecionar uma localidade abre a lista/tabela das obras dessa localidade; selecionar uma obra abre N04.
+- **Base:** T2 §§1, 4, 7, 22; T3 [00:23:07]–[00:24:29], [01:15:33]–[01:16:27], [01:17:45]–[01:18:00], [01:20:29]–[01:21:38].
+- **Limite:** dados e posições demonstrativos; não depende de um serviço de mapas em produção. Sem trajetos nem distritos ([Never X01–X02](../never/funcionalidades.md)). O que o tamanho dos marcadores representa (valor, número de concursos ou urgência) está por decidir. Uma vista agrupada por fases fica em Later L18.
 
-### N04 — Consultar o concurso e os prazos
+### N04 — Consultar o concurso
 
 - **Objetivo:** decidir se vale a pena analisar a participação.
-- **Protótipo:** mostrar entidade adjudicante, descrição do trabalho, valor anunciado, localização, prazo da obra, data/hora limite de entrega e plataforma indicada. Permitir consultar o anúncio de origem, representado por uma pré-visualização demonstrativa.
-- **Base:** T1 §§5.3, 6, 8; T2 §§5, 6, 14.
-- **Limite:** distinguir valor anunciado de valor proposto, e prazo da obra de prazo de submissão.
+- **Protótipo:** a vista do concurso mostra entidade adjudicante, descrição do trabalho, valor da obra (valor anunciado), localização, prazo de execução, data/hora limite de entrega quando conhecida, alvará exigido (categoria/subcategoria e classe) e plataforma indicada. Permitir consultar o anúncio de origem, representado por uma pré-visualização demonstrativa.
+- **Base:** T1 §§5.3, 6, 8; T2 §§5, 6, 14; T3 [00:28:51]–[00:32:04], [01:21:00].
+- **Limite:** distinguir valor da obra de custo da empresa e de valor proposto, e prazo de execução de prazo de submissão. A T3 indica que o prazo de submissão está na plataforma e não no Diário da República; confirmar antes de exigir este campo. Mostrar o alvará exigido não é verificação de elegibilidade (Later L12).
 
-### N05 — Consultar a linha temporal dos prazos de propostas
+### N13 — Conversar com o assistente sobre as oportunidades
 
-- **Objetivo:** ver a urgência dos concursos em análise ou preparação.
-- **Protótipo:** apresentar datas-limite numa linha temporal/lista ordenada e sinalizar «próximo do prazo» e «prazo ultrapassado» com uma data de referência de demonstração.
-- **Base:** T1 §8; T2 §§8, 14.
-- **Limite:** não é o cronograma de execução da obra; sem notificações reais por e-mail.
+- **Objetivo:** pesquisar e consultar oportunidades por linguagem natural sem configurar muitos controlos.
+- **Protótipo:** chat ao lado do mapa, com pedidos sugeridos como «Mostra obras até 30 km» e «Quais os prazos mais urgentes?». Selecionar um ou vários concursos define o contexto da conversa; o assistente pode aplicar filtros N14. As respostas são texto com ligações para os concursos.
+- **Base:** T2 §§1, 4, 7, 19; T3 [00:04:26], [00:07:19]–[00:07:52], [00:09:42]–[00:10:03], [00:15:49]–[00:16:19], [00:41:03]–[00:41:28], [01:10:02]–[01:10:13], [01:28:08]. Antes Maybe M02.
+- **Limite:** respostas simuladas e verificáveis contra os dados mostrados; usar um modelo existente por API, sem treino próprio (T3 [00:11:06]). A T3 pede avaliações da qualidade das respostas antes de confiar no assistente (T3 [00:17:30]–[00:18:15]). Navegar pela aplicação em nome do utilizador fica em Later L17.
 
-### N06 — Incluir oportunidades recebidas por convite
+### N14 — Filtrar e priorizar oportunidades
 
-- **Objetivo:** cobrir a entrada alternativa ao anúncio público.
-- **Protótipo:** apresentar um convite fictício com indicação de aviso por e-mail e acesso demonstrativo ao procedimento. A decisão de participar ou não fica registada localmente para continuar o percurso.
-- **Base:** T1 §7; notas iniciais da transcrição 1.
-- **Limite:** o e-mail é apenas aviso. Aceitação, recusa formal e interação com o procedimento acontecem na plataforma externa; não há leitura de caixa de correio.
-
-### N07 — Rever requisitos e decidir participar
-
-- **Objetivo:** avaliar interesse e capacidade antes de preparar a proposta.
-- **Protótipo:** comparar requisitos ilustrativos com classe/licenças do perfil; mostrar informação em falta ou incompatibilidade aparente; permitir «Participar» ou «Não concorrer». A participação inicia a preparação; a recusa termina este percurso.
-- **Base:** T1 §7; T2 §§5, 9.
-- **Limite:** apoio à revisão humana, não aprovação automática nem parecer jurídico. Não confundir esta revisão com documentos de habilitação pedidos após adjudicação.
-
-### N08 — Organizar as peças do concurso
-
-- **Objetivo:** reunir a base necessária para preparar a proposta.
-- **Protótipo:** listar desenhos, memorial descritivo, mapas e requisitos; abrir pré-visualizações fictícias e assinalar peças obtidas. Mostrar que a obtenção real acontece na plataforma indicada.
-- **Base:** T1 §6; T2 §5.
-- **Limite:** sem autenticação externa, acesso pago, descarregamento real ou análise automática de ficheiros.
-
-### N09 — Preparar a documentação com uma checklist
-
-- **Objetivo:** reduzir omissões que podem levar à desclassificação.
-- **Protótipo:** listar os documentos exigidos para o concurso fictício, distinguir obrigatórios/opcionais, simular anexação ou marcar como preparado e evidenciar documentos em falta.
-- **Base:** T1 §§6, 15; T2 §§6, 16.
-- **Limite:** não pressupor uma checklist universal. No processo atual, a documentação é preparada em Word/Excel. A simulação não verifica autenticidade ou validade legal.
-
-### N10 — Preencher a lista de preços unitários e obter o total
-
-- **Objetivo:** atribuir preços aos itens e definir o valor final da proposta.
-- **Protótipo:** editar preços numa tabela de itens, unidades e quantidades fictícias; calcular subtotais e total demonstrativos; evidenciar itens sem preço. Preços obtidos externamente podem ser introduzidos manualmente.
-- **Base:** T1 §§6, 9, 11–13; T2 §6.
-- **Limite:** não incluir já um módulo de compras, stock ou pedidos de cotação. A regra de margem está incerta na T1; não aplicar automaticamente 25 % nem tratar esse exemplo como regra de negócio.
-
-### N12 — Rever a proposta e simular a passagem à plataforma
-
-- **Objetivo:** reunir os elementos preparados no âmbito Now e verificar o prazo antes da entrega.
-- **Protótipo:** resumir documentos, peças, preços e valor; mostrar omissões e prazo ultrapassado; num exemplo completo e dentro do prazo, abrir um painel que representa a plataforma externa e concluir com «Simular submissão». Mostrar «Submissão simulada — nenhum documento foi enviado».
-- **Base:** T1 §§6, 8, 15; T2 §§6, 14, 21.
-- **Limite:** a preparação e o acompanhamento do cronograma financeiro ficam em [Later L09](../later/funcionalidades.md); não são uma condição de prontidão nem uma verificação da revisão Now. A simulação não certifica a completude legal de uma proposta real. AcinGov/Vortal continua a ser o local da submissão real. Não comprar selos, assinar documentos ou enviar propostas. «Em análise», «Em preparação», «Pronta» e «Submetida» são estados da participação/proposta da empresa, não fases do concurso público.
+- **Objetivo:** reduzir as oportunidades às que interessam à empresa.
+- **Protótipo:** filtrar por local, data de publicação, valor, prazo, entidade adjudicante e tipo de obra. Destacar primeiro as categorias prioritárias do perfil N01. Os mesmos filtros aplicam-se ao mapa e às listas.
+- **Base:** T3 [00:10:17]–[00:10:38], [00:43:19]–[00:44:01], [01:03:23]–[01:04:44], [01:06:57]–[01:08:32], [01:30:40].
+- **Limite:** o Diário da República não fornece categorias de obra; o tipo exige classificação automática. Na demonstração, os tipos são fixos. Prioridade ordena ou destaca; não exclui. Não ocultar automaticamente oportunidades pelo valor ou pela classe ([Never X03](../never/funcionalidades.md)).

@@ -1,5 +1,7 @@
 # Investigação técnica end-to-end — Cairn
 
+> Os identificadores de funcionalidades neste documento são anteriores à transcrição 3. Consultar a [correspondência de identificadores](../README.md#correspondência-de-identificadores).
+
 **Idioma:** Português (Portugal) · **Acesso de pesquisa:** 07-10-2026 · **Natureza:** investigação técnica com recomendações; não é aprovação do entrevistado, compromisso de implementação, protótipo construído nem aconselhamento jurídico.
 
 **Atualização de âmbito:** esta investigação foi escrita com a hipótese de um protótipo limitado a Now. Essa hipótese, as recomendações de painel Later/Maybe estático e o respetivo roteiro estão superados pelo [contrato atual do protótipo interativo](../system/prototype.md): experiência completa de Now, Later e Maybe, evoluindo de wireframe sem estilos para UI próxima da produção, sempre com dados fictícios e ações locais simuladas; prioridades apenas em código/comentários/documentação. O restante texto preserva as conclusões e recomendações originais, não é autorização para integrações nem especificação atual do protótipo.

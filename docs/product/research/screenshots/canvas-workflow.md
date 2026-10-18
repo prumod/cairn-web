@@ -1,5 +1,7 @@
 # Cairn screenshot and annotation workflow
 
+> Feature identifiers in this document predate transcription 3. See the [identifier mapping](../../README.md#correspondência-de-identificadores).
+
 Use the existing [Cairn Feature References.tldraw](../Cairn%20Feature%20References.tldraw) in `docs/product/research/` for all future cycles. Document ID: `aZt_XMSEAL7McEUtUPm8m`. Never replace the document or clear its pages.
 
 Created 08-10-2026 with 14 screenshots embedded from the Tenderlake and Alerta captures obtained through Codex's built-in browser. Page 01 contains six primary reference images, coverage labels and annotation/comparison space. Page 02 preserves eight full captures, initial empty states and access barriers. Competitor screens are references; requested implementation belongs to the Cairn frontend.
