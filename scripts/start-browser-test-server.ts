@@ -1,4 +1,4 @@
-import { createTestApplication } from "../web/tests/acceptance/integration/testSupport.js";
+import { createTestApplication } from "../apps/web/tests/acceptance/integration/testSupport.js";
 
 const application = await createTestApplication(4173, { testControlProxy: true });
 let closing: Promise<void> | undefined;
@@ -8,5 +8,7 @@ async function close() {
   await closing;
 }
 
-process.once("SIGTERM", close);
-process.once("SIGINT", close);
+// Playwright signals the process group, and the wrapper also forwards the signal.
+// Keep the idempotent handler installed until async teardown has finished.
+process.on("SIGTERM", close);
+process.on("SIGINT", close);

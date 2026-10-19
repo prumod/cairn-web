@@ -4,7 +4,7 @@ import { defineBddConfig } from "playwright-bdd";
 export default defineConfig({
   testDir: defineBddConfig({
     features: "features/deployed/**/*.feature",
-    steps: "web/tests/acceptance/deployed/**/*.steps.ts",
+    steps: "apps/web/tests/acceptance/deployed/**/*.steps.ts",
     outputDir: ".features-gen",
   }),
   forbidOnly: true,

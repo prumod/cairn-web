@@ -1,6 +1,8 @@
 # Manage Render Blueprints
 
-Use this guide to review repository configuration and, only with explicit authorization, adopt the existing testing service or opt into a future production Blueprint. It assumes maintainer access to the repository and Render workspace. Repository changes alone do not authorize live operations, credential entry, billing changes or production provisioning.
+> **Historical; not approved for the current Workers runtime.** This guide describes Render resources and workflows retained from the previous Node/Express runtime. It does not deploy or validate the current Cloudflare Workers application. Do not perform Render adoption, sync, deployment, credential-entry, or production steps from this guide for the migrated application. No external provider state, deployment, or Google OAuth has been verified for the Workers runtime. The instructions below are historical context, not authorization or a current cutover procedure.
+
+Use this guide only as a record of the earlier Render configuration. It assumes maintainer access to the repository and Render workspace; repository changes alone do not authorize live operations, credential entry, billing changes or production provisioning.
 
 ## Check the repository configuration
 

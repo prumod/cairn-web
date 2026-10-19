@@ -1,19 +1,35 @@
 {
   "name": "cairn-web",
   "private": true,
-  "workspaces": [
-    "web"
-  ],
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "zod": "^4.5.4",
+      "typescript": "^6.0.3",
+      "varlock": "1.18.0",
+      "next-themes": "^0.4.6",
+      "sonner": "^2.0.8",
+      "tailwindcss": "^4.3.3",
+      "better-auth": "1.7.7",
+      "drizzle-orm": "1.0.0-rc.4"
+    }
+  },
   "type": "module",
   "scripts": {
     "setup": "bash scripts/setup.sh",
     "update": "bash scripts/update.sh",
-    "dev": "bun run --cwd web dev",
-    "build": "bun run --cwd web build",
-    "start": "bun run --cwd web start",
-    "db:migrate": "bun run --cwd web migrate",
-    "preview": "bun run start",
-    "typecheck": "bun run --cwd web typecheck && tsc --noEmit -p tsconfig.checks.json",
+    "dev": "bun run --cwd packages/infra dev",
+    "dev:web": "bun run --cwd apps/web dev:bare",
+    "build": "bun run --cwd apps/web build",
+    "db:migrate": "bun run --cwd packages/db db:migrate",
+    "db:generate": "bun run --cwd packages/db db:generate",
+    "db:studio": "bun run --cwd packages/db db:studio",
+    "env:generate": "varlock codegen --path ./apps/web/ && varlock codegen --path ./packages/db/",
+    "postinstall": "bun run env:generate",
+    "typecheck": "bun run env:generate && bun run --filter '*' check-types && tsc --noEmit -p tsconfig.checks.json",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
@@ -31,18 +47,25 @@
     "check": "bash scripts/check.sh full"
   },
   "devDependencies": {
+    "@cairn/config": "workspace:*",
+    "@cloudflare/workers-types": "^5.20260906.1",
     "@playwright/test": "1.64.0",
-    "@types/node": "^22.15.30",
+    "@types/node": "^26.4.1",
     "dependency-cruiser": "18.5.0",
     "oxfmt": "^0.72.0",
     "oxlint": "^1.81.0",
     "playwright-bdd": "9.2.1",
     "tsx": "4.23.15",
-    "typescript": "^5.8.3",
+    "typescript": "catalog:",
+    "varlock": "catalog:",
     "vitest": "5.0.3"
   },
   "overrides": {
-    "esbuild": "0.28.2"
+    "@hono/node-server": "1.19.15",
+    "esbuild": "0.28.2",
+    "hono": "4.13.13",
+    "lodash": "4.18.1",
+    "valibot": "1.5.0"
   },
   "packageManager": "bun@1.3.14"
 }

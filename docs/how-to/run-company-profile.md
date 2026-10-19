@@ -1,49 +1,55 @@
 # Run the company profile locally
 
-This guide runs the full-stack TanStack Start application with local PostgreSQL. Google sign-in also requires a local OAuth web client. Do not commit credentials or use testing/production secrets or data.
+This guide runs the full-stack app through the local Alchemy development stack and Cloudflare Workers runtime. It does not deploy the app to Cloudflare or Render. Local development needs a Neon-compatible HTTP database URL and private authentication values. Do not reuse testing/production credentials or data.
 
-## Configure the environment
+## Configure local values
 
-Set these variables in your shell or an untracked local environment manager:
+Install the locked workspace dependencies and tools from the repository root:
 
 ```sh
-export DATABASE_URL='postgres://…'
-export APP_ORIGIN='http://localhost:5173'
-export BETTER_AUTH_SECRET='at-least-32-random-characters-here'
-export GOOGLE_CLIENT_ID='…'
-export GOOGLE_CLIENT_SECRET='…'
-export BOOTSTRAP_ADMIN_EMAIL='your-verified-google-email@example.com'
+bun run setup
+bun run env:generate
 ```
 
-For the built Node server, set `APP_ORIGIN` to `http://localhost:3000` and optionally set `PORT=3000` (the default). Use the exact origin you open in the browser. Create a local-only Google OAuth web client with that authorized origin and redirect URI `<APP_ORIGIN>/api/auth/callback/google`. Update the OAuth client and `APP_ORIGIN` together if the origin changes. Production requires HTTPS. Keep OAuth secrets private.
+Provide these variables through your local environment or an ignored local environment file consumed by Varlock:
 
-Use separate local PostgreSQL, OAuth and secrets; never reuse testing or production credentials or data. The application applies committed migrations from `web/migrations/` when the first server handler initializes its runtime. `/healthz` triggers this initialization and reports readiness. Builds do not need database or authentication secrets.
+```dotenv
+DATABASE_URL=postgres://... # Neon serverless HTTP connection URL
+BETTER_AUTH_SECRET=...     # at least 32 random characters
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+BOOTSTRAP_ADMIN_EMAIL=your-verified-google-email@example.com
+NODE_ENV=development
+```
 
-## Run the application
+The local Alchemy stack supplies the app origin and Better Auth URL from its Worker URL. Do not commit `.env` files or generated `env.ts` files. The committed `.env.schema` files are safe templates, not credential stores.
 
-With Bun 1.3.14, dependencies installed, and PostgreSQL reachable, start the full-stack Vite/TanStack Start development server:
+If you want to try Google sign-in, configure a local-only Google OAuth web client for `http://localhost:3001` and the callback `http://localhost:3001/api/auth/callback/google`. Keep the client secret private. This configuration is an instruction for local setup, not evidence that the Google flow has been verified in this migration.
+
+## Apply migrations and start the app
+
+Use a development database that you control. Apply the committed Drizzle migrations, then start the local Worker stack:
 
 ```sh
+bun run db:migrate
 bun run dev
 ```
 
-Open `http://localhost:5173`. UI routes and server handlers are part of the same Start application; there is no Express service or separate `/api` proxy.
+Open `http://localhost:3001`. The root `bun run dev` command starts `packages/infra`'s Alchemy development stage and the TanStack Start app in the local Workers runtime. `bun run dev:web` runs Vite directly and does not start the Alchemy Worker stack. The app's database client uses Neon HTTP; a plain PostgreSQL URL is not a substitute for the HTTP endpoint expected by the app.
 
-To verify the built Node server instead:
+The first protected request from a verified Google identity matching `BOOTSTRAP_ADMIN_EMAIL` initializes administrator access. Other users need administrator approval. Pending users cannot access company data, and protected requests check current access against the database. There is no seed command.
+
+## Run local tests
+
+Tests use a separate disposable environment. Docker Compose starts a temporary PostgreSQL 18.6 container and the pinned local Neon HTTP proxy; the test fixture builds the app, runs it in `workerd`, creates isolated test databases, and cleans up its containers. Browser tests use Chromium and controlled identities through an external test-only proxy. They do not use your local OAuth credentials or verify Google's OAuth flow.
 
 ```sh
-bun run build
-bun run start
+bun run test:fast
+bun run test:browser
 ```
 
-Open `http://localhost:3000`. Use the root `bun run start` command: it sets the working directory to `web/`, which the runtime uses to locate SQL migrations. Do not start `web/.output/server/index.mjs` from the repository root. `bun run preview` also starts the built integrated server. To apply migrations explicitly, run `bun run db:migrate` with the same local `DATABASE_URL`.
+For test boundaries and the current verification status, see [Testing](../../TESTING.md).
 
-The first verified Google identity matching `BOOTSTRAP_ADMIN_EMAIL` becomes administrator on a protected request. The administrator can approve or revoke signed-in users. Pending users cannot read or write company data; access is checked against PostgreSQL on every protected request, including for existing sessions. The application does not seed users.
+## Verification and deployment limits
 
-## Verification limits
-
-`bun run test:fast` and `bun run test:browser` use disposable PostgreSQL and controlled local identities. Browser identities enter through a test-only proxy outside the application. These tests verify application behavior; they do not validate Google redirect, consent, state, PKCE or a real account.
-
-The earlier testing-service Google OAuth/E2E evidence was produced by the Express implementation. It does not certify the Start replacement. Fresh exact-SHA testing, real-Google browser verification and deployed functional E2E are still required before the replacement can be treated as accepted. No production deployment or provider change is authorized by this guide.
-
-For deployment constraints and Blueprint safeguards, see [Manage Render Blueprints](manage-render-blueprints.md). Root `render.yaml` describes the existing testing service; the production template retains an unresolved plan decision and is not approved for submission. Keep databases, OAuth clients and secrets separate across local, testing and production environments.
+Local development and controlled-identity tests do not verify Cloudflare account provisioning, remote Alchemy state, an external deployment, real Google sign-in, CI, or production behavior. The retained Render files and workflows target the previous runtime and are not a deployment path for this Worker. A cloud cutover requires separate authorization and validation of provider state, credentials, database and migrations, OAuth, security gates, and live behavior for the exact revision.

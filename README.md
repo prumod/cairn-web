@@ -1,6 +1,6 @@
 # Cairn Web
 
-Este repositório contém a aplicação web full-stack Cairn, construída com React e TanStack Start em modo SPA, Better Auth/Google, PostgreSQL e um perfil de empresa partilhado com controlo de acesso. Não existe um backend Express separado. O deployment de teste e as provas de OAuth existentes são anteriores à migração para Start; a nova implementação ainda precisa de validação exata no ambiente de teste. A adoção dos Blueprints e a publicação de produção continuam por concluir.
+Este repositório contém um monorepo Bun para a aplicação Cairn: React e TanStack Start, executados como Cloudflare Worker através de Alchemy, Better Auth/Google e Drizzle com Neon HTTP. Não existe um backend Express separado. A configuração Render e as provas de deployment/OAuth anteriores pertencem ao runtime antigo; não validam esta aplicação Workers. Não foi verificado nenhum deployment externo, fluxo OAuth Google, estado remoto ou ambiente de produção.
 
 Leia este ficheiro antes de começar. Se as instruções de configuração mudarem, atualize este README no mesmo pull request.
 
@@ -53,7 +53,7 @@ bun run setup
 
 `bun run setup` instala as dependências a partir do ficheiro de lock. Confirme que o terminal reconhece Bun 1.3.14 com `bun --version`. Depois de atualizar o repositório, `bun run update` instala as dependências desse ficheiro. Altere `bun.lock` apenas quando mudar intencionalmente as dependências.
 
-Para executar a aplicação full-stack localmente, configure PostgreSQL e as variáveis de autenticação conforme [Executar o perfil da empresa](docs/how-to/run-company-profile.md). Não configure credenciais reais em ficheiros versionados.
+Para executar a aplicação localmente, configure uma base compatível com Neon HTTP e as variáveis de autenticação conforme [Executar o perfil da empresa](docs/how-to/run-company-profile.md). Os testes precisam de Docker Compose; não configure credenciais reais em ficheiros versionados.
 
 ## Como executar o projeto
 
@@ -67,7 +67,7 @@ export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"
 
 No Windows, abra um novo terminal PowerShell na raiz do repositório para carregar o `PATH` atualizado pelo assistente.
 
-Inicie o servidor full-stack de desenvolvimento com `bun run dev` e abra `http://localhost:5173`. TanStack Start serve as rotas da interface e os handlers de servidor na mesma aplicação; não existe proxy para um backend Express. Para configurar autenticação e PostgreSQL ou executar a compilação Node integrada, consulte [Executar o perfil da empresa](docs/how-to/run-company-profile.md).
+Inicie o runtime local Cloudflare Workers com `bun run dev` e abra `http://localhost:3001`. O comando usa a stack de desenvolvimento Alchemy e serve a aplicação full-stack no mesmo Worker; não inicia um servidor Node/Nitro nem um backend Express. Para configurar a base e a autenticação, consulte [Executar o perfil da empresa](docs/how-to/run-company-profile.md).
 
 ## Como contribuir
 
@@ -121,39 +121,34 @@ Se não conseguir aceder ao repositório ou se alguma instrução não funcionar
 
 ## Comandos do projeto
 
-Os scripts executáveis estão em `scripts/`. Cada script encontra a raiz do repositório a partir da sua localização. `scripts/setup.sh` prepara ferramentas e dependências. `scripts/update.sh` instala dependências depois de atualizar o repositório. `scripts/run.sh` inicia a aplicação. `scripts/test.sh` executa os conjuntos de testes contra uma compilação nova. `scripts/check.sh` faz a validação completa, incluindo a auditoria de dependências. Os assistentes `setup-project` também instalam ferramentas do sistema operativo.
+Os comandos principais estão definidos no `package.json` da raiz. `bun run setup` instala dependências bloqueadas, Gitleaks e Chromium. `bun run typecheck` regenera os tipos de ambiente antes de verificar os pacotes do workspace. Consulte [Estrutura do projeto](docs/reference/project-structure.md) para os limites entre módulos.
 
-| Comando                    | Utilização                                                                                                                                                           |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bun run setup`            | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                                                                                         |
-| `bun run update`           | Instala as dependências depois de atualizar uma cópia existente.                                                                                                     |
-| `bun run dev`              | Inicia o servidor Vite/TanStack Start full-stack para desenvolvimento.                                                                                               |
-| `bun run build`            | Compila a aplicação TanStack Start/Nitro para `web/.output`.                                                                                                         |
-| `bun run start`            | Inicia o servidor Node compilado com o diretório de trabalho `web/`.                                                                                                 |
-| `bun run db:migrate`       | Aplica as migrações SQL committed ao banco configurado.                                                                                                              |
-| `bun run preview`          | Inicia o servidor integrado compilado, igual a `bun run start`.                                                                                                      |
-| `bun run format`           | Formata os ficheiros suportados em todo o repositório com Oxfmt.                                                                                                     |
-| `bun run format:check`     | Verifica a formatação sem alterar ficheiros.                                                                                                                         |
-| `bun run lint`             | Analisa o código-fonte e a configuração do repositório com Oxlint.                                                                                                   |
-| `bun run lint:boundaries`  | Verifica as fronteiras de módulos e dependências.                                                                                                                    |
-| `bun run test:boundaries`  | Prova que as regras de fronteira aceitam e rejeitam exemplos esperados.                                                                                              |
-| `bun run check:blueprints` | Analisa o Blueprint de teste e o template de produção e verifica a política local, sem contactar o Render.                                                           |
-| `bun run typecheck`        | Verifica os tipos da aplicação web, das configurações de teste e das ligações dos testes.                                                                            |
-| `bun run audit`            | Audita as dependências bloqueadas, incluindo as ferramentas de desenvolvimento.                                                                                      |
-| `bun run test`             | Executa os testes rápidos, compila a aplicação e executa os cenários no navegador.                                                                                   |
-| `bun run check`            | Executa a formatação, a análise estática, as verificações de fronteiras e Blueprints, a verificação de tipos, a auditoria de dependências, os testes e a compilação. |
+| Comando                                               | Utilização                                                                                                |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `bun run update`                                      | Instala as dependências bloqueadas depois de atualizar o repositório.                                     |
+| `bun run dev`                                         | Inicia a stack Alchemy local para o Worker Cloudflare de desenvolvimento.                                 |
+| `bun run dev:web`                                     | Inicia Vite diretamente, sem a stack Alchemy.                                                             |
+| `bun run build`                                       | Compila a aplicação TanStack Start para `apps/web/dist`.                                                  |
+| `bun run db:migrate`                                  | Aplica as migrações Drizzle à base indicada por `DATABASE_URL`.                                           |
+| `bun run db:generate`                                 | Gera migrações a partir do schema Drizzle.                                                                |
+| `bun run env:generate`                                | Gera os tipos TypeScript a partir dos schemas de ambiente versionados.                                    |
+| `bun run format` / `bun run format:check`             | Formata ou verifica os ficheiros com Oxfmt.                                                               |
+| `bun run lint`                                        | Analisa o código com Oxlint.                                                                              |
+| `bun run audit`                                       | Audita as dependências bloqueadas, incluindo ferramentas de desenvolvimento.                              |
+| `bun run lint:boundaries` / `bun run test:boundaries` | Verifica e prova os limites de dependências.                                                              |
+| `bun run check:blueprints`                            | Verifica localmente a política dos ficheiros Render antigos; não contacta o provider nem valida o Worker. |
+| `bun run test:fast`                                   | Compila e executa Vitest com PostgreSQL e proxy Neon HTTP descartáveis via Docker Compose.                |
+| `bun run test:browser`                                | Compila e executa os cenários Chromium contra o Worker compilado e uma identidade de teste isolada.       |
+| `bun run test`                                        | Executa os testes rápidos e de browser.                                                                   |
+| `bun run check`                                       | Executa as verificações completas, incluindo tipos, auditoria e testes.                                   |
 
-Consulte [Estrutura do projeto](docs/reference/project-structure.md) para as regras de módulos e testes. O conjunto inclui testes unitários de configuração, integração HTTP/PostgreSQL contra o servidor Start compilado e cenários Playwright-BDD. `bun run test:fast` requer PostgreSQL local instalado ou `TEST_DATABASE_URL` para um servidor de teste dedicado com permissão `CREATEDB`; `bun run test:browser` compila primeiro a aplicação e usa PostgreSQL descartável e identidades controladas por um proxy de teste isolado. A CI de pull requests usa PostgreSQL 18.6 efémero. `Agent checks` e `Deployed company profile E2E` são obrigatórios na proteção de `main`, com verificações estritas e aplicação a administradores; a proteção exige zero aprovações de revisão.
+Os testes precisam de Docker Compose e Chromium. O wrapper cria um projeto Compose isolado com imagens fixadas de PostgreSQL 18.6 e do proxy Neon HTTP; não é necessário configurar manualmente um servidor PostgreSQL. O workflow CI usa o mesmo wrapper, sem um serviço PostgreSQL separado. Para os detalhes e limites da verificação atual, consulte [Testes](TESTING.md). Para as verificações Git locais, consulte [Verificações dos agentes](docs/agents/checks.md).
 
-Para saber como funcionam as verificações de commit e push, a instalação do Gitleaks e do navegador, e a recuperação de falhas, consulte [Verificações dos agentes](docs/agents/checks.md).
+## Estado de deployment
 
-## Publicação
+A aplicação atual define um alvo Cloudflare Workers através de `Cloudflare.Website.Vite` em `packages/infra/alchemy.run.ts`. O desenvolvimento local usa Alchemy com estado local. A existência desta configuração não comprova que uma conta Cloudflare, um backend de estado remoto, credenciais, segredos, OAuth ou um deployment tenham sido configurados ou verificados. A aplicação não está aprovada nem validada para produção.
 
-`render.yaml` tem uma definição de teste que visa o nome de serviço `cairn-testing`, na branch `feat/63-company-profile`, com a origem existente `https://cairn-testing.onrender.com`. A adoção do serviço pelo Blueprint ainda não foi verificada. `deploy/render.production.template.yaml` descreve separadamente o futuro serviço `cairn-production`, na branch `main`, mas mantém a decisão de plano em aberto: `plan: __APPROVED_PRODUCTION_PLAN_REQUIRED__`. Não submeta este template até aprovar um plano não-Free e validar o ficheiro contra o Render. Nenhum plano pago está aprovado. A produção não está aprovada nem provisionada; o ficheiro não autoriza operações no Render. O teste usa Free em Frankfurt; ambos os ficheiros excluem bases de dados Render e previews.
-
-O E2E funcional de teste na revisão `eb8f66a54dbd6265440f72ffebe4a6be4c900224` usou a implementação Express anterior. A execução, a evidência do gate e a proteção de `main` são históricas e não certificam a migração Start. A substituição Start só pode ser aceite depois de passar CI, de ser implantada pela revisão exata e de passar E2E funcional com Google nessa mesma revisão. Consulte [Testes](TESTING.md) para os limites. Mantenha bases de dados PostgreSQL, clientes OAuth e segredos separados entre local, teste e produção.
-
-Consulte [Gerir os Blueprints Render](docs/how-to/manage-render-blueprints.md) antes de qualquer operação autorizada. O YAML de teste e o serviço live usam `autoDeployTrigger: off`. O novo fluxo de `.github/workflows/deployed-e2e.yml` inicia após `Agent checks` terminar com sucesso para um PR aberto, não draft, do mesmo repositório para `main`; antes de usar o Render, valida o PR, CI e uma atestação confiável para o SHA exato. `.github/workflows/trusted-pr-submission.yml` usa `pull_request_target` na branch base, apenas para `opened`/`synchronize`, e filtra pelo ID estável de conta do ator autorizado (TiagoJacinto). Faz checkout apenas de `github.sha` (código da base), não executa código candidato nem recebe segredos Render/teste, e publica `Trusted PR submission` para o head atual. O gate espera até 10 minutos por esse status para acomodar filas dos runners e só usa a chave Render depois da validação. Forks, outros atores, PRs fechados e drafts não são implantados; para um draft, é necessário um novo push depois de o tornar pronto. A produção não é alterada. O PR #81 integrou este fluxo em `main` na revisão `349514a10bc65eaa50ab3d7c5761210c428d7dae`; o primeiro deployment automático ainda não foi verificado. A migração Start continua a precisar de CI e E2E Google na sua revisão exata. Não há aqui afirmação de execução ou deployment live do novo fluxo. **Auto Sync** é separado e não foi alterado; confirme-o antes de qualquer adoção autorizada. O plano Free tem cold starts e limites partilhados; não garante ausência de despesa e o Render desaconselha-o para produção. Não altere faturação nem provisione produção sem autorização. Consulte [Arquitetura](ARCHITECTURE.md) e [Executar o perfil da empresa](docs/how-to/run-company-profile.md) para os restantes limites.
+`render.yaml`, `deploy/render.production.template.yaml` e os workflows/gates de Render continuam no repositório como artefactos do runtime anterior. Não fazem o deployment nem validam o Worker atual; resultados históricos e proteções anteriores não são evidência de CI, runtime ou prontidão para produção desta migração. Não use o caminho Render como cutover. Uma migração cloud exige trabalho separado e autorização explícita para provisionamento, estado, segredos, OAuth, segurança e testes live da revisão exata.
 
 ## Integrações opcionais com Pi
 
@@ -190,14 +185,4 @@ pi
 
 ## Origem e arquitetura
 
-A aplicação React/TanStack Start está em `web/`: as rotas e páginas ficam em `web/src/routes/` e `web/src/pages/`; os handlers, módulos de domínio, Better Auth, PostgreSQL via Drizzle e migrações SQL ficam em `web/src/server/` e `web/migrations/`. Nitro compila o servidor Node integrado. Oxlint e Oxfmt são executados a partir da raiz. Consulte [Arquitetura](ARCHITECTURE.md) para comportamento atual e limites.
-
-A base foi gerada com `create-better-agent-stack@2.0.0`, através da seleção de funcionalidades em vez de um preset:
-
-```sh
-bunx create-better-agent-stack@2.0.0 --name cairn-web-features \
-  --features oxlint,oxfmt,vite-react,react-compiler-oxc \
-  --package-manager bun --no-interactive
-```
-
-Este comando serve de referência para uma pasta temporária vazia. Não o use para configurar este repositório. O frontend React inicial foi movido para `web/` e posteriormente integrado com TanStack Start. As dependências e os comandos de formatação e análise estática foram mantidos na raiz. `.agent-stack/manifest.json` regista as funcionalidades selecionadas. Não foram selecionados um preset, ESLint, Ultracite, Anti-slop, um framework de testes ou um workflow de CI. O compilador Oxc está ativado com `react({ compiler: true })` em `web/vite.config.ts`. É experimental.
+O workspace foi gerado com Better T Stack e depois adaptado para Cairn. `apps/web` contém a aplicação TanStack Start e o código de interface; `packages/infra` define a stack Alchemy/Cloudflare; `packages/db` contém Drizzle, o cliente Neon HTTP e migrações; `packages/auth` configura Better Auth com Google. Não existe um package `packages/ui` separado, backend Express ou runtime Node de produção. Consulte [Arquitetura](ARCHITECTURE.md) e [Estrutura do projeto](docs/reference/project-structure.md) para os limites atuais.

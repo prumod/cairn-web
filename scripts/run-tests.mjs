@@ -17,8 +17,8 @@ function run(binary, args) {
 const suite = process.argv[2];
 if (suite === "fast") {
   const tests = globSync([
-    "{web,shared}/src/**/*.{spec,test}.{ts,tsx}",
-    "web/tests/{acceptance,typical}/integration/**/*.{spec,test}.{ts,tsx}",
+    "{apps/web,packages,shared}/src/**/*.{spec,test}.{ts,tsx}",
+    "apps/web/tests/{acceptance,typical}/integration/**/*.{spec,test}.{ts,tsx}",
   ]);
   run("vitest", ["run", ...(tests.length === 0 ? ["--passWithNoTests"] : [])]);
   if (tests.length === 0) console.log("SKIPPED: no Vitest tests yet; no behavior verified.");
