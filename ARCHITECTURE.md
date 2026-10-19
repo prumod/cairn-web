@@ -13,7 +13,7 @@ The root workspace contains these application packages:
 
 TanStack Start owns UI and server routes in `apps/web/src/routes/`. Client pages and reusable client modules live in `apps/web/src/pages/` and `apps/web/src/shared/`. Server modules handle access and the company profile; `apps/web/src/server/shared/` and `apps/web/src/services.ts` provide server-side support. Database access uses the Neon HTTP driver rather than a direct PostgreSQL wire connection.
 
-A verified Google identity matching `BOOTSTRAP_ADMIN_EMAIL` receives administrator access on its first protected request. Other users need administrator approval. Protected handlers recheck access against the database, so revocation applies to existing sessions. The company profile has one record with a non-empty name and address and a positive finite radius. Writes require a same-origin request. `/healthz` checks database connectivity. There is no seed step.
+A verified Google identity matching `BOOTSTRAP_ADMIN_EMAIL` receives administrator access on its first protected request. Other users need administrator approval. Protected handlers recheck access against the database, so revocation applies to existing sessions. The company profile has one record with a non-empty name and address and a positive finite radius. Writes require a same-origin request. Alchemy derives the `APP_ENV` binding from its execution mode: local development is `development`, deployment is `production`, and the acceptance stack supplies `test`. Production requires an HTTPS application origin; this check does not depend on Vite’s build-time `NODE_ENV`. `/healthz` checks database connectivity. There is no seed step.
 
 ## Test runtime
 
