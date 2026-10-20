@@ -92,6 +92,15 @@ jobs:
           bun install --frozen-lockfile --ignore-scripts
           npm install -g @anthropic-ai/claude-code@2.1.304
 
+      - name: "TEMP diagnostic — token shape (test branch only)"
+        if: steps.gate.outputs.run == 'true'
+        env:
+          T: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          echo "length=${#T}"
+          echo "prefix=${T:0:13}"
+          case "$T" in *[[:space:]]*) echo "contains whitespace";; *) echo "no whitespace";; esac
+
       - name: Actuator — run Claude Code
         if: steps.gate.outputs.run == 'true'
         env:
