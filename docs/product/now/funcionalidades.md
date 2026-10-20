@@ -2,13 +2,13 @@
 
 ## Fontes e estatuto
 
-As prioridades foram acordadas com o utilizador; não constituem aprovação do entrevistado nem validação técnica ou jurídica. T1, T2 e T3 referem-se às [transcrições](../transcriptions/): [T1](../transcriptions/transcricao1_gestao_obras.md), [T2](../transcriptions/transcricao2_gestao_obras.txt) e [T3](../transcriptions/transcricao_3_gestao_obras.txt). T1 e T2 citam secções numeradas; T3 cita instantes da gravação (`[hh:mm:ss]`). Contexto adicional: [ideia inicial](../system/ideia_inicial.txt) e [notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>).
+As prioridades foram acordadas com o utilizador; não constituem aprovação do entrevistado nem validação técnica ou jurídica. T1, T2, T3 e T4 referem-se às [transcrições](../transcriptions/): [T1](../transcriptions/transcricao1_gestao_obras.md), [T2](../transcriptions/transcricao2_gestao_obras.txt), [T3](../transcriptions/transcricao_3_gestao_obras.txt) e [T4](../transcriptions/transcricao4_teste_loop_gestao_obras.txt). T1 e T2 citam secções numeradas; T3 e T4 citam instantes da gravação (`[hh:mm:ss]`). A T4 apresenta-se como transcrição sintética de teste, não como entrevista real. Contexto adicional: [ideia inicial](../system/ideia_inicial.txt) e [notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>).
 
 Consultar as [definições de prioridade](../README.md) e o [contrato do protótipo interativo](../system/prototype.md). A prioridade de produção não limita a cobertura do protótipo: Now, Later e Maybe são demonstrados primeiro como wireframe sem estilos e depois com UI próxima da produção, sempre com dados fictícios e ações simuladas. Os limites abaixo descrevem cada prioridade; não impedem demonstrar capacidades de outros níveis no mesmo protótipo.
 
 ## Âmbito decidido na T3
 
-No fim da T3, o quadro branco lista «1. Mapa», «2. Chatbot», «3. Concurso View», «4. Filtros», «5. Dossier (Later)» e «6. Navegação (Later)» (T3 [01:26:42]–[01:28:55]). O foco passa a ser a descoberta de obras no Diário da República; a interação com AcinGov/Vortal fica para o fim (T3 [00:32:04]–[00:32:26]). Por isso, Now termina na consulta do concurso. A decisão de participar, o dossier, a checklist, os preços e a passagem à plataforma passaram para [Later](../later/funcionalidades.md) (L10–L16). A correspondência de identificadores está no [README](../README.md#correspondência-de-identificadores).
+No fim da T3, o quadro branco lista «1. Mapa», «2. Chatbot», «3. Concurso View», «4. Filtros», «5. Dossier (Later)» e «6. Navegação (Later)» (T3 [01:26:42]–[01:28:55]). O foco passa a ser a descoberta de obras no Diário da República; a interação com AcinGov/Vortal fica para o fim (T3 [00:32:04]–[00:32:26]). Por isso, Now termina na consulta do concurso. A decisão de participar, o dossier, a checklist, os preços e a passagem à plataforma passaram para [Later](../later/funcionalidades.md) (L10–L16). A T4 retira dos filtros Now o filtro por entidade adjudicante, que passa a Later L19 (T4 [00:01:10]). A correspondência de identificadores está no [README](../README.md#correspondência-de-identificadores).
 
 ## Ordem por simplicidade de implementação e compreensão
 
@@ -43,15 +43,15 @@ O comportamento de interface abaixo é uma proposta derivada das necessidades de
 
 - **Objetivo:** perceber onde estão as obras abertas e escolher uma localidade.
 - **Protótipo:** o mapa é a vista principal. Assinala a localização da empresa e o raio. Selecionar uma localidade abre a lista/tabela das obras dessa localidade; selecionar uma obra abre N04.
-- **Base:** T2 §§1, 4, 7, 22; T3 [00:23:07]–[00:24:29], [01:15:33]–[01:16:27], [01:17:45]–[01:18:00], [01:20:29]–[01:21:38].
-- **Limite:** dados e posições demonstrativos; não depende de um serviço de mapas em produção. Sem trajetos nem distritos ([Never X01–X02](../never/funcionalidades.md)). O que o tamanho dos marcadores representa (valor, número de concursos ou urgência) está por decidir. Uma vista agrupada por fases fica em Later L18.
+- **Base:** T2 §§1, 4, 7, 22; T3 [00:23:07]–[00:24:29], [01:15:33]–[01:16:27], [01:17:45]–[01:18:00], [01:20:29]–[01:21:38]; T4 [00:00:05].
+- **Limite:** dados e posições demonstrativos; não depende de um serviço de mapas em produção. Sem trajetos nem distritos ([Never X01–X02](../never/funcionalidades.md)). O tamanho dos marcadores mostra o número de concursos em cada localidade, não o valor (T4 [00:00:05]). Uma vista agrupada por fases fica em Later L18.
 
 ### N04 — Consultar o concurso
 
 - **Objetivo:** decidir se vale a pena analisar a participação.
-- **Protótipo:** a vista do concurso mostra entidade adjudicante, descrição do trabalho, valor da obra (valor anunciado), localização, prazo de execução, data/hora limite de entrega quando conhecida, alvará exigido (categoria/subcategoria e classe) e plataforma indicada. Permitir consultar o anúncio de origem, representado por uma pré-visualização demonstrativa.
-- **Base:** T1 §§5.3, 6, 8; T2 §§5, 6, 14; T3 [00:28:51]–[00:32:04], [01:21:00].
-- **Limite:** distinguir valor da obra de custo da empresa e de valor proposto, e prazo de execução de prazo de submissão. A T3 indica que o prazo de submissão está na plataforma e não no Diário da República; confirmar antes de exigir este campo. Mostrar o alvará exigido não é verificação de elegibilidade (Later L12).
+- **Protótipo:** a vista do concurso mostra entidade adjudicante, descrição do trabalho, valor da obra (valor anunciado), localização, prazo de execução, data/hora limite de entrega quando conhecida, se a visita ao local é obrigatória, alvará exigido (categoria/subcategoria e classe) e plataforma indicada. Permitir consultar o anúncio de origem, representado por uma pré-visualização demonstrativa.
+- **Base:** T1 §§5.3, 6, 8; T2 §§5, 6, 14; T3 [00:28:51]–[00:32:04], [01:21:00]; T4 [00:02:30].
+- **Limite:** distinguir valor da obra de custo da empresa e de valor proposto, e prazo de execução de prazo de submissão. A T3 indica que o prazo de submissão está na plataforma e não no Diário da República; confirmar antes de exigir este campo. Mostrar o alvará exigido não é verificação de elegibilidade (Later L12). Se o anúncio não indicar se a visita ao local é obrigatória, mostrar essa informação como em falta (T4 [00:02:30]).
 
 ### N13 — Conversar com o assistente sobre as oportunidades
 
@@ -63,6 +63,6 @@ O comportamento de interface abaixo é uma proposta derivada das necessidades de
 ### N14 — Filtrar e priorizar oportunidades
 
 - **Objetivo:** reduzir as oportunidades às que interessam à empresa.
-- **Protótipo:** filtrar por local, data de publicação, valor, prazo, entidade adjudicante e tipo de obra. Destacar primeiro as categorias prioritárias do perfil N01. Os mesmos filtros aplicam-se ao mapa e às listas.
-- **Base:** T3 [00:10:17]–[00:10:38], [00:43:19]–[00:44:01], [01:03:23]–[01:04:44], [01:06:57]–[01:08:32], [01:30:40].
-- **Limite:** o Diário da República não fornece categorias de obra; o tipo exige classificação automática. Na demonstração, os tipos são fixos. Prioridade ordena ou destaca; não exclui. Não ocultar automaticamente oportunidades pelo valor ou pela classe ([Never X03](../never/funcionalidades.md)).
+- **Protótipo:** filtrar por local, data de publicação, valor, prazo e tipo de obra. Destacar primeiro as categorias prioritárias do perfil N01. Os mesmos filtros aplicam-se ao mapa e às listas.
+- **Base:** T3 [00:10:17]–[00:10:38], [00:43:19]–[00:44:01], [01:03:23]–[01:04:44], [01:06:57]–[01:08:32], [01:30:40]; T4 [00:01:10].
+- **Limite:** o Diário da República não fornece categorias de obra; o tipo exige classificação automática. Na demonstração, os tipos são fixos. Prioridade ordena ou destaca; não exclui. Não ocultar automaticamente oportunidades pelo valor ou pela classe ([Never X03](../never/funcionalidades.md)). O filtro por entidade adjudicante «não é preciso agora» e passa a Later L19 (T4 [00:01:10]).

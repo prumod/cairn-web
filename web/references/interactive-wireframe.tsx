@@ -34,6 +34,7 @@ type Opportunity = {
   publishedAt: string;
   distanceKm: number;
   kind: "Anúncio" | "Convite";
+  siteVisit: "Obrigatória" | "Não obrigatória" | null;
   requirements: string;
   documents: string[];
   quantities: { item: string; unit: string; quantity: number }[];
@@ -51,6 +52,7 @@ const originalOpportunities: Opportunity[] = [
     publishedAt: "2026-09-29",
     distanceKm: 18,
     kind: "Anúncio",
+    siteVisit: "Obrigatória",
     requirements: "Classe demonstrativa 3 · alvará de construção · experiência em reabilitação",
     documents: [
       "Declaração de proposta",
@@ -74,6 +76,7 @@ const originalOpportunities: Opportunity[] = [
     publishedAt: "2026-09-16",
     distanceKm: 74,
     kind: "Anúncio",
+    siteVisit: "Não obrigatória",
     requirements: "Classe demonstrativa 2 · licença de obras públicas",
     documents: ["Declaração de proposta", "Lista de preços"],
     quantities: [
@@ -91,12 +94,28 @@ const originalOpportunities: Opportunity[] = [
     publishedAt: "2026-10-01",
     distanceKm: 63,
     kind: "Convite",
+    siteVisit: null,
     requirements: "Classe demonstrativa 2 · habilitação por confirmar",
     documents: ["Declaração de proposta", "Memória descritiva", "Lista de preços"],
     quantities: [
       { item: "Desmontagem da cobertura", unit: "m²", quantity: 520 },
       { item: "Painel sandwich", unit: "m²", quantity: 520 },
     ],
+  },
+  {
+    id: "obra-rua",
+    title: "Repavimentação da Rua Direita",
+    buyer: "Junta de Freguesia do Centro Histórico",
+    place: "Viseu",
+    value: 58000,
+    deadline: "2026-10-22",
+    publishedAt: "2026-09-30",
+    distanceKm: 4,
+    kind: "Anúncio",
+    siteVisit: "Não obrigatória",
+    requirements: "Classe demonstrativa 1 · alvará de vias de comunicação",
+    documents: ["Declaração de proposta", "Lista de preços"],
+    quantities: [{ item: "Fresagem e repavimentação", unit: "m²", quantity: 900 }],
   },
 ];
 
@@ -221,6 +240,9 @@ export function InteractiveWireframe() {
   const [opportunities, setOpportunities] = useState(originalOpportunities);
   const [selectedId, setSelectedId] = useState("obra-escola");
   const [search, setSearch] = useState("");
+  const [buyerFilter, setBuyerFilter] = useState("");
+  const [selectedPlace, setSelectedPlace] = useState<string | null>(null);
+  const [showListExport, setShowListExport] = useState(false);
   const [radius, setRadius] = useState("80");
   const [publicationDate, setPublicationDate] = useState("2026-10-01");
   const [showMap, setShowMap] = useState(true);
@@ -297,8 +319,19 @@ export function InteractiveWireframe() {
         .toLocaleLowerCase("pt-PT")
         .includes(search.toLocaleLowerCase("pt-PT")) &&
       item.publishedAt <= publicationDate &&
-      item.distanceKm <= Number(radius),
+      item.distanceKm <= Number(radius) &&
+      (buyerFilter === "" || item.buyer === buyerFilter),
   );
+  const buyers = [...new Set(opportunities.map((item) => item.buyer))];
+  // Map markers group opportunities by locality; marker size encodes the count, not the value.
+  const places = [...new Set(visibleOpportunities.map((item) => item.place))].map((place) => ({
+    place,
+    count: visibleOpportunities.filter((item) => item.place === place).length,
+  }));
+  const placeOpportunities =
+    selectedPlace && places.some((item) => item.place === selectedPlace)
+      ? visibleOpportunities.filter((item) => item.place === selectedPlace)
+      : visibleOpportunities;
   const prepared = preparedDocuments[selected.id] ?? [];
   const checklistDocument = selected.documents.includes(selectedDocument)
     ? selectedDocument
@@ -352,6 +385,9 @@ export function InteractiveWireframe() {
     setOpportunities(originalOpportunities);
     setSelectedId("obra-escola");
     setSearch("");
+    setBuyerFilter("");
+    setSelectedPlace(null);
+    setShowListExport(false);
     setRadius("80");
     setPublicationDate("2026-10-01");
     setShowMap(true);
@@ -599,6 +635,22 @@ export function InteractiveWireframe() {
             />
           </p>
           <p>
+            <label htmlFor="buyer-filter">Entidade adjudicante</label>
+            <br />
+            <select
+              id="buyer-filter"
+              value={buyerFilter}
+              onChange={(event) => setBuyerFilter(event.target.value)}
+            >
+              <option value="">Todas</option>
+              {buyers.map((buyer) => (
+                <option key={buyer} value={buyer}>
+                  {buyer}
+                </option>
+              ))}
+            </select>
+          </p>
+          <p>
             Localização usada: {profileLocation}. As distâncias fictícias foram preparadas a partir
             de Viseu e não são recalculadas ao alterar a localização.
           </p>
@@ -631,7 +683,10 @@ export function InteractiveWireframe() {
             <button
               onClick={() => {
                 setSearch("");
-                setNotice("Filtros de texto removidos. Os exemplos voltaram à lista.");
+                setBuyerFilter("");
+                setNotice(
+                  "Filtros de texto e de entidade removidos. Os exemplos voltaram à lista.",
+                );
               }}
             >
               Limpar pesquisa
@@ -639,7 +694,10 @@ export function InteractiveWireframe() {
           </>
         ) : showMap ? (
           <>
-            <p>Esquema de posições ilustrativas. Os pontos não representam coordenadas reais.</p>
+            <p>
+              Esquema de posições ilustrativas. Os pontos não representam coordenadas reais. O
+              tamanho de cada marcador indica o número de concursos na localidade, não o valor.
+            </p>
             <svg
               role="group"
               aria-labelledby="map-title map-description"
@@ -649,44 +707,55 @@ export function InteractiveWireframe() {
             >
               <title id="map-title">Mapa esquemático de oportunidades</title>
               <desc id="map-description">
-                Três posições fictícias. Selecione um ponto para abrir o procedimento
-                correspondente.
+                Uma posição fictícia por localidade. O tamanho do marcador indica o número de
+                concursos. Selecione um ponto para listar os concursos dessa localidade.
               </desc>
               <line x1="20" y1="90" x2="460" y2="90" stroke="currentColor" strokeWidth="1" />
-              {visibleOpportunities.map((item, index) => {
+              {places.map(({ place, count }, index) => {
                 const x = 75 + index * 145;
+                const y = 90 + (index % 2 ? 28 : -24);
                 return (
-                  <g key={item.id}>
+                  <g key={place}>
                     <a
                       href="#oportunidade"
-                      aria-label={`Selecionar ${item.title}, ${item.place}`}
+                      aria-label={`Selecionar ${place}, ${count} concurso(s)`}
+                      aria-current={selectedPlace === place ? "true" : undefined}
                       onClick={(event) => {
                         event.preventDefault();
-                        setSelectedId(item.id);
-                        setNotice(`${item.title} selecionada.`);
+                        setSelectedPlace(place);
+                        setNotice(`${place} selecionada: ${count} concurso(s).`);
                       }}
                     >
-                      <title>Abrir {item.title}</title>
-                      <circle
-                        cx={x}
-                        cy={90 + (index % 2 ? 28 : -24)}
-                        r="12"
-                        fill="none"
-                        stroke="currentColor"
-                      />
-                      <text x={x} y={95 + (index % 2 ? 28 : -24)} textAnchor="middle">
-                        {index + 1}
+                      <title>Listar concursos em {place}</title>
+                      <circle cx={x} cy={y} r={6 + count * 6} fill="none" stroke="currentColor" />
+                      <text x={x} y={y + 5} textAnchor="middle">
+                        {count}
                       </text>
                     </a>
-                    <text x={x} y={145}>
-                      {item.place} · {item.distanceKm} km
+                    <text x={x} y={165} textAnchor="middle">
+                      {place} · {count} concurso(s)
                     </text>
                   </g>
                 );
               })}
             </svg>
+            <p>
+              {selectedPlace && placeOpportunities !== visibleOpportunities
+                ? `Concursos em ${selectedPlace}.`
+                : "Todas as localidades."}{" "}
+              {selectedPlace && (
+                <button
+                  onClick={() => {
+                    setSelectedPlace(null);
+                    setNotice("Seleção de localidade removida.");
+                  }}
+                >
+                  Mostrar todas as localidades
+                </button>
+              )}
+            </p>
             <ol>
-              {visibleOpportunities.map((item) => (
+              {placeOpportunities.map((item) => (
                 <li key={item.id}>
                   <button
                     onClick={() => {
@@ -714,6 +783,33 @@ export function InteractiveWireframe() {
             ))}
           </ul>
         )}
+        <p>
+          <button
+            onClick={() => {
+              if (visibleOpportunities.length === 0) {
+                setShowListExport(false);
+                setNotice("Não há concursos na lista para exportar. Altere os filtros.");
+                return;
+              }
+              setShowListExport(true);
+              setNotice(
+                "Exportação simulada para Excel. Nenhum ficheiro foi descarregado; veja a pré-visualização.",
+              );
+            }}
+          >
+            Exportar lista para Excel
+          </button>
+        </p>
+        {showListExport && visibleOpportunities.length > 0 && (
+          <pre>
+            {[
+              "Concurso;Entidade adjudicante;Localidade;Valor anunciado;Limite de entrega",
+              ...visibleOpportunities.map((item) =>
+                [item.title, item.buyer, item.place, item.value, item.deadline].join(";"),
+              ),
+            ].join("\n")}
+          </pre>
+        )}
       </Section>
       <Section title="Detalhe do procedimento selecionado">
         <h3>{selected.title}</h3>
@@ -721,6 +817,11 @@ export function InteractiveWireframe() {
         <p>Localização: {selected.place}</p>
         <p>Valor anunciado: {money(selected.value)}. Este valor não é o preço da proposta.</p>
         <p>Prazo demonstrativo da obra: 120 dias. Limite de entrega: {date(selected.deadline)}.</p>
+        <p>
+          Visita ao local:{" "}
+          {selected.siteVisit ??
+            "informação em falta no anúncio de demonstração. Confirmar antes de decidir."}
+        </p>
         <p>Plataforma indicada: Plataforma externa de demonstração, sem ligação real.</p>
         <p>
           <button

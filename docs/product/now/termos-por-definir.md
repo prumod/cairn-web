@@ -6,7 +6,7 @@ Nenhum destes termos é tratado como definitivamente resolvido. O [GLOSSARY.md](
 
 Uma caixa marcada significa que o significado e o nome do termo foram confirmados e que a definição correspondente foi atualizada no glossário. Confirmar um termo não equivale a validar regras jurídicas, contabilísticas ou técnicas.
 
-Os grupos estabelecem a ordem por certeza. Dentro de cada grupo, não se atribui uma diferença de certeza entre termos. As referências T3 indicam instantes da [transcrição 3](../transcriptions/transcricao_3_gestao_obras.txt).
+Os grupos estabelecem a ordem por certeza. Dentro de cada grupo, não se atribui uma diferença de certeza entre termos. As referências T3 indicam instantes da [transcrição 3](../transcriptions/transcricao_3_gestao_obras.txt) e as referências T4 instantes da [transcrição 4](../transcriptions/transcricao4_teste_loop_gestao_obras.txt).
 
 ## Maior certeza — significado explícito nas fontes
 
@@ -37,11 +37,12 @@ As fontes sustentam o conceito ou uma distinção importante, mas o nome, o alca
 - [ ] **Categoria / subcategoria do alvará** — Confirmar os nomes oficiais e a relação com o tipo de obra usado nos filtros. A T3 dá eletricidade, escavação e jardinagem como exemplos (T3 [00:30:16]).
 - [ ] **Tipo de obra** — Classificação atribuída a cada anúncio para filtrar, por exemplo escavação, muro, infraestrutura, betuminoso ou requalificação (T3 [01:07:50]). O Diário da República não a fornece; é atribuída por um classificador (T3 [00:10:17]). É igual à categoria do alvará?
 - [ ] **Categoria prioritária** — Tipo de obra que a empresa executa com mais frequência e que deve aparecer primeiro (T3 [01:07:50]–[01:08:32]). Confirmar que ordena ou destaca e nunca exclui.
-- [ ] **Filtro** — Confirmar o conjunto: local, data, valor, prazo, entidade adjudicante e tipo de obra (T3 [01:06:57]). Os filtros aplicam-se a todas as vistas (T3 [01:30:40]).
+- [ ] **Filtro** — Confirmar o conjunto: local, data, valor, prazo e tipo de obra (T3 [01:06:57]). O filtro por entidade adjudicante passa a Later (T4 [00:01:10]). Os filtros aplicam-se a todas as vistas (T3 [01:30:40]).
 - [ ] **Assistente / chatbot** — Confirmar o nome para o chat que pesquisa, responde e aplica filtros (T3 [01:28:08]). Na T3 diz-se «chatbot» e «inteligência artificial».
 - [ ] **Contexto da conversa** — O concurso ou conjunto de concursos selecionados que o assistente usa nas respostas (T3 [00:09:42]–[00:10:03]). Confirmar o nome e quando é limpo.
 - [ ] **Vista do concurso** — A janela aberta ao selecionar um concurso, com valor, prazos e alvará exigido. No quadro, «Concurso View» (T3 [00:31:32], [01:28:30]). Confirmar o nome em português.
-- [ ] **Localidade** — A unidade selecionada no mapa para listar as obras: cidade, freguesia ou município? (T3 [01:20:51]–[01:21:00]).
+- [ ] **Localidade** — A unidade selecionada no mapa para listar as obras: cidade, freguesia ou município? (T3 [01:20:51]–[01:21:00]). O marcador de cada localidade mostra o número de concursos (T4 [00:00:05]).
+- [ ] **Visita ao local obrigatória** — Indicação, na vista do concurso, de que a obra exige visita ao local (T4 [00:02:30]). Confirmar o nome e onde a informação aparece (anúncio ou peças do concurso).
 
 ## Menor certeza — ambiguidades por resolver
 
@@ -61,7 +62,6 @@ Estas questões permanecem abertas, mas não devem ser transformadas em definiç
 
 - Limites monetários e efeitos legais das classes do alvará.
 - Âmbito, validade e suficiência das habilitações, licenças e alvarás aplicáveis a cada procedimento.
-- O que o tamanho dos marcadores do mapa representa: valor, número de concursos ou urgência (T3 [01:16:56]–[01:17:19]).
 - Se o prazo de submissão aparece no anúncio do Diário da República.
 - Critério para assinalar «próximo do prazo».
 

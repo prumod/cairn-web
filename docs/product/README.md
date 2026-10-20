@@ -15,12 +15,12 @@ O protótipo evolui na mesma implementação: primeiro wireframe sem estilos par
 
 ## Quatro níveis de prioridade
 
-- **Now:** descoberta e consulta de obras do Diário da República: mapa, assistente, vista do concurso e filtros.
-- **Later:** funcionalidades pretendidas para produção posterior, incluindo a decisão de participar, o dossier, a checklist, os preços e a passagem à plataforma, adiados de Now pela T3.
+- **Now:** descoberta e consulta de obras do Diário da República: mapa, assistente, vista do concurso e filtros (sem o filtro por entidade adjudicante, adiado pela T4).
+- **Later:** funcionalidades pretendidas para produção posterior, incluindo a decisão de participar, o dossier, a checklist, os preços e a passagem à plataforma, adiados de Now pela T3, e o filtro por entidade adjudicante, adiado pela T4.
 - **Maybe:** ideias que precisam de validação antes de compromisso de produção.
 - **Never:** exclusões deliberadas do produto, não apenas de uma fase.
 
-Now tem 6 funcionalidades (N01–N04, N13 e N14); Later tem 18 (L01–L18); Maybe tem 14 (M01 e M03–M15); Never tem 3 (X01–X03).
+Now tem 6 funcionalidades (N01–N04, N13 e N14); Later tem 19 (L01–L19); Maybe tem 15 (M01 e M03–M16); Never tem 3 (X01–X03).
 
 ## Correspondência de identificadores
 
@@ -46,12 +46,14 @@ Uma funcionalidade que muda de nível recebe um identificador novo nesse nível;
 | —        | X01   | Trajetos rejeitados na T3.                |
 | —        | X02   | Distritos rejeitados na T3.               |
 | —        | X03   | Exclusão automática rejeitada na T3.      |
+| —        | L19   | Filtro por entidade, adiado na T4.        |
+| —        | M16   | Exportar para Excel, nova na T4.          |
 
 A classificação é uma decisão de produto, não uma divisão da interface. O protótipo interativo cobre toda a experiência de Now, Later e Maybe. Demonstrar uma capacidade não altera a prioridade, não confirma a viabilidade de integração e não constitui compromisso de produção. Gantt/Microsoft Project permanece Maybe.
 
 ## Estatuto das fontes e convenções
 
-As prioridades foram acordadas com o utilizador, mas ainda precisam de validação com o entrevistado. As entrevistas são textos revistos com trechos incertos; não são regras jurídicas nem documentação de APIs. T1, T2 e T3 identificam as entrevistas, não versões de documentos derivados. T1 e T2 citam secções; T3 cita instantes da gravação.
+As prioridades foram acordadas com o utilizador, mas ainda precisam de validação com o entrevistado. As entrevistas são textos revistos com trechos incertos; não são regras jurídicas nem documentação de APIs. T1, T2, T3 e T4 identificam as entrevistas, não versões de documentos derivados. T1 e T2 citam secções; T3 e T4 citam instantes da gravação. A T4 apresenta-se como transcrição sintética de teste, não como entrevista real.
 
 Só os registos em `transcriptions/` usam numeração de entrevista. Os documentos derivados têm nomes descritivos e são atualizados diretamente, com histórico no Git; não se criam conjuntos `transcricao_3_*` ou snapshots numerados.
 

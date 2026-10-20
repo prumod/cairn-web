@@ -2,7 +2,7 @@
 
 ## Fontes e estatuto
 
-As prioridades foram acordadas com o utilizador; não constituem aprovação do entrevistado nem validação técnica ou jurídica. T1, T2 e T3 referem-se às [transcrições](../transcriptions/): [T1](../transcriptions/transcricao1_gestao_obras.md), [T2](../transcriptions/transcricao2_gestao_obras.txt) e [T3](../transcriptions/transcricao_3_gestao_obras.txt). T3 cita instantes da gravação (`[hh:mm:ss]`). Contexto adicional: [ideia inicial](../system/ideia_inicial.txt) e [notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>).
+As prioridades foram acordadas com o utilizador; não constituem aprovação do entrevistado nem validação técnica ou jurídica. T1, T2, T3 e T4 referem-se às [transcrições](../transcriptions/): [T1](../transcriptions/transcricao1_gestao_obras.md), [T2](../transcriptions/transcricao2_gestao_obras.txt), [T3](../transcriptions/transcricao_3_gestao_obras.txt) e [T4](../transcriptions/transcricao4_teste_loop_gestao_obras.txt). T3 e T4 citam instantes da gravação (`[hh:mm:ss]`). A T4 apresenta-se como transcrição sintética de teste, não como entrevista real. Contexto adicional: [ideia inicial](../system/ideia_inicial.txt) e [notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>).
 
 Consultar as [definições de prioridade](../README.md) e o [contrato do protótipo interativo](../system/prototype.md). A prioridade de produção não limita a cobertura do protótipo: Now, Later e Maybe são demonstrados primeiro como wireframe sem estilos e depois com UI próxima da produção, sempre com dados fictícios e ações simuladas. Os limites abaixo descrevem cada prioridade; não impedem demonstrar capacidades de outros níveis no mesmo protótipo.
 
@@ -42,5 +42,9 @@ Na T3, o âmbito Now ficou reduzido a mapa, assistente, vista do concurso e filt
 
 - **L17 — Navegação pelo assistente:** o assistente abre o ecrã, a vista e os filtros pedidos (por exemplo, «quero ver a Torreira em lista»). Escrito «Navegação (Later)» no quadro final. Base: T3 [00:45:19]–[00:45:49], [01:27:07]–[01:27:58].
 - **L18 — Vista agrupada por fases:** segunda vista, além do mapa, com as oportunidades agrupadas por estado — vista, interessante, inscrita — numa única tabela com filtro de fase, em vez de vários quadros. Inclui consultar em tabela os concursos em que a empresa demonstrou interesse, sem os acumular no mapa. Base: T3 [00:09:13]–[00:09:42], [01:18:08]–[01:19:44], [01:30:00]–[01:31:46].
+
+## Novas funcionalidades da T4
+
+- **L19 — Filtrar por entidade adjudicante:** limitar as oportunidades a uma entidade adjudicante, no mapa e nas listas, como os filtros N14. Saiu dos filtros Now: «não é preciso agora. Pode ficar para mais tarde». Base: T3 [01:06:57]; T4 [00:01:10].
 
 As integrações reais e a persistência são trabalho técnico posterior ao protótipo com dados fictícios, não uma funcionalidade adicional nem uma integração já aprovada. As fontes públicas, APIs, mapas e cobertura de dados precisam de validação separada (T2 §§2, 19, 22–24).
