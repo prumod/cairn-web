@@ -1,17 +1,17 @@
 # Interactive prototype coverage
 
-This is the traceability map for the current unstyled wireframe. The priority names below are documentation references only. The application does not display those labels. Capability identifiers follow the [identifier mapping](../README.md#correspondência-de-identificadores) after transcription 3; the screens themselves did not change.
+This is the traceability map for the current unstyled wireframe. The priority names below are documentation references only. The application does not display those labels. Capability identifiers follow the [identifier mapping](../README.md#correspondência-de-identificadores) after transcription 4; the screens themselves did not change.
 
 ## Discovery
 
-| Capability | Screen or interaction                                                                                                                                     |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| N01        | Company profile edits the reference location, search radius, class and licences.                                                                          |
-| N02        | Opportunity search filters fictional examples by publication date, radius and text. The empty result can be corrected.                                    |
-| N03        | Opportunity screen switches between a selectable schematic map and the same results in a list.                                                            |
-| N04        | Selected opportunity shows the buyer, description, announced value, location, work duration, delivery deadline, platform and fictional notice preview.    |
-| N13        | Assisted search returns a deterministic fictional answer with links to the example opportunity list and stated source limits.                             |
-| N14        | Partly covered by N02: publication date, radius and text. Filters for value, deadline, buyer and work type, and priority categories, are not implemented. |
+| Capability | Screen or interaction                                                                                                                                                                                                      |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| N01        | Company profile edits the reference location, search radius, class and licences.                                                                                                                                           |
+| N02        | Opportunity search filters fictional examples by publication date, radius and text. The empty result can be corrected.                                                                                                     |
+| N03        | Opportunity screen switches between a selectable schematic map and the same results in a list.                                                                                                                             |
+| N04        | Selected opportunity shows the buyer, description, announced value, location, work duration, delivery deadline, platform and fictional notice preview. Partly covered: it does not show whether a site visit is mandatory. |
+| N13        | Assisted search returns a deterministic fictional answer with links to the example opportunity list and stated source limits.                                                                                              |
+| N14        | Partly covered by N02: publication date, radius and text. Filters for value, deadline and work type, and priority categories, are not implemented.                                                                         |
 
 ## Later capabilities
 
@@ -37,6 +37,7 @@ L09–L16 belong to proposal preparation, not work execution. L10–L16 were mov
 | L16        | Proposal review lists omissions, checks the fixed deadline, returns to preparation and simulates submission without sending documents.                                   |
 | L17        | Not implemented. The assistant does not navigate the application.                                                                                                        |
 | L18        | Not implemented. No phase-grouped view exists.                                                                                                                           |
+| L19        | Not implemented. Opportunities cannot be filtered by buyer.                                                                                                              |
 
 ## Capabilities to evaluate
 
@@ -56,6 +57,7 @@ L09–L16 belong to proposal preparation, not work execution. L10–L16 were mov
 | M13        | Not implemented.                                                                                                                                                     |
 | M14        | Not implemented.                                                                                                                                                     |
 | M15        | Not implemented.                                                                                                                                                     |
+| M16        | Not implemented.                                                                                                                                                     |
 
 ## Excluded capabilities
 
@@ -72,6 +74,6 @@ X01–X03 have no screens by design.
 
 ## Review status
 
-Before transcription 3, all 32 documented capabilities mapped to an implemented screen or interaction. Of the 38 capabilities documented now, N14 is partly covered and L17, L18 and M13–M15 are not covered. A browser smoke pass visited all 21 task screens at a 390-pixel viewport; none caused horizontal page overflow. The smoke pass also exercised empty-search recovery, proposal preparation, simulated submission and reset. Axe reported no violations on the opportunity map, proposal screen, Gantt screen and initial page. Axe could not determine contrast for some text inside the SVG diagrams.
+Before transcription 3, all 32 documented capabilities mapped to an implemented screen or interaction. Of the 40 capabilities documented now, N04 and N14 are partly covered and L17–L19 and M13–M16 are not covered. A browser smoke pass visited all 21 task screens at a 390-pixel viewport; none caused horizontal page overflow. The smoke pass also exercised empty-search recovery, proposal preparation, simulated submission and reset. Axe reported no violations on the opportunity map, proposal screen, Gantt screen and initial page. Axe could not determine contrast for some text inside the SVG diagrams.
 
 `bun run check`, changed-file formatting and `git diff --check` passed. The browser smoke test does not prove that every workflow or the user experience is complete.
