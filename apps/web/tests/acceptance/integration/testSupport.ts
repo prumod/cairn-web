@@ -24,6 +24,7 @@ const environmentKeys = [
   "DATABASE_URL",
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET",
+  "GIT_SHA",
   "NODE_ENV",
   "TEST_IDENTITY_KEY",
 ] as const;
@@ -176,6 +177,7 @@ export async function createTestApplication(
       DATABASE_URL: neonURL.toString(),
       GOOGLE_CLIENT_ID: googleClientId,
       GOOGLE_CLIENT_SECRET: googleClientSecret,
+      GIT_SHA: "0123456789abcdef0123456789abcdef01234567",
       HOST: "127.0.0.1",
       NODE_ENV: "test",
       PORT: String(appPort),

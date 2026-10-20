@@ -2,6 +2,7 @@ import * as Alchemy from "alchemy";
 import * as Cloudflare from "alchemy/Cloudflare";
 import * as Config from "effect/Config";
 import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
 import "varlock/auto-load";
 
 export const web = Cloudflare.Website.Vite("web", {
@@ -19,6 +20,14 @@ export const web = Cloudflare.Website.Vite("web", {
     GOOGLE_CLIENT_SECRET: Config.Redacted("GOOGLE_CLIENT_SECRET"),
     BOOTSTRAP_ADMIN_EMAIL: Config.NonEmptyString("BOOTSTRAP_ADMIN_EMAIL"),
     APP_ENV: Effect.map(Alchemy.AlchemyContext, ({ dev }) => (dev ? "development" : "production")),
+    GIT_SHA: Effect.gen(function* () {
+      const { dev } = yield* Alchemy.AlchemyContext;
+      if (dev) return "local";
+      return yield* Config.schema(
+        Schema.String.check(Schema.isPattern(/^[a-f0-9]{40}$/)),
+        "GIT_SHA",
+      );
+    }),
   },
   dev: {
     port: 3001,

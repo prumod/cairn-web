@@ -82,6 +82,15 @@ test("anonymous users cannot read, edit, or administer company data", async () =
   ).toBe(401);
 });
 
+test("health identifies the revision supplied to the Worker", async () => {
+  const response = await app.request("/healthz");
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({
+    status: "ready",
+    revision: "0123456789abcdef0123456789abcdef01234567",
+  });
+});
+
 test("the built authentication route returns a JSON session response", async () => {
   const response = await app.request("/api/auth/get-session");
   expect(response.status).toBe(200);

@@ -33,6 +33,7 @@ export default Alchemy.Stack(
         GOOGLE_CLIENT_SECRET: required("GOOGLE_CLIENT_SECRET"),
         BOOTSTRAP_ADMIN_EMAIL: required("BOOTSTRAP_ADMIN_EMAIL"),
         APP_ENV: "test",
+        GIT_SHA: required("GIT_SHA"),
       },
     });
     return { app: worker.url };
