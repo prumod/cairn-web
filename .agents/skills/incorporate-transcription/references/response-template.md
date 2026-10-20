@@ -10,6 +10,7 @@ Incorpora a transcrição N (`docs/product/transcriptions/<file>`) nos documento
 - Maybe: <movimentos e novas>
 - Never: <novas exclusões>
 - Termos: <termos novos ou com nova evidência>
+- Wireframe: <o que passou a demonstrar, por ID; lacunas que ficaram>
 
 ## Reclassificações
 
@@ -29,6 +30,8 @@ Escrever "Nenhuma." quando não houver.
 
 - [x] `node scripts/transcriptions-pending.mjs`: nada pendente para este ficheiro
 - [x] `bun run format:check`
+- [x] `bun run lint`
+- [x] `bun run typecheck`
 - [x] `git diff --check`
 
 A reclassificação ainda não foi validada com o entrevistado.

@@ -138,7 +138,7 @@ Os scripts executáveis estão em `scripts/`. Cada script encontra a raiz do rep
 | `bun run lint:boundaries`  | Verifica as fronteiras de módulos e dependências.                                                                                                                    |
 | `bun run test:boundaries`  | Prova que as regras de fronteira aceitam e rejeitam exemplos esperados.                                                                                              |
 | `bun run check:blueprints` | Analisa o Blueprint de teste e o template de produção e verifica a política local, sem contactar o Render.                                                           |
-| `bun run typecheck`        | Verifica os tipos da aplicação web, das configurações de teste e das ligações dos testes.                                                                            |
+| `bun run typecheck`        | Verifica os tipos da aplicação web, do wireframe de referência, das configurações de teste e das ligações dos testes.                                                |
 | `bun run audit`            | Audita as dependências bloqueadas, incluindo as ferramentas de desenvolvimento.                                                                                      |
 | `bun run test`             | Executa os testes rápidos, compila a aplicação e executa os cenários no navegador.                                                                                   |
 | `bun run check`            | Executa a formatação, a análise estática, as verificações de fronteiras e Blueprints, a verificação de tipos, a auditoria de dependências, os testes e a compilação. |
