@@ -59,8 +59,8 @@ Para a experiência completa e os limites técnicos da demonstração, prevalece
 
 ## Nova transcrição
 
-1. Coloque o ficheiro em `transcriptions/` e integre-o em `main` através de um PR. Faça o mesmo quando o ficheiro foi criado localmente: o único circuito corre no GitHub.
-2. O [workflow](../../.github/workflows/agent-incorporate-transcription.yml) aplica a [skill](../../.agents/skills/incorporate-transcription/SKILL.md) e abre um PR seguinte com as atualizações dos documentos derivados, para revisão.
+1. Coloque o ficheiro em `transcriptions/` e integre-o em `main` através de um PR com a label `transcription` (por exemplo, `gh pr create --label transcription`). Faça o mesmo quando o ficheiro foi criado localmente: o único circuito corre no GitHub.
+2. Só o merge de um PR com essa label, ou do PR do próprio circuito, inicia o circuito. O [workflow](../../.github/workflows/agent-incorporate-transcription.yml) aplica a [skill](../../.agents/skills/incorporate-transcription/SKILL.md) e abre um PR seguinte com as atualizações dos documentos derivados, para revisão.
 3. Registe o feedback duradouro da revisão em [`.github/agent-memory/incorporate-transcription.md`](../../.github/agent-memory/incorporate-transcription.md). Cada execução carrega esse ficheiro.
 
 O workflow também pode ser iniciado manualmente no GitHub Actions.
