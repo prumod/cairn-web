@@ -1,0 +1,13 @@
+TRANSCRIÇÃO DE TESTE DO LOOP (NÃO É UMA ENTREVISTA REAL)
+Ficheiro sintético, criado para testar o workflow «Agent: Incorporate transcription». O PR resultante deve ser fechado sem merge.
+
+Legenda dos tipos de registo:
+  [ÁUDIO]  transcrição da fala. Tem um único instante de início: [hh:mm:ss].
+
+[00:00:05] [ÁUDIO] Sobre o mapa: o tamanho dos marcadores deve mostrar o número de concursos em cada localidade, não o valor.
+
+[00:01:10] [ÁUDIO] Nos filtros, o filtro por entidade adjudicante não é preciso agora. Pode ficar para mais tarde.
+
+[00:02:30] [ÁUDIO] Na vista do concurso, gostava de ver também se a obra tem visita ao local obrigatória.
+
+[00:03:45] [ÁUDIO] Talvez um dia seja útil exportar a lista para Excel, mas não sei se vale a pena.
