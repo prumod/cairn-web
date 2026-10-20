@@ -35,6 +35,10 @@ Client pages/shared modules cannot import server-only modules, environment/servi
 
 `render.yaml`, `deploy/render.production.template.yaml`, and existing Render workflows/gates remain from the previous runtime. They do not deploy or validate the current Workers application. Their presence or historical results are not evidence for this migration; do not treat Render or production as ready.
 
+## Transcription documentation automation
+
+`.github/workflows/agent-incorporate-transcription.yml` defines a workflow that can be started manually or after a merged PR to `main` labelled `transcription` or `agent-incorporate-transcription`. `scripts/transcriptions-pending.mjs` selects the oldest source transcription not linked from `docs/product/now/funcionalidades.md`; the workflow skips when none is pending or while a loop PR is open. On a manual run it checks out the selected branch; after a qualifying merged PR it checks out `main`. Claude Code follows `.agents/skills/incorporate-transcription/SKILL.md` and is instructed to edit only `docs/product/`. The workflow checks that the selected source is linked, enforces that file scope, and runs formatting validation before opening a labelled PR. It uses `AGENT_PR_TOKEN` to push and open that PR; `ANTHROPIC_API_KEY` is provided to the agent step. This describes configured workflow behavior, not evidence that the workflow has run successfully.
+
 ## Change contracts
 
 - Keep UI and route code in `apps/web/src/`, server capabilities in `apps/web/src/server/`, and cross-workspace contracts in `shared/src/` only when they do not depend on application packages.
