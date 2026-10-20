@@ -16,11 +16,14 @@ web/
   migrations/                        # committed SQL migrations and Drizzle metadata
   tests/acceptance/integration/      # HTTP/PostgreSQL integration tests
   tests/acceptance/e2e/              # Playwright-BDD step bindings
+  references/                        # reference wireframe and its standalone viewer
 shared/src/<module>/                 # optional cross-repository contracts/utilities
 features/<capability>/<use-case>.feature  # root capability contracts
 ```
 
 There is one application workspace: `web/`. The Node server is built by Nitro from TanStack Start; Express and a separate backend workspace are not part of the current application. Start route files bind UI and API paths to the client or to a `server.handlers` function. Keep database access, authentication, authorization, and domain operations on the server side.
+
+`web/references/` holds the reference wireframe and its standalone Vite viewer (`bun run wireframe`; `wireframe:build` in `web` writes git-ignored `web/.wireframe-dist/`). It is outside the application build and `web/src`, so TanStack Start does not route it and dependency-cruiser boundaries do not cover it.
 
 ## Module privacy
 

@@ -9,6 +9,7 @@
     "setup": "bash scripts/setup.sh",
     "update": "bash scripts/update.sh",
     "dev": "bun run --cwd web dev",
+    "wireframe": "bun run --cwd web wireframe",
     "build": "bun run --cwd web build",
     "start": "bun run --cwd web start",
     "db:migrate": "bun run --cwd web migrate",
