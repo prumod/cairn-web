@@ -7,17 +7,15 @@
 # The push and PR use AGENT_PR_TOKEN, a fine-grained token of the trusted contributor:
 # PRs opened with GITHUB_TOKEN do not trigger the required "Agent checks", and the
 # required "Deployed company profile E2E" only accepts heads pushed by that contributor.
-# Merging the loop's PR changes now/funcionalidades.md, which re-runs the sensor and
-# selects the next pending transcription, if any.
+# Only merged PRs labelled `transcription` (a new source) or `agent-incorporate-transcription`
+# (the loop's own PR, so the next pending source is picked up) start the loop.
 
 name: "Agent: Incorporate transcription"
 
 on:
-  push:
+  pull_request:
     branches: [main]
-    paths:
-      - docs/product/transcriptions/**
-      - docs/product/now/funcionalidades.md
+    types: [closed]
   workflow_dispatch:
 
 permissions:
@@ -33,11 +31,17 @@ jobs:
     name: Incorporate transcription
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged &&
+      (contains(github.event.pull_request.labels.*.name, 'transcription') ||
+      contains(github.event.pull_request.labels.*.name, 'agent-incorporate-transcription')))
     env:
       AGENT_LABEL: agent-incorporate-transcription
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: main
           # The sensor orders pending files by the commit that added them.
           fetch-depth: 0
           persist-credentials: false
