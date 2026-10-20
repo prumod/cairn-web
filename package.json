@@ -22,7 +22,6 @@
     "setup": "bash scripts/setup.sh",
     "update": "bash scripts/update.sh",
     "dev": "bun run --cwd packages/infra dev",
-    "dev:web": "bun run --cwd apps/web dev:bare",
     "build": "bun run --cwd apps/web build",
     "db:migrate": "bun run --cwd packages/db db:migrate",
     "db:generate": "bun run --cwd packages/db db:generate",

@@ -17,7 +17,8 @@ function run(binary, args) {
 const suite = process.argv[2];
 if (suite === "fast") {
   const tests = globSync([
-    "{apps/web,packages,shared}/src/**/*.{spec,test}.{ts,tsx}",
+    "{apps/web,shared}/src/**/*.{spec,test}.{ts,tsx}",
+    "packages/*/src/**/*.{spec,test}.{ts,tsx}",
     "apps/web/tests/{acceptance,typical}/integration/**/*.{spec,test}.{ts,tsx}",
   ]);
   run("vitest", ["run", ...(tests.length === 0 ? ["--passWithNoTests"] : [])]);

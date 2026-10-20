@@ -127,7 +127,6 @@ Os comandos principais estão definidos no `package.json` da raiz. `bun run setu
 | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `bun run update`                                      | Instala as dependências bloqueadas depois de atualizar o repositório.                                     |
 | `bun run dev`                                         | Inicia a stack Alchemy local para o Worker Cloudflare de desenvolvimento.                                 |
-| `bun run dev:web`                                     | Inicia Vite diretamente, sem a stack Alchemy.                                                             |
 | `bun run build`                                       | Compila a aplicação TanStack Start para `apps/web/dist`.                                                  |
 | `bun run db:migrate`                                  | Aplica as migrações Drizzle à base indicada por `DATABASE_URL`.                                           |
 | `bun run db:generate`                                 | Gera migrações a partir do schema Drizzle.                                                                |
