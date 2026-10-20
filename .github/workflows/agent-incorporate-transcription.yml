@@ -41,7 +41,9 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: main
+          # A merged PR runs on main; a manual run uses the chosen branch, so a test
+          # transcription can be pushed to a branch and incorporated without touching main.
+          ref: ${{ github.event_name == 'pull_request' && 'main' || github.ref }}
           # The sensor orders pending files by the commit that added them.
           fetch-depth: 0
           persist-credentials: false
