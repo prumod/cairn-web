@@ -15,6 +15,7 @@ const deployment = Effect.gen(function* () {
 export const web = Cloudflare.Website.Vite("web", {
   rootDir: "../../apps/web",
   domain: Effect.map(deployment, ({ domain }) => domain),
+  workersDev: Effect.map(deployment, ({ workersDev }) => workersDev),
   compatibility: {
     date: "2026-10-09",
     flags: ["nodejs_compat"],

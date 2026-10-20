@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccessRouteImport } from './routes/access'
 import { Route as HealthzRouteImport } from './routes/healthz'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as ApiCompanyProfileRouteImport } from './routes/api/company-profile'
 import { Route as ApiMeRouteImport } from './routes/api/me'
@@ -32,6 +34,16 @@ const AccessRoute = AccessRouteImport.update({
 const HealthzRoute = HealthzRouteImport.update({
   id: '/healthz',
   path: '/healthz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
@@ -69,6 +81,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/access': typeof AccessRoute
   '/healthz': typeof HealthzRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/api/$': typeof ApiSplatRoute
   '/api/company-profile': typeof ApiCompanyProfileRoute
   '/api/me': typeof ApiMeRoute
@@ -80,6 +94,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/access': typeof AccessRoute
   '/healthz': typeof HealthzRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/api/$': typeof ApiSplatRoute
   '/api/company-profile': typeof ApiCompanyProfileRoute
   '/api/me': typeof ApiMeRoute
@@ -92,6 +108,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/access': typeof AccessRoute
   '/healthz': typeof HealthzRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/api/$': typeof ApiSplatRoute
   '/api/company-profile': typeof ApiCompanyProfileRoute
   '/api/me': typeof ApiMeRoute
@@ -105,6 +123,8 @@ export interface FileRouteTypes {
     | '/'
     | '/access'
     | '/healthz'
+    | '/privacy'
+    | '/terms'
     | '/api/$'
     | '/api/company-profile'
     | '/api/me'
@@ -116,6 +136,8 @@ export interface FileRouteTypes {
     | '/'
     | '/access'
     | '/healthz'
+    | '/privacy'
+    | '/terms'
     | '/api/$'
     | '/api/company-profile'
     | '/api/me'
@@ -127,6 +149,8 @@ export interface FileRouteTypes {
     | '/'
     | '/access'
     | '/healthz'
+    | '/privacy'
+    | '/terms'
     | '/api/$'
     | '/api/company-profile'
     | '/api/me'
@@ -139,6 +163,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccessRoute: typeof AccessRoute
   HealthzRoute: typeof HealthzRoute
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
   ApiSplatRoute: typeof ApiSplatRoute
   ApiCompanyProfileRoute: typeof ApiCompanyProfileRoute
   ApiMeRoute: typeof ApiMeRoute
@@ -168,6 +194,20 @@ declare module '@tanstack/react-router' {
       path: '/healthz'
       fullPath: '/healthz'
       preLoaderRoute: typeof HealthzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/$': {
@@ -219,6 +259,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccessRoute: AccessRoute,
   HealthzRoute: HealthzRoute,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   ApiSplatRoute: ApiSplatRoute,
   ApiCompanyProfileRoute: ApiCompanyProfileRoute,
   ApiMeRoute: ApiMeRoute,

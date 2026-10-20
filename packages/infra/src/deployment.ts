@@ -3,6 +3,7 @@ export function deploymentConfig(stage: string, dev: boolean, revision?: string)
     if (stage !== "dev") throw new Error("Local development stage must be dev");
     return {
       domain: undefined,
+      workersDev: undefined,
       appEnv: "development" as const,
       revision: "local",
     };
@@ -18,6 +19,9 @@ export function deploymentConfig(stage: string, dev: boolean, revision?: string)
 
   return {
     domain: stage === "production" ? "cairn.prumod.eu" : "cairn-testing.prumod.eu",
+    // Alchemy defaults workersDev to true, which would also serve the Worker (and per-version
+    // previews) on workers.dev. Cloud stages are reachable only through their custom domain.
+    workersDev: false,
     appEnv: "production" as const,
     revision,
   };

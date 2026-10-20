@@ -32,6 +32,7 @@ describe("Worker deployment configuration", () => {
   it("keeps local development off custom domains and does not require a deployed revision", () => {
     expect(deploymentConfig("dev", true)).toEqual({
       domain: undefined,
+      workersDev: undefined,
       appEnv: "development",
       revision: "local",
     });
@@ -39,6 +40,7 @@ describe("Worker deployment configuration", () => {
   it("uses the production custom domain without changing security or revision", () => {
     expect(deploymentConfig("production", false, revision)).toEqual({
       domain: "cairn.prumod.eu",
+      workersDev: false,
       appEnv: "production",
       revision,
     });
@@ -46,8 +48,15 @@ describe("Worker deployment configuration", () => {
   it("uses the testing custom domain with production security and the exact revision", () => {
     expect(deploymentConfig("testing", false, revision)).toEqual({
       domain: "cairn-testing.prumod.eu",
+      workersDev: false,
       appEnv: "production",
       revision,
     });
   });
+  it.each(["testing", "production"])(
+    "serves the %s Worker only on its custom domain, never on workers.dev",
+    (stage) => {
+      expect(deploymentConfig(stage, false, revision).workersDev).toBe(false);
+    },
+  );
 });

@@ -1,20 +1,25 @@
-import { Link, Outlet } from "@tanstack/react-router";
+import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { request } from "./shared/api/client.js";
 
 type CurrentUser = { id: string; email: string; approved: boolean; administrator: boolean };
 
 export function AppLayout() {
+  const isPublicLegalPage = useRouterState({
+    select: (state) =>
+      state.location.pathname === "/privacy" || state.location.pathname === "/terms",
+  });
   const [user, setUser] = useState<CurrentUser | null | undefined>();
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (isPublicLegalPage) return;
     request<CurrentUser | null>("/api/me")
       .then(setUser)
       .catch(() =>
         setError("Não foi possível carregar a sessão. Atualize a página para tentar novamente."),
       );
-  }, []);
+  }, [isPublicLegalPage]);
 
   async function signIn() {
     setError("");
@@ -59,8 +64,11 @@ export function AppLayout() {
       </header>
       <main>
         {error && <p role="alert">{error}</p>}
-        {user === undefined && !error && <p>A carregar…</p>}
-        {user === null ? (
+        {isPublicLegalPage ? (
+          <Outlet />
+        ) : user === undefined && !error ? (
+          <p>A carregar…</p>
+        ) : user === null ? (
           <section>
             <h1>Entre no Cairn</h1>
             <p>
@@ -73,6 +81,12 @@ export function AppLayout() {
           user && <Outlet />
         )}
       </main>
+      <footer>
+        <nav aria-label="Informação legal">
+          <Link to="/privacy">Política de privacidade</Link>
+          <Link to="/terms">Termos de utilização</Link>
+        </nav>
+      </footer>
     </>
   );
 }

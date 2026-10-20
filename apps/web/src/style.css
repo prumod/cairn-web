@@ -39,6 +39,11 @@ main {
   margin: 3rem auto;
   padding: 0 1.5rem;
 }
+footer {
+  max-width: 52rem;
+  margin: 3rem auto 1.5rem;
+  padding: 0 1.5rem;
+}
 h1 {
   font-size: 2rem;
   line-height: 1.2;
