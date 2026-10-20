@@ -332,6 +332,7 @@ export function InteractiveWireframe() {
     selectedPlace && places.some((item) => item.place === selectedPlace)
       ? visibleOpportunities.filter((item) => item.place === selectedPlace)
       : visibleOpportunities;
+  const displayedOpportunities = showMap ? placeOpportunities : visibleOpportunities;
   const prepared = preparedDocuments[selected.id] ?? [];
   const checklistDocument = selected.documents.includes(selectedDocument)
     ? selectedDocument
@@ -786,7 +787,7 @@ export function InteractiveWireframe() {
         <p>
           <button
             onClick={() => {
-              if (visibleOpportunities.length === 0) {
+              if (displayedOpportunities.length === 0) {
                 setShowListExport(false);
                 setNotice("Não há concursos na lista para exportar. Altere os filtros.");
                 return;
@@ -800,11 +801,11 @@ export function InteractiveWireframe() {
             Exportar lista para Excel
           </button>
         </p>
-        {showListExport && visibleOpportunities.length > 0 && (
+        {showListExport && displayedOpportunities.length > 0 && (
           <pre>
             {[
               "Concurso;Entidade adjudicante;Localidade;Valor anunciado;Limite de entrega",
-              ...visibleOpportunities.map((item) =>
+              ...displayedOpportunities.map((item) =>
                 [item.title, item.buyer, item.place, item.value, item.deadline].join(";"),
               ),
             ].join("\n")}
