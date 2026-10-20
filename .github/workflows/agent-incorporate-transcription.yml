@@ -96,7 +96,8 @@ jobs:
       - name: Actuator — run Claude Code
         if: steps.gate.outputs.run == 'true'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Long-lived OAuth token from `claude setup-token`; usage counts against the Claude subscription.
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           NEXT_FILE: ${{ steps.sensor.outputs.file }}
           INTERVIEW: ${{ steps.sensor.outputs.interview }}
         run: |
