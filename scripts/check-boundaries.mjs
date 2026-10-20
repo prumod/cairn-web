@@ -10,6 +10,7 @@ const paths = [
   "packages/db/src",
   "packages/ui/src",
   "packages/infra/alchemy.run.ts",
+  "packages/infra/src",
   "packages/infra/test",
   "shared/src",
 ].filter((path) => existsSync(path));

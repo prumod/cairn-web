@@ -145,9 +145,9 @@ Os testes precisam de Docker Compose e Chromium. O wrapper cria um projeto Compo
 
 ## Estado de deployment
 
-A aplicação atual define um alvo Cloudflare Workers através de `Cloudflare.Website.Vite` em `packages/infra/alchemy.run.ts`. O desenvolvimento local usa Alchemy com estado local. A existência desta configuração não comprova que uma conta Cloudflare, um backend de estado remoto, credenciais, segredos, OAuth ou um deployment tenham sido configurados ou verificados. A aplicação não está aprovada nem validada para produção.
+A configuração atual define a stack Alchemy para Cloudflare Workers em `packages/infra/alchemy.run.ts` e `packages/infra/src/deployment.ts`. O estágio local suportado é `dev`: não configura domínio personalizado, define `APP_ENV=development` e usa `GIT_SHA=local`. Os únicos estágios de deployment aceites são `testing` (`cairn-testing.prumod.eu`) e `production` (`cairn.prumod.eu`); ambos usam `APP_ENV=production` e exigem `GIT_SHA` com 40 caracteres hexadecimais minúsculos. O domínio e os bindings são configuração de código, não prova de DNS, certificado, conta/provisionamento Cloudflare, OAuth, estado Alchemy remoto ou deployment live.
 
-`render.yaml`, `deploy/render.production.template.yaml` e os workflows/gates de Render continuam no repositório como artefactos do runtime anterior. Não fazem o deployment nem validam o Worker atual; resultados históricos e proteções anteriores não são evidência de CI, runtime ou prontidão para produção desta migração. Não use o caminho Render como cutover. Uma migração cloud exige trabalho separado e autorização explícita para provisionamento, estado, segredos, OAuth, segurança e testes live da revisão exata.
+Os comandos explicitamente nomeados são `deploy:testing`, `deploy:production`, `destroy:testing` e `destroy:production` no package `packages/infra`; os comandos implícitos `deploy`/`destroy` não existem. Não execute deployment ou destroy sem aprovação separada, inputs isolados e validação operacional. `render.yaml`, `deploy/render.production.template.yaml` e os workflows/gates de Render continuam artefactos do runtime anterior e não validam nem fazem deployment do Worker atual. A configuração declara `Alchemy.localState()`; estado cloud remoto e isolamento de credenciais, bases de dados e OAuth não são provisionados pelo código.
 
 ## Integrações opcionais com Pi
 

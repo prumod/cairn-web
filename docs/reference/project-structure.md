@@ -19,6 +19,7 @@ packages/
   db/src/                              # database client, schemas, and relations
   db/migrations/<timestamp_name>/     # Drizzle 1.0.0-rc.4 folder-based migrations
   infra/alchemy.run.ts                # Alchemy Cloudflare Website.Vite stack
+  infra/src/deployment.ts             # validated dev/testing/production bindings and domains
   infra/test/alchemy.run.ts           # local acceptance Worker stack
   config/                             # workspace configuration package
 shared/src/<module>/                  # optional runtime-independent cross-workspace code
@@ -42,7 +43,7 @@ The dependency rules also enforce these workspace boundaries:
 - Client shared modules cannot import page modules; server-shared modules cannot import domain modules.
 - Circular dependencies and unresolved imports fail. The runtime-resolved `cloudflare:workers` import is the explicit unresolved-import exception.
 
-`bun run lint:boundaries` scans the application source/tests, `packages/auth/src`, `packages/db/src`, Alchemy app/test declarations under `packages/infra`, and `shared/src`. `.alchemy` generated cache/state is excluded. `bun run test:boundaries` proves allowed route-to-server and own-module test imports, and rejects representative private imports, workspace package imports from client code, cross-application shared dependencies, cycles, and unresolved imports. It also creates a temporary `packages/ui` client file to prove that the reserved UI boundary rejects server imports; the package is absent from the actual workspace. These checks enforce dependency shape, not runtime behavior or provider configuration.
+`bun run lint:boundaries` scans the application source/tests, `packages/auth/src`, `packages/db/src`, Alchemy declarations/tests under `packages/infra` (including `packages/infra/src`), and `shared/src`. `.alchemy` generated cache/state is excluded. `bun run test:boundaries` proves allowed route-to-server and own-module test imports, and rejects representative private imports, workspace package imports from client code, cross-application shared dependencies, cycles, and unresolved imports. It also creates a temporary `packages/ui` client file to prove that the reserved UI boundary rejects server imports; the package is absent from the actual workspace. These checks enforce dependency shape, not runtime behavior or provider configuration.
 
 ## Test discovery
 

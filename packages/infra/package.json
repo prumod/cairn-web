@@ -5,8 +5,10 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "dev": "bun node_modules/alchemy/bin/cli.js dev --stage dev",
-    "deploy": "bun node_modules/alchemy/bin/cli.js deploy --stage production",
-    "destroy": "bun node_modules/alchemy/bin/cli.js destroy --stage production"
+    "deploy:testing": "bun node_modules/alchemy/bin/cli.js deploy --stage testing",
+    "deploy:production": "bun node_modules/alchemy/bin/cli.js deploy --stage production",
+    "destroy:testing": "bun node_modules/alchemy/bin/cli.js destroy --stage testing",
+    "destroy:production": "bun node_modules/alchemy/bin/cli.js destroy --stage production"
   },
   "dependencies": {
     "zod": "catalog:"
