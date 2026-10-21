@@ -29,7 +29,7 @@ Evoluir a mesma implementação, sem manter versões paralelas obrigatórias de 
 
 ### Fase de wireframe — estrutura e comportamento
 
-Usar elementos HTML semânticos e a apresentação nativa do browser, sem CSS de apresentação, estilos inline, biblioteca visual ou trabalho de identidade gráfica. Esta restrição aplica-se apenas à fase inicial. O objetivo é rever como as tarefas funcionam, não aprovar a aparência. Rótulos, associação entre campos, foco por teclado e estrutura legível continuam necessários.
+Usar elementos HTML semânticos e a apresentação nativa do browser, sem CSS de apresentação, estilos inline, biblioteca visual ou trabalho de identidade gráfica. Esta restrição aplica-se apenas à fase inicial. O objetivo é rever como as tarefas funcionam, não aprovar a aparência. Para ver o wireframe de referência (`web/references/interactive-wireframe.tsx`), executar `bun run wireframe` e abrir `http://127.0.0.1:5174`. Rótulos, associação entre campos, foco por teclado e estrutura legível continuam necessários.
 
 «Sem estilos» não significa ausência de representação visual. Mapas, cronogramas e gráficos podem usar a geometria e os atributos gráficos mínimos necessários para representar informação e permitir interação, sem decoração nem trabalho de identidade gráfica. A tecnologia usada não fica definida por esta regra.
 

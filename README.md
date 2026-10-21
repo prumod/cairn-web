@@ -128,6 +128,7 @@ Os scripts executáveis estão em `scripts/`. Cada script encontra a raiz do rep
 | `bun run setup`            | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                                                                                         |
 | `bun run update`           | Instala as dependências depois de atualizar uma cópia existente.                                                                                                     |
 | `bun run dev`              | Inicia o servidor Vite/TanStack Start full-stack para desenvolvimento.                                                                                               |
+| `bun run wireframe`        | Inicia o visualizador isolado do wireframe de referência em `http://127.0.0.1:5174`; não faz parte da compilação da aplicação.                                       |
 | `bun run build`            | Compila a aplicação TanStack Start/Nitro para `web/.output`.                                                                                                         |
 | `bun run start`            | Inicia o servidor Node compilado com o diretório de trabalho `web/`.                                                                                                 |
 | `bun run db:migrate`       | Aplica as migrações SQL committed ao banco configurado.                                                                                                              |

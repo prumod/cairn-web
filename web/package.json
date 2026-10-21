@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
+    "wireframe": "vite --config vite.wireframe.config.ts",
+    "wireframe:build": "vite build --config vite.wireframe.config.ts",
     "start": "node .output/server/index.mjs",
     "migrate": "node --import tsx src/server/migrate.ts",
     "typecheck": "tsc --noEmit"
