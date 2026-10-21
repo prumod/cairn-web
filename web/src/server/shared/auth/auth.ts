@@ -13,7 +13,7 @@ export type AuthConfig = {
 
 export function authOptions(db: Database, config: AuthConfig) {
   return {
-    database: drizzleAdapter(db, { provider: "pg", schema }),
+    database: drizzleAdapter(db, { provider: "sqlite", schema }),
     baseURL: config.origin,
     secret: config.secret,
     trustedOrigins: [config.origin],

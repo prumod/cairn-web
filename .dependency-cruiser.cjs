@@ -84,7 +84,8 @@ module.exports = {
       name: "no-unresolved-imports",
       severity: "error",
       from: {},
-      to: { couldNotResolve: true },
+      // cloudflare:* modules are provided by the Workers runtime, not installed packages.
+      to: { couldNotResolve: true, pathNot: "^cloudflare:" },
     },
   ],
   options: {
