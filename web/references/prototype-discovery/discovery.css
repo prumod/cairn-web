@@ -1,0 +1,1058 @@
+/* PROTOTYPE: visual layer for discovering works from the map. */
+
+.d-root {
+  --bg: #dce3ed;
+  --panel: #fff;
+  --ink: #172235;
+  --muted: #46546a;
+  --line: #aebaca;
+  --control-line: #718096;
+  --accent: #3730a3;
+  --accent-soft: #e0e7ff;
+  --radius: 12px;
+
+  min-height: 100vh;
+  padding: 16px 16px 120px;
+  background: var(--bg);
+  color: var(--ink);
+  font:
+    14px/1.5 system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+.d-root *,
+.d-root *::before,
+.d-root *::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+.d-root h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+.d-root h3 {
+  margin: 12px 0 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.d-root p {
+  margin: 6px 0;
+}
+.d-root small {
+  color: var(--muted);
+}
+.d-root ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.d-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* Controls */
+.d-root button {
+  font: inherit;
+  padding: 5px 12px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--control-line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.d-root button:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.d-root button[type="submit"]:hover:not(:disabled),
+.d-root button[aria-pressed="true"]:hover:not(:disabled) {
+  color: #fff;
+  background: #4338ca;
+  border-color: #4338ca;
+}
+.d-root button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.d-root button[aria-pressed="true"] {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.d-root button[type="submit"] {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.d-root button:focus-visible,
+.d-root input:focus-visible,
+.d-root textarea:focus-visible,
+.d-root select:focus-visible,
+.d-root [tabindex="0"]:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.d-root textarea,
+.d-root select {
+  font: inherit;
+  padding: 6px 8px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--control-line);
+  border-radius: 8px;
+}
+.d-root input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chips button {
+  padding: 3px 10px;
+  font-size: 12px;
+  color: var(--accent);
+  border-radius: 999px;
+}
+
+/* Header */
+.d-brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.d-brand strong {
+  color: var(--ink);
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+.d-brand-mark {
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 7px 7px 7px 2px;
+}
+
+.d-demo {
+  margin: 4px 0 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Layout */
+.d-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 16px;
+  align-items: start;
+}
+.d-main {
+  min-width: 0;
+}
+.d-profile {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.d-profile strong {
+  color: var(--ink);
+}
+.d-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: end;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.d-filters label {
+  display: grid;
+  gap: 2px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.d-filters label select {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+.d-filters fieldset {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.d-filters legend {
+  float: left;
+  margin-right: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.d-filter-count {
+  margin: 0 0 0 auto;
+  font-weight: 600;
+}
+
+.d-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 470px) minmax(280px, 1fr);
+  gap: 12px 16px;
+  align-items: start;
+}
+.d-stage > .d-map {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+.d-stage > .d-results,
+.d-stage > .d-contest {
+  grid-column: 2;
+}
+@media (width <= 1100px) {
+  .d-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .d-stage > .d-map,
+  .d-stage > .d-results,
+  .d-stage > .d-contest {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+.d-map {
+  width: 100%;
+  max-width: 470px;
+}
+.d-map > svg {
+  width: 100%;
+  height: auto;
+}
+.d-map .map-legend svg {
+  width: 26px;
+  height: 22px;
+  background: none;
+  border-radius: 0;
+}
+.d-locality {
+  cursor: pointer;
+}
+.d-locality[data-active="false"] {
+  opacity: 0.55;
+}
+.d-locality:hover .map-pin path {
+  stroke: #000;
+  stroke-width: 2;
+}
+.d-count circle {
+  fill: #fff;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.d-count text {
+  stroke: none;
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--accent);
+}
+.d-minimap {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+/* Works of a locality, contest view, comparison */
+.d-results,
+.d-contest,
+.d-compare {
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.d-results h2,
+.d-contest h2,
+.d-compare h2 {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: start;
+}
+.d-close {
+  padding: 0 8px;
+  line-height: 1.4;
+}
+.d-results,
+.d-compare {
+  overflow-x: auto;
+}
+.d-results table,
+.d-compare table {
+  width: 100%;
+  font-size: 13px;
+  border-collapse: collapse;
+}
+.d-results th,
+.d-compare th {
+  padding: 6px 8px;
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+.d-compare tbody th {
+  white-space: nowrap;
+}
+.d-results td,
+.d-compare td {
+  padding: 8px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+.d-results tr[data-selected="true"] td {
+  background: var(--accent-soft);
+}
+.d-results td button {
+  padding: 0;
+  text-align: left;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  font-weight: 600;
+}
+.d-contest {
+  position: relative;
+  z-index: 3;
+}
+.d-contest dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 14px;
+  margin: 0;
+}
+.d-contest dt {
+  color: var(--muted);
+}
+.d-contest dd {
+  margin: 0;
+}
+.d-contest blockquote {
+  margin: 0;
+  padding: 4px 12px;
+  font-size: 13px;
+  background: #f6f7fb;
+  border-left: 3px solid var(--line);
+}
+
+/* Citations: only data from the database or external sources can be selected. */
+.d-results,
+.d-contest,
+.d-compare,
+.d-chat-log {
+  user-select: none;
+}
+.d-results > h2,
+.d-results > .d-select-bar,
+.d-results > .d-map-hint {
+  user-select: text;
+}
+[data-cite] {
+  cursor: text;
+  user-select: text;
+}
+[data-cite]::selection {
+  color: #fff;
+  background: var(--accent);
+}
+.d-citations {
+  display: grid;
+  gap: 4px;
+  margin: 6px 0;
+}
+.d-citations li {
+  display: flex;
+  gap: 6px;
+  align-items: start;
+}
+.d-citations blockquote {
+  flex: 1;
+  margin: 0;
+  padding: 4px 8px;
+  font-size: 12px;
+  background: #fff;
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+}
+.d-citations q {
+  display: block;
+  font-style: italic;
+}
+.d-citations small {
+  display: block;
+}
+.d-citations button {
+  padding: 0 6px;
+}
+
+/* Chat */
+.d-chat-slot {
+  position: sticky;
+  top: 16px;
+}
+.d-chat {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 150px);
+  min-height: 420px;
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.d-chat header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.d-chat header h2 {
+  margin: 0;
+}
+.d-chat-log {
+  flex: 1;
+  margin: 8px 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+.d-chat-log > li {
+  max-width: 96%;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-radius: 12px 12px 12px 2px;
+}
+.d-chat-log > li[data-role="pessoa"] {
+  margin-left: auto;
+  background: var(--accent-soft);
+  border-radius: 12px 12px 2px;
+}
+.d-tools {
+  display: grid;
+  gap: 4px;
+  margin: 6px 0;
+}
+.d-tools button {
+  width: 100%;
+  padding: 3px 8px;
+  font-size: 12px;
+  text-align: left;
+  font-family: ui-monospace, monospace;
+}
+.d-chat-results {
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+.d-chat-cards {
+  display: grid;
+  gap: 6px;
+}
+.d-chat-cards button {
+  display: grid;
+  width: 100%;
+  text-align: left;
+}
+.d-chat-cards span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.d-chat .d-compare {
+  padding: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+}
+.d-chat .d-compare th,
+.d-chat .d-compare td {
+  min-width: 96px;
+  padding: 4px 6px;
+  font-size: 11px;
+}
+.d-chat .d-compare h2 {
+  display: none;
+}
+.d-prompts {
+  margin-bottom: 8px;
+}
+.d-composer {
+  display: grid;
+  gap: 6px;
+}
+.d-composer textarea {
+  width: 100%;
+  resize: vertical;
+}
+/* Options panel */
+.d-options {
+  position: relative;
+  margin-left: auto;
+}
+.d-options-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 10;
+  display: grid;
+  gap: 10px;
+  width: 260px;
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgb(16 24 40 / 25%);
+}
+.d-options-panel fieldset {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.d-options-panel legend {
+  margin-bottom: 4px;
+  padding: 0;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.d-options-panel label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+}
+.d-options-panel small {
+  color: var(--muted);
+}
+
+@media (width <= 900px) {
+  .d-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .d-chat-slot {
+    position: static;
+  }
+  .d-chat {
+    height: 480px;
+  }
+}
+
+/* Map */
+
+/* Map base */
+.map-wrap svg {
+  background: #f2efe9;
+}
+.map-land {
+  fill: #f2efe9;
+}
+.map-sea {
+  fill: #aad3df;
+}
+.map-wrap svg text.map-sea-label {
+  font-size: 13px;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  fill: #2f6f8f;
+}
+.map-road line {
+  stroke-linecap: round;
+}
+.map-road .casing {
+  stroke: #c9a26b;
+  stroke-width: 5;
+}
+.map-road .fill {
+  stroke: #fde9b8;
+  stroke-width: 3;
+}
+.map-road.main .casing {
+  stroke: #c27c2c;
+  stroke-width: 7;
+}
+.map-road.main .fill {
+  stroke: #f8bd5e;
+  stroke-width: 4.5;
+}
+.map-town {
+  fill: #fff;
+  stroke: #555;
+  stroke-width: 1.5;
+}
+.map-wrap svg text {
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.map-wrap svg text.map-town-label {
+  fill: #3b3b3b;
+}
+.map-scale rect {
+  fill: #222;
+  stroke: #222;
+}
+.map-scale rect.alt {
+  fill: #fff;
+}
+.map-wrap svg .map-scale text {
+  font-size: 11px;
+}
+.map-north path {
+  fill: #222;
+}
+.map-wrap svg .map-north text {
+  font-weight: 700;
+}
+
+/* Radius, company and pins */
+.map-radius circle {
+  fill: rgb(55 48 163 / 6%);
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 7 5;
+}
+.map-wrap svg .map-radius text {
+  font-weight: 700;
+  fill: var(--accent);
+}
+.map-radius.proposed circle {
+  fill: none;
+  stroke: #b45309;
+  stroke-width: 3;
+  stroke-dasharray: none;
+}
+.map-wrap svg .map-radius.proposed text {
+  fill: #92400e;
+}
+.map-radius-icon {
+  fill: rgb(55 48 163 / 6%);
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+.map-radius-icon.proposed {
+  fill: none;
+  stroke: #b45309;
+  stroke-dasharray: none;
+}
+.map-company path {
+  fill: #172235;
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+.map-company .door {
+  fill: #fff;
+}
+.map-wrap svg .map-company text {
+  font-weight: 700;
+}
+.map-pin path {
+  fill: #1d4ed8;
+  stroke: #1e3a8a;
+  stroke-width: 1.2;
+}
+.map-pin[data-tone="outside"] path {
+  fill: #98a2b3;
+  stroke: #475467;
+}
+.map-pin[data-selected="true"] path {
+  stroke: #000;
+  stroke-width: 2;
+}
+.map-pin-dot {
+  fill: #fff;
+}
+.map-pin-halo {
+  fill: rgb(250 204 21 / 55%);
+  stroke: #a16207;
+  stroke-width: 1.5;
+}
+.map-wrap svg text.map-label {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+.map-wrap svg text.map-label.selected {
+  font-size: 12px;
+  font-weight: 800;
+}
+.map-wrap svg text.map-label.company {
+  fill: #7c2d12;
+}
+
+.map-legend ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 4px 12px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.map-legend li {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.map-legend svg {
+  flex: none;
+  overflow: visible;
+}
+
+.d-contest-row td:not(:first-child) {
+  cursor: pointer;
+}
+.d-contest-row[data-open="true"] td:first-child {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.d-contest-row:hover,
+.d-contest-row:focus-within {
+  background: color-mix(in srgb, var(--accent) 7%, var(--panel));
+}
+
+/* Choosing units: select-all, selection ring on the map */
+.d-select-all {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.d-selection-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 28px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.d-selection-bar strong {
+  color: var(--ink);
+}
+.d-select-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: center;
+  margin: 0 0 8px;
+}
+.d-sel-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  pointer-events: none;
+}
+.d-sel-ring[data-state="some"] {
+  stroke-dasharray: 4 3;
+}
+.d-contest > .d-select-all {
+  margin-bottom: 8px;
+}
+
+/* Note button and form that open where a selection happened */
+.d-inline-note {
+  position: fixed;
+  z-index: 30;
+}
+.d-root .d-inline-note > button {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 6px 18px rgb(16 24 40 / 30%);
+}
+.d-inline-note form {
+  display: grid;
+  gap: 6px;
+  width: 300px;
+  padding: 10px;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgb(16 24 40 / 35%);
+}
+.d-inline-note blockquote {
+  margin: 0;
+  padding: 4px 8px;
+  font-size: 12px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+}
+.d-inline-note q {
+  display: block;
+  font-style: italic;
+}
+.d-inline-note small {
+  display: block;
+  color: var(--muted);
+}
+.d-inline-note-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.d-root .d-inline-note-actions button[type="submit"] {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.d-staged small {
+  color: var(--muted);
+}
+.d-inline-note input,
+.d-citations input {
+  width: 100%;
+  font: inherit;
+}
+.d-citations em {
+  display: block;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* What waits in the chat to be sent together */
+.d-staged {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  background: #f6f7fb;
+  border: 1px dashed var(--accent);
+  border-radius: 8px;
+}
+.d-staged header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  align-items: baseline;
+}
+.d-staged > button {
+  justify-self: start;
+}
+.d-units {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+.d-units ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.d-units li li {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent-soft);
+  border-radius: 999px;
+}
+.d-root .d-units li li button {
+  padding: 1px 8px;
+  font-size: 12px;
+  background: none;
+  border: 0;
+}
+
+/* Drag selection on the map */
+.d-map > svg {
+  user-select: none;
+  touch-action: none;
+}
+.d-map > svg[data-dragging="true"],
+.d-map > svg[data-dragging="true"] .d-locality {
+  cursor: crosshair;
+}
+.d-drag-shape {
+  fill: color-mix(in srgb, var(--accent) 12%, transparent);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 3;
+  pointer-events: none;
+}
+.d-sel-ring[data-state="preview"] {
+  stroke-width: 2;
+  stroke-dasharray: 2 2;
+  opacity: 0.8;
+}
+.d-map-hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+/* A large selection must not squeeze the conversation away. */
+.d-staged {
+  max-height: 40vh;
+  overflow-y: auto;
+}
+.d-chat-log {
+  min-height: 140px;
+}
+
+/* Localities are folders: opened ones get an underlined name; selected ones a larger pin */
+.d-locality[data-open="true"] .map-label {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.d-selection-bar small {
+  color: var(--muted);
+}
+.d-context-menu {
+  position: fixed;
+  z-index: 40;
+  min-width: 220px;
+  padding: 4px;
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--line, #c9ccd1);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+}
+.d-context-menu hr {
+  margin: 4px 0;
+  border: 0;
+  border-top: 1px solid var(--line, #e3e5e8);
+}
+.d-root .d-context-menu button {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.d-root .d-context-menu button:hover:not(:disabled),
+.d-root .d-context-menu button:focus-visible {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  outline: none;
+}
+.d-root .d-context-menu button:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+.d-context-menu kbd {
+  font: inherit;
+  font-size: 12px;
+  color: var(--muted);
+}
+/* A count in the "Contagem" view opens the names of its list when clicked */
+.d-root .d-count-line {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.d-root .d-count-line:hover,
+.d-root .d-count-line:focus-visible {
+  text-decoration: underline;
+}
+
+/* Leave a gutter and a blank area to begin file-explorer rectangle selection. */
+.d-work-items {
+  min-height: 140px;
+  padding: 8px 6px 28px;
+}
+.d-work-items[data-empty="true"] {
+  min-height: 0;
+  padding: 0;
+  user-select: text;
+}
+.d-results[data-dragging="true"] {
+  user-select: none;
+  cursor: crosshair;
+}
+.d-work-items [data-drag-preview="true"] {
+  outline: 1px dashed var(--accent);
+  outline-offset: -2px;
+}
+.d-list-marquee {
+  position: fixed;
+  z-index: 15;
+  pointer-events: none;
+  border: 1.5px dashed var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* Confirmation before discarding a large selection or comment */
+.d-root .d-confirm {
+  max-width: 360px;
+  padding: 16px 18px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgb(16 24 40 / 30%);
+}
+.d-confirm::backdrop {
+  background: rgb(16 24 40 / 40%);
+}
+.d-confirm h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+.d-confirm p {
+  margin: 0 0 14px;
+  font-size: 13px;
+}
+.d-confirm-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.d-root .d-confirm .d-danger {
+  color: #fff;
+  background: #b42318;
+  border-color: #b42318;
+}

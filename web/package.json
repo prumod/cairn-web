@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
+    "prototype": "vite references/prototype-discovery --host 127.0.0.1",
     "build": "vite build",
     "start": "node .output/server/index.mjs",
     "migrate": "node --import tsx src/server/migrate.ts",

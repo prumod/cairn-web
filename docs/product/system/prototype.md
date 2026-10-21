@@ -4,7 +4,14 @@
 
 Representar a experiência completa do utilizador antes de implementar o backend. O protótipo interativo permite rever o que cada pessoa vê, introduz, altera e faz, e usar essa experiência para compreender abstrações, responsabilidades e estruturas de dados futuras. Ecrãs e tipos de frontend não se convertem automaticamente em tabelas de base de dados.
 
-Este documento regista o âmbito acordado; não afirma que o protótipo já existe. A implementação é trabalho separado. React no Vite existente é a abordagem recomendada, não uma arquitetura de backend aprovada.
+Este documento regista o âmbito acordado e as regras das duas implementações abaixo. React no Vite existente é a abordagem recomendada, não uma arquitetura de backend aprovada.
+
+## Duas implementações
+
+- **Wireframe interativo** ([`web/references/interactive-wireframe.tsx`](../../../web/references/interactive-wireframe.tsx)): mostra o futuro, isto é, as funcionalidades que ainda não têm protótipo principal. Serve para ver como essas funcionalidades se ligam e que informação as interações precisam.
+- **Protótipo principal** ([`web/references/prototype-discovery/`](../../../web/references/prototype-discovery/)): mostra a experiência das funcionalidades em decisão agora. Hoje cobre as funcionalidades Now. Fica fora da aplicação, sem sessão nem backend; corre com `bun run --cwd web prototype`.
+
+Cada funcionalidade está numa só implementação. Quando uma funcionalidade ganha protótipo principal, a sua parte é apagada do wireframe; não se mantêm as duas versões. As prioridades e os identificadores não mudam por isso. O [mapa de cobertura](prototype-coverage.md) indica onde está cada funcionalidade.
 
 ## Cobertura e prioridades
 
@@ -25,7 +32,7 @@ Este documento regista o âmbito acordado; não afirma que o protótipo já exis
 
 ## Evolução do protótipo
 
-Evoluir a mesma implementação, sem manter versões paralelas obrigatórias de wireframe e mockup. O histórico fica no Git. A passagem à fase visual deve partir da revisão dos percursos, informação, interações e estados; não significa que a UX fique fechada.
+Cada funcionalidade passa do wireframe para o protótipo principal; dentro de cada implementação, evolui-se o mesmo código, sem versões paralelas de wireframe e mockup. O histórico fica no Git. As fases abaixo orientam esse trabalho. O protótipo principal pode começar já com estilos quando a interação a explorar depende deles (por exemplo, a seleção no mapa). A passagem à fase visual deve partir da revisão dos percursos, informação, interações e estados; não significa que a UX fique fechada.
 
 ### Fase de wireframe — estrutura e comportamento
 
@@ -45,7 +52,7 @@ Manter semântica, operação por teclado, foco visível, contraste adequado e e
 
 ## Sem dados reais nem efeitos externos
 
-Estes limites aplicam-se a ambas as fases, mesmo quando a interface se aproximar da produção.
+Estes limites aplicam-se a ambas as implementações e a ambas as fases, mesmo quando a interface se aproximar da produção.
 
 - Usar exemplos fictícios coerentes, pré-visualizações incluídas na demonstração e estado local descartável. Sem backend, base de dados, autenticação externa ou persistência de produção.
 - Simular localmente os resultados de pesquisa, sugestões de IA, importações, documentos, e-mails, integrações e restantes ações externas. Não consultar DR, BASE, IMPIC, fornecedores, mapas, ERP ou plataformas reais.
@@ -60,7 +67,39 @@ Estes limites aplicam-se a ambas as fases, mesmo quando a interface se aproximar
 
 Now: perfil da empresa → anúncios de obras do dia → mapa com o raio e filtros → localidade → lista de obras → vista do concurso, com o assistente ao lado do mapa. Incluir um dia sem anúncios, filtros sem resultados e um pedido ao assistente sobre um ou vários concursos selecionados.
 
+A seleção de obras limita-se às obras presentes na lista atual. Fechar a lista, abrir outra localidade ou alterar filtros remove da seleção as obras que deixem de ser mostradas. A seleção de localidades e os comentários já preparados no assistente mantêm-se.
+
 Later continua o percurso: convites, prazos, revisão de requisitos e decisão de participar → dossier e checklist → preços unitários e total → revisão → submissão simulada, mais a navegação pelo assistente e a vista por fases. Incluir informação de habilitação em falta/incompatível, recusa, preparação incompleta, regresso à preparação, proposta pronta e prazo ultrapassado. A submissão simulada pode alimentar os exemplos de acompanhamento posterior.
+
+### Opções do agente
+
+O cabeçalho tem um painel «⚙ Opções» (fecha com Escape ou clique fora) com duas escolhas, que se mantêm ao reiniciar a demonstração:
+
+- **Resultados do agente — «No chat»:** desligado por omissão, os resultados aparecem só no mapa. Ligado, aparecem no mapa e também no chat.
+- **Ações do agente:** «Imediatas» (por omissão) alteram o mapa logo; «Com proposta» alteram o mapa só depois de «Aplicar no mapa», e uma proposta pendente fica rejeitada quando a pessoa envia outro pedido.
+
+A conversa fica sempre ao lado do mapa. Não há seletor de variações.
+
+### Seleção por retângulo na lista de obras
+
+Na tabela de obras, arrastar a partir de qualquer espaço vazio do painel de obras (incluindo as margens laterais) ou das margens interiores de uma linha inicia um retângulo de seleção. Arrastar sobre texto citável continua a selecionar texto para citação; controlos, cabeçalhos, o título, a barra de seleção e o texto de ajuda do painel não iniciam o retângulo e o seu texto seleciona-se normalmente. Sem obras na lista, a mensagem é texto simples: não inicia retângulo, não limpa a seleção ao clique e não abre o menu de contexto de seleção.
+
+As linhas intercetadas pelo retângulo apresentam uma pré-visualização da seleção. Sem modificador, o arrasto substitui a seleção de obras; Shift acrescenta obras; Ctrl/Meta alterna as obras intercetadas relativamente à seleção existente no início do arrasto.
+
+Ao largar, a seleção fica aplicada e é oferecido um comentário para as unidades recém-selecionadas, sem abrir obras nem enviar mensagens. Escape ou cancelamento do gesto pelo dispositivo preserva a seleção original. A interação mantém a analogia de obras como ficheiros e localidades como pastas para selecionar e abrir, sem mover ficheiros, e preserva clique, duplo clique, menu de contexto e atalhos de teclado.
+
+No mapa, a seleção por retângulo segue o mesmo gesto e o mesmo aspeto da lista: o cursor é o normal ao passar sobre o mapa e passa a cruz apenas durante o arrasto; o retângulo tracejado, a pré-visualização, Shift, Ctrl/Meta e Escape comportam-se como na lista.
+
+Ao guardar um comentário sobre localidades ou obras, o que foi comentado deixa de estar selecionado. Na lista de comentários preparados no assistente, cada comentário tem dois botões: ✕ apaga-o e ↩ («Descomentar») retira-o e volta a selecionar as localidades e as obras a que se referia, abrindo de novo as localidades dessas obras para que continuem na lista. O texto do comentário perde-se.
+
+Ações que descartam unidades pedem confirmação num diálogo modal («Tem a certeza?»), com «Cancelar» em foco e a ação destrutiva a vermelho. O limiar depende do esforço investido: só selecionadas, a partir de 10 unidades; num comentário guardado sem texto, a partir de 3; num comentário com texto escrito, sempre (valores de protótipo, pois há poucas obras nos dados; localidades e obras contam-se somadas). Aplica-se a: limpar a seleção (botão «Desselecionar tudo» na barra de seleção, que limpa localidades e obras; clique no vazio, Escape, menu «Limpar seleção», desmarcar a lista inteira, arrastar um retângulo que apenas desseleciona), fechar a lista com obras selecionadas, apagar um comentário e descomentar. «Limpar tudo» nos itens para enviar pede sempre confirmação. Abaixo do limiar, a ação executa-se logo. Substituir a seleção por outra não pede confirmação.
+
+### Seleção por teclado no mapa e na lista
+
+Os atalhos atuam na região com foco e não interferem com a escrita em campos de texto. Ctrl/⌘+A funciona também quando o foco está na página, depois de clicar no vazio: atua na última zona usada (mapa ou lista de obras) e nunca seleciona o texto da página nessas zonas. Estão disponíveis:
+
+- **Mapa:** Tab percorre os marcadores; Espaço alterna a seleção do marcador com foco; Enter abre as localidades selecionadas ou, sem seleção, a localidade do marcador com foco. Escape fecha primeiro os elementos sobrepostos e depois limpa apenas a seleção do mapa. Ctrl+A seleciona todas as localidades; Shift+F10 abre o menu de contexto.
+- **Lista de obras:** Cima/Baixo move o foco e substitui a seleção; Espaço alterna a seleção da obra com foco; Shift+Cima/Baixo seleciona um intervalo; Ctrl+A seleciona todas as obras visíveis; Home/End selecionam a primeira e a última obra (com Shift, estendem a seleção); Ctrl+Cima/Baixo/Home/End movem apenas o foco. Enter abre a obra selecionada ou compara as obras selecionadas; Escape limpa apenas a seleção de obras; Shift+F10 abre o menu de contexto.
 
 ### Preparação adicional da proposta — Later
 

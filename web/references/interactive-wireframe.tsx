@@ -1,8 +1,9 @@
+// Future features only: Now (N01–N04, N13, N14) lives in the main prototype, web/references/prototype-discovery/.
 import { useState, type FormEvent, type ReactNode } from "react";
 
 type Page =
   | "inicio"
-  | "oportunidades"
+  | "decisao"
   | "convites"
   | "prazos"
   | "proposta"
@@ -14,9 +15,7 @@ type Page =
   | "financas"
   | "planeamento"
   | "pos-obra"
-  | "perfil"
   | "concorrentes"
-  | "assistente"
   | "historico-precos"
   | "referencias"
   | "previsoes"
@@ -31,8 +30,6 @@ type Opportunity = {
   place: string;
   value: number;
   deadline: string;
-  publishedAt: string;
-  distanceKm: number;
   kind: "Anúncio" | "Convite";
   requirements: string;
   documents: string[];
@@ -40,6 +37,8 @@ type Opportunity = {
 };
 
 const referenceDate = "2026-10-01";
+// The company profile is edited in the main prototype (N01); here it is a fixed example.
+const licence = "Classe 3 demonstrativa";
 const originalOpportunities: Opportunity[] = [
   {
     id: "obra-escola",
@@ -48,8 +47,6 @@ const originalOpportunities: Opportunity[] = [
     place: "Viseu",
     value: 284000,
     deadline: "2026-10-18",
-    publishedAt: "2026-09-29",
-    distanceKm: 18,
     kind: "Anúncio",
     requirements: "Classe demonstrativa 3 · alvará de construção · experiência em reabilitação",
     documents: [
@@ -71,8 +68,6 @@ const originalOpportunities: Opportunity[] = [
     place: "Coimbra",
     value: 91500,
     deadline: "2026-09-20",
-    publishedAt: "2026-09-16",
-    distanceKm: 74,
     kind: "Anúncio",
     requirements: "Classe demonstrativa 2 · licença de obras públicas",
     documents: ["Declaração de proposta", "Lista de preços"],
@@ -88,8 +83,6 @@ const originalOpportunities: Opportunity[] = [
     place: "Aveiro",
     value: 126000,
     deadline: "2026-10-24",
-    publishedAt: "2026-10-01",
-    distanceKm: 63,
     kind: "Convite",
     requirements: "Classe demonstrativa 2 · habilitação por confirmar",
     documents: ["Declaração de proposta", "Memória descritiva", "Lista de preços"],
@@ -104,10 +97,9 @@ const navigation: { title: string; items: { id: Page; label: string }[] }[] = [
   {
     title: "Descoberta",
     items: [
-      { id: "oportunidades", label: "Anúncios e mapa" },
+      { id: "decisao", label: "Decidir participação" },
       { id: "convites", label: "Convites" },
       { id: "prazos", label: "Prazos" },
-      { id: "assistente", label: "Pesquisa assistida" },
       { id: "concorrentes", label: "Análise de concorrentes" },
     ],
   },
@@ -146,12 +138,11 @@ const navigation: { title: string; items: { id: Page; label: string }[] }[] = [
       { id: "padroes-contratos", label: "Padrões de contratos" },
     ],
   },
-  { title: "Empresa", items: [{ id: "perfil", label: "Perfil da empresa" }] },
 ];
 
 const pageTitles: Record<Page, string> = {
   inicio: "Visão geral",
-  oportunidades: "Anúncios de obras",
+  decisao: "Requisitos e decisão de participar",
   convites: "Convites recebidos",
   prazos: "Prazos de propostas",
   proposta: "Preparar proposta",
@@ -163,9 +154,7 @@ const pageTitles: Record<Page, string> = {
   financas: "Finanças da obra",
   planeamento: "Planeamento da obra",
   "pos-obra": "Receção e garantia",
-  perfil: "Perfil da empresa",
   concorrentes: "Análise de concorrentes",
-  assistente: "Pesquisa assistida",
   "historico-precos": "Histórico de preços",
   referencias: "Preços de referência e margem",
   previsoes: "Previsão de materiais",
@@ -220,10 +209,6 @@ export function InteractiveWireframe() {
   const [page, setPage] = useState<Page>("inicio");
   const [opportunities, setOpportunities] = useState(originalOpportunities);
   const [selectedId, setSelectedId] = useState("obra-escola");
-  const [search, setSearch] = useState("");
-  const [radius, setRadius] = useState("80");
-  const [publicationDate, setPublicationDate] = useState("2026-10-01");
-  const [showMap, setShowMap] = useState(true);
   const [notice, setNotice] = useState("");
   const [decisions, setDecisions] = useState<Record<string, string>>({
     "obra-escola": "Em preparação",
@@ -243,9 +228,6 @@ export function InteractiveWireframe() {
   const [simulatedSubmittedId, setSimulatedSubmittedId] = useState<string | null>(null);
   const [simulateFailure, setSimulateFailure] = useState(false);
   const [showDemoControls, setShowDemoControls] = useState(false);
-  const [profileLocation, setProfileLocation] = useState("Viseu");
-  const [profileRadius, setProfileRadius] = useState("80");
-  const [licence, setLicence] = useState("Classe 3 demonstrativa");
   const [supplierQuery, setSupplierQuery] = useState("cimento");
   const [supplierName, setSupplierName] = useState("Materiais do Mondego");
   const [quotePrice, setQuotePrice] = useState("8,40");
@@ -291,14 +273,6 @@ export function InteractiveWireframe() {
 
   const selected =
     opportunities.find((item) => item.id === selectedId) ?? originalOpportunities[0]!;
-  const visibleOpportunities = opportunities.filter(
-    (item) =>
-      `${item.title} ${item.place} ${item.buyer}`
-        .toLocaleLowerCase("pt-PT")
-        .includes(search.toLocaleLowerCase("pt-PT")) &&
-      item.publishedAt <= publicationDate &&
-      item.distanceKm <= Number(radius),
-  );
   const prepared = preparedDocuments[selected.id] ?? [];
   const checklistDocument = selected.documents.includes(selectedDocument)
     ? selectedDocument
@@ -336,7 +310,7 @@ export function InteractiveWireframe() {
   function selectOpportunity(id: string) {
     setSelectedId(id);
     setNotice("");
-    navigate("oportunidades");
+    navigate("decisao");
   }
 
   function updateDecision(id: string, value: string) {
@@ -351,10 +325,6 @@ export function InteractiveWireframe() {
   function resetDemo() {
     setOpportunities(originalOpportunities);
     setSelectedId("obra-escola");
-    setSearch("");
-    setRadius("80");
-    setPublicationDate("2026-10-01");
-    setShowMap(true);
     setDecisions({
       "obra-escola": "Em preparação",
       "obra-praca": "Não concorrer",
@@ -371,9 +341,6 @@ export function InteractiveWireframe() {
     setSimulatedSubmittedId(null);
     setSimulateFailure(false);
     setShowDemoControls(false);
-    setProfileLocation("Viseu");
-    setProfileRadius("80");
-    setLicence("Classe 3 demonstrativa");
     setSupplierQuery("cimento");
     setSupplierName("Materiais do Mondego");
     setQuotePrice("8,40");
@@ -409,21 +376,6 @@ export function InteractiveWireframe() {
     setShowExport(false);
     navigate("inicio");
     setNotice("Demonstração reiniciada. Os exemplos e a data de referência foram repostos.");
-  }
-
-  function runSearch(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!profileLocation.trim() || Number(radius) <= 0) {
-      setNotice(
-        "Indique uma localização e um raio superior a zero para aplicar os filtros demonstrativos.",
-      );
-      return;
-    }
-    setNotice(
-      visibleOpportunities.length === 0
-        ? "Não existem exemplos que correspondam à pesquisa. Altere os filtros para tentar novamente."
-        : `${visibleOpportunities.length} exemplo(s) correspondem aos filtros. Nenhuma fonte externa foi consultada.`,
-    );
   }
 
   function markPrepared(documentName: string, isPrepared: boolean) {
@@ -499,17 +451,9 @@ export function InteractiveWireframe() {
       setAssistantAnswer(
         `Na demonstração da ${selectedWork}, foram registados ${money(Number(costAmount))} em despesas. O valor faturado é ${money(Number(billedAmount))} e o valor recebido é ${money(Number(receivedAmount))}. Estes totais são exemplos locais.`,
       );
-    } else if (
-      ["anúncio", "oportunidade", "concurso", "raio", "pesquisa"].some((term) =>
-        question.includes(term),
-      )
-    ) {
-      setAssistantAnswer(
-        "Encontrei exemplos fictícios de anúncios dentro do raio ilustrativo. Consulte a lista de oportunidades. Não consultei fontes externas.",
-      );
     } else {
       setAssistantAnswer(
-        "Esta pergunta não está coberta pelos exemplos locais. Tente perguntar sobre anúncios ou sobre despesas, faturação e recebimentos. Nenhum serviço de IA foi consultado.",
+        "Esta pergunta não está coberta pelos exemplos locais. Tente perguntar sobre despesas, faturação e recebimentos. Nenhum serviço de IA foi consultado.",
       );
     }
   }
@@ -529,8 +473,8 @@ export function InteractiveWireframe() {
         </p>
         <ul>
           <li>
-            <button onClick={() => navigate("oportunidades")}>Pesquisar anúncios e convites</button>{" "}
-            · {visibleOpportunities.length} exemplos no conjunto
+            <button onClick={() => navigate("convites")}>Responder a convites</button> ·{" "}
+            {opportunities.filter((item) => item.kind === "Convite").length} convites no conjunto
           </li>
           <li>
             <button onClick={() => navigate("proposta")}>Preparar uma proposta</button> ·{" "}
@@ -570,170 +514,28 @@ export function InteractiveWireframe() {
     </>
   );
 
-  const opportunityPage = (
+  const decisionPage = (
     <>
-      <Section title="Filtros demonstrativos">
-        <form onSubmit={runSearch}>
-          <label htmlFor="search">Pesquisar por obra, entidade ou localidade</label>
-          <br />
-          <input id="search" value={search} onChange={(event) => setSearch(event.target.value)} />
-          <p>
-            <label htmlFor="pub-date">Data de publicação</label>
-            <br />
-            <input
-              id="pub-date"
-              type="date"
-              value={publicationDate}
-              onChange={(event) => setPublicationDate(event.target.value)}
-            />
-          </p>
-          <p>
-            <label htmlFor="radius">Raio ilustrativo em quilómetros</label>
-            <br />
-            <input
-              id="radius"
-              type="number"
-              min="1"
-              value={radius}
-              onChange={(event) => setRadius(event.target.value)}
-            />
-          </p>
-          <p>
-            Localização usada: {profileLocation}. As distâncias fictícias foram preparadas a partir
-            de Viseu e não são recalculadas ao alterar a localização.
-          </p>
-          <button type="submit">Aplicar filtros</button>{" "}
-          <button
-            type="button"
-            onClick={() => {
-              setSearch("sem correspondência");
-              setNotice(
-                "Filtro sem resultados selecionado. A lista vazia inclui uma forma de corrigir a pesquisa.",
-              );
-            }}
-          >
-            Mostrar pesquisa sem resultados
-          </button>
-        </form>
+      <Section title="Procedimentos">
+        <ul>
+          {opportunities.map((item) => (
+            <li key={item.id}>
+              <button
+                aria-pressed={item.id === selected.id}
+                onClick={() => {
+                  setSelectedId(item.id);
+                  setNotice("");
+                }}
+              >
+                {item.title}
+              </button>{" "}
+              · {item.buyer} · {item.place} · limite {date(item.deadline)} · {decisions[item.id]}
+            </li>
+          ))}
+        </ul>
       </Section>
-      <Section title="Resultados">
-        <p>
-          <button aria-pressed={showMap} onClick={() => setShowMap(true)}>
-            Mapa esquemático
-          </button>{" "}
-          <button aria-pressed={!showMap} onClick={() => setShowMap(false)}>
-            Lista
-          </button>
-        </p>
-        {visibleOpportunities.length === 0 ? (
-          <>
-            <p role="status">Não foram encontrados exemplos.</p>
-            <button
-              onClick={() => {
-                setSearch("");
-                setNotice("Filtros de texto removidos. Os exemplos voltaram à lista.");
-              }}
-            >
-              Limpar pesquisa
-            </button>
-          </>
-        ) : showMap ? (
-          <>
-            <p>Esquema de posições ilustrativas. Os pontos não representam coordenadas reais.</p>
-            <svg
-              role="group"
-              aria-labelledby="map-title map-description"
-              viewBox="0 0 480 180"
-              width="100%"
-              height="180"
-            >
-              <title id="map-title">Mapa esquemático de oportunidades</title>
-              <desc id="map-description">
-                Três posições fictícias. Selecione um ponto para abrir o procedimento
-                correspondente.
-              </desc>
-              <line x1="20" y1="90" x2="460" y2="90" stroke="currentColor" strokeWidth="1" />
-              {visibleOpportunities.map((item, index) => {
-                const x = 75 + index * 145;
-                return (
-                  <g key={item.id}>
-                    <a
-                      href="#oportunidade"
-                      aria-label={`Selecionar ${item.title}, ${item.place}`}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setSelectedId(item.id);
-                        setNotice(`${item.title} selecionada.`);
-                      }}
-                    >
-                      <title>Abrir {item.title}</title>
-                      <circle
-                        cx={x}
-                        cy={90 + (index % 2 ? 28 : -24)}
-                        r="12"
-                        fill="none"
-                        stroke="currentColor"
-                      />
-                      <text x={x} y={95 + (index % 2 ? 28 : -24)} textAnchor="middle">
-                        {index + 1}
-                      </text>
-                    </a>
-                    <text x={x} y={145}>
-                      {item.place} · {item.distanceKm} km
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
-            <ol>
-              {visibleOpportunities.map((item) => (
-                <li key={item.id}>
-                  <button
-                    onClick={() => {
-                      setSelectedId(item.id);
-                      setNotice(`${item.title} selecionada no mapa.`);
-                    }}
-                  >
-                    {item.title}
-                  </button>{" "}
-                  · {item.place} · {money(item.value)}{" "}
-                  <button onClick={() => selectOpportunity(item.id)}>Ver detalhe</button>
-                </li>
-              ))}
-            </ol>
-          </>
-        ) : (
-          <ul>
-            {visibleOpportunities.map((item) => (
-              <li key={item.id}>
-                <button onClick={() => setSelectedId(item.id)}>{item.title}</button> · {item.buyer}{" "}
-                · {item.place} · {item.distanceKm} km · publicação {date(item.publishedAt)} ·{" "}
-                {money(item.value)} · limite {date(item.deadline)}{" "}
-                <button onClick={() => selectOpportunity(item.id)}>Abrir</button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Section>
-      <Section title="Detalhe do procedimento selecionado">
+      <Section title="Procedimento selecionado">
         <h3>{selected.title}</h3>
-        <p>Entidade adjudicante: {selected.buyer}</p>
-        <p>Localização: {selected.place}</p>
-        <p>Valor anunciado: {money(selected.value)}. Este valor não é o preço da proposta.</p>
-        <p>Prazo demonstrativo da obra: 120 dias. Limite de entrega: {date(selected.deadline)}.</p>
-        <p>Plataforma indicada: Plataforma externa de demonstração, sem ligação real.</p>
-        <p>
-          <button
-            onClick={() =>
-              setNotice(
-                `Pré-visualização fictícia do anúncio: ${selected.title}. Nenhum endereço externo foi aberto.`,
-              )
-            }
-          >
-            Consultar pré-visualização do anúncio
-          </button>
-        </p>
-        <h3>Requisitos e decisão</h3>
         <p>{selected.requirements}</p>
         <p>Perfil atual: {licence}. Esta comparação não confirma elegibilidade jurídica.</p>
         {selected.id === "obra-praca" && (
@@ -1774,53 +1576,6 @@ export function InteractiveWireframe() {
     </>
   );
 
-  const profilePage = (
-    <>
-      <Section title="Referência da empresa">
-        <p>
-          <label htmlFor="profile-location">Localização de pesquisa</label>
-          <br />
-          <input
-            id="profile-location"
-            value={profileLocation}
-            onChange={(event) => setProfileLocation(event.target.value)}
-          />
-        </p>
-        <p>
-          <label htmlFor="profile-radius">Raio ilustrativo (km)</label>
-          <br />
-          <input
-            id="profile-radius"
-            type="number"
-            min="1"
-            value={profileRadius}
-            onChange={(event) => setProfileRadius(event.target.value)}
-          />
-        </p>
-        <p>
-          <label htmlFor="licence">Classe e habilitações demonstrativas</label>
-          <br />
-          <input
-            id="licence"
-            value={licence}
-            onChange={(event) => setLicence(event.target.value)}
-          />
-        </p>
-        <button
-          onClick={() => {
-            setRadius(profileRadius);
-            setNotice(
-              "Perfil atualizado. A pesquisa usa estes valores apenas nos exemplos locais.",
-            );
-          }}
-        >
-          Guardar perfil demonstrativo
-        </button>
-        <p>Não consultamos o IMPIC e não atribuímos limites monetários à classe.</p>
-      </Section>
-    </>
-  );
-
   const competitorsPage = (
     <>
       <Section title="Participações e resultados">
@@ -1884,42 +1639,6 @@ export function InteractiveWireframe() {
           </text>
         </svg>
         <p>Posições ilustrativas. Sem cobertura nem consulta do Portal BASE.</p>
-      </Section>
-    </>
-  );
-
-  const assistantPage = (
-    <>
-      <Section title="Perguntar sobre os exemplos">
-        <form onSubmit={answerAssistant}>
-          <label htmlFor="assistant-question">Pergunta</label>
-          <br />
-          <input
-            id="assistant-question"
-            value={assistantQuestion}
-            onChange={(event) => setAssistantQuestion(event.target.value)}
-          />
-          <button>Obter resposta demonstrativa</button>
-        </form>
-        {assistantAnswer && <p role="status">{assistantAnswer}</p>}
-        <p>A pesquisa assistida usa respostas determinísticas incluídas na aplicação.</p>
-      </Section>
-      <Section title="Fontes e limites">
-        <p>
-          Exemplos usados: lista de oportunidades e resumo financeiro desta demonstração. Pode abrir
-          cada exemplo para rever os valores.
-        </p>
-        <ul>
-          <li>
-            <button onClick={() => navigate("oportunidades")}>
-              Lista de oportunidades demonstrativas
-            </button>
-          </li>
-          <li>
-            <button onClick={() => navigate("financas")}>Resumo financeiro demonstrativo</button>
-          </li>
-        </ul>
-        <p>Não há fontes oficiais consultadas nem validação independente da resposta.</p>
       </Section>
     </>
   );
@@ -2334,7 +2053,7 @@ export function InteractiveWireframe() {
 
   const content: Record<Page, ReactNode> = {
     inicio: home,
-    oportunidades: opportunityPage,
+    decisao: decisionPage,
     convites: invitePage,
     prazos: deadlinePage,
     proposta: proposalPage,
@@ -2346,9 +2065,7 @@ export function InteractiveWireframe() {
     financas: financePage,
     planeamento: planningPage,
     "pos-obra": afterWorkPage,
-    perfil: profilePage,
     concorrentes: competitorsPage,
-    assistente: assistantPage,
     "historico-precos": historyPage,
     referencias: referencesPage,
     previsoes: forecastPage,
@@ -2422,16 +2139,6 @@ export function InteractiveWireframe() {
                 />
                 Simular falha ao abrir a plataforma externa durante a submissão
               </label>
-            </p>
-            <p>
-              <button
-                onClick={() => {
-                  setSearch("sem correspondência");
-                  navigate("oportunidades");
-                }}
-              >
-                Mostrar pesquisa sem resultados
-              </button>
             </p>
             <p>
               <button
