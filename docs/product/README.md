@@ -11,7 +11,7 @@
 - [System](system/): [ideia inicial](system/ideia_inicial.txt) e [contrato do protótipo interativo](system/prototype.md).
 - [Research](research/): [questões de investigação](research/README.md), [investigação técnica](research/pesquisa_arquitetura_cairn.md), [pesquisa de mercado](research/pesquisa_mercado_cairn.md) e [fluxo de capturas e anotações](research/screenshots/canvas-workflow.md).
 
-O protótipo evolui na mesma implementação: primeiro wireframe sem estilos para rever estrutura e comportamento; depois design visual próximo da produção. UX e UI são revistas ao longo dessa evolução. Mockups são representações visuais de apoio, normalmente estáticas; não substituem o protótipo interativo.
+O wireframe interativo mostra as funcionalidades futuras; o protótipo principal mostra as que estão em decisão agora (hoje, Now). Quando uma funcionalidade ganha protótipo principal, sai do wireframe. Em cada implementação, evolui-se o mesmo código: primeiro estrutura e comportamento, depois design visual próximo da produção. UX e UI são revistas ao longo dessa evolução. Mockups são representações visuais de apoio, normalmente estáticas; não substituem o protótipo interativo.
 
 ## Quatro níveis de prioridade
 
