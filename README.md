@@ -160,7 +160,7 @@ Os comandos explicitamente nomeados são `deploy:testing`, `deploy:production`, 
 
 O estado do Alchemy é local (`Alchemy.localState()`, pasta `.alchemy`). O estado remoto não está ativado: só a máquina que tem `.alchemy` consegue atualizar ou destruir a stack, e perder esse estado impede a recuperação pelo Alchemy.
 
-Verificado: a verificação de tipos e os testes unitários passam. Não verificado: nada foi implementado nem planeado contra o Neon ou o Cloudflare. O provisionamento Neon, a adoção das migrações, o DNS, o certificado, o OAuth Google e o deployment live não têm prova.
+Verificado: a verificação de tipos e os testes unitários passam. O plano Alchemy de testing foi executado: propõe criar a base, o segredo de autenticação e o Worker, com nove bindings. Não foi aplicado; o plano não prova elegibilidade da conta nem sucesso de deployment. O provisionamento Neon, a adoção das migrações, o DNS, o certificado, o OAuth Google e o deployment live não têm prova.
 
 ## Integrações opcionais com Pi
 
