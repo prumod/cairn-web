@@ -1,17 +1,17 @@
 # Interactive prototype coverage
 
-This is the traceability map for the current unstyled wireframe. The priority names below are documentation references only. The application does not display those labels. Capability identifiers follow the [identifier mapping](../README.md#correspondência-de-identificadores) after transcription 3; the screens themselves did not change.
+This is the traceability map for the two prototype implementations described in [the prototype contract](prototype.md#duas-implementações). Each capability is in one implementation only: the [main prototype](../../../apps/web/references/prototype-discovery/) covers the capabilities being decided now; the [interactive wireframe](../../../apps/web/references/interactive-wireframe.tsx) covers the future ones. When a capability gets a main prototype, its part is removed from the wireframe. The priority names below are documentation references only. The application does not display those labels. Capability identifiers follow the [identifier mapping](../README.md#correspondência-de-identificadores) after transcription 3.
 
-## Discovery
+## Discovery — main prototype
 
-| Capability | Screen or interaction                                                                                                                                     |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| N01        | Company profile edits the reference location, search radius, class and licences.                                                                          |
-| N02        | Opportunity search filters fictional examples by publication date, radius and text. The empty result can be corrected.                                    |
-| N03        | Opportunity screen switches between a selectable schematic map and the same results in a list.                                                            |
-| N04        | Selected opportunity shows the buyer, description, announced value, location, work duration, delivery deadline, platform and fictional notice preview.    |
-| N13        | Assisted search returns a deterministic fictional answer with links to the example opportunity list and stated source limits.                             |
-| N14        | Partly covered by N02: publication date, radius and text. Filters for value, deadline, buyer and work type, and priority categories, are not implemented. |
+| Capability | Screen or interaction                                                                                                                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| N01        | The header shows the fictional company, its place, search radius, class and priority work types. Editing the profile is not implemented.                                                                                                                                                         |
+| N02        | Distance and publication-date filters reduce fictional notices to works inside the company radius. Empty results show a message in the list and a distinct state on the map.                                                                                                                     |
+| N03        | The map is the main view, with the company and its radius. Localities behave like folders: select, open their works in a table, select works, and open a contest.                                                                                                                                |
+| N04        | The contest panel shows buyer, location, announced value, execution period, submission deadline, required licence, platform, publication date and a fictional source-notice preview.                                                                                                             |
+| N13        | The assistant sits beside the map, with suggested prompts. Commented localities and works and cited text are its context. It applies filters and shows contests on the map; the Opções panel chooses whether results also appear in the chat and whether actions apply at once or as a proposal. |
+| N14        | Filters for distance, publication date, value, buyer and work type apply to the map and the table. Priority work types come first. A deadline filter is not implemented; the assistant sorts by deadline.                                                                                        |
 
 ## Later capabilities
 
