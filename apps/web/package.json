@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "check-types": "vite build && tsc --noEmit",
+    "check-types": "vite build && tsc --noEmit && tsc --noEmit -p tsconfig.references.json",
     "env:generate": "varlock codegen"
   },
   "dependencies": {

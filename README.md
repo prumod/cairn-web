@@ -125,6 +125,7 @@ Os comandos principais estão definidos no `package.json` da raiz. `bun run setu
 
 | Comando                                               | Utilização                                                                                                |
 | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `bun run setup`                                       | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                              |
 | `bun run update`                                      | Instala as dependências bloqueadas depois de atualizar o repositório.                                     |
 | `bun run dev`                                         | Inicia a stack Alchemy local para o Worker Cloudflare de desenvolvimento.                                 |
 | `bun run build`                                       | Compila a aplicação TanStack Start para `apps/web/dist`.                                                  |
@@ -133,9 +134,10 @@ Os comandos principais estão definidos no `package.json` da raiz. `bun run setu
 | `bun run env:generate`                                | Gera os tipos TypeScript a partir dos schemas de ambiente versionados.                                    |
 | `bun run format` / `bun run format:check`             | Formata ou verifica os ficheiros com Oxfmt.                                                               |
 | `bun run lint`                                        | Analisa o código com Oxlint.                                                                              |
-| `bun run audit`                                       | Audita as dependências bloqueadas, incluindo ferramentas de desenvolvimento.                              |
 | `bun run lint:boundaries` / `bun run test:boundaries` | Verifica e prova os limites de dependências.                                                              |
 | `bun run check:blueprints`                            | Verifica localmente a política dos ficheiros Render antigos; não contacta o provider nem valida o Worker. |
+| `bun run typecheck`                                   | Verifica os tipos da aplicação, do wireframe de referência, dos pacotes do workspace e dos testes.        |
+| `bun run audit`                                       | Audita as dependências bloqueadas, incluindo ferramentas de desenvolvimento.                              |
 | `bun run test:fast`                                   | Compila e executa Vitest com PostgreSQL e proxy Neon HTTP descartáveis via Docker Compose.                |
 | `bun run test:browser`                                | Compila e executa os cenários Chromium contra o Worker compilado e uma identidade de teste isolada.       |
 | `bun run test`                                        | Executa os testes rápidos e de browser.                                                                   |
