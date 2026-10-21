@@ -24,6 +24,9 @@ const database = Effect.gen(function* () {
   if (!managed) return yield* Config.Redacted("DATABASE_URL");
   const project = yield* Neon.Project("database", {
     region: "aws-eu-central-1",
+    // Alchemy asks for 24 h by default; Neon Free caps history retention at 6 h and rejects the
+    // create request otherwise.
+    historyRetentionSeconds: 21600,
     migrations: "../db/migrations",
   });
   return Output.map(project.pooledConnectionUri, Redacted.make);
