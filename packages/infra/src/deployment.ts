@@ -4,6 +4,7 @@ export function deploymentConfig(stage: string, dev: boolean, revision?: string)
     return {
       domain: undefined,
       workersDev: undefined,
+      managed: false,
       appEnv: "development" as const,
       revision: "local",
     };
@@ -22,6 +23,9 @@ export function deploymentConfig(stage: string, dev: boolean, revision?: string)
     // Alchemy defaults workersDev to true, which would also serve the Worker (and per-version
     // previews) on workers.dev. Cloud stages are reachable only through their custom domain.
     workersDev: false,
+    // Cloud stages own their database and auth secret; local development reads them from the
+    // environment.
+    managed: true,
     appEnv: "production" as const,
     revision,
   };

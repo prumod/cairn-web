@@ -18,7 +18,7 @@ packages/
   auth/src/                           # Better Auth and provider configuration
   db/src/                              # database client, schemas, and relations
   db/migrations/<timestamp_name>/     # Drizzle 1.0.0-rc.4 folder-based migrations
-  infra/alchemy.run.ts                # Alchemy Cloudflare Website.Vite stack
+  infra/alchemy.run.ts                # Alchemy Cloudflare Website.Vite and Neon project stack
   infra/src/deployment.ts             # validated dev/testing/production bindings and domains
   infra/test/alchemy.run.ts           # local acceptance Worker stack
   config/                             # workspace configuration package
@@ -26,7 +26,7 @@ shared/src/<module>/                  # optional runtime-independent cross-works
 features/<capability>/<use-case>.feature  # root Playwright-BDD contracts
 ```
 
-The repository is a Bun workspace over `apps/*` and `packages/*`. `apps/web` is a TanStack Start application built for Cloudflare Workers. `packages/infra` uses Alchemy to run the app locally and declares a Cloudflare target; the test fixture separately serves the compiled Worker in `workerd`. `packages/db` uses Drizzle with the Neon serverless HTTP driver. `packages/auth` configures Better Auth and Google. These package roles describe code structure, not a verified cloud deployment.
+The repository is a Bun workspace over `apps/*` and `packages/*`. `apps/web` is a TanStack Start application built for Cloudflare Workers. `packages/infra` uses Alchemy to run the app locally and declares a Cloudflare target and, for cloud stages, a Neon project; the test fixture separately serves the compiled Worker in `workerd`. `packages/db` uses Drizzle with the Neon serverless HTTP driver. `packages/auth` configures Better Auth and Google. These package roles describe code structure, not a verified cloud deployment.
 
 Generated build output, `.alchemy`/`.tanstack` local state/cache, and generated environment types are ignored. Keep secrets in ignored local environment files. The tracked `.env.schema` files define safe environment inputs.
 

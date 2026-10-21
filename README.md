@@ -53,7 +53,7 @@ bun run setup
 
 `bun run setup` instala as dependências a partir do ficheiro de lock. Confirme que o terminal reconhece Bun 1.3.14 com `bun --version`. Depois de atualizar o repositório, `bun run update` instala as dependências desse ficheiro. Altere `bun.lock` apenas quando mudar intencionalmente as dependências.
 
-Para executar a aplicação localmente, configure uma base compatível com Neon HTTP e as variáveis de autenticação conforme [Executar o perfil da empresa](docs/how-to/run-company-profile.md). Os testes precisam de Docker Compose; não configure credenciais reais em ficheiros versionados.
+Para executar a aplicação localmente (estágio `dev`), configure uma base compatível com Neon HTTP e as variáveis de autenticação conforme [Executar o perfil da empresa](docs/how-to/run-company-profile.md). Os testes precisam de Docker Compose; não configure credenciais reais em ficheiros versionados.
 
 ## Como executar o projeto
 
@@ -145,9 +145,20 @@ Os testes precisam de Docker Compose e Chromium. O wrapper cria um projeto Compo
 
 ## Estado de deployment
 
-A configuração atual define a stack Alchemy para Cloudflare Workers em `packages/infra/alchemy.run.ts` e `packages/infra/src/deployment.ts`. O estágio local suportado é `dev`: usa o runtime local, não configura domínio personalizado, deixa `workersDev` por definir, define `APP_ENV=development` e usa `GIT_SHA=local`. Os únicos estágios de deployment aceites são `testing` (`cairn-testing.prumod.eu`) e `production` (`cairn.prumod.eu`); ambos usam `APP_ENV=production`, exigem `GIT_SHA` com 40 caracteres hexadecimais minúsculos e definem `workersDev: false`. Assim, a configuração de ambos usa apenas o domínio personalizado correspondente e desativa os URLs estáveis `workers.dev` e os URLs de pré-visualização por versão. O domínio e os bindings são configuração de código, não prova de DNS, certificado, conta/provisionamento Cloudflare, OAuth, estado Alchemy remoto ou deployment live.
+A configuração atual define a stack Alchemy para Cloudflare Workers em `packages/infra/alchemy.run.ts` e `packages/infra/src/deployment.ts`. O estágio local suportado é `dev`: usa o runtime local, não configura domínio personalizado, deixa `workersDev` por definir, define `APP_ENV=development`, usa `GIT_SHA=local` e lê `DATABASE_URL` e `BETTER_AUTH_SECRET` do ambiente (varlock). Os únicos estágios de deployment aceites são `testing` (`cairn-testing.prumod.eu`) e `production` (`cairn.prumod.eu`); ambos usam `APP_ENV=production`, exigem `GIT_SHA` com 40 caracteres hexadecimais minúsculos e definem `workersDev: false`. Assim, a configuração de ambos usa apenas o domínio personalizado correspondente e desativa os URLs estáveis `workers.dev` e os URLs de pré-visualização por versão.
 
-Os comandos explicitamente nomeados são `deploy:testing`, `deploy:production`, `destroy:testing` e `destroy:production` no package `packages/infra`; os comandos implícitos `deploy`/`destroy` não existem. Não execute deployment ou destroy sem aprovação separada, inputs isolados e validação operacional. `render.yaml`, `deploy/render.production.template.yaml` e os workflows/gates de Render continuam artefactos do runtime anterior e não validam nem fazem deployment do Worker atual. A configuração declara `Alchemy.localState()`; estado cloud remoto e isolamento de credenciais, bases de dados e OAuth não são provisionados pelo código.
+Os estágios cloud são totalmente provisionados pelo Alchemy. Cada estágio cria um `Neon.Project` chamado `database` na região `aws-eu-central-1` (Frankfurt) e aplica as migrações de `packages/db/migrations` em cada deploy; no primeiro deploy, o Alchemy assume o histórico do drizzle-kit. O Worker recebe o URI de ligação com pooling do projeto como segredo `DATABASE_URL`, e um `BETTER_AUTH_SECRET` gerado e guardado no estado do Alchemy. Ninguém cria a base de dados nem copia o `DATABASE_URL` à mão.
+
+Um deployment cloud precisa destes inputs humanos: `NEON_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `BOOTSTRAP_ADMIN_EMAIL`, `GIT_SHA` e autorização Cloudflare para o Alchemy. Guarde os segredos em `packages/infra/.env.local` (ignorado pelo Git; o varlock carrega-o sobre `.env.schema`) ou no ambiente do processo. Nunca os submeta. Os passos que não podem ser IaC continuam manuais:
+
+- Criar o cliente OAuth Web do Google por ambiente na Google Cloud Console, com o URI de redirecionamento `https://<domínio>/api/auth/callback/google`. Não se conhece nenhuma API para criar um cliente Web padrão; não confirmado.
+- Alterar os nameservers e o registo DS do DNSSEC no registrar (Spaceship).
+
+Os comandos explicitamente nomeados são `deploy:testing`, `deploy:production`, `destroy:testing` e `destroy:production` no package `packages/infra`; os comandos implícitos `deploy`/`destroy` não existem. Não execute deployment ou destroy sem aprovação separada, inputs isolados e validação operacional. `render.yaml`, `deploy/render.production.template.yaml` e os workflows/gates de Render continuam artefactos do runtime anterior e não validam nem fazem deployment do Worker atual.
+
+O estado do Alchemy é local (`Alchemy.localState()`, pasta `.alchemy`). O estado remoto não está ativado: só a máquina que tem `.alchemy` consegue atualizar ou destruir a stack, e perder esse estado impede a recuperação pelo Alchemy.
+
+Verificado: a verificação de tipos e os testes unitários passam. Não verificado: nada foi implementado nem planeado contra o Neon ou o Cloudflare. O provisionamento Neon, a adoção das migrações, o DNS, o certificado, o OAuth Google e o deployment live não têm prova.
 
 ## Integrações opcionais com Pi
 

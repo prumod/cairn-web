@@ -50,10 +50,33 @@ bun run test:browser
 
 For test boundaries and the current verification status, see [Testing](../../TESTING.md).
 
+## Cloud stages
+
+The `testing` and `production` stages are provisioned by Alchemy, not by hand. Each stage gets its own `Neon.Project` named `database` in `aws-eu-central-1` (Frankfurt). `Neon.Project` applies `packages/db/migrations/` on every deploy; on the first deploy, Alchemy takes over drizzle-kit's migration history. The Worker receives the project's pooled connection URI as a secret `DATABASE_URL`, and a generated `BETTER_AUTH_SECRET` that Alchemy keeps in its state. Do not create a Neon database or copy a `DATABASE_URL` for these stages. `bun run db:migrate` is only for the local `dev` database.
+
+A cloud deploy needs these inputs from a human:
+
+- `NEON_API_KEY`
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+- `BOOTSTRAP_ADMIN_EMAIL`
+- `GIT_SHA`, the full 40-character lowercase hexadecimal commit
+- Cloudflare authorization for Alchemy
+
+Put secrets in the ignored `packages/infra/.env.local` (Varlock loads it over `.env.schema`) or in the process environment. Never commit them.
+
+These steps cannot be infrastructure code and stay manual:
+
+- Create the Google OAuth Web client for each environment in Google Cloud Console, with redirect URI `https://<domain>/api/auth/callback/google`. No known API creates a standard Web client; this is unconfirmed.
+- Change the nameservers and the DNSSEC DS record at the registrar, Spaceship.
+
+Alchemy state is local (`Alchemy.localState()`, directory `.alchemy`). Remote state is not enabled, so only the machine that holds `.alchemy` can update or destroy the stack. Losing it loses Alchemy's record of the deployed resources and the generated auth secret.
+
 ## Verification and deployment limits
 
-Local development is supported only with Alchemy stage `dev`; it uses the local runtime, has no custom domain, leaves `workersDev` unset, sets `APP_ENV=development`, and uses revision `local`. The configured deployed stages are `testing` (`cairn-testing.prumod.eu`) and `production` (`cairn.prumod.eu`); both set `APP_ENV=production`, require a full 40-character lowercase hexadecimal `GIT_SHA`, and set `workersDev: false`. Their configuration uses only the corresponding custom domain and disables stable `workers.dev` URLs and per-version preview URLs. These are code configuration values, not evidence of working DNS, certificates, Cloudflare provisioning, OAuth, or a live deployment. Alchemy is configured with local state; remote state and database/OAuth/credential isolation are not provisioned here.
+Local development is supported only with Alchemy stage `dev`; it uses the local runtime, has no custom domain, leaves `workersDev` unset, sets `APP_ENV=development`, reads `DATABASE_URL` and `BETTER_AUTH_SECRET` from the environment, and uses revision `local`. The configured deployed stages are `testing` (`cairn-testing.prumod.eu`) and `production` (`cairn.prumod.eu`); both set `APP_ENV=production`, require a full 40-character lowercase hexadecimal `GIT_SHA`, and set `workersDev: false`. Their configuration uses only the corresponding custom domain and disables stable `workers.dev` URLs and per-version preview URLs.
 
-The package scripts are `deploy:testing`, `deploy:production`, `destroy:testing`, and `destroy:production`; each fixes its stage, and there are no implicit `deploy` or `destroy` aliases. These script names are documented for identification, not as ready-to-run commands. They can change remote resources when run with valid Cloudflare authentication, including persistent Alchemy OAuth/token credentials; unsetting `CLOUDFLARE_API_KEY` and `CLOUDFLARE_ACCOUNT_ID` alone does not prevent that. Any deploy or destroy requires separate explicit approval for that operation and stage, plus verified isolated credentials, state, and other inputs. For reference, the scripts are run with working directory `packages/infra`.
+Verified: the typecheck and unit tests pass. Unverified: nothing has been deployed or planned against Neon or Cloudflare. Neon provisioning, migration takeover, DNS, certificates, Google OAuth, and live behavior are untested.
 
-Local development and controlled-identity tests do not verify Cloudflare account provisioning, remote Alchemy state, an external deployment, real Google sign-in, CI, or production behavior. The retained Render files and workflows target the previous runtime and are not a deployment path for this Worker. A cloud cutover requires separate authorization and validation of provider state, credentials, database and migrations, OAuth, security gates, and live behavior for the exact revision.
+The package scripts are `deploy:testing`, `deploy:production`, `destroy:testing`, and `destroy:production`; each fixes its stage, and there are no implicit `deploy` or `destroy` aliases. These script names are documented for identification, not as ready-to-run commands. They can change remote resources when run with valid Cloudflare or Neon authentication, including persistent Alchemy OAuth/token credentials; unsetting `CLOUDFLARE_API_KEY` and `CLOUDFLARE_ACCOUNT_ID` alone does not prevent that. Any deploy or destroy requires separate explicit approval for that operation and stage, plus verified isolated credentials and other inputs. For reference, the scripts are run with working directory `packages/infra`.
+
+Local development and controlled-identity tests do not verify Cloudflare or Neon provisioning, an external deployment, real Google sign-in, CI, or production behavior. The retained Render files and workflows target the previous runtime and are not a deployment path for this Worker. A cloud cutover requires separate authorization and validation of provider state, credentials, migrations, OAuth, security gates, and live behavior for the exact revision.

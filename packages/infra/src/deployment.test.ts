@@ -33,6 +33,7 @@ describe("Worker deployment configuration", () => {
     expect(deploymentConfig("dev", true)).toEqual({
       domain: undefined,
       workersDev: undefined,
+      managed: false,
       appEnv: "development",
       revision: "local",
     });
@@ -41,6 +42,7 @@ describe("Worker deployment configuration", () => {
     expect(deploymentConfig("production", false, revision)).toEqual({
       domain: "cairn.prumod.eu",
       workersDev: false,
+      managed: true,
       appEnv: "production",
       revision,
     });
@@ -49,6 +51,7 @@ describe("Worker deployment configuration", () => {
     expect(deploymentConfig("testing", false, revision)).toEqual({
       domain: "cairn-testing.prumod.eu",
       workersDev: false,
+      managed: true,
       appEnv: "production",
       revision,
     });
@@ -59,4 +62,13 @@ describe("Worker deployment configuration", () => {
       expect(deploymentConfig(stage, false, revision).workersDev).toBe(false);
     },
   );
+  it.each(["testing", "production"])(
+    "lets Alchemy provision the %s database and auth secret instead of reading them from the environment",
+    (stage) => {
+      expect(deploymentConfig(stage, false, revision).managed).toBe(true);
+    },
+  );
+  it("reads the local development database and auth secret from the environment", () => {
+    expect(deploymentConfig("dev", true).managed).toBe(false);
+  });
 });
