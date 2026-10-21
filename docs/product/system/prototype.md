@@ -8,8 +8,8 @@ Este documento regista o âmbito acordado; não afirma que o protótipo já exis
 
 ## Cobertura e prioridades
 
-- Cobrir todas as funcionalidades documentadas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md): N01–N04, N13 e N14, L01–L18 e M01 e M03–M15.
-- Não criar ecrãs para as exclusões de [Never](../never/funcionalidades.md) (X01–X03) nem inventar outras.
+- Cobrir todas as funcionalidades documentadas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md). A lista atual, com o estado de cada funcionalidade, está em [prototype-coverage.md](prototype-coverage.md).
+- Não criar ecrãs para as exclusões de [Never](../never/funcionalidades.md) nem inventar outras.
 - Representar a experiência completa: ecrãs, navegação, campos, controlos, interações, validações, alterações de estado, resultados vazios, informação em falta, erros e correção/regresso quando aplicáveis.
 - Later e Maybe não se limitam a um painel estático de âmbito. Devem demonstrar as respetivas experiências; isso não altera a prioridade nem confirma viabilidade técnica, valor ou regras de negócio.
 - Não mostrar etiquetas, separadores ou navegação Now/Later/Maybe/Never no frontend. A navegação deve seguir os conceitos e tarefas do utilizador.
