@@ -80,7 +80,8 @@ module.exports = {
       name: "no-circular",
       severity: "error",
       from: {},
-      to: { circular: true },
+      // TanStack Router's generated route tree imports the router back as a type.
+      to: { circular: true, viaOnly: { dependencyTypesNot: ["type-only"] } },
     },
     {
       name: "no-unresolved-imports",
@@ -90,6 +91,8 @@ module.exports = {
     },
   ],
   options: {
+    // TypeScript 7 has no JavaScript API, so parse TypeScript with swc.
+    parser: "swc",
     doNotFollow: { path: "node_modules" },
     enhancedResolveOptions: {
       exportsFields: ["exports"],
