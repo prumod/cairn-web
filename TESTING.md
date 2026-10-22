@@ -26,7 +26,7 @@ Run commands from the repository root with Bun 1.3.14:
 - `bun run test:browser` builds the Worker and runs the Chromium Playwright-BDD scenarios against the local test Worker. Install Chromium with the repository setup command or `bunx --no-install playwright install chromium`.
 - `bun run test` runs a fresh build, fast tests, and browser tests.
 - `bun run typecheck` first regenerates environment types, then checks workspace packages and root test/config types.
-- `bun run check` runs formatting, lint, boundary checks/proofs, typecheck, dependency audit, and the full test command.
+- `bun run check` runs formatting, lint, boundary checks/proofs, typecheck, build, dependency audit, and the fast and browser test suites. The required `Agent checks` CI workflow runs the same full check; the local commit and push gates do not run tests.
 
 ## Current migration verification
 
