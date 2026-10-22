@@ -57,7 +57,7 @@ done
 tree=$(git write-tree)
 export CHECK_TIMINGS_GROUP=staged
 timed "Secret scan" bash "$runner_dir/check-secrets.sh" staged
-check_tree "$tree" fast
+check_tree "$tree" commit
 if [[ "$(git write-tree)" != "$tree" ]]; then
   printf 'The staging area changed during validation. Retry the commit.\n' >&2
   exit 1

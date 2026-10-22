@@ -25,7 +25,7 @@ for index in "${!commits[@]}"; do
   export CHECK_TIMINGS_GROUP=${commit:0:7}
   # Scan reachable history too: deletion of a secret does not erase its commit.
   timed "Secret scan" bash "$runner_dir/check-secrets.sh" history "$commit"
-  check_tree "$commit" full
+  check_tree "$commit" push
 done
 
 for index in "${!refs[@]}"; do
