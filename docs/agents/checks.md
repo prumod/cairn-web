@@ -1,6 +1,6 @@
 # Agent Git gates
 
-Stage the intended changes before executing `scripts/commit-with-hooks.sh` with the Git commit arguments. It checks a disposable staged snapshot, scans the staged diff for secrets, and commits only after success. Working-tree selection (`-a`, `-i`, `-o`, or path arguments) is unsupported: use staging to select content.
+Stage the intended changes before executing `scripts/commit-with-hooks.sh` with the Git commit arguments. It checks a disposable staged snapshot, scans the staged diff for secrets, and commits only after success. Working-tree selection (`-a`, `-i`, `-o`, or path arguments) is unsupported: use staging to select content. In a linked worktree, the gate first requires the commit author described in `AGENTS.md`.
 
 Execute `scripts/push-with-hooks.sh` with the Git push arguments. Git's dry run identifies the outgoing refs; each committed snapshot receives the full checks and a reachable-history secret scan before the real push. The dry run contacts the remote, so authentication is required twice. Dirty working files do not affect either gate.
 
