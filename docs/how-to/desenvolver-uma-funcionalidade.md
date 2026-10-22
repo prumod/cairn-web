@@ -2,9 +2,24 @@
 
 Use este guia como referência durante uma Issue pronta para implementar. O percurso começa pela Issue e termina quando a Pull Request entra em `main` e a Issue fica concluída. Não inclui publicação.
 
+Pode fazer o trabalho com agentes no T3 ou manualmente.
+
+## Com agentes no T3
+
+1. Abra uma thread no `cairn-web` conforme [Trabalhar com agentes no T3](trabalhar-com-agentes-no-t3.md).
+2. Escolha um processo em [Processos e skills](../reference/processos-e-skills.md). Para um problema por esclarecer, use **RPI**; para ecrãs novos, use **Produto ponta a ponta**.
+3. Se preferir um percurso curto para uma Issue já clara:
+   1. `/grill-with-docs` para fechar as dúvidas sobre o comportamento.
+   2. `/atdd` para escrever o cenário em `features/` e aprová-lo.
+   3. `/hvtdd` para implementar o cenário com testes primeiro.
+4. Se a alteração tocar o servidor, faça a **Revisão de arquitetura do backend** de [Processos e skills](../reference/processos-e-skills.md#revisão-de-arquitetura-do-backend).
+5. Termine com o passo 5 de [Trabalhar com agentes no T3](trabalhar-com-agentes-no-t3.md#5-termine-com-uma-pull-request).
+
+## Manualmente
+
 Faça o trabalho no editor, no terminal e no GitHub. Pode usar o ChatGPT para esclarecer dúvidas, mas confirme as respostas no código e na documentação do projeto. Não envie credenciais, ficheiros `.env` nem dados privados.
 
-## 1. Confirme que o projeto está configurado
+### 1. Confirme que o projeto está configurado
 
 Se ainda não configurou o projeto, execute o assistente na pasta do repositório.
 
@@ -22,7 +37,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-project.ps1
 
 No Windows, use Git Bash para os restantes comandos deste guia. Se a configuração falhar, siga as instruções do assistente ou peça ajuda ao sénior ou ao programador intermédio. Consulte o [README](../../README.md) para mais detalhes sobre os pré-requisitos.
 
-## 2. Leia a Issue
+### 2. Leia a Issue
 
 Leia a descrição, os critérios de aceitação e os comentários da Issue. Antes de alterar código, confirme que consegue responder a estas perguntas:
 
@@ -33,7 +48,7 @@ Leia a descrição, os critérios de aceitação e os comentários da Issue. Ant
 
 Se faltar uma resposta ou houver interpretações possíveis, pergunte na Issue ao sénior ou ao programador intermédio. Espere pela clarificação antes de implementar. Se o pedido afetar autenticação, autorização, persistência ou outro comportamento no servidor, confirme o âmbito com essa pessoa. A aplicação full-stack fica em `apps/web/`; o código de servidor está em `apps/web/src/server/`, com autenticação, base de dados e infraestrutura nas respetivas packages. Não existe um backend Express separado.
 
-## 3. Atualize `main` e crie uma branch
+### 3. Atualize `main` e crie uma branch
 
 Abra um terminal na pasta do repositório e confirme que não tem alterações locais inesperadas:
 
@@ -58,19 +73,19 @@ git switch -c feat/123-short-description
 
 Use `fix/` para uma correção ou `chore/` para uma tarefa técnica. Substitua `123-short-description` pelos dados da Issue. Confirme a branch atual com `git status --short --branch`.
 
-## 4. Encontre o código relacionado
+### 4. Encontre o código relacionado
 
 A aplicação TanStack Start fica em `apps/web/`. As rotas estão em `apps/web/src/routes/`, as páginas client em `apps/web/src/pages/` e os handlers e módulos de domínio em `apps/web/src/server/`. A autenticação, o acesso à base de dados e a infraestrutura Cloudflare estão em `packages/auth/`, `packages/db/` e `packages/infra/`. Use a pesquisa do editor para encontrar o texto, componente ou rota mencionado na Issue. Leia o código relacionado e os componentes que o chamam antes de decidir onde fazer a alteração.
 
 Mantenha a alteração limitada ao pedido. Não reformate nem reorganize ficheiros sem relação com a funcionalidade. Se a estrutura existente não for clara, peça orientação antes de introduzir um padrão novo.
 
-## 5. Implemente e teste o comportamento
+### 5. Implemente e teste o comportamento
 
 Implemente os critérios da Issue, um de cada vez. Para cada critério, identifique o resultado observável e acrescente ou atualize um teste automatizado que o verifique.
 
 O projeto tem testes unitários colocados junto ao código, testes de integração em `apps/web/tests/acceptance/integration/` e cenários Playwright-BDD em `features/`, com bindings em `apps/web/tests/acceptance/e2e/`. Os comandos `bun run test:fast` e `bun run test:browser` usam PostgreSQL descartável e um proxy Neon HTTP via Docker Compose; os testes de browser executam a aplicação compilada no runtime Worker local. As identidades controladas usam um proxy de teste isolado; não são contas Google reais. Uma suite vazia indica que não há testes a executar, não que o comportamento foi verificado. Consulte [Testes](../../TESTING.md) para os limites atuais. Se não souber qual padrão usar ou como criar um teste, peça orientação ao sénior ou ao programador intermédio.
 
-## 6. Verifique a funcionalidade no browser
+### 6. Verifique a funcionalidade no browser
 
 Inicie a aplicação full-stack na raiz do repositório:
 
@@ -82,7 +97,7 @@ Abra `http://localhost:3001`. O comando inicia a stack Alchemy local para Cloudf
 
 Os testes automatizados usam identidades locais controladas; isso não comprova a autenticação real com Google. Não exponha a infraestrutura de teste nem use os seus endpoints em produção.
 
-## 7. Execute as verificações e reveja as alterações
+### 7. Execute as verificações e reveja as alterações
 
 Execute a validação completa antes de abrir a Pull Request:
 
@@ -102,7 +117,7 @@ git diff
 
 Confirme que o diff só contém alterações da Issue, que os critérios estão cobertos e que não incluiu segredos ou ficheiros `.env`. Se não conseguir executar uma verificação, indique isso na Pull Request. Não diga que passou.
 
-## 8. Faça commit e envie a branch
+### 8. Faça commit e envie a branch
 
 Adicione apenas os ficheiros desta funcionalidade. Não use `git add .` se houver outras alterações locais.
 
@@ -114,7 +129,7 @@ git push -u origin HEAD
 
 Se precisar de alterar a funcionalidade após o commit, faça as alterações na mesma branch, volte a executar as verificações relevantes, crie outro commit e envie-o com `git push`.
 
-## 9. Abra a Pull Request e peça revisão
+### 9. Abra a Pull Request e peça revisão
 
 No GitHub, abra uma Pull Request da sua branch para `main`. Inclua:
 
@@ -127,7 +142,7 @@ Espere que as verificações automáticas da Pull Request passem. Peça revisão
 
 Se receber comentários, responda-lhes e faça as alterações na mesma branch. Execute novamente as verificações relevantes e envie as alterações. A Pull Request existente recebe os novos commits.
 
-## 10. Integre a Pull Request e conclua a Issue
+### 10. Integre a Pull Request e conclua a Issue
 
 Depois da aprovação e de todas as verificações passarem, use **Squash and merge** no GitHub. Elimine a branch remota depois do merge. Não use force push.
 
