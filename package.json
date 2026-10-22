@@ -7,13 +7,13 @@
       "packages/*"
     ],
     "catalog": {
-      "zod": "^4.5.4",
+      "zod": "^4.6.7",
       "typescript": "^7.0.2",
-      "varlock": "1.18.0",
+      "varlock": "1.23.0",
       "next-themes": "^0.4.6",
       "sonner": "^2.0.8",
       "tailwindcss": "^4.3.3",
-      "better-auth": "1.7.7",
+      "better-auth": "1.7.12",
       "drizzle-orm": "1.0.0-rc.4"
     }
   },
@@ -45,18 +45,18 @@
   },
   "devDependencies": {
     "@cairn/config": "workspace:*",
-    "@cloudflare/workers-types": "^5.20260906.1",
-    "@playwright/test": "1.64.0",
+    "@cloudflare/workers-types": "^5.20261022.1",
+    "@playwright/test": "1.64.1",
     "@swc/core": "1.16.20",
-    "@types/node": "^26.4.1",
-    "dependency-cruiser": "18.5.0",
-    "oxfmt": "^0.72.0",
-    "oxlint": "^1.81.0",
+    "@types/node": "^26.6.5",
+    "dependency-cruiser": "18.7.0",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
     "playwright-bdd": "9.2.1",
     "tsx": "4.23.15",
-    "typescript": "catalog:",
+    "typescript": "^7.0.2",
     "varlock": "catalog:",
-    "vitest": "5.0.3"
+    "vitest": "5.0.5"
   },
   "overrides": {
     "@hono/node-server": "1.19.15",
