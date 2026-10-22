@@ -28,7 +28,7 @@ O comportamento de interface abaixo é uma proposta derivada das necessidades de
 ### N01 — Definir a referência da empresa
 
 - **Objetivo:** pesquisar a partir da localização da empresa e ter presentes as suas habilitações.
-- **Protótipo:** editar localização, raio de pesquisa, alvará (categorias/subcategorias e classe) e categorias prioritárias de obra num perfil demonstrativo. Estes campos alimentam a pesquisa, o mapa e os filtros, sem consulta real ao IMPIC.
+- **Protótipo:** um perfil demonstrativo, só de leitura, mostra o nome, a localização, o raio de pesquisa, a classe e as categorias prioritárias de obra. Estes dados alimentam a pesquisa, o mapa e os filtros, sem consulta real ao IMPIC. O protótipo não permite editar o perfil nem mostra o alvará da empresa.
 - **Base:** T2 §§4, 7, 9; T3 [00:01:51]–[00:02:16], [00:07:52], [00:30:16]–[00:30:45], [01:07:50]–[01:08:32].
 - **Limite:** o raio é configurado uma vez por empresa (por exemplo, 30 ou 50 km) e raramente muda; o centro é a empresa. Não fixar limites monetários por classe nem garantir elegibilidade jurídica; os valores das conversas são aproximados.
 
@@ -42,7 +42,7 @@ O comportamento de interface abaixo é uma proposta derivada das necessidades de
 ### N03 — Explorar oportunidades no mapa
 
 - **Objetivo:** perceber onde estão as obras abertas e escolher uma localidade.
-- **Protótipo:** o mapa é a vista principal. Assinala a localização da empresa e o raio. Selecionar uma localidade abre a lista/tabela das obras dessa localidade; selecionar uma obra abre N04.
+- **Protótipo:** a tabela de todas as obras dentro do raio é a vista principal. O filtro de localidade abre um popover com o mapa, que assinala a localização da empresa e o raio, ou, conforme as Opções, uma lista de caixas. Aplicar as localidades escolhidas filtra a tabela; abrir uma obra abre N04.
 - **Base:** T2 §§1, 4, 7, 22; T3 [00:23:07]–[00:24:29], [01:15:33]–[01:16:27], [01:17:45]–[01:18:00], [01:20:29]–[01:21:38].
 - **Limite:** dados e posições demonstrativos; não depende de um serviço de mapas em produção. Sem trajetos nem distritos ([Never X01–X02](../never/funcionalidades.md)). O que o tamanho dos marcadores representa (valor, número de concursos ou urgência) está por decidir. Uma vista agrupada por fases fica em Later L18.
 
@@ -56,13 +56,13 @@ O comportamento de interface abaixo é uma proposta derivada das necessidades de
 ### N13 — Conversar com o assistente sobre as oportunidades
 
 - **Objetivo:** pesquisar e consultar oportunidades por linguagem natural sem configurar muitos controlos.
-- **Protótipo:** chat ao lado do mapa, com pedidos sugeridos como «Mostra obras até 30 km» e «Quais os prazos mais urgentes?». Selecionar um ou vários concursos define o contexto da conversa; o assistente pode aplicar filtros N14. As respostas são texto com ligações para os concursos.
+- **Protótipo:** chat ao lado da tabela, com pedidos sugeridos como «Mostra obras até 30 km» e «Quais os 2 prazos mais urgentes?». Os comentários sobre obras e localidades e as citações definem o contexto da conversa; as obras apenas selecionadas não. O assistente aplica filtros N14 e mostra, abre e compara concursos. Cada resposta é texto com as ferramentas usadas; conforme as Opções, os resultados aparecem também no chat, como lista com ligações para os concursos, mapa pequeno ou ambos.
 - **Base:** T2 §§1, 4, 7, 19; T3 [00:04:26], [00:07:19]–[00:07:52], [00:09:42]–[00:10:03], [00:15:49]–[00:16:19], [00:41:03]–[00:41:28], [01:10:02]–[01:10:13], [01:28:08]. Antes Maybe M02.
 - **Limite:** respostas simuladas e verificáveis contra os dados mostrados; usar um modelo existente por API, sem treino próprio (T3 [00:11:06]). A T3 pede avaliações da qualidade das respostas antes de confiar no assistente (T3 [00:17:30]–[00:18:15]). Navegar pela aplicação em nome do utilizador fica em Later L17.
 
 ### N14 — Filtrar e priorizar oportunidades
 
 - **Objetivo:** reduzir as oportunidades às que interessam à empresa.
-- **Protótipo:** filtrar por local, data de publicação, valor, prazo, entidade adjudicante e tipo de obra. Destacar primeiro as categorias prioritárias do perfil N01. Os mesmos filtros aplicam-se ao mapa e às listas.
+- **Protótipo:** filtrar por localidade, distância, data de publicação, valor, entidade adjudicante e tipo de obra. Não há filtro de prazo; o assistente ordena por prazo de entrega. As obras das categorias prioritárias do perfil N01 têm a marca «★ prioridade»; a tabela agrupa as obras por localidade, e o contador e o assistente põem as prioritárias primeiro. Os mesmos filtros aplicam-se ao mapa e à tabela.
 - **Base:** T3 [00:10:17]–[00:10:38], [00:43:19]–[00:44:01], [01:03:23]–[01:04:44], [01:06:57]–[01:08:32], [01:30:40].
 - **Limite:** o Diário da República não fornece categorias de obra; o tipo exige classificação automática. Na demonstração, os tipos são fixos. Prioridade ordena ou destaca; não exclui. Não ocultar automaticamente oportunidades pelo valor ou pela classe ([Never X03](../never/funcionalidades.md)).
