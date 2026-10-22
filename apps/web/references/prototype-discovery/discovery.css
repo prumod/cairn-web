@@ -1056,3 +1056,112 @@ body {
   background: #b42318;
   border-color: #b42318;
 }
+
+/* PROTOTYPE (throwaway): the Localidade filter button and its map popover. */
+.d-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+.d-filter-row .d-filters {
+  flex: 1;
+  margin-bottom: 0;
+}
+.d-locality-anchor {
+  position: relative;
+  display: flex;
+  align-items: end;
+}
+.d-locality-button {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 12px;
+  border: 1px solid var(--control-line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.d-locality-button[aria-expanded="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.d-locality-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  width: min(520px, 92vw);
+  padding: 12px;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgb(23 34 53 / 0.2);
+}
+.d-locality-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+.d-locality-foot button {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid var(--control-line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+}
+.d-locality-foot button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* The map now lives in the popover, so the results take the full width. */
+.d-stage {
+  grid-template-columns: minmax(0, 1fr);
+}
+.d-stage > .d-results,
+.d-stage > .d-contest {
+  grid-column: 1;
+}
+
+/* PROTOTYPE (throwaway): the Localidade filter as a plain list of checkboxes. */
+.d-locality-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: center;
+  margin: 0 0 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.d-locality-list legend {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.d-locality-list label {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 13px;
+}
+/* The list inside the Localidade popover stacks its checkboxes. */
+.d-locality-popover .d-locality-list {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+}

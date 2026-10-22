@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { type AgentReply, type ToolStep, interpret, suggestedPrompts } from "./agent";
 import { type Citation, CitationList, Cite, confirmOnEnter } from "./Citations";
 import { useConfirm } from "./Confirm";
-import { contestById, euro } from "./data";
+import { contestById, deadlineText, euro } from "./data";
 import { MiniMap } from "./MapView";
 import { type UnitNote, UnitLines, unitLines } from "./Notes";
 import { CompareTable } from "./Panels";
@@ -29,7 +29,7 @@ export type Message = {
 const intro: Message = {
   id: 0,
   role: "agente",
-  text: "Olá. Peça-me para filtrar obras, mostrar concursos no mapa, abrir um concurso ou comparar vários.",
+  text: "Olá. Peça-me para filtrar obras, mostrar concursos nas obras, abrir um concurso ou comparar vários.",
   steps: [],
 };
 
@@ -140,10 +140,27 @@ function Results({
   return (
     <div className="d-chat-results">
       {compare !== undefined && <CompareTable ids={compare.ids} />}
-      {compare === undefined && last.ids.length > 0 && (
+      {compare === undefined && last.ids.length > 0 && settings.chatList && (
+        <ul className="d-chat-cards" aria-label="Obras do agente">
+          {last.ids.map((id) => {
+            const c = contestById(id);
+            return (
+              <li key={id}>
+                <button type="button" onClick={() => onOpen(id)}>
+                  <strong>{c.title}</strong>
+                  <span>
+                    {c.place} · {euro.format(c.announcedValue)} · {deadlineText(c)}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      {compare === undefined && last.ids.length > 0 && settings.chatMap && (
         <>
           <MiniMap ids={last.ids} />
-          {last.ids.length <= 5 && (
+          {last.ids.length <= 5 && !settings.chatList && (
             <ul className="d-chat-cards">
               {last.ids.map((id) => {
                 const c = contestById(id);
@@ -336,7 +353,7 @@ export function ChatPanel({
             {m.state === "pendente" && (
               <p className="d-proposal">
                 <button type="button" onClick={() => chat.resolve(m.id, true)}>
-                  Aplicar no mapa
+                  Aplicar
                 </button>{" "}
                 <button type="button" onClick={() => chat.resolve(m.id, false)}>
                   Rejeitar
