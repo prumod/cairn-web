@@ -4,7 +4,6 @@
 
 - [Now](now/funcionalidades.md): funcionalidades prioritárias.
 - [Termos por definir (Now)](now/termos-por-definir.md): vocabulário a confirmar.
-- [Especificação do protótipo Now](now/especificacao-prototipo.md): comportamento implementado no protótipo principal.
 - [Later](later/funcionalidades.md): funcionalidades pretendidas para depois.
 - [Maybe](maybe/funcionalidades.md): ideias a validar antes de compromisso.
 - [Never](never/funcionalidades.md): exclusões deliberadas.
