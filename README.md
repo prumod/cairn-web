@@ -73,7 +73,16 @@ Inicie o runtime local Cloudflare Workers com `bun run dev` e abra `http://local
 
 As GitHub Issues são a referência para o trabalho do projeto. O [quadro do projeto Cairn Web](https://github.com/orgs/prumod/projects/1) acompanha o trabalho nas fases Backlog, Ready, In Progress, In Review e Done. O utilizador pode descrever um problema ou fazer uma pergunta numa Issue. Não precisa de criar branches, usar um terminal ou conhecer detalhes de implementação. Os programadores sénior e intermédios ajudam a esclarecer o pedido e a transformá-lo em trabalho de desenvolvimento.
 
-Para ver o processo detalhado de desenvolvimento, consulte [Como desenvolver uma funcionalidade](docs/how-to/desenvolver-uma-funcionalidade.md).
+Para ver o processo detalhado, consulte o guia da tarefa. Cada guia tem um percurso com agentes no T3 e um percurso manual:
+
+- [Trabalhar com agentes no T3](docs/how-to/trabalhar-com-agentes-no-t3.md)
+- [Desenvolver uma funcionalidade](docs/how-to/desenvolver-uma-funcionalidade.md)
+- [Modificar uma funcionalidade](docs/how-to/modificar-uma-funcionalidade.md)
+- [Corrigir um bug](docs/how-to/corrigir-um-bug.md)
+- [Refatorar código](docs/how-to/refatorar-codigo.md)
+- [Criar um design](docs/how-to/criar-um-design.md)
+
+[Processos e skills](docs/reference/processos-e-skills.md) lista os processos e as skills que pode escolher.
 
 Para cada alteração:
 
@@ -118,6 +127,10 @@ git diff
 Indique no pull request o que verificou. Se não conseguir executar uma verificação, diga-o em vez de afirmar que passou.
 
 Se não conseguir aceder ao repositório ou se alguma instrução não funcionar, peça ajuda a um programador sénior ou intermédio. Coloque questões sobre o trabalho numa GitHub Issue ou no pull request relacionado.
+
+## Notas de referência
+
+As notas pessoais do Tiago sobre arquitetura, testes, segurança, infraestrutura e agentes de IA estão publicadas em [obsidian-vault-khaki.vercel.app](https://obsidian-vault-khaki.vercel.app/). O site tem pesquisa e vista de grafo. As notas são material de estudo; quando divergirem deste repositório, prevalecem o código e a documentação do projeto.
 
 ## Comandos do projeto
 

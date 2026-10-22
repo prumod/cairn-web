@@ -2,6 +2,14 @@
 set -euo pipefail
 source "$(dirname "$0")/git-checks.sh"
 
+# The shared T3 host runs every agent under one Git identity, and T3 does not
+# record who started a thread, so each linked worktree names its author once.
+if [[ "$(git rev-parse --path-format=absolute --git-dir)" != "$(git rev-parse --path-format=absolute --git-common-dir)" ]] &&
+  ! git config --worktree --get cairn.author >/dev/null; then
+  printf 'This worktree has no commit author. Set it as AGENTS.md describes, then retry the commit.\n' >&2
+  exit 2
+fi
+
 # Checks certify the index, so Git must not replace it with working-tree content.
 needs_value=false
 fixup_value=false
