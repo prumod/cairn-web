@@ -3,7 +3,7 @@ set -euo pipefail
 source "$(dirname "$0")/git-checks.sh"
 
 # Ask Git which refs it would push, including first pushes and explicit refspecs.
-git push --dry-run --porcelain "$@" >"$temp/push-plan"
+timed "Plan push" git push --dry-run --porcelain "$@" >"$temp/push-plan"
 refs=()
 commits=()
 while IFS=$'\t' read -r flag refspec summary; do
@@ -22,9 +22,10 @@ done <"$temp/push-plan"
 
 for index in "${!commits[@]}"; do
   commit=${commits[$index]}
+  export CHECK_TIMINGS_GROUP=${commit:0:7}
   # Scan reachable history too: deletion of a secret does not erase its commit.
-  bash "$runner_dir/check-secrets.sh" history "$commit"
-  check_tree "$commit" full
+  timed "Secret scan" bash "$runner_dir/check-secrets.sh" history "$commit"
+  check_tree "$commit" push
 done
 
 for index in "${!refs[@]}"; do
