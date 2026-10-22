@@ -6,14 +6,17 @@ O T3 corre na máquina do Tiago. Os agentes executam comandos nessa máquina com
 
 ## Antes de começar
 
-- Peça ao Tiago para autorizar o seu email no Cloudflare Access e para lhe enviar um link de pairing. O link só funciona uma vez e expira, por omissão, ao fim de 24 horas.
+- Peça ao Tiago para adicionar o seu email à lista de acesso. Precisa de conseguir receber mensagens nesse email.
 - Tenha uma Issue no GitHub que descreva o trabalho. Consulte [Como contribuir](../../README.md#como-contribuir).
 
 ## 1. Entre no T3
 
-1. Abra o link de pairing no browser. O endereço começa por `https://t3.prumod.eu/pair`.
-2. Na página **Cloudflare Access**, inicie sessão com o email autorizado.
-3. O T3 abre com a lista de projetos à esquerda. Depois do primeiro acesso, use `https://t3.prumod.eu`. A sessão do T3 dura cerca de 30 dias.
+1. Abra [t3.prumod.eu/join](https://t3.prumod.eu/join) no browser.
+2. Na página **Cloudflare Access**, introduza o email autorizado e peça o código de acesso (**One-time PIN**).
+3. Consulte a sua caixa de correio e introduza o código recebido. O acesso cria automaticamente uma ligação temporária ao T3 e abre a aplicação, com a lista de projetos à esquerda. Não precisa de pedir um link ao Tiago.
+4. Depois do primeiro acesso, use [t3.prumod.eu](https://t3.prumod.eu). A sessão do T3 dura cerca de 30 dias. Se precisar de voltar a ligar o browser, abra novamente `/join`.
+
+Se o código não chegar, consulte a pasta de spam e confirme que usou o email autorizado. Se o acesso continuar a falhar, peça ao Tiago para confirmar a entrada na lista.
 
 ## 2. Comece uma thread
 
@@ -48,3 +51,13 @@ Consulte [Processos e skills](../reference/processos-e-skills.md) para escolher 
 4. Peça revisão ao sénior ou ao programador intermédio. O merge segue o passo 10 de [Como desenvolver uma funcionalidade](desenvolver-uma-funcionalidade.md#10-integre-a-pull-request-e-conclua-a-issue).
 
 O resultado é uma Pull Request no GitHub, ligada à Issue, com as verificações descritas.
+
+## Administrar a lista de acesso (Tiago)
+
+1. No **Cloudflare Zero Trust**, abra **Access controls > Policies > T3 Code - allowed users**, ou use a [ligação direta à política](https://dash.cloudflare.com/07e5c1652b02918c719474468f8e5664/one/access-controls/policies/61e7d59c-e22e-4201-939f-80d8722906e0/edit).
+2. Em **Include > Emails**, acrescente o email de cada pessoa autorizada, mantendo os restantes emails.
+3. Guarde a política. A pessoa pode então abrir `https://t3.prumod.eu/join` e entrar com o código recebido por email, sem intervenção adicional sua.
+
+Para retirar alguém da lista, remova o email e guarde a política. Esta alteração não garante o encerramento imediato das sessões já abertas.
+
+O percurso completo com receção de um código real por email e entrada no T3 ainda aguarda validação por uma pessoa autorizada.
