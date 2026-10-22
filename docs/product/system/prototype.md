@@ -8,8 +8,8 @@ Este documento regista o âmbito acordado e as regras das duas implementações 
 
 ## Duas implementações
 
-- **Wireframe interativo** ([`web/references/interactive-wireframe.tsx`](../../../web/references/interactive-wireframe.tsx)): mostra o futuro, isto é, as funcionalidades que ainda não têm protótipo principal. Serve para ver como essas funcionalidades se ligam e que informação as interações precisam.
-- **Protótipo principal** ([`web/references/prototype-discovery/`](../../../web/references/prototype-discovery/)): mostra a experiência das funcionalidades em decisão agora. Hoje cobre as funcionalidades Now. Fica fora da aplicação, sem sessão nem backend; corre com `bun run --cwd web prototype`.
+- **Wireframe interativo** ([`apps/web/references/interactive-wireframe.tsx`](../../../apps/web/references/interactive-wireframe.tsx)): mostra o futuro, isto é, as funcionalidades que ainda não têm protótipo principal. Serve para ver como essas funcionalidades se ligam e que informação as interações precisam.
+- **Protótipo principal** ([`apps/web/references/prototype-discovery/`](../../../apps/web/references/prototype-discovery/)): mostra a experiência das funcionalidades em decisão agora. Hoje cobre as funcionalidades Now. Fica fora da aplicação, sem sessão nem backend; corre com `bun run --cwd apps/web prototype`.
 
 Cada funcionalidade está numa só implementação. Quando uma funcionalidade ganha protótipo principal, a sua parte é apagada do wireframe; não se mantêm as duas versões. As prioridades e os identificadores não mudam por isso. O [mapa de cobertura](prototype-coverage.md) indica onde está cada funcionalidade.
 

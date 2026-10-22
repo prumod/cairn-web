@@ -1,9 +1,9 @@
 // Public production files sit at each module root; all subfolders are private.
 const roots = [
-  "web/src/pages",
-  "web/src/shared",
-  "web/src/server/modules",
-  "web/src/server/shared",
+  "apps/web/src/pages",
+  "apps/web/src/shared",
+  "apps/web/src/server/modules",
+  "apps/web/src/server/shared",
   "shared/src",
 ];
 const modulePath = `^(?:${roots.join("|")})/[^/]+/`;
@@ -47,32 +47,34 @@ module.exports = {
     {
       name: "client-cannot-import-server",
       severity: "error",
-      from: { path: "^web/src/(?:pages|shared)/" },
-      to: { path: "^web/src/server/" },
+      from: { path: "^(?:apps/web/src/(?:pages|shared)/|packages/ui/)" },
+      to: {
+        path: "^(?:apps/web/src/(?:server/|env\\.server|services)|packages/(?:auth|db|infra)/|@cairn/(?:auth|db|infra)(?:/|$)|cloudflare:)",
+      },
     },
     {
       name: "server-cannot-import-client",
       severity: "error",
-      from: { path: "^web/src/server/" },
-      to: { path: "^web/src/(?:pages|shared)/" },
+      from: { path: "^apps/web/src/server/" },
+      to: { path: "^apps/web/src/(?:pages|shared)/" },
     },
     {
       name: "cross-application-shared-is-independent",
       severity: "error",
       from: { path: "^shared/" },
-      to: { path: "^web/" },
+      to: { path: "^(?:apps/web/|packages/(?:auth|db|infra|ui)/)" },
     },
     {
       name: "frontend-shared-cannot-import-pages",
       severity: "error",
-      from: { path: "^web/src/shared/" },
-      to: { path: "^web/src/pages/" },
+      from: { path: "^apps/web/src/shared/" },
+      to: { path: "^apps/web/src/pages/" },
     },
     {
       name: "server-shared-cannot-import-domain-modules",
       severity: "error",
-      from: { path: "^web/src/server/shared/" },
-      to: { path: "^web/src/server/modules/" },
+      from: { path: "^apps/web/src/server/shared/" },
+      to: { path: "^apps/web/src/server/modules/" },
     },
     {
       name: "no-circular",
@@ -84,7 +86,7 @@ module.exports = {
       name: "no-unresolved-imports",
       severity: "error",
       from: {},
-      to: { couldNotResolve: true },
+      to: { couldNotResolve: true, pathNot: "^cloudflare:workers$" },
     },
   ],
   options: {

@@ -1,37 +1,50 @@
 # Project structure
 
-This reference describes the TanStack Start application layout and the import boundaries enforced by `dependency-cruiser`. Do not create empty directories just to match the tree.
+This reference describes the current Bun workspace and the enforced dependency boundaries. Do not create empty directories just to match this tree.
 
-## Application layout
+## Workspace layout
 
 ```text
-web/
-  src/pages/<page>/                 # client page capabilities
-  src/shared/<module>/              # client-side reusable modules
-  src/routes/                       # TanStack Start UI and server-handler routes
-  src/server/
-    application.server.ts            # server-side application use cases and HTTP behavior
-    modules/<domain>/                # server access and company-profile capabilities
-    shared/<module>/                 # auth, database, and other server-only support
-  migrations/                        # committed SQL migrations and Drizzle metadata
-  tests/acceptance/integration/      # HTTP/PostgreSQL integration tests
-  tests/acceptance/e2e/              # Playwright-BDD step bindings
-shared/src/<module>/                 # optional cross-repository contracts/utilities
-features/<capability>/<use-case>.feature  # root capability contracts
+apps/web/
+  src/routes/                         # TanStack Start UI and server-handler routes
+  src/pages/<page>/                   # client page capabilities
+  src/shared/<module>/                # reusable client modules
+  src/server/modules/<domain>/        # server access and company-profile capabilities
+  src/server/shared/<module>/         # server-only support
+  tests/acceptance/integration/       # HTTP/database integration tests
+  tests/acceptance/e2e/               # Playwright-BDD step bindings
+  dist/                               # generated Worker entry and client assets
+packages/
+  auth/src/                           # Better Auth and provider configuration
+  db/src/                              # database client, schemas, and relations
+  db/migrations/<timestamp_name>/     # Drizzle 1.0.0-rc.4 folder-based migrations
+  infra/alchemy.run.ts                # Alchemy Cloudflare Website.Vite and Neon project stack
+  infra/src/deployment.ts             # validated dev/testing/production bindings and domains
+  infra/test/alchemy.run.ts           # local acceptance Worker stack
+  config/                             # workspace configuration package
+shared/src/<module>/                  # optional runtime-independent cross-workspace code
+features/<capability>/<use-case>.feature  # root Playwright-BDD contracts
 ```
 
-There is one application workspace: `web/`. The Node server is built by Nitro from TanStack Start; Express and a separate backend workspace are not part of the current application. Start route files bind UI and API paths to the client or to a `server.handlers` function. Keep database access, authentication, authorization, and domain operations on the server side.
+The repository is a Bun workspace over `apps/*` and `packages/*`. `apps/web` is a TanStack Start application built for Cloudflare Workers. `packages/infra` uses Alchemy to run the app locally and declares a Cloudflare target and, for cloud stages, a Neon project; the test fixture separately serves the compiled Worker in `workerd`. `packages/db` uses Drizzle with the Neon serverless HTTP driver. `packages/auth` configures Better Auth and Google. These package roles describe code structure, not a verified cloud deployment.
 
-## Module privacy
+Generated build output, `.alchemy`/`.tanstack` local state/cache, and generated environment types are ignored. Keep secrets in ignored local environment files. The tracked `.env.schema` files define safe environment inputs.
 
-- Production files directly in a module root are its public entry points. Import other modules through those root files, never their nested implementation files.
-- Every module subfolder is private; do not add a `lib/` convention or public barrels. Keep private helpers and persistence implementations below the module root.
-- A module's own unit tests may import its private implementation. Unit tests are colocated with source as `*.spec.ts[x]` or `*.test.ts[x]`; production code cannot import tests, and tests of another module cannot import private implementation or tests.
-- Non-unit acceptance/typical integration and E2E tests live outside `src`. Approved Gherkin capability contracts live at root `features/`.
-- Route files may import the server-side application entry point to declare TanStack Start handlers. Client page and shared UI modules must not import server modules.
+## Module privacy and dependency boundaries
 
-## Current enforcement
+For modules under `apps/web/src/pages`, `apps/web/src/shared`, `apps/web/src/server/modules`, `apps/web/src/server/shared`, and `shared/src`, production files at the module root are public entry points. Nested files are private. Other modules must import through the public entry point. A module's own colocated unit tests may import its private production files; other modules may not import private implementations or tests. Production code cannot import tests.
 
-The dependency-cruiser rules cover `web/src/pages`, `web/src/shared`, `web/src/server/modules`, `web/src/server/shared`, and optional `shared/src`. They reject cross-module private imports, test imports, client/server coupling, dependencies from root shared into the application, dependencies from client shared code into pages, dependencies from server shared code into domain modules, cycles, and unresolved imports. They permit a module's own unit test to import its private production files. `bun run lint:boundaries` checks the repository graph; `bun run test:boundaries` checks representative allowed and rejected graphs.
+The dependency rules also enforce these workspace boundaries:
 
-Fast Vitest discovery includes colocated `web` and optional `shared` source tests plus `web/tests/{acceptance,typical}/integration`. Playwright-BDD discovers root `features/**/*.feature` and bindings under `web/tests/acceptance/e2e`. Browser fixtures use the built Start server and a disposable database. Controlled Google-like identities are created through a test-only proxy outside the application; they do not prove Google's OAuth provider. There is no database seed step. See [Testing](../../TESTING.md) for commands and evidence limits.
+- Client pages/shared modules cannot import server-only app modules, server environment/services, `packages/auth`, `packages/db`, `packages/infra`, their `@cairn/auth`, `@cairn/db`, and `@cairn/infra` workspace specifiers, or Cloudflare runtime APIs.
+- There is no current `packages/ui` workspace package. A reserved rule rejects server imports from that future client package shape, and synthetic boundary tests exercise it.
+- Server modules cannot import client pages or shared UI modules.
+- `shared/src` cannot depend on `apps/web` or application packages (`auth`, `db`, or `infra`); the rule also reserves the absent `ui` package path. Keep this code runtime-independent.
+- Client shared modules cannot import page modules; server-shared modules cannot import domain modules.
+- Circular dependencies and unresolved imports fail. The runtime-resolved `cloudflare:workers` import is the explicit unresolved-import exception.
+
+`bun run lint:boundaries` scans the application source/tests, `packages/auth/src`, `packages/db/src`, Alchemy declarations/tests under `packages/infra` (including `packages/infra/src`), and `shared/src`. `.alchemy` generated cache/state is excluded. `bun run test:boundaries` proves allowed route-to-server and own-module test imports, and rejects representative private imports, workspace package imports from client code, cross-application shared dependencies, cycles, and unresolved imports. It also creates a temporary `packages/ui` client file to prove that the reserved UI boundary rejects server imports; the package is absent from the actual workspace. These checks enforce dependency shape, not runtime behavior or provider configuration.
+
+## Test discovery
+
+Vitest discovers colocated tests under `{apps/web,shared}/src/**/*.{spec,test}.{ts,tsx}` and `packages/*/src/**/*.{spec,test}.{ts,tsx}`. It also discovers integration tests under `apps/web/tests/{acceptance,typical}/integration/`. Playwright-BDD discovers root contracts under `features/company/` and `features/access/`, with bindings under `apps/web/tests/acceptance/e2e/`. Browser fixtures use the compiled Worker and disposable database/proxy pair. Controlled Google-like identities do not prove Google's OAuth provider. See [Testing](../../TESTING.md) for commands and current evidence limits.

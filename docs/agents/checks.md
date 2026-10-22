@@ -22,7 +22,13 @@ For test boundaries and coverage limits, see [Testing](../../TESTING.md). Packag
 
 ## Local application and test process cautions
 
-Integration and browser acceptance use the built Nitro Node server at `web/.output/server/index.mjs`, with `web/` as its working directory. Runtime migration lookup depends on this directory because committed SQL files live in `web/migrations/`. The browser fixture's controlled-identity endpoint runs on a separate test-only HTTP proxy; do not add it to the Start application. The disposable PostgreSQL process is detached by `pg_ctl`; Playwright's server wrapper needs graceful `SIGTERM` handling and async shutdown, followed by a checked `pg_ctl stop` before removing its temporary directory. Default `SIGKILL` or signal forwarding alone can leave PostgreSQL running.
+`bun run dev` starts `packages/infra`'s Alchemy development stage, which serves TanStack Start in the local Cloudflare Workers runtime. Alchemy uses local state for this workflow; `.alchemy` is generated local state/cache, not remote provider state or proof of deployment. Standalone Vite dev/preview commands are not supported because the app requires the Workers runtime. Root `bun run typecheck` runs `env:generate` before workspace type checks. Keep generated `apps/web/src/env.ts` and `packages/db/src/env.ts` out of version control; retain the safe `.env.schema` inputs and keep actual credentials in ignored local environment files.
+
+`bun run test:fast` and `bun run test:browser` build the application and use `scripts/with-test-postgres.mjs`. It starts a uniquely named Docker Compose project from `compose.test.yaml`, with digest-pinned PostgreSQL 18.6 and a pinned local Neon HTTP proxy, loopback-only dynamic ports, and temporary database storage. The wrapper supplies `TEST_DATABASE_URL` and `TEST_NEON_PORT`, then runs `docker compose down --volumes --remove-orphans`. Each app fixture creates a separate database, applies migrations through the Neon HTTP driver, and starts the compiled Worker with the test-only Alchemy stack in `packages/infra/test/alchemy.run.ts` using local `workerd` and Alchemy state. Browser fixtures add a controlled-identity proxy outside the application.
+
+Do not start or stop a separate `pg_ctl` database for these suites. The test wrapper owns the Compose services and waits for the test process and asynchronous teardown; the browser server keeps idempotent signal handlers while cleanup finishes. CI invokes the same `scripts/check.sh full` entrypoint and relies on the wrapper's Compose pair rather than a separate PostgreSQL service. The local and CI flows do not provision Cloudflare, create remote Alchemy state, or validate Google OAuth/deployment.
+
+For the current test and audit status, see [Testing](../../TESTING.md). Historical Render files and workflows do not validate the current Workers runtime.
 
 ## Shared enforcement
 

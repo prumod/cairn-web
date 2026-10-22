@@ -1,5 +1,5 @@
 {
-  "extends": "./web/tsconfig.json",
+  "extends": "./apps/web/tsconfig.json",
   "compilerOptions": {
     "types": ["node"]
   },
@@ -7,6 +7,6 @@
     "vitest.config.ts",
     "playwright.config.ts",
     "playwright.deployed.config.ts",
-    "web/tests/**/*.ts"
+    "apps/web/tests/**/*.ts"
   ]
 }

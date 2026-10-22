@@ -8,10 +8,10 @@ import { fileURLToPath } from "node:url";
 const repository = fileURLToPath(new URL("../", import.meta.url));
 const sandbox = mkdtempSync(join(tmpdir(), "cairn-boundaries-"));
 const roots = [
-  "web/src/pages",
-  "web/src/shared",
-  "web/src/server/modules",
-  "web/src/server/shared",
+  "apps/web/src/pages",
+  "apps/web/src/shared",
+  "apps/web/src/server/modules",
+  "apps/web/src/server/shared",
   "shared/src",
 ];
 
@@ -34,7 +34,8 @@ function cruise(expectedRule) {
       join(repository, "node_modules/dependency-cruiser/bin/dependency-cruiser.mjs"),
       "--config",
       join(repository, ".dependency-cruiser.cjs"),
-      "web",
+      "apps/web",
+      "packages",
       "shared",
     ],
     { cwd: sandbox, encoding: "utf8" },
@@ -74,17 +75,24 @@ try {
     );
     write(`${root}/two/entry.ts`, "export const value = 1;\n");
   }
-  write("web/src/main.ts", importing("web/src/main.ts", "web/src/pages/one/entry.ts"));
+  write("packages/auth/src/index.ts", "export const value = 1;\n");
+  write("packages/db/src/index.ts", "export const value = 1;\n");
+  write("packages/infra/alchemy.run.ts", "export const value = 1;\n");
+  write("packages/ui/src/probe.ts", "export const value = 1;\n");
   write(
-    "web/tests/acceptance/integration/example.spec.ts",
+    "apps/web/src/main.ts",
+    importing("apps/web/src/main.ts", "apps/web/src/pages/one/entry.ts"),
+  );
+  write(
+    "apps/web/tests/acceptance/integration/example.spec.ts",
     importing(
-      "web/tests/acceptance/integration/example.spec.ts",
-      "web/src/server/modules/one/entry.ts",
+      "apps/web/tests/acceptance/integration/example.spec.ts",
+      "apps/web/src/server/modules/one/entry.ts",
     ),
   );
   write(
-    "web/src/routes/index.ts",
-    importing("web/src/routes/index.ts", "web/src/server/modules/one/entry.ts"),
+    "apps/web/src/routes/index.ts",
+    importing("apps/web/src/routes/index.ts", "apps/web/src/server/modules/one/entry.ts"),
   );
   cruise();
   console.log(
@@ -101,61 +109,73 @@ try {
     );
   }
   prove(
-    "web/src/main.ts",
-    "web/src/pages/one/implementation/value.ts",
+    "apps/web/src/main.ts",
+    "apps/web/src/pages/one/implementation/value.ts",
     "entrypoint-boundary-from-app",
   );
   prove(
-    "web/tests/acceptance/integration/example.spec.ts",
-    "web/src/server/modules/one/implementation/value.ts",
+    "apps/web/tests/acceptance/integration/example.spec.ts",
+    "apps/web/src/server/modules/one/implementation/value.ts",
     "entrypoint-boundary-from-app",
   );
   prove(
-    "web/src/pages/two/probe.ts",
-    "web/src/pages/two/probe.spec.ts",
+    "apps/web/src/pages/two/probe.ts",
+    "apps/web/src/pages/two/probe.spec.ts",
     "production-cannot-import-tests",
   );
   prove(
-    "web/tests/acceptance/integration/example.spec.ts",
-    "web/src/server/modules/one/entry.spec.ts",
+    "apps/web/tests/acceptance/integration/example.spec.ts",
+    "apps/web/src/server/modules/one/entry.spec.ts",
     "app-cannot-import-module-tests",
   );
   prove(
-    "web/src/pages/two/probe.ts",
-    "web/src/server/modules/one/entry.ts",
+    "apps/web/src/pages/two/probe.ts",
+    "apps/web/src/server/modules/one/entry.ts",
     "client-cannot-import-server",
   );
+  for (const target of [
+    "packages/auth/src/index.ts",
+    "packages/db/src/index.ts",
+    "packages/infra/alchemy.run.ts",
+  ]) {
+    prove("apps/web/src/pages/two/probe.ts", target, "client-cannot-import-server");
+    prove("packages/ui/src/probe.ts", target, "client-cannot-import-server");
+  }
   prove(
-    "web/src/server/modules/two/probe.ts",
-    "web/src/pages/one/entry.ts",
+    "apps/web/src/server/modules/two/probe.ts",
+    "apps/web/src/pages/one/entry.ts",
     "server-cannot-import-client",
   );
   prove(
     "shared/src/two/probe.ts",
-    "web/src/pages/one/entry.ts",
+    "apps/web/src/pages/one/entry.ts",
     "cross-application-shared-is-independent",
   );
   prove(
     "shared/src/two/probe.ts",
-    "web/src/server/modules/one/entry.ts",
+    "apps/web/src/server/modules/one/entry.ts",
     "cross-application-shared-is-independent",
   );
   prove(
-    "web/src/shared/two/probe.ts",
-    "web/src/pages/one/entry.ts",
+    "apps/web/src/shared/two/probe.ts",
+    "apps/web/src/pages/one/entry.ts",
     "frontend-shared-cannot-import-pages",
   );
   prove(
-    "web/src/server/shared/two/probe.ts",
-    "web/src/server/modules/one/entry.ts",
+    "apps/web/src/server/shared/two/probe.ts",
+    "apps/web/src/server/modules/one/entry.ts",
     "server-shared-cannot-import-domain-modules",
   );
   write(
-    "web/src/pages/two/cycle.ts",
-    importing("web/src/pages/two/cycle.ts", "web/src/pages/two/probe.ts"),
+    "apps/web/src/pages/two/cycle.ts",
+    importing("apps/web/src/pages/two/cycle.ts", "apps/web/src/pages/two/probe.ts"),
   );
-  prove("web/src/pages/two/probe.ts", "web/src/pages/two/cycle.ts", "no-circular");
-  prove("web/src/pages/two/probe.ts", "web/src/pages/two/missing.ts", "no-unresolved-imports");
+  prove("apps/web/src/pages/two/probe.ts", "apps/web/src/pages/two/cycle.ts", "no-circular");
+  prove(
+    "apps/web/src/pages/two/probe.ts",
+    "apps/web/src/pages/two/missing.ts",
+    "no-unresolved-imports",
+  );
 } finally {
   // Remove only the isolated temporary project created by this process.
   rmSync(sandbox, { recursive: true, force: true });

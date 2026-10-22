@@ -73,7 +73,7 @@ Follow the conventions in `docs/product/README.md`: a capability that changes le
 
 1. Update the feature files, `now/termos-por-definir.md`, and `docs/product/README.md` (counts, the identifier mapping, and the source list).
 2. If identifiers changed, update the identifier note at the top of each document in `docs/product/research/`.
-3. Update `web/references/interactive-wireframe.tsx` and `docs/product/system/prototype-coverage.md` as in step 3, items 4 and 5, of `.agents/skills/incorporate-transcription/SKILL.md`.
+3. Update `apps/web/references/interactive-wireframe.tsx` and `docs/product/system/prototype-coverage.md` as in step 3, items 4 and 5, of `.agents/skills/incorporate-transcription/SKILL.md`.
 
 ## 9. Open the pull request
 

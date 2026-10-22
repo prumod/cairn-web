@@ -1,0 +1,25 @@
+{
+  "name": "@cairn/infra",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "dev": "bun node_modules/alchemy/bin/cli.js dev --stage dev",
+    "deploy:testing": "bun node_modules/alchemy/bin/cli.js deploy --stage testing",
+    "deploy:production": "bun node_modules/alchemy/bin/cli.js deploy --stage production",
+    "destroy:testing": "bun node_modules/alchemy/bin/cli.js destroy --stage testing",
+    "destroy:production": "bun node_modules/alchemy/bin/cli.js destroy --stage production"
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@cairn/config": "workspace:*",
+    "@effect/platform-bun": "4.0.5",
+    "@effect/platform-node": "4.0.5",
+    "alchemy": "2.0.0-beta.83",
+    "effect": "4.0.5",
+    "typescript": "catalog:",
+    "varlock": "catalog:"
+  }
+}

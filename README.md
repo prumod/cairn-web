@@ -1,6 +1,6 @@
 # Cairn Web
 
-Este repositório contém a aplicação web full-stack Cairn, construída com React e TanStack Start em modo SPA, Better Auth/Google, PostgreSQL e um perfil de empresa partilhado com controlo de acesso. Não existe um backend Express separado. O deployment de teste e as provas de OAuth existentes são anteriores à migração para Start; a nova implementação ainda precisa de validação exata no ambiente de teste. A adoção dos Blueprints e a publicação de produção continuam por concluir.
+Este repositório contém um monorepo Bun para a aplicação Cairn: React e TanStack Start, executados como Cloudflare Worker através de Alchemy, Better Auth/Google e Drizzle com Neon HTTP. Não existe um backend Express separado. A configuração Render e as provas de deployment/OAuth anteriores pertencem ao runtime antigo; não validam esta aplicação Workers. Em 2026-10-22, os ambientes testing e production estavam publicados e o início e fim de sessão com Google, incluindo o fluxo do perfil da empresa e as permissões de acesso, foram verificados nos dois ambientes. Consulte [Estado de deployment](#estado-de-deployment) e o [guia de execução do perfil da empresa](docs/how-to/run-company-profile.md) para os resultados e limites atuais.
 
 Leia este ficheiro antes de começar. Se as instruções de configuração mudarem, atualize este README no mesmo pull request.
 
@@ -53,7 +53,7 @@ bun run setup
 
 `bun run setup` instala as dependências a partir do ficheiro de lock. Confirme que o terminal reconhece Bun 1.3.14 com `bun --version`. Depois de atualizar o repositório, `bun run update` instala as dependências desse ficheiro. Altere `bun.lock` apenas quando mudar intencionalmente as dependências.
 
-Para executar a aplicação full-stack localmente, configure PostgreSQL e as variáveis de autenticação conforme [Executar o perfil da empresa](docs/how-to/run-company-profile.md). Não configure credenciais reais em ficheiros versionados.
+Para executar a aplicação localmente (estágio `dev`), configure uma base compatível com Neon HTTP e as variáveis de autenticação conforme [Executar o perfil da empresa](docs/how-to/run-company-profile.md). Os testes precisam de Docker Compose; não configure credenciais reais em ficheiros versionados.
 
 ## Como executar o projeto
 
@@ -67,7 +67,7 @@ export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"
 
 No Windows, abra um novo terminal PowerShell na raiz do repositório para carregar o `PATH` atualizado pelo assistente.
 
-Inicie o servidor full-stack de desenvolvimento com `bun run dev` e abra `http://localhost:5173`. TanStack Start serve as rotas da interface e os handlers de servidor na mesma aplicação; não existe proxy para um backend Express. Para configurar autenticação e PostgreSQL ou executar a compilação Node integrada, consulte [Executar o perfil da empresa](docs/how-to/run-company-profile.md).
+Inicie o runtime local Cloudflare Workers com `bun run dev` e abra `http://localhost:3001`. O comando usa a stack de desenvolvimento Alchemy e serve a aplicação full-stack no mesmo Worker; não inicia um servidor Node/Nitro nem um backend Express. Para configurar a base e a autenticação, consulte [Executar o perfil da empresa](docs/how-to/run-company-profile.md).
 
 ## Como contribuir
 
@@ -121,39 +121,58 @@ Se não conseguir aceder ao repositório ou se alguma instrução não funcionar
 
 ## Comandos do projeto
 
-Os scripts executáveis estão em `scripts/`. Cada script encontra a raiz do repositório a partir da sua localização. `scripts/setup.sh` prepara ferramentas e dependências. `scripts/update.sh` instala dependências depois de atualizar o repositório. `scripts/run.sh` inicia a aplicação. `scripts/test.sh` executa os conjuntos de testes contra uma compilação nova. `scripts/check.sh` faz a validação completa, incluindo a auditoria de dependências. Os assistentes `setup-project` também instalam ferramentas do sistema operativo.
+Os comandos principais estão definidos no `package.json` da raiz. `bun run setup` instala dependências bloqueadas, Gitleaks e Chromium. `bun run typecheck` regenera os tipos de ambiente antes de verificar os pacotes do workspace. Consulte [Estrutura do projeto](docs/reference/project-structure.md) para os limites entre módulos.
 
-| Comando                    | Utilização                                                                                                                                                           |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bun run setup`            | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                                                                                         |
-| `bun run update`           | Instala as dependências depois de atualizar uma cópia existente.                                                                                                     |
-| `bun run dev`              | Inicia o servidor Vite/TanStack Start full-stack para desenvolvimento.                                                                                               |
-| `bun run build`            | Compila a aplicação TanStack Start/Nitro para `web/.output`.                                                                                                         |
-| `bun run start`            | Inicia o servidor Node compilado com o diretório de trabalho `web/`.                                                                                                 |
-| `bun run db:migrate`       | Aplica as migrações SQL committed ao banco configurado.                                                                                                              |
-| `bun run preview`          | Inicia o servidor integrado compilado, igual a `bun run start`.                                                                                                      |
-| `bun run format`           | Formata os ficheiros suportados em todo o repositório com Oxfmt.                                                                                                     |
-| `bun run format:check`     | Verifica a formatação sem alterar ficheiros.                                                                                                                         |
-| `bun run lint`             | Analisa o código-fonte e a configuração do repositório com Oxlint.                                                                                                   |
-| `bun run lint:boundaries`  | Verifica as fronteiras de módulos e dependências.                                                                                                                    |
-| `bun run test:boundaries`  | Prova que as regras de fronteira aceitam e rejeitam exemplos esperados.                                                                                              |
-| `bun run check:blueprints` | Analisa o Blueprint de teste e o template de produção e verifica a política local, sem contactar o Render.                                                           |
-| `bun run typecheck`        | Verifica os tipos da aplicação web, do wireframe de referência, das configurações de teste e das ligações dos testes.                                                |
-| `bun run audit`            | Audita as dependências bloqueadas, incluindo as ferramentas de desenvolvimento.                                                                                      |
-| `bun run test`             | Executa os testes rápidos, compila a aplicação e executa os cenários no navegador.                                                                                   |
-| `bun run check`            | Executa a formatação, a análise estática, as verificações de fronteiras e Blueprints, a verificação de tipos, a auditoria de dependências, os testes e a compilação. |
+| Comando                                               | Utilização                                                                                                |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `bun run setup`                                       | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                              |
+| `bun run update`                                      | Instala as dependências bloqueadas depois de atualizar o repositório.                                     |
+| `bun run dev`                                         | Inicia a stack Alchemy local para o Worker Cloudflare de desenvolvimento.                                 |
+| `bun run build`                                       | Compila a aplicação TanStack Start para `apps/web/dist`.                                                  |
+| `bun run db:migrate`                                  | Aplica as migrações Drizzle à base indicada por `DATABASE_URL`.                                           |
+| `bun run db:generate`                                 | Gera migrações a partir do schema Drizzle.                                                                |
+| `bun run env:generate`                                | Gera os tipos TypeScript a partir dos schemas de ambiente versionados.                                    |
+| `bun run format` / `bun run format:check`             | Formata ou verifica os ficheiros com Oxfmt.                                                               |
+| `bun run lint`                                        | Analisa o código com Oxlint.                                                                              |
+| `bun run lint:boundaries` / `bun run test:boundaries` | Verifica e prova os limites de dependências.                                                              |
+| `bun run check:blueprints`                            | Verifica localmente a política dos ficheiros Render antigos; não contacta o provider nem valida o Worker. |
+| `bun run typecheck`                                   | Verifica os tipos da aplicação, do wireframe de referência, dos pacotes do workspace e dos testes.        |
+| `bun run audit`                                       | Audita as dependências bloqueadas, incluindo ferramentas de desenvolvimento.                              |
+| `bun run test:fast`                                   | Compila e executa Vitest com PostgreSQL e proxy Neon HTTP descartáveis via Docker Compose.                |
+| `bun run test:browser`                                | Compila e executa os cenários Chromium contra o Worker compilado e uma identidade de teste isolada.       |
+| `bun run test`                                        | Executa os testes rápidos e de browser.                                                                   |
+| `bun run check`                                       | Executa as verificações completas, incluindo tipos, auditoria e testes.                                   |
 
-Consulte [Estrutura do projeto](docs/reference/project-structure.md) para as regras de módulos e testes. O conjunto inclui testes unitários de configuração, integração HTTP/PostgreSQL contra o servidor Start compilado e cenários Playwright-BDD. `bun run test:fast` requer PostgreSQL local instalado ou `TEST_DATABASE_URL` para um servidor de teste dedicado com permissão `CREATEDB`; `bun run test:browser` compila primeiro a aplicação e usa PostgreSQL descartável e identidades controladas por um proxy de teste isolado. A CI de pull requests usa PostgreSQL 18.6 efémero. `Agent checks` e `Deployed company profile E2E` são obrigatórios na proteção de `main`, com verificações estritas e aplicação a administradores; a proteção exige zero aprovações de revisão.
+Os testes precisam de Docker Compose e Chromium. O wrapper cria um projeto Compose isolado com imagens fixadas de PostgreSQL 18.6 e do proxy Neon HTTP; não é necessário configurar manualmente um servidor PostgreSQL. O workflow CI usa o mesmo wrapper, sem um serviço PostgreSQL separado. Para os detalhes e limites da verificação atual, consulte [Testes](TESTING.md). Para as verificações Git locais, consulte [Verificações dos agentes](docs/agents/checks.md).
 
-Para saber como funcionam as verificações de commit e push, a instalação do Gitleaks e do navegador, e a recuperação de falhas, consulte [Verificações dos agentes](docs/agents/checks.md).
+## Estado de deployment
 
-## Publicação
+A configuração atual define a stack Alchemy para Cloudflare Workers em `packages/infra/alchemy.run.ts` e `packages/infra/src/deployment.ts`. O estágio local suportado é `dev`: usa o runtime local, não configura domínio personalizado, deixa `workersDev` por definir, define `APP_ENV=development`, usa `GIT_SHA=local` e lê `DATABASE_URL` e `BETTER_AUTH_SECRET` do ambiente (varlock). Os únicos estágios de deployment aceites são `testing` (`cairn-testing.prumod.eu`) e `production` (`cairn.prumod.eu`); ambos usam `APP_ENV=production`, exigem `GIT_SHA` com 40 caracteres hexadecimais minúsculos e definem `workersDev: false`. Assim, a configuração de ambos usa apenas o domínio personalizado correspondente e desativa os URLs estáveis `workers.dev` e os URLs de pré-visualização por versão.
 
-`render.yaml` tem uma definição de teste que visa o nome de serviço `cairn-testing`, na branch `feat/63-company-profile`, com a origem existente `https://cairn-testing.onrender.com`. A adoção do serviço pelo Blueprint ainda não foi verificada. `deploy/render.production.template.yaml` descreve separadamente o futuro serviço `cairn-production`, na branch `main`, mas mantém a decisão de plano em aberto: `plan: __APPROVED_PRODUCTION_PLAN_REQUIRED__`. Não submeta este template até aprovar um plano não-Free e validar o ficheiro contra o Render. Nenhum plano pago está aprovado. A produção não está aprovada nem provisionada; o ficheiro não autoriza operações no Render. O teste usa Free em Frankfurt; ambos os ficheiros excluem bases de dados Render e previews.
+Os estágios cloud são totalmente provisionados pelo Alchemy. Cada estágio cria um `Neon.Project` chamado `database` na região `aws-eu-central-1` (Frankfurt) e aplica as migrações de `packages/db/migrations` em cada deploy; no primeiro deploy, o Alchemy assume o histórico do drizzle-kit. O Worker recebe o URI de ligação com pooling do projeto como segredo `DATABASE_URL`, e um `BETTER_AUTH_SECRET` gerado e guardado no estado do Alchemy. Ninguém cria a base de dados nem copia o `DATABASE_URL` à mão.
 
-O E2E funcional de teste na revisão `eb8f66a54dbd6265440f72ffebe4a6be4c900224` usou a implementação Express anterior. A execução, a evidência do gate e a proteção de `main` são históricas e não certificam a migração Start. A substituição Start só pode ser aceite depois de passar CI, de ser implantada pela revisão exata e de passar E2E funcional com Google nessa mesma revisão. Consulte [Testes](TESTING.md) para os limites. Mantenha bases de dados PostgreSQL, clientes OAuth e segredos separados entre local, teste e produção.
+O Neon Free limita a retenção do histórico a `21600` segundos (6 horas). A criação de projeto usa `historyRetentionSeconds: 21600`, porque o valor predefinido de 86400 segundos (24 horas) do Alchemy é rejeitado pelo Neon Free e faz falhar o pedido de criação. Em 2026-10-22, testing e production tinham projetos Neon separados na organização Free ($0/mês), ambos em `aws-eu-central-1`, com retenção de `21600` segundos. Uma falha pode deixar um projeto Neon órfão, fora do estado local do Alchemy; confirme na consola ou API do Neon e elimine-o manualmente. A elegibilidade dos dois ambientes para o plano Neon Free foi confirmada.
 
-Consulte [Gerir os Blueprints Render](docs/how-to/manage-render-blueprints.md) antes de qualquer operação autorizada. O YAML de teste e o serviço live usam `autoDeployTrigger: off`. O novo fluxo de `.github/workflows/deployed-e2e.yml` inicia após `Agent checks` terminar com sucesso para um PR aberto, não draft, do mesmo repositório para `main`; antes de usar o Render, valida o PR, CI e uma atestação confiável para o SHA exato. `.github/workflows/trusted-pr-submission.yml` usa `pull_request_target` na branch base, apenas para `opened`/`synchronize`, e filtra pelo ID estável de conta do ator autorizado (TiagoJacinto). Faz checkout apenas de `github.sha` (código da base), não executa código candidato nem recebe segredos Render/teste, e publica `Trusted PR submission` para o head atual. O gate espera até 10 minutos por esse status para acomodar filas dos runners e só usa a chave Render depois da validação. Forks, outros atores, PRs fechados e drafts não são implantados; para um draft, é necessário um novo push depois de o tornar pronto. A produção não é alterada. O PR #81 integrou este fluxo em `main` na revisão `349514a10bc65eaa50ab3d7c5761210c428d7dae`; o primeiro deployment automático ainda não foi verificado. A migração Start continua a precisar de CI e E2E Google na sua revisão exata. Não há aqui afirmação de execução ou deployment live do novo fluxo. **Auto Sync** é separado e não foi alterado; confirme-o antes de qualquer adoção autorizada. O plano Free tem cold starts e limites partilhados; não garante ausência de despesa e o Render desaconselha-o para produção. Não altere faturação nem provisione produção sem autorização. Consulte [Arquitetura](ARCHITECTURE.md) e [Executar o perfil da empresa](docs/how-to/run-company-profile.md) para os restantes limites.
+O Alchemy lê as propriedades `domain` e `workersDev` do Worker antes de resolver propriedades que devolvem um `Effect`. Por isso, `alchemy.run.ts` resolve `deploymentConfig` dentro do `Effect` da stack e passa valores simples. Passar diretamente valores `Effect` nessas propriedades faz o deployment falhar com `Cloudflare zone not found for undefined`.
+
+Um deployment cloud precisa destes inputs humanos: `NEON_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `BOOTSTRAP_ADMIN_EMAIL`, `GIT_SHA` e autorização Cloudflare para o Alchemy. Guarde os segredos em `packages/infra/.env.local` (ignorado pelo Git; o varlock carrega-o sobre `.env.schema`) ou no ambiente do processo. Nunca os submeta. Em 2026-10-22, cada ambiente usava o seu próprio cliente OAuth Google no projeto Cloud `cairn`, com ecrã de consentimento External/Testing e os utilizadores de teste `tiagojacintodev@gmail.com` e `tiagojacinto7@gmail.com`. Para production, forneça `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` do cliente de production como variáveis exportadas; estas substituem os valores testing guardados em `packages/infra/.env.local`. Os passos que não podem ser IaC continuam manuais:
+
+- Criar o cliente OAuth Web do Google por ambiente na Google Cloud Console, com o URI de redirecionamento `https://<domínio>/api/auth/callback/google`. Não se conhece nenhuma API para criar um cliente Web padrão; não confirmado.
+- Alterar os nameservers e o registo DS do DNSSEC no registrar (Spaceship).
+
+Para deployments rotineiros de um estágio existente, use a chave Neon limitada ao projeto desse estágio; `NEON_API_KEY` exportada substitui a chave testing em `.env.local`. Criar um estágio ou executar `destroy:<stage>` exige uma API key organizacional. Consulte o [guia do perfil da empresa](docs/how-to/run-company-profile.md) para o âmbito e a criação das chaves. `ALCHEMY_PASSWORD` só aparece vazio em `packages/infra/.env.schema`; não está configurado.
+
+Os comandos explicitamente nomeados são `deploy:testing`, `deploy:production`, `destroy:testing` e `destroy:production` no package `packages/infra`; os comandos implícitos `deploy`/`destroy` não existem. Em execução não interativa, os comandos de deployment precisam das opções `--no-input --yes`. A partir de `packages/infra`, o deployment production usa `env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<40-hex>' bun run deploy:production --no-input --yes`, com as variáveis exportadas `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` do cliente production. O [guia de deployment](docs/how-to/run-company-profile.md#plan-and-deploy-production) inclui o comando e os passos de recuperação. `destroy:testing` e `destroy:production` eliminam o projeto Neon do estágio correspondente e os respetivos dados. Não execute deployment ou destroy sem aprovação separada, inputs isolados e validação operacional. `render.yaml`, `deploy/render.production.template.yaml` e os workflows/gates de Render continuam artefactos do runtime anterior e não validam nem fazem deployment do Worker atual.
+
+O estado do Alchemy é local (`Alchemy.localState()`, pasta `.alchemy`). O estado remoto não está ativado: só a máquina que tem `.alchemy` consegue atualizar ou destruir a stack, e perder esse estado impede a recuperação pelo Alchemy. Este estado ainda não é partilhado entre máquinas.
+
+Verificação externa registada em 2026-10-22: `https://cairn-testing.prumod.eu` e `https://cairn.prumod.eu` estavam deployed na revisão `100ae4e3b91fe1b054c84793616d822a83707b97`; ambos os endpoints `/healthz` responderam com essa revisão. Cada estágio usava o seu próprio projeto Neon Free, segredos gerados e cliente OAuth Google. O início e fim de sessão reais com Google foram verificados em ambos. A conta administradora guardou o perfil da empresa e este persistiu após recarregar; uma segunda conta passou de pendente a aprovada, viu o perfil partilhado e voltou à página pendente após revogação. A leitura da base confirmou `approved=false` e zero sessões depois de terminar a sessão.
+
+Na verificação de faturação, Cloudflare Billable usage e Invoices mostraram “No invoices”; Cloudflare Workers e `prumod.eu` estavam no plano Free e a organização Neon também estava no plano Free ($0/mês). Não foi usado plano pago nem método de pagamento. Ambos os domínios resolviam para IPs Cloudflare; a zona usava `albert.ns.cloudflare.com` e `bonnie.ns.cloudflare.com`, tinha DS publicado no domínio pai e o resolver devolveu a flag AD, confirmando validação DNSSEC.
+
+Medições de 2026-10-22: o dashboard Cloudflare mostrou 708 invocações production em 24 h, 0 erros e CPU time de 4 ms; testing registou 862 pedidos e mediana de 4,9 ms. O limite CPU do Workers Free é 10 ms; o p99 não foi consultado. Após cerca de 7 minutos sem tráfego, `/healthz` (que executa `SELECT 1`) demorou 0,90 s, 0,67 s e 0,24 s; respostas warm demoraram 0,17–0,34 s.
+
+As páginas `/privacy` e `/terms` correspondem aos dados guardados pelo código, mas não identificam o responsável pelo tratamento nem o respetivo contacto, não indicam um prazo de retenção nem os direitos dos titulares. Continuam por verificar: atualização Neon via Alchemy com chave limitada ao projeto, p99 de CPU, revisão legal e estado Alchemy partilhado (não local). O estado atual do Alchemy continua local.
 
 ## Integrações opcionais com Pi
 
@@ -190,14 +209,4 @@ pi
 
 ## Origem e arquitetura
 
-A aplicação React/TanStack Start está em `web/`: as rotas e páginas ficam em `web/src/routes/` e `web/src/pages/`; os handlers, módulos de domínio, Better Auth, PostgreSQL via Drizzle e migrações SQL ficam em `web/src/server/` e `web/migrations/`. Nitro compila o servidor Node integrado. Oxlint e Oxfmt são executados a partir da raiz. Consulte [Arquitetura](ARCHITECTURE.md) para comportamento atual e limites.
-
-A base foi gerada com `create-better-agent-stack@2.0.0`, através da seleção de funcionalidades em vez de um preset:
-
-```sh
-bunx create-better-agent-stack@2.0.0 --name cairn-web-features \
-  --features oxlint,oxfmt,vite-react,react-compiler-oxc \
-  --package-manager bun --no-interactive
-```
-
-Este comando serve de referência para uma pasta temporária vazia. Não o use para configurar este repositório. O frontend React inicial foi movido para `web/` e posteriormente integrado com TanStack Start. As dependências e os comandos de formatação e análise estática foram mantidos na raiz. `.agent-stack/manifest.json` regista as funcionalidades selecionadas. Não foram selecionados um preset, ESLint, Ultracite, Anti-slop, um framework de testes ou um workflow de CI. O compilador Oxc está ativado com `react({ compiler: true })` em `web/vite.config.ts`. É experimental.
+O workspace foi gerado com Better T Stack e depois adaptado para Cairn. `apps/web` contém a aplicação TanStack Start e o código de interface; `packages/infra` define a stack Alchemy/Cloudflare; `packages/db` contém Drizzle, o cliente Neon HTTP e migrações; `packages/auth` configura Better Auth com Google. Não existe um package `packages/ui` separado, backend Express ou runtime Node de produção. Consulte [Arquitetura](ARCHITECTURE.md) e [Estrutura do projeto](docs/reference/project-structure.md) para os limites atuais.
