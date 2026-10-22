@@ -9,7 +9,6 @@ type ConfigEnvironment = Partial<
     | "GOOGLE_CLIENT_SECRET"
     | "APP_ENV"
     | "PORT"
-    | "RENDER_GIT_COMMIT"
     | "GIT_SHA"
   >
 >;
@@ -46,7 +45,7 @@ export function readConfig(env: ConfigEnvironment = process.env) {
     googleClientId: required("GOOGLE_CLIENT_ID"),
     googleClientSecret: required("GOOGLE_CLIENT_SECRET"),
     bootstrapEmail: required("BOOTSTRAP_ADMIN_EMAIL"),
-    revision: env.RENDER_GIT_COMMIT ?? env.GIT_SHA ?? "local",
+    revision: env.GIT_SHA ?? "local",
     port,
   };
 }

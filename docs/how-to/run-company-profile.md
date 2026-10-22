@@ -1,6 +1,6 @@
 # Run the company profile locally
 
-This guide runs the full-stack app through the local Alchemy development stack and Cloudflare Workers runtime. It does not deploy the app to Cloudflare or Render. Local development needs a Neon-compatible HTTP database URL and private authentication values. Do not reuse testing/production credentials or data.
+This guide runs the full-stack app through the local Alchemy development stack and Cloudflare Workers runtime. It does not deploy the app to Cloudflare. Local development needs a Neon-compatible HTTP database URL and private authentication values. Do not reuse testing/production credentials or data.
 
 ## Configure local values
 
@@ -127,4 +127,4 @@ The `/privacy` and `/terms` pages match the data stored by the code, but do not 
 
 The package scripts are `deploy:testing`, `deploy:production`, `destroy:testing`, and `destroy:production`; each fixes its stage, and there are no implicit `deploy` or `destroy` aliases. These script names are documented for identification, not as ready-to-run commands. They can change remote resources when run with valid Cloudflare or Neon authentication, including persistent Alchemy OAuth/token credentials; unsetting `CLOUDFLARE_API_KEY` and `CLOUDFLARE_ACCOUNT_ID` alone does not prevent that. Any deploy or destroy requires separate explicit approval for that operation and stage, plus verified isolated credentials and other inputs. For reference, the scripts are run with working directory `packages/infra`.
 
-The local development stack and controlled-identity tests do not exercise these external services or Google's OAuth flow; the live checks above provide that evidence for the recorded revision. Still unverified: a Neon update through Alchemy using a project-scoped key, p99 CPU time, legal review, and shared (non-local) Alchemy state. The current Alchemy state remains local and is not shared between machines. The retained Render files and workflows target the previous runtime and are not a deployment path for this Worker.
+The local development stack and controlled-identity tests do not exercise these external services or Google's OAuth flow; the live checks above provide that evidence for the recorded revision. Still unverified: a Neon update through Alchemy using a project-scoped key, p99 CPU time, legal review, and shared (non-local) Alchemy state. The current Alchemy state remains local and is not shared between machines.

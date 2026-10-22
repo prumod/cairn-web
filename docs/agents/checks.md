@@ -28,7 +28,7 @@ For test boundaries and coverage limits, see [Testing](../../TESTING.md). Packag
 
 Do not start or stop a separate `pg_ctl` database for these suites. The test wrapper owns the Compose services and waits for the test process and asynchronous teardown; the browser server keeps idempotent signal handlers while cleanup finishes. CI invokes the same `scripts/check.sh full` entrypoint and relies on the wrapper's Compose pair rather than a separate PostgreSQL service. The local and CI flows do not provision Cloudflare, create remote Alchemy state, or validate Google OAuth/deployment.
 
-For the current test and audit status, see [Testing](../../TESTING.md). Historical Render files and workflows do not validate the current Workers runtime.
+For the current test and audit status, see [Testing](../../TESTING.md).
 
 ## Shared enforcement
 

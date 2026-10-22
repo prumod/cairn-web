@@ -36,22 +36,6 @@ if (suite === "fast") {
   } else {
     run("playwright", ["test"]);
   }
-} else if (suite === "deployed") {
-  const required = [
-    "CAIRN_CANDIDATE_SHA",
-    "CAIRN_E2E_GOOGLE_CLIENT_ID",
-    "CAIRN_E2E_GOOGLE_CLIENT_SECRET",
-    "CAIRN_E2E_ADMIN_EMAIL",
-    "CAIRN_E2E_MEMBER_EMAIL",
-    "CAIRN_E2E_ADMIN_REFRESH_TOKEN",
-    "CAIRN_E2E_MEMBER_REFRESH_TOKEN",
-  ];
-  const missing = required.filter((name) => !process.env[name]?.trim());
-  if (missing.length > 0) throw new Error(`Missing deployed E2E inputs: ${missing.join(", ")}`);
-  if (!/^[a-f0-9]{40}$/i.test(process.env.CAIRN_CANDIDATE_SHA))
-    throw new Error("CAIRN_CANDIDATE_SHA must be a full commit SHA.");
-  run("bddgen", ["--config", "playwright.deployed.config.ts"]);
-  run("playwright", ["test", "--config", "playwright.deployed.config.ts"]);
 } else {
-  throw new Error("Expected fast, browser, or deployed suite.");
+  throw new Error("Expected fast or browser suite.");
 }
