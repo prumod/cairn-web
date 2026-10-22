@@ -160,6 +160,8 @@ Um deployment cloud precisa destes inputs humanos: `NEON_API_KEY`, `GOOGLE_CLIEN
 - Criar o cliente OAuth Web do Google por ambiente na Google Cloud Console, com o URI de redirecionamento `https://<domínio>/api/auth/callback/google`. Não se conhece nenhuma API para criar um cliente Web padrão; não confirmado.
 - Alterar os nameservers e o registo DS do DNSSEC no registrar (Spaceship).
 
+Para deployments rotineiros de um estágio existente, use a chave Neon limitada ao projeto desse estágio; `NEON_API_KEY` exportada substitui a chave testing em `.env.local`. Criar um estágio ou executar `destroy:<stage>` exige uma API key organizacional. Consulte o [guia do perfil da empresa](docs/how-to/run-company-profile.md) para o âmbito e a criação das chaves. `ALCHEMY_PASSWORD` só aparece vazio em `packages/infra/.env.schema`; não está configurado.
+
 Os comandos explicitamente nomeados são `deploy:testing`, `deploy:production`, `destroy:testing` e `destroy:production` no package `packages/infra`; os comandos implícitos `deploy`/`destroy` não existem. Em execução não interativa, os comandos de deployment precisam das opções `--no-input --yes`. A partir de `packages/infra`, o deployment production usa `env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<40-hex>' bun run deploy:production --no-input --yes`, com as variáveis exportadas `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` do cliente production. O [guia de deployment](docs/how-to/run-company-profile.md#plan-and-deploy-production) inclui o comando e os passos de recuperação. `destroy:testing` e `destroy:production` eliminam o projeto Neon do estágio correspondente e os respetivos dados. Não execute deployment ou destroy sem aprovação separada, inputs isolados e validação operacional. `render.yaml`, `deploy/render.production.template.yaml` e os workflows/gates de Render continuam artefactos do runtime anterior e não validam nem fazem deployment do Worker atual.
 
 O estado do Alchemy é local (`Alchemy.localState()`, pasta `.alchemy`). O estado remoto não está ativado: só a máquina que tem `.alchemy` consegue atualizar ou destruir a stack, e perder esse estado impede a recuperação pelo Alchemy. Este estado ainda não é partilhado entre máquinas.
@@ -168,7 +170,9 @@ Verificação externa registada em 2026-10-22: `https://cairn-testing.prumod.eu`
 
 Na verificação de faturação, Cloudflare Billable usage e Invoices mostraram “No invoices”; Cloudflare Workers e `prumod.eu` estavam no plano Free e a organização Neon também estava no plano Free ($0/mês). Não foi usado plano pago nem método de pagamento. Ambos os domínios resolviam para IPs Cloudflare; a zona usava `albert.ns.cloudflare.com` e `bonnie.ns.cloudflare.com`, tinha DS publicado no domínio pai e o resolver devolveu a flag AD, confirmando validação DNSSEC.
 
-Pontos por verificar: margem disponível de CPU time e comportamento do cold start Neon sob carga; revisão do texto das páginas legais. O `NEON_API_KEY` usado é da organização, não uma chave com âmbito limitado. O estado do Alchemy continua local e não partilhado.
+Medições de 2026-10-22: o dashboard Cloudflare mostrou 708 invocações production em 24 h, 0 erros e CPU time de 4 ms; testing registou 862 pedidos e mediana de 4,9 ms. O limite CPU do Workers Free é 10 ms; o p99 não foi consultado. Após cerca de 7 minutos sem tráfego, `/healthz` (que executa `SELECT 1`) demorou 0,90 s, 0,67 s e 0,24 s; respostas warm demoraram 0,17–0,34 s.
+
+As páginas `/privacy` e `/terms` correspondem aos dados guardados pelo código, mas não identificam o responsável pelo tratamento nem o respetivo contacto, não indicam um prazo de retenção nem os direitos dos titulares. Continuam por verificar: atualização Neon via Alchemy com chave limitada ao projeto, p99 de CPU, revisão legal e estado Alchemy partilhado (não local). O estado atual do Alchemy continua local.
 
 ## Integrações opcionais com Pi
 
