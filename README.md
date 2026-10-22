@@ -1,6 +1,6 @@
 # Cairn Web
 
-Este repositório contém um monorepo Bun para a aplicação Cairn: React e TanStack Start, executados como Cloudflare Worker através de Alchemy, Better Auth/Google e Drizzle com Neon HTTP. Não existe um backend Express separado. A configuração Render e as provas de deployment/OAuth anteriores pertencem ao runtime antigo; não validam esta aplicação Workers. Em 2026-10-22, os ambientes testing e production estavam publicados e o início e fim de sessão com Google, incluindo o fluxo do perfil da empresa e as permissões de acesso, foram verificados nos dois ambientes. Consulte [Estado de deployment](#estado-de-deployment) e o [guia de execução do perfil da empresa](docs/how-to/run-company-profile.md) para os resultados e limites atuais.
+Este repositório contém um monorepo Bun para a aplicação Cairn: React e TanStack Start, executados como Cloudflare Worker através de Alchemy, Better Auth/Google e Drizzle com Neon HTTP. Não existe um backend Express separado. Em 2026-10-22, os ambientes testing e production estavam publicados e o início e fim de sessão com Google, incluindo o fluxo do perfil da empresa e as permissões de acesso, foram verificados nos dois ambientes. Consulte [Estado de deployment](#estado-de-deployment) e o [guia de execução do perfil da empresa](docs/how-to/run-company-profile.md) para os resultados e limites atuais.
 
 Leia este ficheiro antes de começar. Se as instruções de configuração mudarem, atualize este README no mesmo pull request.
 
@@ -123,25 +123,24 @@ Se não conseguir aceder ao repositório ou se alguma instrução não funcionar
 
 Os comandos principais estão definidos no `package.json` da raiz. `bun run setup` instala dependências bloqueadas, Gitleaks e Chromium. `bun run typecheck` regenera os tipos de ambiente antes de verificar os pacotes do workspace. Consulte [Estrutura do projeto](docs/reference/project-structure.md) para os limites entre módulos.
 
-| Comando                                               | Utilização                                                                                                |
-| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `bun run setup`                                       | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                              |
-| `bun run update`                                      | Instala as dependências bloqueadas depois de atualizar o repositório.                                     |
-| `bun run dev`                                         | Inicia a stack Alchemy local para o Worker Cloudflare de desenvolvimento.                                 |
-| `bun run build`                                       | Compila a aplicação TanStack Start para `apps/web/dist`.                                                  |
-| `bun run db:migrate`                                  | Aplica as migrações Drizzle à base indicada por `DATABASE_URL`.                                           |
-| `bun run db:generate`                                 | Gera migrações a partir do schema Drizzle.                                                                |
-| `bun run env:generate`                                | Gera os tipos TypeScript a partir dos schemas de ambiente versionados.                                    |
-| `bun run format` / `bun run format:check`             | Formata ou verifica os ficheiros com Oxfmt.                                                               |
-| `bun run lint`                                        | Analisa o código com Oxlint.                                                                              |
-| `bun run lint:boundaries` / `bun run test:boundaries` | Verifica e prova os limites de dependências.                                                              |
-| `bun run check:blueprints`                            | Verifica localmente a política dos ficheiros Render antigos; não contacta o provider nem valida o Worker. |
-| `bun run typecheck`                                   | Verifica os tipos da aplicação, do wireframe de referência, dos pacotes do workspace e dos testes.        |
-| `bun run audit`                                       | Audita as dependências bloqueadas, incluindo ferramentas de desenvolvimento.                              |
-| `bun run test:fast`                                   | Compila e executa Vitest com PostgreSQL e proxy Neon HTTP descartáveis via Docker Compose.                |
-| `bun run test:browser`                                | Compila e executa os cenários Chromium contra o Worker compilado e uma identidade de teste isolada.       |
-| `bun run test`                                        | Executa os testes rápidos e de browser.                                                                   |
-| `bun run check`                                       | Executa as verificações completas, incluindo tipos, auditoria e testes.                                   |
+| Comando                                               | Utilização                                                                                          |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `bun run setup`                                       | Instala as dependências bloqueadas, o Gitleaks e o Chromium.                                        |
+| `bun run update`                                      | Instala as dependências bloqueadas depois de atualizar o repositório.                               |
+| `bun run dev`                                         | Inicia a stack Alchemy local para o Worker Cloudflare de desenvolvimento.                           |
+| `bun run build`                                       | Compila a aplicação TanStack Start para `apps/web/dist`.                                            |
+| `bun run db:migrate`                                  | Aplica as migrações Drizzle à base indicada por `DATABASE_URL`.                                     |
+| `bun run db:generate`                                 | Gera migrações a partir do schema Drizzle.                                                          |
+| `bun run env:generate`                                | Gera os tipos TypeScript a partir dos schemas de ambiente versionados.                              |
+| `bun run format` / `bun run format:check`             | Formata ou verifica os ficheiros com Oxfmt.                                                         |
+| `bun run lint`                                        | Analisa o código com Oxlint.                                                                        |
+| `bun run lint:boundaries` / `bun run test:boundaries` | Verifica e prova os limites de dependências.                                                        |
+| `bun run typecheck`                                   | Verifica os tipos da aplicação, do wireframe de referência, dos pacotes do workspace e dos testes.  |
+| `bun run audit`                                       | Audita as dependências bloqueadas, incluindo ferramentas de desenvolvimento.                        |
+| `bun run test:fast`                                   | Compila e executa Vitest com PostgreSQL e proxy Neon HTTP descartáveis via Docker Compose.          |
+| `bun run test:browser`                                | Compila e executa os cenários Chromium contra o Worker compilado e uma identidade de teste isolada. |
+| `bun run test`                                        | Executa os testes rápidos e de browser.                                                             |
+| `bun run check`                                       | Executa as verificações completas, incluindo tipos, auditoria e testes.                             |
 
 Os testes precisam de Docker Compose e Chromium. O wrapper cria um projeto Compose isolado com imagens fixadas de PostgreSQL 18.6 e do proxy Neon HTTP; não é necessário configurar manualmente um servidor PostgreSQL. O workflow CI usa o mesmo wrapper, sem um serviço PostgreSQL separado. Para os detalhes e limites da verificação atual, consulte [Testes](TESTING.md). Para as verificações Git locais, consulte [Verificações dos agentes](docs/agents/checks.md).
 
@@ -162,7 +161,7 @@ Um deployment cloud precisa destes inputs humanos: `NEON_API_KEY`, `GOOGLE_CLIEN
 
 Para deployments rotineiros de um estágio existente, use a chave Neon limitada ao projeto desse estágio; `NEON_API_KEY` exportada substitui a chave testing em `.env.local`. Criar um estágio ou executar `destroy:<stage>` exige uma API key organizacional. Consulte o [guia do perfil da empresa](docs/how-to/run-company-profile.md) para o âmbito e a criação das chaves. `ALCHEMY_PASSWORD` só aparece vazio em `packages/infra/.env.schema`; não está configurado.
 
-Os comandos explicitamente nomeados são `deploy:testing`, `deploy:production`, `destroy:testing` e `destroy:production` no package `packages/infra`; os comandos implícitos `deploy`/`destroy` não existem. Em execução não interativa, os comandos de deployment precisam das opções `--no-input --yes`. A partir de `packages/infra`, o deployment production usa `env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<40-hex>' bun run deploy:production --no-input --yes`, com as variáveis exportadas `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` do cliente production. O [guia de deployment](docs/how-to/run-company-profile.md#plan-and-deploy-production) inclui o comando e os passos de recuperação. `destroy:testing` e `destroy:production` eliminam o projeto Neon do estágio correspondente e os respetivos dados. Não execute deployment ou destroy sem aprovação separada, inputs isolados e validação operacional. `render.yaml`, `deploy/render.production.template.yaml` e os workflows/gates de Render continuam artefactos do runtime anterior e não validam nem fazem deployment do Worker atual.
+Os comandos explicitamente nomeados são `deploy:testing`, `deploy:production`, `destroy:testing` e `destroy:production` no package `packages/infra`; os comandos implícitos `deploy`/`destroy` não existem. Em execução não interativa, os comandos de deployment precisam das opções `--no-input --yes`. A partir de `packages/infra`, o deployment production usa `env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<40-hex>' bun run deploy:production --no-input --yes`, com as variáveis exportadas `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` do cliente production. O [guia de deployment](docs/how-to/run-company-profile.md#plan-and-deploy-production) inclui o comando e os passos de recuperação. `destroy:testing` e `destroy:production` eliminam o projeto Neon do estágio correspondente e os respetivos dados. Não execute deployment ou destroy sem aprovação separada, inputs isolados e validação operacional.
 
 O estado do Alchemy é local (`Alchemy.localState()`, pasta `.alchemy`). O estado remoto não está ativado: só a máquina que tem `.alchemy` consegue atualizar ou destruir a stack, e perder esse estado impede a recuperação pelo Alchemy. Este estado ainda não é partilhado entre máquinas.
 
