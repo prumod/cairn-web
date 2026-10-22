@@ -54,7 +54,11 @@ For test boundaries and the current verification status, see [Testing](../../TES
 
 The `testing` and `production` stages are provisioned by Alchemy, not by hand. Each stage gets its own `Neon.Project` named `database` in `aws-eu-central-1` (Frankfurt). `Neon.Project` applies `packages/db/migrations/` on every deploy; on the first deploy, Alchemy takes over drizzle-kit's migration history. The Worker receives the project's pooled connection URI as a secret `DATABASE_URL`, and a generated `BETTER_AUTH_SECRET` that Alchemy keeps in its state. Do not create a Neon database or copy a `DATABASE_URL` for these stages. `bun run db:migrate` is only for the local `dev` database.
 
+Neon Free caps history retention at `21600` seconds (6 hours). `packages/infra/alchemy.run.ts` sets `historyRetentionSeconds: 21600` because Alchemy's default of 86400 seconds (24 hours) is rejected by Neon Free and the project create request fails. A failed request can leave an orphan Neon project outside Alchemy's local state; inspect the Neon console or API and delete that project manually. Free-plan eligibility for the deployed environment has not been verified.
+
 The infra `.env.schema` marks imported `DATABASE_URL` and `BETTER_AUTH_SECRET` as optional, so loading infra configuration for cloud stages does not need either value. The `dev` stack still reads both through `Config.Redacted` and fails if either is missing.
+
+Alchemy reads the Worker `domain` and `workersDev` props before resolving Effect-valued props. `alchemy.run.ts` therefore resolves `deploymentConfig` inside the stack Effect and passes plain values. Passing Effect values for these props makes deployment fail with `Cloudflare zone not found for undefined`.
 
 A cloud deploy needs these inputs from a human:
 
@@ -73,29 +77,31 @@ These steps cannot be infrastructure code and stay manual:
 
 ### Plan and deploy testing
 
-From `packages/infra`, review the testing plan for the exact approved 40-character lowercase commit SHA. Replace the placeholder below with that SHA; do not add `--yes`:
+From `packages/infra`, review the testing plan for the exact approved 40-character lowercase commit SHA. Replace the placeholder below with that SHA:
 
 ```sh
 env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<approved-full-SHA>' bun node_modules/alchemy/bin/cli.js plan --stage testing --detailed
 ```
 
-The reviewed plan proposed three creates (`better-auth-secret`, `database`, and `web`) plus nine bindings. A plan does not prove account eligibility or a successful deployment. Deploy only after separate approval for that exact SHA:
+The plan describes the changes Alchemy intends to make; it does not verify Neon Free eligibility, billing, or Google sign-in. Deploy only after separate approval for that exact SHA. For a non-interactive run, pass both `--no-input` and `--yes`:
 
 ```sh
-env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<approved-full-SHA>' bun run deploy:testing
+env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<40-hex>' bun run deploy:testing --no-input --yes
 ```
+
+Replace `<40-hex>` with the approved revision's full 40-character lowercase hexadecimal SHA.
 
 ### State and recovery
 
 Alchemy state is local (`Alchemy.localState()`, `packages/infra/.alchemy/state`); remote state is not enabled. It contains generated credentials: Alchemy's state encoding serializes redacted secrets as plaintext JSON. `Redacted` masks logs; it does not encrypt state. Use `umask 077`, keep `.alchemy` and backup directories at mode `0700` and files at `0600`, and do not commit or store state or backups remotely. Preserve `.alchemy` and ignored credentials such as `.env.local` across deployment attempts; losing state loses Alchemy's record of resources and the generated auth secret.
 
-After a partial failure, inspect a plan for the same stage, then reapply only the approved revision. Do not use `--adopt` or `--force`, or remove state. A code rollback is safe only to a compatible prior revision after assessing its database migrations; the first deploy has no prior deployed revision. Do not use `destroy:testing` as rollback: in installed Alchemy `2.0.0-beta.83`, the `Neon.Project` delete handler deletes the Neon project, including its database.
+After a partial failure, inspect the plan for the same stage and `GIT_SHA`. A failed Neon project create can leave an orphan project outside Alchemy state; inspect the Neon console or API and delete it manually before retrying. After addressing the failure, rerun the deploy command for the same revision. Do not use `--adopt` or `--force`, or remove state. A code rollback is safe only to a compatible prior revision after assessing its database migrations; the first deploy has no prior deployed revision. Do not use `destroy:testing` as rollback: in installed Alchemy `2.0.0-beta.83`, the `Neon.Project` delete handler deletes the Neon project, including its database.
 
 ## Verification and deployment limits
 
 Local development is supported only with Alchemy stage `dev`; it uses the local runtime, has no custom domain, leaves `workersDev` unset, sets `APP_ENV=development`, reads `DATABASE_URL` and `BETTER_AUTH_SECRET` from the environment, and uses revision `local`. The configured deployed stages are `testing` (`cairn-testing.prumod.eu`) and `production` (`cairn.prumod.eu`); both set `APP_ENV=production`, require a full 40-character lowercase hexadecimal `GIT_SHA`, and set `workersDev: false`. Their configuration uses only the corresponding custom domain and disables stable `workers.dev` URLs and per-version preview URLs.
 
-Verified: the typecheck and unit tests pass. A reviewed testing plan proposed three creates and nine bindings, but no cloud deployment or recovery has been verified. The plan does not establish account eligibility or deployment success. Neon provisioning, migration takeover, DNS, certificates, Google OAuth, and live behavior remain untested.
+Observed on testing: `GET https://cairn-testing.prumod.eu/healthz` returned `{"status":"ready","revision":"<deployed 40-hex SHA>"}`. The response reported the deployed full revision. This does not verify real Google sign-in, production, billing, or Neon Free eligibility.
 
 The package scripts are `deploy:testing`, `deploy:production`, `destroy:testing`, and `destroy:production`; each fixes its stage, and there are no implicit `deploy` or `destroy` aliases. These script names are documented for identification, not as ready-to-run commands. They can change remote resources when run with valid Cloudflare or Neon authentication, including persistent Alchemy OAuth/token credentials; unsetting `CLOUDFLARE_API_KEY` and `CLOUDFLARE_ACCOUNT_ID` alone does not prevent that. Any deploy or destroy requires separate explicit approval for that operation and stage, plus verified isolated credentials and other inputs. For reference, the scripts are run with working directory `packages/infra`.
 

@@ -1,6 +1,6 @@
 # Cairn Web
 
-Este repositório contém um monorepo Bun para a aplicação Cairn: React e TanStack Start, executados como Cloudflare Worker através de Alchemy, Better Auth/Google e Drizzle com Neon HTTP. Não existe um backend Express separado. A configuração Render e as provas de deployment/OAuth anteriores pertencem ao runtime antigo; não validam esta aplicação Workers. Não foi verificado nenhum deployment externo, fluxo OAuth Google, estado remoto ou ambiente de produção.
+Este repositório contém um monorepo Bun para a aplicação Cairn: React e TanStack Start, executados como Cloudflare Worker através de Alchemy, Better Auth/Google e Drizzle com Neon HTTP. Não existe um backend Express separado. A configuração Render e as provas de deployment/OAuth anteriores pertencem ao runtime antigo; não validam esta aplicação Workers. O endpoint live de health do ambiente testing foi verificado; o fluxo OAuth Google e o ambiente de produção não.
 
 Leia este ficheiro antes de começar. Se as instruções de configuração mudarem, atualize este README no mesmo pull request.
 
@@ -151,16 +151,20 @@ A configuração atual define a stack Alchemy para Cloudflare Workers em `packag
 
 Os estágios cloud são totalmente provisionados pelo Alchemy. Cada estágio cria um `Neon.Project` chamado `database` na região `aws-eu-central-1` (Frankfurt) e aplica as migrações de `packages/db/migrations` em cada deploy; no primeiro deploy, o Alchemy assume o histórico do drizzle-kit. O Worker recebe o URI de ligação com pooling do projeto como segredo `DATABASE_URL`, e um `BETTER_AUTH_SECRET` gerado e guardado no estado do Alchemy. Ninguém cria a base de dados nem copia o `DATABASE_URL` à mão.
 
+O Neon Free limita a retenção do histórico a `21600` segundos (6 horas). A criação de projeto usa `historyRetentionSeconds: 21600`, porque o valor predefinido de 86400 segundos (24 horas) do Alchemy é rejeitado pelo Neon Free e faz falhar o pedido de criação. Uma falha pode deixar um projeto Neon órfão, fora do estado local do Alchemy; confirme na consola ou API do Neon e elimine-o manualmente. A elegibilidade do ambiente para o plano Free não está verificada.
+
+O Alchemy lê as propriedades `domain` e `workersDev` do Worker antes de resolver propriedades que devolvem um `Effect`. Por isso, `alchemy.run.ts` resolve `deploymentConfig` dentro do `Effect` da stack e passa valores simples. Passar diretamente valores `Effect` nessas propriedades faz o deployment falhar com `Cloudflare zone not found for undefined`.
+
 Um deployment cloud precisa destes inputs humanos: `NEON_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `BOOTSTRAP_ADMIN_EMAIL`, `GIT_SHA` e autorização Cloudflare para o Alchemy. Guarde os segredos em `packages/infra/.env.local` (ignorado pelo Git; o varlock carrega-o sobre `.env.schema`) ou no ambiente do processo. Nunca os submeta. Os passos que não podem ser IaC continuam manuais:
 
 - Criar o cliente OAuth Web do Google por ambiente na Google Cloud Console, com o URI de redirecionamento `https://<domínio>/api/auth/callback/google`. Não se conhece nenhuma API para criar um cliente Web padrão; não confirmado.
 - Alterar os nameservers e o registo DS do DNSSEC no registrar (Spaceship).
 
-Os comandos explicitamente nomeados são `deploy:testing`, `deploy:production`, `destroy:testing` e `destroy:production` no package `packages/infra`; os comandos implícitos `deploy`/`destroy` não existem. Não execute deployment ou destroy sem aprovação separada, inputs isolados e validação operacional. `render.yaml`, `deploy/render.production.template.yaml` e os workflows/gates de Render continuam artefactos do runtime anterior e não validam nem fazem deployment do Worker atual.
+Os comandos explicitamente nomeados são `deploy:testing`, `deploy:production`, `destroy:testing` e `destroy:production` no package `packages/infra`; os comandos implícitos `deploy`/`destroy` não existem. Em execução não interativa, `deploy:testing` precisa das opções `--no-input --yes`; o [guia de deployment](docs/how-to/run-company-profile.md#plan-and-deploy-testing) inclui o comando e os passos de recuperação. Não execute deployment ou destroy sem aprovação separada, inputs isolados e validação operacional. `render.yaml`, `deploy/render.production.template.yaml` e os workflows/gates de Render continuam artefactos do runtime anterior e não validam nem fazem deployment do Worker atual.
 
 O estado do Alchemy é local (`Alchemy.localState()`, pasta `.alchemy`). O estado remoto não está ativado: só a máquina que tem `.alchemy` consegue atualizar ou destruir a stack, e perder esse estado impede a recuperação pelo Alchemy.
 
-Verificado: a verificação de tipos e os testes unitários passam. O plano Alchemy de testing foi executado: propõe criar a base, o segredo de autenticação e o Worker, com nove bindings. Não foi aplicado; o plano não prova elegibilidade da conta nem sucesso de deployment. O provisionamento Neon, a adoção das migrações, o DNS, o certificado, o OAuth Google e o deployment live não têm prova.
+Verificado: `GET https://cairn-testing.prumod.eu/healthz` respondeu `{"status":"ready","revision":"<deployed 40-hex SHA>"}`. O endpoint comunicou o SHA completo do deployment testing. Não estão verificados o início de sessão real com Google, production, billing nem a elegibilidade do plano Neon Free.
 
 ## Integrações opcionais com Pi
 
