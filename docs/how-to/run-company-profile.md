@@ -24,7 +24,7 @@ NODE_ENV=development
 
 The local Alchemy stack supplies the app origin and Better Auth URL from its Worker URL. Do not commit `.env` files or generated `env.ts` files. The committed `.env.schema` files are safe templates, not credential stores.
 
-If you want to try Google sign-in, configure a local-only Google OAuth web client for `http://localhost:3001` and the callback `http://localhost:3001/api/auth/callback/google`. Keep the client secret private. This configuration is an instruction for local setup, not evidence that the Google flow has been verified in this migration.
+If you want to try Google sign-in locally, configure a local-only Google OAuth web client for `http://localhost:3001` and the callback `http://localhost:3001/api/auth/callback/google`. Keep the client secret private. Live Google sign-in and sign-out have been verified on both cloud stages; this local-only client remains a separate configuration.
 
 ## Apply migrations and start the app
 
@@ -41,7 +41,7 @@ The first protected request from a verified Google identity matching `BOOTSTRAP_
 
 ## Run local tests
 
-Tests use a separate disposable environment. Docker Compose starts a temporary PostgreSQL 18.6 container and the pinned local Neon HTTP proxy; the test fixture builds the app, runs it in `workerd`, creates isolated test databases, and cleans up its containers. Browser tests use Chromium and controlled identities through an external test-only proxy. They do not use your local OAuth credentials or verify Google's OAuth flow.
+Tests use a separate disposable environment. Docker Compose starts a temporary PostgreSQL 18.6 container and the pinned local Neon HTTP proxy; the test fixture builds the app, runs it in `workerd`, creates isolated test databases, and cleans up its containers. Browser tests use Chromium and controlled identities through an external test-only proxy. They do not use your local OAuth credentials or exercise Google's OAuth flow; live Google OAuth was verified separately on both cloud stages as recorded below.
 
 ```sh
 bun run test:fast
@@ -54,7 +54,7 @@ For test boundaries and the current verification status, see [Testing](../../TES
 
 The `testing` and `production` stages are provisioned by Alchemy, not by hand. Each stage gets its own `Neon.Project` named `database` in `aws-eu-central-1` (Frankfurt). `Neon.Project` applies `packages/db/migrations/` on every deploy; on the first deploy, Alchemy takes over drizzle-kit's migration history. The Worker receives the project's pooled connection URI as a secret `DATABASE_URL`, and a generated `BETTER_AUTH_SECRET` that Alchemy keeps in its state. Do not create a Neon database or copy a `DATABASE_URL` for these stages. `bun run db:migrate` is only for the local `dev` database.
 
-Neon Free caps history retention at `21600` seconds (6 hours). `packages/infra/alchemy.run.ts` sets `historyRetentionSeconds: 21600` because Alchemy's default of 86400 seconds (24 hours) is rejected by Neon Free and the project create request fails. A failed request can leave an orphan Neon project outside Alchemy's local state; inspect the Neon console or API and delete that project manually. Free-plan eligibility for the deployed environment has not been verified.
+Neon Free caps history retention at `21600` seconds (6 hours). `packages/infra/alchemy.run.ts` sets `historyRetentionSeconds: 21600` because Alchemy's default of 86400 seconds (24 hours) is rejected by Neon Free and the project create request fails. A failed request can leave an orphan Neon project outside Alchemy's local state; inspect the Neon console or API and delete that project manually. On 2026-10-22, both deployed environments had their own Neon project in `aws-eu-central-1`, on the Neon organization Free plan ($0/month), with `21600`-second history retention. Free-plan eligibility was verified for both projects.
 
 The infra `.env.schema` marks imported `DATABASE_URL` and `BETTER_AUTH_SECRET` as optional, so loading infra configuration for cloud stages does not need either value. The `dev` stack still reads both through `Config.Redacted` and fails if either is missing.
 
@@ -68,11 +68,11 @@ A cloud deploy needs these inputs from a human:
 - `GIT_SHA`, the full 40-character lowercase hexadecimal commit
 - Cloudflare authorization for Alchemy
 
-Put secrets in the ignored `packages/infra/.env.local` (Varlock loads it over `.env.schema`) or in the process environment. Never commit them.
+Put secrets in the ignored `packages/infra/.env.local` (Varlock loads it over `.env.schema`) or in the process environment. Never commit them. Each deployed stage uses its own generated secrets and its own Google OAuth client in Google Cloud project `cairn`. Both clients use an External/Testing consent screen; the test users are `tiagojacintodev@gmail.com` and `tiagojacinto7@gmail.com`. For production deploys, export the production client's `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; these override the testing values in `packages/infra/.env.local`.
 
 These steps cannot be infrastructure code and stay manual:
 
-- Create the Google OAuth Web client for each environment in Google Cloud Console, with redirect URI `https://<domain>/api/auth/callback/google`. No known API creates a standard Web client; this is unconfirmed.
+- Create a separate Google OAuth Web client for each environment in Google Cloud Console, with redirect URI `https://<domain>/api/auth/callback/google`.
 - Change the nameservers and the DNSSEC DS record at the registrar, Spaceship.
 
 ### Plan and deploy testing
@@ -83,13 +83,23 @@ From `packages/infra`, review the testing plan for the exact approved 40-charact
 env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<approved-full-SHA>' bun node_modules/alchemy/bin/cli.js plan --stage testing --detailed
 ```
 
-The plan describes the changes Alchemy intends to make; it does not verify Neon Free eligibility, billing, or Google sign-in. Deploy only after separate approval for that exact SHA. For a non-interactive run, pass both `--no-input` and `--yes`:
+The plan describes the changes Alchemy intends to make; it does not itself verify the live application, billing, or sign-in. Deploy only after separate approval for that exact SHA. For a non-interactive run, pass both `--no-input` and `--yes`:
 
 ```sh
 env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<40-hex>' bun run deploy:testing --no-input --yes
 ```
 
 Replace `<40-hex>` with the approved revision's full 40-character lowercase hexadecimal SHA.
+
+### Plan and deploy production
+
+From `packages/infra`, export the production OAuth client's `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. These override the testing values in `.env.local`. Then deploy the approved revision:
+
+```sh
+env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<40-hex>' bun run deploy:production --no-input --yes
+```
+
+Replace `<40-hex>` with the approved revision's full 40-character lowercase hexadecimal SHA. `destroy:testing` and `destroy:production` delete the corresponding Neon project and its data.
 
 ### State and recovery
 
@@ -101,8 +111,12 @@ After a partial failure, inspect the plan for the same stage and `GIT_SHA`. A fa
 
 Local development is supported only with Alchemy stage `dev`; it uses the local runtime, has no custom domain, leaves `workersDev` unset, sets `APP_ENV=development`, reads `DATABASE_URL` and `BETTER_AUTH_SECRET` from the environment, and uses revision `local`. The configured deployed stages are `testing` (`cairn-testing.prumod.eu`) and `production` (`cairn.prumod.eu`); both set `APP_ENV=production`, require a full 40-character lowercase hexadecimal `GIT_SHA`, and set `workersDev: false`. Their configuration uses only the corresponding custom domain and disables stable `workers.dev` URLs and per-version preview URLs.
 
-Observed on testing: `GET https://cairn-testing.prumod.eu/healthz` returned `{"status":"ready","revision":"<deployed 40-hex SHA>"}`. The response reported the deployed full revision. This does not verify real Google sign-in, production, billing, or Neon Free eligibility.
+Verified on 2026-10-22: testing (`https://cairn-testing.prumod.eu`) and production (`https://cairn.prumod.eu`) were deployed at revision `100ae4e3b91fe1b054c84793616d822a83707b97`. Each `GET /healthz` response reported that revision. Both stages used separate Neon Free projects in `aws-eu-central-1` with `21600`-second history retention, separate generated secrets, and separate Google OAuth clients.
+
+Real Google sign-in and sign-out were verified in a browser on both stages. The bootstrap administrator saved the company profile, which persisted after reload. A second account saw the pending-access page, was approved by the administrator through `/access`, viewed the shared profile, and returned to the pending page after the administrator revoked access. A database read confirmed `approved=false` and zero sessions after sign-out.
+
+Cloudflare Billable usage and Invoices showed “No invoices”; Cloudflare Workers and the `prumod.eu` zone were on Free plans. The Neon organization was on the Free plan ($0/month). No paid plan or payment method was used. Both hostnames resolved to Cloudflare IPs. The zone nameservers were `albert.ns.cloudflare.com` and `bonnie.ns.cloudflare.com`; a DS record was published at the parent and a resolver returned the AD flag, confirming DNSSEC validation.
 
 The package scripts are `deploy:testing`, `deploy:production`, `destroy:testing`, and `destroy:production`; each fixes its stage, and there are no implicit `deploy` or `destroy` aliases. These script names are documented for identification, not as ready-to-run commands. They can change remote resources when run with valid Cloudflare or Neon authentication, including persistent Alchemy OAuth/token credentials; unsetting `CLOUDFLARE_API_KEY` and `CLOUDFLARE_ACCOUNT_ID` alone does not prevent that. Any deploy or destroy requires separate explicit approval for that operation and stage, plus verified isolated credentials and other inputs. For reference, the scripts are run with working directory `packages/infra`.
 
-Local development and controlled-identity tests do not verify Cloudflare or Neon provisioning, an external deployment, real Google sign-in, CI, or production behavior. The retained Render files and workflows target the previous runtime and are not a deployment path for this Worker. A cloud cutover requires separate authorization and validation of provider state, credentials, migrations, OAuth, security gates, and live behavior for the exact revision.
+The local development stack and controlled-identity tests do not exercise these external services or Google's OAuth flow; the live checks above provide that evidence for the recorded revision. Remaining checks are CPU-time headroom and Neon cold-start behavior under load, and review of the legal-page wording. The `NEON_API_KEY` used is organization-wide rather than scoped. Alchemy state remains local and is not shared between machines. The retained Render files and workflows target the previous runtime and are not a deployment path for this Worker.
