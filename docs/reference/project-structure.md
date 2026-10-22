@@ -42,6 +42,7 @@ The dependency rules also enforce these workspace boundaries:
 - `shared/src` cannot depend on `apps/web` or application packages (`auth`, `db`, or `infra`); the rule also reserves the absent `ui` package path. Keep this code runtime-independent.
 - Client shared modules cannot import page modules; server-shared modules cannot import domain modules.
 - Circular dependencies and unresolved imports fail. The runtime-resolved `cloudflare:workers` import is the explicit unresolved-import exception.
+- These rules also apply to `import type` dependencies. Only the circular-dependency rule ignores cycles made entirely of type-only imports, because TanStack Router's generated `apps/web/src/routeTree.gen.ts` imports the router type from `router.tsx`.
 
 `bun run lint:boundaries` scans the application source/tests, `packages/auth/src`, `packages/db/src`, Alchemy declarations/tests under `packages/infra` (including `packages/infra/src`), and `shared/src`. `.alchemy` generated cache/state is excluded. `bun run test:boundaries` proves allowed route-to-server and own-module test imports, and rejects representative private imports, workspace package imports from client code, cross-application shared dependencies, cycles, and unresolved imports. It also creates a temporary `packages/ui` client file to prove that the reserved UI boundary rejects server imports; the package is absent from the actual workspace. These checks enforce dependency shape, not runtime behavior or provider configuration.
 
