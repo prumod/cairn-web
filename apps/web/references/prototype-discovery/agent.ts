@@ -9,6 +9,7 @@ import {
   company,
   contestById,
   euro,
+  places as allPlaces,
   publicationDates,
   today,
 } from "./data";
@@ -16,6 +17,8 @@ import { type Filters, type View, defaultFilters, describeFilters, visibleContes
 
 export type ToolCall =
   | { tool: "filtrar"; args: Partial<Filters> & { limpar?: boolean } }
+  // An empty list means every locality.
+  | { tool: "filtrar_localidades"; args: { places: string[] } }
   | { tool: "pesquisar_anuncios"; args: { date: string } }
   | { tool: "mostrar_concursos"; args: { ids: string[] } }
   | { tool: "abrir_concurso"; args: { id: string } }
@@ -34,6 +37,7 @@ export type AgentReply = { text: string; steps: ToolStep[] };
 
 export const suggestedPrompts = [
   "Mostra obras até 30 km",
+  "Mostra obras em Leiria e Pombal",
   "Quais os 2 prazos mais urgentes?",
   "Só edifícios publicados ontem",
   "Compara a escola com o mercado",
@@ -137,6 +141,24 @@ export function runTool(view: View, call: ToolCall): ToolStep {
         line: `filtrar · ${label} → ${plural(ids.length, "concurso", "concursos")}`,
       };
     }
+    case "filtrar_localidades": {
+      const { places } = call.args;
+      const after = {
+        ...view,
+        filters: { ...view.filters, localities: places },
+        picked: [],
+        highlighted: [],
+        open: null,
+      };
+      const ids = visibleContests(after).map((c) => c.id);
+      const label = places.length === 0 ? "todas" : places.join(", ");
+      return {
+        call,
+        after,
+        ids,
+        line: `filtrar localidades · ${label} → ${plural(ids.length, "concurso", "concursos")}`,
+      };
+    }
     case "pesquisar_anuncios": {
       const filters = { ...view.filters, publishedOn: call.args.date };
       const after = { ...view, filters, highlighted: [], compare: null };
@@ -154,15 +176,20 @@ export function runTool(view: View, call: ToolCall): ToolStep {
         call,
         after,
         ids: call.args.ids,
-        line: `mostrar no mapa · ${plural(call.args.ids.length, "concurso", "concursos")}`,
+        line: `mostrar nas obras · ${plural(call.args.ids.length, "concurso", "concursos")}`,
       };
     }
     case "abrir_concurso": {
       const contest = contestById(call.args.id);
-      const localities = view.localities.includes(contest.place)
-        ? view.localities
-        : [...view.localities, contest.place];
-      const after = { ...view, open: contest.id, localities, compare: null };
+      const localities = view.filters.localities.includes(contest.place)
+        ? view.filters.localities
+        : [...view.filters.localities, contest.place];
+      const after = {
+        ...view,
+        filters: { ...view.filters, localities },
+        open: contest.id,
+        compare: null,
+      };
       return { call, after, ids: [contest.id], line: `abrir concurso · ${shortTitle(contest)}` };
     }
     case "comparar": {
@@ -190,6 +217,14 @@ export function interpret(prompt: string, view: View): AgentReply {
   }
   if (reset || Object.keys(args).length > 0)
     calls.push({ tool: "filtrar", args: { ...args, limpar: reset } });
+
+  // Localities are a filter of their own: named with a locality word, or cleared.
+  const localityWord = /localidade|\bem\b|\bso\b|\bapenas\b/.test(text);
+  const clearPlaces =
+    /(todas|todos) (as |os )?localidades|sem localidades?|limpa\w* (as )?localidades/.test(text);
+  const mentioned = allPlaces.filter((p) => text.includes(normalize(p)));
+  if (clearPlaces || (mentioned.length > 0 && localityWord))
+    calls.push({ tool: "filtrar_localidades", args: { places: clearPlaces ? [] : mentioned } });
 
   const date = monthDay(text);
   if (date !== null) calls.push({ tool: "pesquisar_anuncios", args: { date } });
@@ -244,13 +279,13 @@ export function interpret(prompt: string, view: View): AgentReply {
       view.selected[0] ??
       (working.highlighted.length === 1 ? working.highlighted[0] : undefined);
     if (id !== undefined) run({ tool: "abrir_concurso", args: { id } });
-    else notes.push("Diga qual concurso quer abrir, ou selecione um no mapa.");
+    else notes.push("Diga qual concurso quer abrir, ou selecione um na lista.");
   }
 
   if (stepsSoFar.length === 0) {
     return {
       steps: [],
-      text: `${notes.join(" ")} Posso filtrar por distância, tipo de obra, valor, entidade e data de publicação, mostrar concursos no mapa, abrir um concurso ou compará-los. Experimente um dos pedidos sugeridos.`.trim(),
+      text: `${notes.join(" ")} Posso filtrar por distância, localidade, tipo de obra, valor, entidade e data de publicação, mostrar concursos nas obras, abrir um concurso ou compará-los. Experimente um dos pedidos sugeridos.`.trim(),
     };
   }
   return { steps: stepsSoFar, text: replyText(stepsSoFar, notes) };

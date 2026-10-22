@@ -18,6 +18,7 @@ import {
   deadlineText,
   euro,
   formatDate,
+  places,
   publicationDates,
   today,
   workTypes,
@@ -33,6 +34,7 @@ import {
   defaultFilters,
   hasActiveFilters,
   isPriority,
+  placesLabel,
   selectionState,
   toggleGroup,
   visibleContests,
@@ -149,7 +151,7 @@ export function FilterBar({ view, setView }: { view: View; setView: SetView }) {
       />
       <p className="d-filter-count" role="status">
         {total} {total === 1 ? "obra" : "obras"}
-        {hasActiveFilters(view.filters) && (
+        {(hasActiveFilters(view.filters) || view.highlighted.length > 0) && (
           <>
             {" "}
             <button type="button" onClick={() => set({ ...defaultFilters })}>
@@ -159,6 +161,47 @@ export function FilterBar({ view, setView }: { view: View; setView: SetView }) {
         )}
       </p>
     </form>
+  );
+}
+
+// The Localidade filter as a plain list of checkboxes: Selecionar todos, then one checkbox per
+// locality. It always keeps at least one locality checked.
+export function LocalityChecks({
+  checked,
+  onChange,
+}: {
+  checked: string[];
+  onChange: (next: string[]) => void;
+}) {
+  const all = checked.length === places.length;
+  const box = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (box.current !== null) box.current.indeterminate = !all;
+  }, [all]);
+  return (
+    <fieldset className="d-locality-list">
+      <legend>Localidade</legend>
+      <label className="d-select-all">
+        <input ref={box} type="checkbox" checked={all} onChange={() => onChange(places)} />
+        Selecionar todos
+      </label>
+      {places.map((place) => {
+        const on = checked.includes(place);
+        return (
+          <label key={place}>
+            <input
+              type="checkbox"
+              checked={on}
+              disabled={on && checked.length === 1}
+              onChange={() =>
+                onChange(on ? checked.filter((p) => p !== place) : [...checked, place])
+              }
+            />
+            {place}
+          </label>
+        );
+      })}
+    </fieldset>
   );
 }
 
@@ -196,8 +239,13 @@ function SelectGroup({
           const apply = () =>
             setView((v) => ({
               ...withSelected(v, toggleGroup(v.selected, ids)),
-              localities:
-                listPlaces && state !== "all" ? withPlaces(v.localities, ids) : v.localities,
+              filters: {
+                ...v.filters,
+                localities:
+                  listPlaces && state !== "all"
+                    ? withPlaces(v.filters.localities, ids)
+                    : v.filters.localities,
+              },
             }));
           if (state === "all") {
             ask(ids.length, {
@@ -407,18 +455,22 @@ export function worksToList(
   view: View,
   locs: Locality[],
 ): { title: string; list: Contest[]; places: number } {
-  const picked = view.localities.flatMap((place) => locs.filter((l) => l.place === place));
-  if (picked.length > 0) {
+  // What the agent showed replaces the table until a filter or a reset clears it.
+  if (view.highlighted.length > 0) {
+    const list = view.highlighted.map((id) => contestById(id));
     return {
-      title: `Obras em ${picked.map((l) => l.place).join(", ")}`,
-      list: picked.flatMap((l) => l.shown),
-      places: picked.length,
+      title: "Mostrados pelo agente",
+      list,
+      places: new Set(list.map((c) => c.place)).size,
     };
   }
+  // Every locality filter is already applied to the shown obras.
+  const list = locs.flatMap((l) => l.shown);
+  const named = view.filters.localities;
   return {
-    places: 0,
-    title: "Obras mostradas no mapa",
-    list: view.highlighted.map((id) => contestById(id)),
+    places: new Set(list.map((c) => c.place)).size,
+    title: named.length > 0 ? `Obras em ${placesLabel(named)}` : "Obras",
+    list,
   };
 }
 
@@ -623,48 +675,40 @@ export function LocalityResults({
   const surface = useRef<HTMLElement>(null);
   const drag = useListDrag(view, setView, surface);
   const openMenu = useOpenMenu();
-  const empty = view.localities.length === 0 && list.length === 0;
   // With no obras there is nothing to select: the message is plain text.
   const selectable = list.length > 0;
   const ask = useConfirm();
-  const close = () =>
-    ask(view.selected.length, {
-      message: `Fechar a lista desseleciona ${unitsText(0, view.selected.length)}.`,
-      action: "Fechar a lista",
-      run: () => setView((v) => ({ ...v, localities: [], highlighted: [] })),
-    });
-  const body = empty ? (
-    <p>Abra uma ou mais localidades no mapa (duplo clique) para ver as suas obras.</p>
-  ) : list.length === 0 ? (
-    <p>Sem obras nas localidades selecionadas com estes filtros.</p>
-  ) : (
-    <table>
-      <thead>
-        <tr>
-          <th scope="col">
-            <span className="d-sr">Conversa</span>
-          </th>
-          <th scope="col">Obra</th>
-          <th scope="col">Tipo</th>
-          <th scope="col">Valor</th>
-          <th scope="col">Prazo</th>
-        </tr>
-      </thead>
-      <tbody>
-        {list.map((c) => (
-          <ContestRow
-            key={c.id}
-            contest={c}
-            view={view}
-            setView={setView}
-            preview={drag.preview.includes(c.id)}
-            gestures={gesturesFor(c)}
-            place={places > 1 ? c.place : undefined}
-          />
-        ))}
-      </tbody>
-    </table>
-  );
+  const body =
+    list.length === 0 ? (
+      <p>Sem obras com estes filtros.</p>
+    ) : (
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">
+              <span className="d-sr">Conversa</span>
+            </th>
+            <th scope="col">Obra</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Valor</th>
+            <th scope="col">Prazo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.map((c) => (
+            <ContestRow
+              key={c.id}
+              contest={c}
+              view={view}
+              setView={setView}
+              preview={drag.preview.includes(c.id)}
+              gestures={gesturesFor(c)}
+              place={places > 1 ? c.place : undefined}
+            />
+          ))}
+        </tbody>
+      </table>
+    );
   return (
     <section
       ref={surface}
@@ -695,15 +739,8 @@ export function LocalityResults({
         openMenu({ kind: "vazio" }, { x: event.clientX, y: event.clientY });
       }}
     >
-      <h2>
-        {empty ? "Obras" : title}
-        {!empty && (
-          <button type="button" className="d-close" aria-label="Fechar lista" onClick={close}>
-            ✕
-          </button>
-        )}
-      </h2>
-      {!empty && list.length > 0 && (
+      <h2>{title}</h2>
+      {list.length > 0 && (
         <p className="d-select-bar">
           <SelectGroup
             ids={list.map((c) => c.id)}

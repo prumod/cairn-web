@@ -53,9 +53,27 @@ export function OptionsPanel({
             </label>
             <small>
               {settings.resultsInChat
-                ? "Os resultados aparecem no mapa e no chat."
-                : "Os resultados aparecem só no mapa."}
+                ? "Os resultados aparecem na lista e no chat."
+                : "Os resultados aparecem só na lista."}
             </small>
+            <label>
+              <input
+                type="checkbox"
+                checked={settings.chatList}
+                disabled={!settings.resultsInChat}
+                onChange={(event) => onChange({ ...settings, chatList: event.target.checked })}
+              />
+              Lista no chat
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={settings.chatMap}
+                disabled={!settings.resultsInChat}
+                onChange={(event) => onChange({ ...settings, chatMap: event.target.checked })}
+              />
+              Mapa no chat
+            </label>
           </fieldset>
           <fieldset>
             <legend>Ações do agente</legend>
@@ -79,8 +97,34 @@ export function OptionsPanel({
             </label>
             <small>
               {settings.actions === "imediato"
-                ? "O agente altera o mapa logo."
-                : "O agente propõe e só altera o mapa depois de aceitar."}
+                ? "O agente altera a lista logo."
+                : "O agente propõe e só altera a lista depois de aceitar."}
+            </small>
+          </fieldset>
+          <fieldset>
+            <legend>Localidade</legend>
+            <label>
+              <input
+                type="radio"
+                name="d-locality-filter"
+                checked={settings.localityFilter === "mapa"}
+                onChange={() => onChange({ ...settings, localityFilter: "mapa" })}
+              />
+              Mapa
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="d-locality-filter"
+                checked={settings.localityFilter === "lista"}
+                onChange={() => onChange({ ...settings, localityFilter: "lista" })}
+              />
+              Lista
+            </label>
+            <small>
+              {settings.localityFilter === "mapa"
+                ? "A localidade filtra-se num mapa."
+                : "A localidade filtra-se numa lista de caixas."}
             </small>
           </fieldset>
         </section>
