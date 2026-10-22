@@ -6,8 +6,7 @@
 # This workflow validates scope and formatting, then commits, pushes and opens the PR.
 #
 # The push and PR use AGENT_PR_TOKEN, a fine-grained token of the trusted contributor:
-# PRs opened with GITHUB_TOKEN do not trigger the required "Agent checks", and the
-# required "Deployed company profile E2E" only accepts heads pushed by that contributor.
+# PRs opened with GITHUB_TOKEN do not trigger the required "Agent checks".
 # Only merged PRs labelled `transcription` (a new source) or `agent-incorporate-transcription`
 # (the loop's own PR, so the next pending source is picked up) start the loop.
 
