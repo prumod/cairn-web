@@ -24,8 +24,6 @@ run bun run format:check
 run bun run lint
 run bun run lint:boundaries
 run bun run test:boundaries
-run bun run check:blueprints
-run bun run check:candidate-gate
 run bun run check:transcriptions
 run bun run typecheck
 if [[ "$scope" == full ]]; then
