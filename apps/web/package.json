@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "prototype": "vite references/prototype-discovery --host 127.0.0.1",
+    "prototype": "vite references/prototype-discovery --host 127.0.0.1 --port 5173 --strictPort",
     "check-types": "vite build && tsc --noEmit && tsc --noEmit -p tsconfig.references.json",
     "env:generate": "varlock codegen"
   },

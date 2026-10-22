@@ -186,7 +186,7 @@ export function MapView({
           const active = loc.shown.length > 0;
           const framed = loc.contests.some((c) => view.highlighted.includes(c.id));
           const selected = view.picked.includes(loc.place);
-          const opened = view.localities.includes(loc.place);
+          const opened = view.filters.localities.includes(loc.place);
           const count = loc.shown.length;
           const picked = selectionState(
             view.selected,

@@ -40,7 +40,7 @@ Usar elementos HTML semânticos e a apresentação nativa do browser, sem CSS de
 
 «Sem estilos» não significa ausência de representação visual. Mapas, cronogramas e gráficos podem usar a geometria e os atributos gráficos mínimos necessários para representar informação e permitir interação, sem decoração nem trabalho de identidade gráfica. A tecnologia usada não fica definida por esta regra.
 
-Mapas, Gantt e outras visualizações devem representar a interação e a informação necessárias, sem polimento visual nem serviços externos. Não substituir automaticamente uma experiência visual relevante por uma tabela sem revisão.
+Mapas, Gantt e outras visualizações devem representar a interação e a informação necessárias, sem polimento visual nem serviços externos. Não substituir automaticamente uma experiência visual relevante por uma tabela sem revisão. Na revisão do protótipo Now, a tabela de obras passou a ser a vista principal e o mapa ficou no popover do filtro de localidade; a decisão foi tomada com a pessoa que revê o protótipo.
 
 ### Fase de design visual — aproximação à produção
 
@@ -65,20 +65,21 @@ Estes limites aplicam-se a ambas as implementações e a ambas as fases, mesmo q
 
 ### Descoberta e proposta
 
-Now: perfil da empresa → anúncios de obras do dia → mapa com o raio e filtros → localidade → lista de obras → vista do concurso, com o assistente ao lado do mapa. Incluir um dia sem anúncios, filtros sem resultados e um pedido ao assistente sobre um ou vários concursos selecionados.
+Now: perfil da empresa → anúncios de obras do dia → tabela de todas as obras dentro do raio → filtro de localidade (popover com mapa ou lista de caixas) → vista do concurso, com o assistente ao lado da tabela. Incluir um dia sem anúncios, filtros sem resultados e um pedido ao assistente sobre um ou vários concursos selecionados.
 
-A seleção de obras limita-se às obras presentes na lista atual. Fechar a lista, abrir outra localidade ou alterar filtros remove da seleção as obras que deixem de ser mostradas. A seleção de localidades e os comentários já preparados no assistente mantêm-se.
+A seleção de obras limita-se às obras presentes na lista atual. Alterar filtros, aplicar outra localidade ou limpar filtros remove da seleção as obras que deixem de ser mostradas. As localidades escolhidas no popover só passam a filtro com «Aplicar», e «Cancelar» descarta-as. Os comentários já preparados no assistente mantêm-se. «Limpar filtros» (botão, menu ou pedido ao assistente) limpa todos os filtros, incluindo as localidades e os resultados mostrados pelo assistente.
 
 Later continua o percurso: convites, prazos, revisão de requisitos e decisão de participar → dossier e checklist → preços unitários e total → revisão → submissão simulada, mais a navegação pelo assistente e a vista por fases. Incluir informação de habilitação em falta/incompatível, recusa, preparação incompleta, regresso à preparação, proposta pronta e prazo ultrapassado. A submissão simulada pode alimentar os exemplos de acompanhamento posterior.
 
 ### Opções do agente
 
-O cabeçalho tem um painel «⚙ Opções» (fecha com Escape ou clique fora) com duas escolhas, que se mantêm ao reiniciar a demonstração:
+O cabeçalho tem um painel «⚙ Opções» (fecha com Escape ou clique fora), que se mantém ao reiniciar a demonstração:
 
-- **Resultados do agente — «No chat»:** desligado por omissão, os resultados aparecem só no mapa. Ligado, aparecem no mapa e também no chat.
-- **Ações do agente:** «Imediatas» (por omissão) alteram o mapa logo; «Com proposta» alteram o mapa só depois de «Aplicar no mapa», e uma proposta pendente fica rejeitada quando a pessoa envia outro pedido.
+- **Resultados do agente — «No chat»:** desligado por omissão, os resultados aparecem só na tabela. Ligado, o chat mostra os resultados com duas escolhas independentes: «Lista no chat» (ligado por omissão) e «Mapa no chat» (desligado por omissão). Podem estar ligadas as duas.
+- **Localidade — «Mapa» ou «Lista»:** «Mapa» (por omissão) abre o mapa no popover do botão Localidade; «Lista» abre no mesmo popover uma lista com «Selecionar todos» e uma caixa por localidade. Em ambas, «Aplicar» define o filtro e «Cancelar» descarta a escolha.
+- **Ações do agente:** «Imediatas» (por omissão) alteram a tabela logo; «Com proposta» alteram-na só depois de «Aplicar», e uma proposta pendente fica rejeitada quando a pessoa envia outro pedido.
 
-A conversa fica sempre ao lado do mapa. Não há seletor de variações.
+A conversa fica sempre ao lado da tabela. Não há seletor de variações.
 
 ### Seleção por retângulo na lista de obras
 

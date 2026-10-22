@@ -11,14 +11,14 @@ export type Filters = {
   minValue: number | null;
   buyer: string | null;
   text: string;
+  // Localities that filter the obras. Empty means every locality.
+  localities: string[];
 };
 
 export type View = {
   filters: Filters;
   // Contests the agent asked to show together on the map.
   highlighted: string[];
-  // Localities opened: their works are listed together. A locality is like a folder.
-  localities: string[];
   // Localities selected on the map (not yet necessarily opened). Never together with obras.
   picked: string[];
   open: string | null;
@@ -35,12 +35,12 @@ export const defaultFilters: Filters = {
   minValue: null,
   buyer: null,
   text: "",
+  localities: [],
 };
 
 export const initialView: View = {
   filters: defaultFilters,
   highlighted: [],
-  localities: [],
   picked: [],
   open: null,
   selected: [],
@@ -55,6 +55,7 @@ const normalize = (text: string) =>
 
 export function matches(filters: Filters, contest: Contest): boolean {
   return (
+    (filters.localities.length === 0 || filters.localities.includes(contest.place)) &&
     contest.distanceKm <= filters.maxKm &&
     (filters.workTypes.length === 0 || filters.workTypes.includes(contest.workType)) &&
     (filters.publishedOn === null || contest.publishedOn === filters.publishedOn) &&
@@ -85,6 +86,7 @@ export const isPriority = (contest: Contest) => company.priorityTypes.includes(c
 
 export function describeFilters(filters: Filters): string {
   const parts = [`até ${filters.maxKm} km`];
+  if (filters.localities.length > 0) parts.push(placesLabel(filters.localities));
   if (filters.workTypes.length > 0) parts.push(filters.workTypes.join(" / "));
   if (filters.publishedOn !== null) parts.push(`publicados a ${filters.publishedOn}`);
   if (filters.minValue !== null) parts.push(`valor ≥ ${filters.minValue / 1000} mil €`);
@@ -129,14 +131,13 @@ export function pickPlaces(view: View, places: string[], mode: PickMode): View {
   return { ...view, picked: combine(view.picked, places, mode) };
 }
 
-// Opens the localities (like entering folders): they stay selected and their obras are listed
-// together.
-export const openPlaces = (view: View, places: string[]): View => ({
-  ...view,
-  localities: places,
-  picked: places,
-  open: null,
-});
+// The Localidade filter as text: no filter, one name, or a count.
+export const placesLabel = (places: string[]): string =>
+  places.length === 0
+    ? "todas"
+    : places.length === 1
+      ? (places[0] ?? "")
+      : `${places.length} localidades`;
 
 export type SelectionState = "none" | "some" | "all";
 

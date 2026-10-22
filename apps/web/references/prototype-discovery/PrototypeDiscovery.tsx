@@ -20,12 +20,14 @@ import {
   unitsText,
 } from "./Confirm";
 import { ContextMenu, type MenuItem, MenuProvider, type MenuTarget } from "./ContextMenu";
+import { places as allPlaces } from "./data";
 import { MapView, localities } from "./MapView";
 import { OptionsPanel } from "./Options";
 import {
   CompareTable,
   ContestView,
   FilterBar,
+  LocalityChecks,
   LocalityResults,
   Profile,
   worksToList,
@@ -34,9 +36,11 @@ import { type Settings, defaultSettings } from "./settings";
 import {
   type PickMode,
   type View,
+  defaultFilters,
+  hasActiveFilters,
   initialView,
-  openPlaces,
   pickPlaces,
+  placesLabel,
   withPlaces,
   withSelected,
 } from "./view";
@@ -69,6 +73,8 @@ function Screen({
   onSettings: (next: Settings) => void;
   onReset: () => void;
 }) {
+  // The Localidade popover is open while its map picks are a draft, not yet a filter.
+  const [mapOpen, setMapOpen] = useState(false);
   const [view, setViewState] = useState<View>(initialView);
   const [citations, setCitations] = useState<Citation[]>([]);
   const [unitNotes, setUnitNotes] = useState<UnitNote[]>([]);
@@ -153,7 +159,10 @@ function Screen({
         setUnitNotes((list) => list.filter((_, i) => i !== index));
         setView((v) => ({
           ...v,
-          localities: withPlaces(v.localities, note.obras),
+          filters: {
+            ...v.filters,
+            localities: withPlaces(v.filters.localities, note.obras),
+          },
           picked: [...new Set([...v.picked, ...note.places])],
           selected: [...new Set([...v.selected, ...note.obras])],
         }));
@@ -205,10 +214,67 @@ function Screen({
     if (settled) note();
     else placeNote.current = setTimeout(note, doubleClickMs);
   };
+  // The Localidade popover: its picks are a draft that starts from the current filter. Apply makes
+  // them the filter; Cancelar, Escape or a click outside discards them.
+  // The draft starts from the current filter; the list starts from every locality when none is set.
+  // The map shows every locality, so picking one never shows 0 for the others.
+  const mapView: View = { ...view, filters: { ...view.filters, localities: [] } };
+  const openMap = () => {
+    setView((v) => ({
+      ...v,
+      picked:
+        settings.localityFilter === "lista" && v.filters.localities.length === 0
+          ? allPlaces
+          : v.filters.localities,
+    }));
+    setMapOpen(true);
+  };
+  const cancelMap = () => {
+    clearTimeout(placeNote.current);
+    setView((v) => ({ ...v, picked: [] }));
+    setMapOpen(false);
+  };
+  const applyPlaces = () => {
+    clearTimeout(placeNote.current);
+    // Every locality picked is the same as no locality filter.
+    setView((v) => ({
+      ...v,
+      filters: {
+        ...v.filters,
+        localities: v.picked.length === allPlaces.length ? [] : v.picked,
+      },
+      picked: [],
+      open: null,
+    }));
+    setMapOpen(false);
+  };
+  // A double click on a locality filters to it at once.
   const onOpenPlaces = (places: string[]) => {
     clearTimeout(placeNote.current);
-    setView((v) => openPlaces(v, places));
+    setView((v) => ({
+      ...v,
+      filters: { ...v.filters, localities: places },
+      picked: [],
+      open: null,
+    }));
+    setMapOpen(false);
   };
+  // Changing the Localidade option ends a draft that is still open.
+  useEffect(() => {
+    cancelMap();
+  }, [settings.localityFilter]);
+  // A click outside the popover is Cancelar. Its own controls, its menu, notes and dialogs do not count.
+  useEffect(() => {
+    if (!mapOpen) return;
+    const outside = (event: PointerEvent) => {
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest(".d-locality-anchor, .d-context-menu, .d-inline-note, .d-confirm"))
+        return;
+      cancelMap();
+    };
+    document.addEventListener("pointerdown", outside);
+    return () => document.removeEventListener("pointerdown", outside);
+  });
 
   // Activating obras never opens the separately selected localities.
   const activateWorks = (v: View): View => {
@@ -235,20 +301,16 @@ function Screen({
     const keepsLocalities = target.kind === "vazio" && view.picked.length > 0;
     setMenu({ kind: keepsLocalities ? "localidades" : target.kind, at });
   };
-  // Closing the list also deselects the obras that were in it.
-  const closeList = () =>
-    ask(view.selected.length, {
-      message: `Fechar a lista desseleciona ${unitsText(0, view.selected.length)}.`,
-      action: "Fechar a lista",
-      run: () => setView((v) => ({ ...v, localities: [], highlighted: [] })),
-    });
+  // One reset for every filter, the locality filter and the agent's results included.
+  const resetFilters = () =>
+    setView((v) => ({ ...v, filters: defaultFilters, highlighted: [], compare: null }));
   const menuItems = (kind: MenuTarget["kind"], at: Point): MenuItem[] => {
     if (kind === "localidades") {
       return [
         {
-          label: "Abrir localidades",
+          label: "Filtrar obras por estas localidades",
           shortcut: "Enter",
-          onSelect: () => setView((v) => openPlaces(v, v.picked)),
+          onSelect: applyPlaces,
         },
         {
           label: "Comentar",
@@ -288,9 +350,9 @@ function Screen({
         onSelect: () => setView((v) => withSelected(v, listed)),
       },
       {
-        label: "Fechar a lista",
-        disabled: view.localities.length === 0 && view.highlighted.length === 0,
-        onSelect: () => closeList(),
+        label: "Limpar filtros",
+        disabled: !hasActiveFilters(view.filters) && view.highlighted.length === 0,
+        onSelect: () => resetFilters(),
       },
     ];
   };
@@ -365,6 +427,11 @@ function Screen({
       const map = target.closest(".d-map");
       const results = target.closest(".d-results");
       if (map === null && results === null) return;
+      if (event.key === "Escape" && map !== null) {
+        event.preventDefault();
+        cancelMap();
+        return;
+      }
       if (event.key === "Escape") {
         event.preventDefault();
         const count = map ? view.picked.length : view.selected.length;
@@ -491,7 +558,51 @@ function Screen({
             <div className="d-body">
               <main className="d-main">
                 <Profile />
-                <FilterBar view={view} setView={setView} />
+                <div className="d-filter-row">
+                  <div className="d-locality-anchor">
+                    <button
+                      type="button"
+                      className="d-locality-button"
+                      aria-expanded={mapOpen}
+                      onClick={() => (mapOpen ? cancelMap() : openMap())}
+                    >
+                      Localidade · {placesLabel(view.filters.localities)} ▾
+                    </button>
+                    {mapOpen && (
+                      <div
+                        className="d-locality-popover"
+                        role="dialog"
+                        aria-label="Filtrar por localidade"
+                        onKeyDown={(event) => {
+                          if (event.key === "Escape") cancelMap();
+                        }}
+                      >
+                        <strong>Localidade</strong>
+                        {settings.localityFilter === "lista" ? (
+                          <LocalityChecks
+                            checked={view.picked}
+                            onChange={(next) => setView((v) => ({ ...v, picked: next }))}
+                          />
+                        ) : (
+                          <MapView
+                            view={mapView}
+                            onPickPlaces={onPickPlaces}
+                            onOpenPlaces={onOpenPlaces}
+                          />
+                        )}
+                        <div className="d-locality-foot">
+                          <button type="button" onClick={cancelMap}>
+                            Cancelar
+                          </button>
+                          <button type="button" className="primary" onClick={applyPlaces}>
+                            Aplicar · {placesLabel(view.picked)}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <FilterBar view={view} setView={setView} />
+                </div>
                 <p className="d-selection-bar" role="status">
                   {view.picked.length + view.selected.length === 0 ? (
                     <small>Nada selecionado</small>
@@ -508,11 +619,8 @@ function Screen({
                           .join(" · ")}
                       </strong>
                       {view.picked.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setView((v) => openPlaces(v, v.picked))}
-                        >
-                          Abrir
+                        <button type="button" onClick={applyPlaces}>
+                          Filtrar
                         </button>
                       )}
                       <button
@@ -539,7 +647,6 @@ function Screen({
                   )}
                 </p>
                 <div className="d-stage">
-                  <MapView view={view} onPickPlaces={onPickPlaces} onOpenPlaces={onOpenPlaces} />
                   <LocalityResults view={view} setView={setView} locs={locs} />
                   {view.open !== null && <ContestView id={view.open} setView={setView} />}
                 </div>
