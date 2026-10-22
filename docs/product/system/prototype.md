@@ -9,7 +9,7 @@ Este documento regista o âmbito acordado e as regras das duas implementações 
 ## Duas implementações
 
 - **Wireframe interativo** ([`apps/web/references/interactive-wireframe.tsx`](../../../apps/web/references/interactive-wireframe.tsx)): mostra o futuro, isto é, as funcionalidades que ainda não têm protótipo principal. Serve para ver como essas funcionalidades se ligam e que informação as interações precisam.
-- **Protótipo principal** ([`apps/web/references/prototype-discovery/`](../../../apps/web/references/prototype-discovery/)): mostra a experiência das funcionalidades em decisão agora. Hoje cobre as funcionalidades Now. Fica fora da aplicação, sem sessão nem backend; corre com `bun run --cwd apps/web prototype`.
+- **Protótipo principal** ([`apps/web/references/prototype-discovery/`](../../../apps/web/references/prototype-discovery/)): mostra a experiência das funcionalidades em decisão agora. Hoje cobre as funcionalidades Now. Fica fora da aplicação, sem sessão nem backend; corre com `bun run --cwd apps/web prototype`. Enquanto não houver implementação de produção, é a fonte de verdade do comportamento Now; a [especificação do protótipo Now](../now/especificacao-prototipo.md) descreve-o, e os documentos que divergem dele são atualizados.
 
 Cada funcionalidade está numa só implementação. Quando uma funcionalidade ganha protótipo principal, a sua parte é apagada do wireframe; não se mantêm as duas versões. As prioridades e os identificadores não mudam por isso. O [mapa de cobertura](prototype-coverage.md) indica onde está cada funcionalidade.
 
@@ -99,7 +99,7 @@ Ações que descartam unidades pedem confirmação num diálogo modal («Tem a c
 
 Os atalhos atuam na região com foco e não interferem com a escrita em campos de texto. Ctrl/⌘+A funciona também quando o foco está na página, depois de clicar no vazio: atua na última zona usada (mapa ou lista de obras) e nunca seleciona o texto da página nessas zonas. Estão disponíveis:
 
-- **Mapa:** Tab percorre os marcadores; Espaço alterna a seleção do marcador com foco; Enter abre as localidades selecionadas ou, sem seleção, a localidade do marcador com foco. Escape fecha primeiro os elementos sobrepostos e depois limpa apenas a seleção do mapa. Ctrl+A seleciona todas as localidades; Shift+F10 abre o menu de contexto.
+- **Mapa:** Tab percorre os marcadores; Espaço alterna a seleção do marcador com foco; Enter abre as localidades selecionadas ou, sem seleção, a localidade do marcador com foco. Escape fecha o popover de Localidade e descarta as localidades escolhidas, bem como um botão de comentário aberto. Ctrl+A seleciona todas as localidades; Shift+F10 abre o menu de contexto.
 - **Lista de obras:** Cima/Baixo move o foco e substitui a seleção; Espaço alterna a seleção da obra com foco; Shift+Cima/Baixo seleciona um intervalo; Ctrl+A seleciona todas as obras visíveis; Home/End selecionam a primeira e a última obra (com Shift, estendem a seleção); Ctrl+Cima/Baixo/Home/End movem apenas o foco. Enter abre a obra selecionada ou compara as obras selecionadas; Escape limpa apenas a seleção de obras; Shift+F10 abre o menu de contexto.
 
 ### Preparação adicional da proposta — Later
