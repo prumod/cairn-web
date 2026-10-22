@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source scripts/timing.sh
 
 run() {
   printf '\nChecking: %s\n' "$*"
-  if "$@"; then return 0; else
+  if timed "${*#bun run }" "$@"; then return 0; else
     status=$?
     printf 'FAILED (%s). Reproduce from the repository root: %s\n' "$status" "$*" >&2
     return "$status"
@@ -29,7 +30,9 @@ run bun run typecheck
 if [[ "$scope" == full ]]; then
   # Advisory data requires the network; keep it out of the fast commit gate.
   run bun run audit
-  run bun run test
-else
-  run bun run test:fast
+fi
+run bun run build
+run bun run test:fast:run
+if [[ "$scope" == full ]]; then
+  run bun run test:browser:run
 fi

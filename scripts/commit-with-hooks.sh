@@ -55,7 +55,8 @@ for argument in "$@"; do
 done
 
 tree=$(git write-tree)
-bash "$runner_dir/check-secrets.sh" staged
+export CHECK_TIMINGS_GROUP=staged
+timed "Secret scan" bash "$runner_dir/check-secrets.sh" staged
 check_tree "$tree" fast
 if [[ "$(git write-tree)" != "$tree" ]]; then
   printf 'The staging area changed during validation. Retry the commit.\n' >&2
