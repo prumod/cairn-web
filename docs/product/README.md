@@ -20,7 +20,7 @@ O wireframe interativo mostra as funcionalidades futuras; o protótipo principal
 - **Maybe:** ideias que precisam de validação antes de compromisso de produção.
 - **Never:** exclusões deliberadas do produto, não apenas de uma fase.
 
-Now tem 6 funcionalidades (N01–N04, N13 e N14); Later tem 18 (L01–L18); Maybe tem 14 (M01 e M03–M15); Never tem 3 (X01–X03).
+Now tem 6 funcionalidades (N01–N04, N13 e N14); Later tem 18 (L01–L18); Maybe tem 20 (M01 e M03–M21); Never tem 3 (X01–X03).
 
 ## Correspondência de identificadores
 
@@ -43,6 +43,12 @@ Uma funcionalidade que muda de nível recebe um identificador novo nesse nível;
 | —        | M13   | Mapa 3D, nova na T3.                      |
 | —        | M14   | Caixa de entrada de anúncios, nova na T3. |
 | —        | M15   | Conversas por fase, nova na T3.           |
+| —        | M16   | Urgência do prazo, nova no design.        |
+| —        | M17   | Barra de seleção, nova no design.         |
+| —        | M18   | Copiar como tabela, nova no design.       |
+| —        | M19   | «Fora da lista atual», nova no design.    |
+| —        | M20   | Diferenças na comparação, nova no design. |
+| —        | M21   | Estado da recolha, nova no design.        |
 | —        | X01   | Trajetos rejeitados na T3.                |
 | —        | X02   | Distritos rejeitados na T3.               |
 | —        | X03   | Exclusão automática rejeitada na T3.      |
