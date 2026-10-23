@@ -56,12 +56,6 @@ L09–L16 belong to proposal preparation, not work execution. L10–L16 were mov
 | M13        | Not implemented.                                                                                                                                                     |
 | M14        | Not implemented.                                                                                                                                                     |
 | M15        | Not implemented.                                                                                                                                                     |
-| M16        | Not implemented. The main prototype shows «(N dias)» after the deadline without emphasis.                                                                            |
-| M17        | Not implemented. Open and compare are only in the context menu and on Enter.                                                                                         |
-| M18        | Not implemented.                                                                                                                                                     |
-| M19        | Not implemented.                                                                                                                                                     |
-| M20        | Not implemented. The comparison shows the same rows without highlighting differences.                                                                                |
-| M21        | Not implemented. The main prototype has no collection states.                                                                                                        |
 
 ## Excluded capabilities
 
@@ -78,6 +72,6 @@ X01–X03 have no screens by design.
 
 ## Review status
 
-Before transcription 3, all 32 documented capabilities mapped to an implemented screen or interaction. Of the 44 capabilities documented now, N14 is partly covered and L17, L18 and M13–M21 are not covered. A browser smoke pass visited all 21 task screens at a 390-pixel viewport; none caused horizontal page overflow. The smoke pass also exercised empty-search recovery, proposal preparation, simulated submission and reset. Axe reported no violations on the opportunity map, proposal screen, Gantt screen and initial page. Axe could not determine contrast for some text inside the SVG diagrams.
+Before transcription 3, all 32 documented capabilities mapped to an implemented screen or interaction. Of the 38 capabilities documented now, N14 is partly covered and L17, L18 and M13–M15 are not covered. A browser smoke pass visited all 21 task screens at a 390-pixel viewport; none caused horizontal page overflow. The smoke pass also exercised empty-search recovery, proposal preparation, simulated submission and reset. Axe reported no violations on the opportunity map, proposal screen, Gantt screen and initial page. Axe could not determine contrast for some text inside the SVG diagrams.
 
 `bun run check`, changed-file formatting and `git diff --check` passed. The browser smoke test does not prove that every workflow or the user experience is complete.
