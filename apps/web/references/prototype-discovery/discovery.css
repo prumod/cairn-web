@@ -932,7 +932,7 @@ body {
   min-height: 140px;
 }
 
-/* Localities are folders: opened ones get an underlined name; selected ones a larger pin */
+/* Opened localities get an underlined name; selected ones a larger pin */
 .d-locality[data-open="true"] .map-label {
   text-decoration: underline;
   text-underline-offset: 2px;

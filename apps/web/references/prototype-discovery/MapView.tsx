@@ -1,6 +1,6 @@
-// PROTOTYPE: the map is where the person starts. Markers are localities, like folders
-// in a file explorer: a click selects, a double click opens, a right click opens a menu. The agent
-// can frame several contests together with a halo.
+// PROTOTYPE: the map is where the person starts. Markers are localities, selectable units with
+// the controls of a file explorer: a click selects, a double click opens, a right click opens a
+// menu. The agent can frame several contests together with a halo.
 
 import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from "react";
 import { type Contest, company, contests, places } from "./data";

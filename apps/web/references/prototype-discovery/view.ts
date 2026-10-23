@@ -126,7 +126,7 @@ const combine = (current: string[], ids: string[], mode: PickMode): string[] =>
 // Selects obras; Ctrl/⌘ and Shift add to them, a plain pick replaces them.
 export const withSelected = (view: View, selected: string[]): View => ({ ...view, selected });
 
-// Selects localities (folders) on the map. Selecting never opens them, and never touches obras.
+// Selects localities on the map. Selecting never opens them, and never touches obras.
 export function pickPlaces(view: View, places: string[], mode: PickMode): View {
   return { ...view, picked: combine(view.picked, places, mode) };
 }

@@ -1,5 +1,5 @@
 // PROTOTYPE: the right-click menu. What it offers depends on what was clicked — an
-// obra (a file), a locality (a folder) or empty space — and it acts on the whole selection.
+// obra, a locality or empty space — and it acts on the whole selection.
 
 import { createContext, useContext, useEffect, useRef } from "react";
 import { type Point } from "./Notes";

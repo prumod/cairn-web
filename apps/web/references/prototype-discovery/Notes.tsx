@@ -17,7 +17,7 @@ import { contestById } from "./data";
 export type Point = { x: number; y: number };
 
 // A note about selected obras, staged in the chat next to the citations.
-// A note about localities lists their obras too, as copying a folder takes what is inside it.
+// A note about localities lists their obras too, since a locality stands for the obras inside it.
 // Obras are listed by name, localities by name. `obras` are the selected ones; `ids` are staged.
 export type UnitNote = { ids: string[]; places: string[]; obras: string[]; note: string };
 

@@ -187,7 +187,7 @@ function Screen({
     );
 
   // What a comment is about: the selected obras, and the obras of the picked localities too.
-  // Localities alone make a folder note; obras alone make an obra note.
+  // Localities alone make a locality note; obras alone make an obra note.
   const unitsAnchor = (v: View, at: Point): Anchor => {
     const ids = [...new Set([...v.selected, ...shownIds(v.picked)])];
     return v.picked.length > 0

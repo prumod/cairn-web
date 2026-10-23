@@ -87,7 +87,7 @@ Na tabela de obras, arrastar a partir de qualquer espaço vazio do painel de obr
 
 As linhas intercetadas pelo retângulo apresentam uma pré-visualização da seleção. Sem modificador, o arrasto substitui a seleção de obras; Shift acrescenta obras; Ctrl/Meta alterna as obras intercetadas relativamente à seleção existente no início do arrasto.
 
-Ao largar, a seleção fica aplicada e é oferecido um comentário para as unidades recém-selecionadas, sem abrir obras nem enviar mensagens. Escape ou cancelamento do gesto pelo dispositivo preserva a seleção original. A interação mantém a analogia de obras como ficheiros e localidades como pastas para selecionar e abrir, sem mover ficheiros, e preserva clique, duplo clique, menu de contexto e atalhos de teclado.
+Ao largar, a seleção fica aplicada e é oferecido um comentário para as unidades recém-selecionadas, sem abrir obras nem enviar mensagens. Escape ou cancelamento do gesto pelo dispositivo preserva a seleção original. Obras e localidades são unidades selecionáveis. A interação segue os controlos do Explorador de Ficheiros do Windows 11 para selecionar e abrir unidades, sem as mover, e preserva clique, duplo clique, menu de contexto e atalhos de teclado.
 
 No mapa, a seleção por retângulo segue o mesmo gesto e o mesmo aspeto da lista: o cursor é o normal ao passar sobre o mapa e passa a cruz apenas durante o arrasto; o retângulo tracejado, a pré-visualização, Shift, Ctrl/Meta e Escape comportam-se como na lista.
 
