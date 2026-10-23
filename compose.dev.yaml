@@ -1,0 +1,39 @@
+# Persistent local database for `bun run dev`: PostgreSQL plus the local Neon HTTP proxy that the
+# app's database client expects. Keep the image pins in sync with compose.test.yaml, which serves
+# the disposable test databases instead. Ports bind to loopback only.
+# The credentials and ports are mirrored in the `dev:db` script (package.json) and in the
+# `.env.local` that scripts/setup-project.sh and scripts/setup-project.ps1 write.
+name: cairn-dev
+
+services:
+  postgres:
+    image: postgres:18.6@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: local-dev-only
+      POSTGRES_DB: cairn
+    ports:
+      - "127.0.0.1:54320:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      # Probe over TCP: during first-run initialization PostgreSQL only listens on a socket, and the
+      # Neon proxy creates its control-plane table once at startup, so it must not start earlier.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d cairn"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+  neon:
+    image: ghcr.io/timowilhelm/local-neon-http-proxy@sha256:cd2ae14edf2feafbc3330492de5c80506f77274c3bd013154cdef697bdeb768a
+    restart: unless-stopped
+    environment:
+      PG_CONNECTION_STRING: postgres://postgres:local-dev-only@postgres:5432/cairn
+    ports:
+      - "127.0.0.1:54321:4444"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:

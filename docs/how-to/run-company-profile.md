@@ -4,6 +4,8 @@ This guide runs the full-stack app through the local Alchemy development stack a
 
 ## Configure local values
 
+On a new machine, the `setup-project` wizard (see the README) already does this: it starts the local development database from `compose.dev.yaml`, applies the migrations, and writes `packages/infra/.env.local` with `DATABASE_URL` (the local Neon HTTP proxy), a generated `BETTER_AUTH_SECRET`, and `BOOTSTRAP_ADMIN_EMAIL` taken from `git config user.email`. Only `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` remain, because Google offers no way to create the OAuth client by script. Follow the steps below to configure a machine by hand or to use a different database.
+
 Install the locked workspace dependencies and tools from the repository root:
 
 ```sh
@@ -34,6 +36,8 @@ Use a development database that you control. Apply the committed Drizzle migrati
 bun run db:migrate
 bun run dev
 ```
+
+With the wizard's database, run `bun run dev:db` instead of `bun run db:migrate`. It starts the Compose services if they are stopped and applies pending migrations, so run it again after you pull new migrations. `db:migrate` talks the PostgreSQL protocol, so it cannot use the Neon HTTP proxy URL that `.env.local` holds; `dev:db` passes the direct PostgreSQL URL (`127.0.0.1:54320`).
 
 Open `http://localhost:3001`. The root `bun run dev` command starts `packages/infra`'s Alchemy development stage and the TanStack Start app in the local Workers runtime. Standalone Vite dev/preview is not supported; use the Worker stack. The app's database client uses Neon HTTP; a plain PostgreSQL URL is not a substitute for the HTTP endpoint expected by the app.
 
