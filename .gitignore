@@ -28,3 +28,6 @@ infra/**/*.tfplan
 .DS_Store
 .idea/
 .vscode/
+
+# Local agent worktrees
+.claude/worktrees/
