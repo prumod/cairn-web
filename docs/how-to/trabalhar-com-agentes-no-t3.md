@@ -1,6 +1,6 @@
 # Como trabalhar com agentes no T3
 
-Este guia mostra como abrir o T3 da equipa, começar uma tarefa num projeto e pedir ajuda aos agentes com skills. Os guias de cada tarefa remetem para aqui.
+Este guia mostra como abrir o T3 da equipa, começar uma tarefa num projeto e pedir ajuda aos agentes com skills. Os guias de cada tarefa remetem para aqui. Se o Tiago já criou a conversa, siga [Como continuar uma conversa já criada no T3](continuar-uma-conversa-no-t3.md).
 
 O T3 corre na máquina do Tiago. Os agentes executam comandos nessa máquina com as contas dele, incluindo GitHub e Cloudflare. Não peça deploys, eliminação de dados nem alterações fora da tarefa sem aprovação do Tiago.
 
