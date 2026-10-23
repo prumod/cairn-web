@@ -35,7 +35,7 @@ Em Windows, abra o PowerShell na pasta do repositório e execute:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-project.ps1
 ```
 
-No Windows, use Git Bash para os restantes comandos deste guia. Se a configuração falhar, siga as instruções do assistente ou peça ajuda ao sénior ou ao programador intermédio. Consulte o [README](../../README.md) para mais detalhes sobre os pré-requisitos.
+O assistente instala as ferramentas em falta, incluindo o Docker, e prepara a base de dados local. No fim, indica o que ainda falta preencher em `packages/infra/.env.local`. No Windows, use Git Bash para os restantes comandos deste guia. Se a configuração falhar, siga as instruções do assistente ou peça ajuda ao sénior ou ao programador intermédio. Consulte [Como configurar o projeto](configurar-o-projeto.md) para mais detalhes sobre os pré-requisitos.
 
 ### 2. Leia a Issue
 
@@ -138,7 +138,7 @@ No GitHub, abra uma Pull Request da sua branch para `main`. Inclua:
 - Os testes e verificações executados, incluindo a verificação manual no browser.
 - Qualquer verificação que não conseguiu executar.
 
-Espere que as verificações automáticas da Pull Request passem. Peça revisão ao sénior ou ao programador intermédio e espere pela aprovação antes do merge. O README indica que o GitHub não exige atualmente uma aprovação para integrar alterações. Neste fluxo, a revisão continua a ser necessária.
+Espere que as verificações automáticas da Pull Request passem. Peça revisão ao sénior ou ao programador intermédio e espere pela aprovação antes do merge. O GitHub não exige atualmente uma aprovação para integrar alterações em `main`, só uma Pull Request. Neste fluxo, a revisão continua a ser necessária.
 
 Se receber comentários, responda-lhes e faça as alterações na mesma branch. Execute novamente as verificações relevantes e envie as alterações. A Pull Request existente recebe os novos commits.
 

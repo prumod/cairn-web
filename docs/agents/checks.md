@@ -10,7 +10,7 @@ Both files preserve the staging area and working files. Failed checks stop the G
 
 ## Setup and recovery
 
-With host prerequisites installed, execute `scripts/setup.sh` to prepare the locked dependencies, scanner, and browser. The human `setup-project` wizards also provision missing host tools.
+With host prerequisites installed, execute `scripts/setup.sh` to prepare the locked dependencies, scanner, and browser. The human `setup-project` wizards also provision missing host tools, including Docker, start the development database from `compose.dev.yaml`, apply its migrations, and write the ignored `packages/infra/.env.local`.
 
 The gates need Bash, Git, Bun 1.3.14, Node.js 22.12+, and Gitleaks 8.30.0. Execute `scripts/install-gitleaks.sh` on Linux x64/arm64 to install the checksum-verified scanner into ignored `.tools/`. On other hosts, set `GITLEAKS_BIN` to an absolute path to that version.
 
@@ -24,7 +24,7 @@ For test boundaries and coverage limits, see [Testing](../../TESTING.md). Packag
 
 ## Local application and test process cautions
 
-`bun run dev` starts `packages/infra`'s Alchemy development stage, which serves TanStack Start in the local Cloudflare Workers runtime. Alchemy uses local state for this workflow; `.alchemy` is generated local state/cache, not remote provider state or proof of deployment. Standalone Vite dev/preview commands are not supported because the app requires the Workers runtime. Root `bun run typecheck` runs `env:generate` before workspace type checks. Keep generated `apps/web/src/env.ts` and `packages/db/src/env.ts` out of version control; retain the safe `.env.schema` inputs and keep actual credentials in ignored local environment files.
+`bun run dev` starts `packages/infra`'s Alchemy development stage, which serves TanStack Start in the local Cloudflare Workers runtime. Alchemy uses local state for this workflow; `.alchemy` is generated local state/cache, not remote provider state or proof of deployment. Standalone Vite dev/preview commands are not supported because the app requires the Workers runtime. `bun run dev:db` starts the persistent development database (PostgreSQL and the local Neon HTTP proxy) from `compose.dev.yaml` and applies pending migrations; it is separate from the disposable `compose.test.yaml` project that the test wrapper owns. Root `bun run typecheck` runs `env:generate` before workspace type checks. Keep generated `apps/web/src/env.ts` and `packages/db/src/env.ts` out of version control; retain the safe `.env.schema` inputs and keep actual credentials in ignored local environment files.
 
 `bun run test:fast` and `bun run test:browser` build the application and use `scripts/with-test-postgres.mjs`. It starts a uniquely named Docker Compose project from `compose.test.yaml`, with digest-pinned PostgreSQL 18.6 and a pinned local Neon HTTP proxy, loopback-only dynamic ports, and temporary database storage. The wrapper supplies `TEST_DATABASE_URL` and `TEST_NEON_PORT`, then runs `docker compose down --volumes --remove-orphans`. Each app fixture creates a separate database, applies migrations through the Neon HTTP driver, and starts the compiled Worker with the test-only Alchemy stack in `packages/infra/test/alchemy.run.ts` using local `workerd` and Alchemy state. Browser fixtures add a controlled-identity proxy outside the application.
 

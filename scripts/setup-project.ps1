@@ -4,7 +4,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $StageIndex = 0
-$TotalStages = 5
+$TotalStages = 7
 $ToolsRoot = Join-Path $HOME '.cairn'
 $TempSetup = Join-Path ([IO.Path]::GetTempPath()) ([Guid]::NewGuid().ToString())
 
@@ -50,10 +50,22 @@ function Node-Ready {
     return $LASTEXITCODE -eq 0
 }
 
+function Test-Native([string]$Command, [string[]]$Arguments) {
+    if (-not (Get-Command $Command -ErrorAction SilentlyContinue)) { return $false }
+    $previous = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        & $Command @Arguments *> $null
+        return $LASTEXITCODE -eq 0
+    }
+    catch { return $false }
+    finally { $ErrorActionPreference = $previous }
+}
+
 Push-Location $ProjectRoot
 try {
     Write-Host 'Configuração do Cairn Web para Windows.'
-    Write-Host 'Os comandos são automáticos. O Windows pode pedir autorização para instalar o Git.'
+    Write-Host 'Os comandos são automáticos. O Windows pode pedir autorização para instalar o Git e o Docker Desktop.'
     Write-Host 'Pode interromper com Ctrl+C e voltar a executar o script.'
     Stage 'Verificar o sistema e instalar Git'
     if ($env:OS -ne 'Windows_NT' -or $env:PROCESSOR_ARCHITECTURE -ne 'AMD64') {
@@ -79,6 +91,34 @@ try {
     }
     # Os scripts de validação usam Git Bash, não o bash.exe do WSL.
     $env:Path = "$(Split-Path -Parent $gitBash);$env:Path"
+
+    Stage 'Instalar o Docker Desktop'
+    Write-Host '  O Docker serve a base de dados local e os testes.'
+    if (-not (Test-Native 'docker' @('compose', 'version'))) {
+        if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+            Write-Host 'Abra https://apps.microsoft.com/detail/9nblggh4nns1 e instale o Instalador de Aplicações da Microsoft.'
+            Write-Host 'Depois, feche este terminal, abra outro e volte a executar o assistente.'
+            throw 'O winget é necessário para instalar o Docker Desktop automaticamente.'
+        }
+        Write-Host '  A executar: winget install Docker.DockerDesktop'
+        & winget install --id Docker.DockerDesktop --exact --silent --accept-package-agreements --accept-source-agreements --disable-interactivity
+        # O código 3010 indica que o Windows precisa de reiniciar, o que não invalida a instalação.
+        if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3010) {
+            throw "A instalação do Docker Desktop terminou com o código $LASTEXITCODE."
+        }
+        $env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [Environment]::GetEnvironmentVariable('Path', 'User')
+    }
+    if (-not (Test-Native 'docker' @('info'))) {
+        $dockerDesktop = Join-Path $env:ProgramFiles 'Docker\Docker\Docker Desktop.exe'
+        if (Test-Path $dockerDesktop) { Start-Process $dockerDesktop }
+        Write-Host '  A aguardar pelo Docker Desktop, até 5 minutos. Se aparecerem os termos de serviço, aceite-os na janela do Docker Desktop.'
+        $deadline = (Get-Date).AddMinutes(5)
+        while (-not (Test-Native 'docker' @('info')) -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 5 }
+        if (-not (Test-Native 'docker' @('info'))) {
+            throw 'O Docker Desktop não ficou pronto. Se o Windows pediu para reiniciar, reinicie e volte a executar o assistente: ele retoma onde parou.'
+        }
+    }
+    Run docker @('compose', 'version')
 
     Stage 'Instalar Bun 1.3.14 e verificar Node.js'
     $bunDirectory = Join-Path $ToolsRoot 'bun-1.3.14\bun-windows-x64-baseline'
@@ -128,15 +168,56 @@ try {
     [Environment]::SetEnvironmentVariable('GITLEAKS_BIN', $env:GITLEAKS_BIN, 'User')
     Run bunx @('--no-install', 'playwright', 'install', 'chromium')
 
+    Stage 'Preparar o ambiente de desenvolvimento'
+    Write-Host '  A base de dados local corre em Docker (compose.dev.yaml) e guarda os dados entre execuções.'
+    Run docker @('compose', '-f', 'compose.dev.yaml', 'up', '-d', '--wait', '--wait-timeout', '180')
+    $env:DATABASE_URL = 'postgres://postgres:local-dev-only@127.0.0.1:54320/cairn'
+    try { Run bun @('run', 'db:migrate') }
+    finally { Remove-Item Env:DATABASE_URL -ErrorAction SilentlyContinue }
+    Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:54321/sql' -ContentType 'application/json' `
+        -Headers @{ 'Neon-Connection-String' = 'postgres://postgres:local-dev-only@db.localtest.me/cairn' } `
+        -Body '{"query":"select 1","params":[]}' | Out-Null
+    $envLocal = Join-Path $ProjectRoot 'packages\infra\.env.local'
+    $utf8 = New-Object System.Text.UTF8Encoding $false
+    if (-not (Test-Path $envLocal)) {
+        $header = "# Valores locais para ``bun run dev``. Ignorado pelo Git: não o submeta.`n# Preencha o cliente OAuth Web do Google para http://localhost:3001; ver docs/how-to/run-company-profile.md.`n"
+        [IO.File]::WriteAllText($envLocal, $header, $utf8)
+    }
+    # Acrescenta apenas as chaves em falta, para nunca substituir valores que o utilizador já definiu.
+    function Ensure-Env([string]$Key, [string]$Value) {
+        if (-not (Select-String -Path $envLocal -Pattern "^$Key=" -Quiet)) {
+            [IO.File]::AppendAllText($envLocal, "$Key=$Value`n", $utf8)
+        }
+    }
+    $randomBytes = New-Object byte[] 32
+    $generator = [Security.Cryptography.RandomNumberGenerator]::Create()
+    $generator.GetBytes($randomBytes)
+    $generator.Dispose()
+    $gitEmail = & git config user.email
+    if (-not $gitEmail) { $gitEmail = '' }
+    Ensure-Env 'DATABASE_URL' 'postgres://postgres:local-dev-only@db.localtest.me:54321/cairn'
+    Ensure-Env 'BETTER_AUTH_SECRET' (-join ($randomBytes | ForEach-Object { $_.ToString('x2') }))
+    Ensure-Env 'BOOTSTRAP_ADMIN_EMAIL' $gitEmail
+    Ensure-Env 'GOOGLE_CLIENT_ID' ''
+    Ensure-Env 'GOOGLE_CLIENT_SECRET' ''
+    Write-Host "  Ficheiro $envLocal pronto."
+
     Stage 'Verificar o projeto'
     Run $gitBash @('scripts/check.sh', 'full')
     Write-Host "`nConfiguração concluída. As verificações terminaram sem erros."
     Write-Host 'As suites sem testes indicam uma omissão, não comprovam o comportamento da aplicação.'
     Write-Host 'O assistente acrescentou as ferramentas instaladas ao PATH do seu utilizador.'
     Write-Host 'O GITLEAKS_BIN do seu utilizador aponta para o scanner desta cópia do projeto.'
-    Write-Host 'Abra um novo terminal PowerShell nesta pasta e execute: bun run dev'
-    Write-Host 'Abra o endereço apresentado pelo Vite, normalmente http://localhost:5173.'
-    Write-Host 'Não é necessário criar um ficheiro .env. Discord, WhatsApp e publicação são configurações separadas.'
+    Write-Host 'A base de dados local está a correr e migrada. Depois de atualizar o repositório, execute bun run dev:db.'
+    $pending = @(@('BOOTSTRAP_ADMIN_EMAIL', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET') | Where-Object { -not (Select-String -Path $envLocal -Pattern "^$($_)=." -Quiet) })
+    if ($pending.Count -gt 0) {
+        Write-Host "Falta preencher em ${envLocal}: $($pending -join ', ')." -ForegroundColor Yellow
+        Write-Host 'O Google não permite criar o cliente OAuth por script. Crie um cliente Web para http://localhost:3001'
+        Write-Host 'com o URI de redirecionamento http://localhost:3001/api/auth/callback/google (docs/how-to/run-company-profile.md).'
+        Write-Host 'BOOTSTRAP_ADMIN_EMAIL é o email da conta Google que será administradora.'
+    }
+    Write-Host 'Abra um novo terminal PowerShell nesta pasta, execute bun run dev e abra http://localhost:3001.'
+    Write-Host 'Discord, WhatsApp e publicação são configurações separadas.'
 }
 catch {
     Write-Host "`nErro: $($_.Exception.Message)" -ForegroundColor Red

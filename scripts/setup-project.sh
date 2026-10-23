@@ -212,7 +212,7 @@ finish() {
 # Replace the example below. Set TOTAL_STAGES to match the stages you write.
 # ──────────────────────────────────────────────────────────────────────────
 
-TOTAL_STAGES=5
+TOTAL_STAGES=7
 PROJECT_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"
@@ -231,6 +231,18 @@ fail() {
   printf '%sErro: %s%s\n' "$RED" "$1" "$RESET" >&2
   exit 1
 }
+as_root() {
+  if [[ "$EUID" == 0 ]]; then
+    run "$@"
+  else
+    command -v sudo >/dev/null 2>&1 || fail "Peça ao administrador que execute: $*"
+    run sudo "$@"
+  fi
+}
+# O daemon responde ao root mesmo antes de o utilizador pertencer ao grupo docker.
+docker_daemon_up() {
+  if [[ "$EUID" == 0 ]]; then docker info; else sudo docker info; fi >/dev/null 2>&1
+}
 trap 'printf "\nA configuração falhou. Corrija o erro acima e volte a executar este script.\n" >&2' ERR
 
 say "Configuração do Cairn Web para Ubuntu e WSL."
@@ -248,26 +260,51 @@ aarch64) NODE_ARCH=arm64 ;;
 *) fail "Arquitetura não suportada: $(uname -m)." ;;
 esac
 missing=()
-for tool in git curl unzip xz sha256sum tar; do
+for tool in git curl unzip xz sha256sum tar setfacl; do
   if ! command -v "$tool" >/dev/null 2>&1; then
     case "$tool" in
     xz) missing+=(xz-utils) ;;
     sha256sum) missing+=(coreutils) ;;
+    setfacl) missing+=(acl) ;;
     *) missing+=("$tool") ;;
     esac
   fi
 done
 if ((${#missing[@]})); then
-  if [[ "$EUID" == 0 ]]; then
-    run apt-get update
-    run apt-get install -y "${missing[@]}" ca-certificates
-  else
-    command -v sudo >/dev/null 2>&1 || fail "Peça ao administrador que instale: ${missing[*]} e ca-certificates."
-    run sudo apt-get update
-    run sudo apt-get install -y "${missing[@]}" ca-certificates
-  fi
+  as_root apt-get update
+  as_root apt-get install -y "${missing[@]}" ca-certificates
 fi
 run git --version
+
+stage "Instalar o Docker"
+say "O Docker serve a base de dados local e os testes."
+if ! command -v docker >/dev/null 2>&1 || ! docker compose version >/dev/null 2>&1; then
+  as_root apt-get update
+  as_root apt-get install -y docker.io docker-compose-v2
+  docker compose version >/dev/null 2>&1 || fail "O Docker Compose v2 não ficou disponível. Instale-o seguindo https://docs.docker.com/engine/install/ubuntu/ e repita a configuração."
+fi
+if ! docker info >/dev/null 2>&1; then
+  # O Docker Desktop do Windows, quando integrado no WSL, já responde acima. Aqui o motor é local.
+  if [[ -d /run/systemd/system ]]; then
+    as_root systemctl enable --now docker
+  else
+    as_root service docker start
+  fi
+  for _ in $(seq 1 30); do
+    docker_daemon_up && break
+    sleep 1
+  done
+fi
+DOCKER_GROUP_ADDED=0
+if [[ "$EUID" != 0 ]] && ! docker info >/dev/null 2>&1; then
+  say "A dar a $(id -un) acesso ao Docker. O grupo docker equivale a acesso de administrador neste computador."
+  as_root usermod -aG docker "$(id -un)"
+  # O grupo só vale em sessões novas. A ACL dá acesso já aos comandos deste assistente.
+  as_root setfacl -m "u:$(id -un):rw" /var/run/docker.sock
+  DOCKER_GROUP_ADDED=1
+fi
+docker info >/dev/null 2>&1 || fail "O Docker não respondeu. Em WSL sem systemd, ative o systemd ou use o Docker Desktop com integração WSL."
+run docker compose version
 
 stage "Instalar Bun 1.3.14 e verificar Node.js"
 TMP_SETUP=$(mktemp -d)
@@ -303,6 +340,17 @@ fi
 node_ready || fail "É necessário Node.js 22.12 ou superior."
 run node --version
 run bun --version
+# Torna o PATH permanente para que os terminais novos encontrem Bun e Node.js sem passos manuais.
+persist_path() {
+  local profile="$1"
+  [[ -f "$profile" ]] || return 0
+  grep -qF '# >>> cairn-web >>>' "$profile" && return 0
+  # shellcheck disable=SC2016
+  printf '\n# >>> cairn-web >>>\nexport PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"\n# <<< cairn-web <<<\n' >>"$profile"
+  say "PATH acrescentado a $profile."
+}
+persist_path "$HOME/.bashrc"
+persist_path "$HOME/.zshrc"
 
 stage "Instalar as dependências do projeto"
 run bun install --frozen-lockfile
@@ -314,11 +362,52 @@ fi
 # --with-deps instala também as bibliotecas de sistema de que o Chromium precisa.
 run bunx --no-install playwright install --with-deps chromium
 
+stage "Preparar o ambiente de desenvolvimento"
+say "A base de dados local corre em Docker (compose.dev.yaml) e guarda os dados entre execuções."
+run bun run dev:db
+run curl --fail --silent --show-error --max-time 10 --request POST http://127.0.0.1:54321/sql \
+  --header 'Content-Type: application/json' \
+  --header 'Neon-Connection-String: postgres://postgres:local-dev-only@db.localtest.me/cairn' \
+  --data '{"query":"select 1","params":[]}' --output /dev/null
+ENV_LOCAL=packages/infra/.env.local
+if [[ ! -f "$ENV_LOCAL" ]]; then
+  (
+    umask 077
+    {
+      printf '# Valores locais para `bun run dev`. Ignorado pelo Git: não o submeta.\n'
+      printf '# Preencha o cliente OAuth Web do Google para http://localhost:3001; ver docs/how-to/run-company-profile.md.\n'
+    } >"$ENV_LOCAL"
+  )
+fi
+# Acrescenta apenas as chaves em falta, para nunca substituir valores que o utilizador já definiu.
+ensure_env() {
+  grep -qE "^$1=" "$ENV_LOCAL" || printf '%s=%s\n' "$1" "$2" >>"$ENV_LOCAL"
+}
+ensure_env DATABASE_URL "postgres://postgres:local-dev-only@db.localtest.me:54321/cairn"
+ensure_env BETTER_AUTH_SECRET "$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+ensure_env BOOTSTRAP_ADMIN_EMAIL "$(git config user.email || true)"
+ensure_env GOOGLE_CLIENT_ID ""
+ensure_env GOOGLE_CLIENT_SECRET ""
+say "Ficheiro $ENV_LOCAL pronto."
+
 stage "Verificar o projeto"
 run bun run check
 say "Configuração concluída. As verificações terminaram sem erros."
 say "As suites sem testes indicam uma omissão, não comprovam o comportamento da aplicação."
-say "Para iniciar o projeto, abra um terminal nesta pasta e execute:"
-printf '  export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"\n  bun run dev\n'
-say "Abra o endereço apresentado pelo Vite, normalmente http://localhost:5173."
-say "Não é necessário criar um ficheiro .env. Discord, WhatsApp e publicação são configurações separadas."
+say "A base de dados local está a correr e migrada. Depois de atualizar o repositório, execute bun run dev:db."
+say "Abra um novo terminal (ou execute source ~/.bashrc) para carregar o PATH."
+if ((DOCKER_GROUP_ADDED)); then
+  say "Termine a sessão e volte a entrar para o grupo docker ficar ativo em todos os terminais."
+fi
+pending=()
+for key in BOOTSTRAP_ADMIN_EMAIL GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET; do
+  grep -qE "^$key=." "$ENV_LOCAL" || pending+=("$key")
+done
+if ((${#pending[@]})); then
+  warn "Falta preencher em $ENV_LOCAL: ${pending[*]}."
+  say "O Google não permite criar o cliente OAuth por script. Crie um cliente Web para http://localhost:3001"
+  say "com o URI de redirecionamento http://localhost:3001/api/auth/callback/google (docs/how-to/run-company-profile.md)."
+  say "BOOTSTRAP_ADMIN_EMAIL é o email da conta Google que será administradora."
+fi
+say "Depois execute bun run dev e abra http://localhost:3001."
+say "Discord, WhatsApp e publicação são configurações separadas."
