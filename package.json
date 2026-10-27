@@ -20,6 +20,7 @@
   "type": "module",
   "scripts": {
     "setup": "bash scripts/setup.sh",
+    "hooks:install": "bash scripts/install-git-hooks.sh",
     "update": "bash scripts/update.sh",
     "dev": "bun run --cwd packages/infra dev",
     "dev:db": "docker compose -f compose.dev.yaml up -d --wait --wait-timeout 180 && DATABASE_URL=postgres://postgres:local-dev-only@127.0.0.1:54320/cairn bun run db:migrate",

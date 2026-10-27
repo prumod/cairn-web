@@ -1,6 +1,6 @@
 # Agent Git gates
 
-Use ordinary `git commit` and `git push`. Run `bash scripts/install-git-hooks.sh` once per clone (also run by setup/update) to configure the repository-owned `.githooks` directory. The setting applies to linked worktrees too. Installation refuses to replace another configured hook directory or existing native commit/push hooks.
+Run `bun run hooks:install` once per clone (also run by setup/update) to configure the repository-owned `.githooks` directory. The setting applies to linked worktrees too. Installation refuses to replace another configured hook directory or existing native commit/push hooks.
 
 The pre-commit hook scans the actual staged diff for secrets and validates a disposable snapshot. This supports Git's normal content selection, including `commit -a` and path arguments. Linked worktrees still require the author configured as described in `AGENTS.md`.
 

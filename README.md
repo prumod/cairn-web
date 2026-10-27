@@ -44,7 +44,7 @@ Consulte [Testes](TESTING.md) e [Verificações dos agentes](docs/agents/checks.
 
 ## Como contribuir
 
-Os comandos normais `git commit` e `git push` executam verificações escolhidas pelo diff. O setup/update instala os hooks; num clone existente execute `bash scripts/install-git-hooks.sh`. Consulte [Verificações](docs/agents/checks.md).
+Os comandos normais `git commit` e `git push` executam verificações escolhidas pelo diff. O setup/update instala os hooks; num clone existente execute `bun run hooks:install`. Consulte [Verificações](docs/agents/checks.md).
 
 O trabalho começa numa GitHub Issue. O [quadro do projeto Cairn Web](https://github.com/orgs/prumod/projects/1) acompanha as fases Backlog, Ready, In Progress, In Review e Done. Quem não programa pode descrever um problema ou fazer uma pergunta numa Issue.
 
