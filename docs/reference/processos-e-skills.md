@@ -42,6 +42,7 @@ Use para criar ou renovar a linguagem visual de uma página. Siga a ordem e salt
 
 | Ordem | Skill                             | Resultado                                                       |
 | ----- | --------------------------------- | --------------------------------------------------------------- |
+| 0     | `design-00-run-process`           | Quatro percursos isolados na fase 1 e uma só conversa depois.   |
 | 1     | `design-01-random-seed`           | Uma direção criativa derivada de uma semente aleatória.         |
 | 2     | `design-02-broad-directions`      | Muitas ideias curtas para uma linguagem de design própria.      |
 | 3     | `design-03-sharpen-direction`     | A direção escolhida, refinada com as suas reações.              |
@@ -80,7 +81,7 @@ Pode usar estas skills em qualquer processo. Escolha as que o ajudam.
 | Implementar com testes        | `hvtdd`, `tdd`, `high-value-testing`                                                   |
 | Bugs                          | `reproducing-bugs`, `diagnosing-bugs`                                                  |
 | Estrutura do código           | `improve-codebase-architecture`, `codebase-design`                                     |
-| Interface                     | `prototype`, `impeccable`, `design-01-random-seed` a `design-09-restrained-minimalism` |
+| Interface                     | `prototype`, `impeccable`, `design-00-run-process` a `design-09-restrained-minimalism` |
 | Rever                         | `code-review`, `decisions`                                                             |
 | Pull Request                  | `rpi-describe-pr`, `before-and-after`                                                  |
 | Documentação                  | `documentation` (deste repositório)                                                    |
