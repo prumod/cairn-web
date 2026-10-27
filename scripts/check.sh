@@ -38,6 +38,7 @@ run bun run build
 [[ "$scope" == push ]] && exit 0
 
 # Proves the boundary rules themselves; they change rarely, so CI suffices.
+run node --test scripts/git-hooks.test.mjs
 run bun run test:boundaries
 # Advisory data requires the network.
 run bun run audit

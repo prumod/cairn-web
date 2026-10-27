@@ -1,40 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source "$(dirname "$0")/git-checks.sh"
-
-# Ask Git which refs it would push, including first pushes and explicit refspecs.
-timed "Plan push" git push --dry-run --porcelain "$@" >"$temp/push-plan"
-refs=()
-commits=()
-while IFS=$'\t' read -r flag refspec summary; do
-  case "$flag" in
-  ' ' | + | '*')
-    ref=${refspec%%:*}
-    commit=$(git rev-parse --verify "$ref^{commit}") || {
-      printf 'Only refs pointing to commits can be checked: %s\n' "$ref" >&2
-      exit 2
-    }
-    refs+=("$ref")
-    commits+=("$commit")
-    ;;
-  esac
-done <"$temp/push-plan"
-
-for index in "${!commits[@]}"; do
-  commit=${commits[$index]}
-  export CHECK_TIMINGS_GROUP=${commit:0:7}
-  # Scan reachable history too: deletion of a secret does not erase its commit.
-  timed "Secret scan" bash "$runner_dir/check-secrets.sh" history "$commit"
-  check_tree "$commit" push
-done
-
-for index in "${!refs[@]}"; do
-  if [[ "$(git rev-parse "${refs[$index]}^{commit}")" != "${commits[$index]}" ]]; then
-    printf 'A push ref changed during validation. Retry the push.\n' >&2
-    exit 1
-  fi
-done
-
-rm -rf "$temp"
-trap - EXIT
+bash "$(dirname "$0")/install-git-hooks.sh"
 exec git push "$@"

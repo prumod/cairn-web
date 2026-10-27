@@ -1,12 +1,16 @@
 # Agent Git gates
 
-Stage the intended changes before executing `scripts/commit-with-hooks.sh` with the Git commit arguments. It runs the commit checks (formatting, lint, boundary rules, and transcriptions) on a disposable staged snapshot, scans the staged diff for secrets, and commits only after success. Working-tree selection (`-a`, `-i`, `-o`, or path arguments) is unsupported: use staging to select content. In a linked worktree, the gate first requires the commit author described in `AGENTS.md`.
+Use ordinary `git commit` and `git push`. Run `bash scripts/install-git-hooks.sh` once per clone (also run by setup/update) to configure the repository-owned `.githooks` directory. The setting applies to linked worktrees too. Installation refuses to replace another configured hook directory or existing native commit/push hooks.
 
-Execute `scripts/push-with-hooks.sh` with the Git push arguments. Git's dry run identifies the outgoing refs; each committed snapshot receives the push checks (the commit checks plus typecheck and build) and a reachable-history secret scan before the real push. Tests and the dependency audit run only in the full check: the required CI workflow and `bun run check`. The dry run contacts the remote, so authentication is required twice. Dirty working files do not affect either gate.
+The pre-commit hook scans the actual staged diff for secrets and validates a disposable snapshot. This supports Git's normal content selection, including `commit -a` and path arguments. Linked worktrees still require the author configured as described in `AGENTS.md`.
 
-Each gate run records per-phase durations in `<git-common-dir>/check-timings/` (newest 50 runs); `bun run checks:timings [count]` shows them as job/step durations.
+Both hooks classify the diff. If every changed path is Markdown and no non-Markdown tracked file references its filename, only the secret scan runs. References are checked in both snapshots; dynamic Markdown loaders conservatively require code checks. Any other change runs the existing checks: formatting, lint, boundaries and transcriptions at commit; typecheck and build additionally at push. The policy is the same for every author. Tests and dependency audits remain in CI and `bun run check`.
 
-Both files preserve the staging area and working files. Failed checks stop the Git operation. No native Git hooks or persistent Git settings are installed. Index/ref comparisons detect changes during validation, but do not atomically lock the final Git operation.
+Pre-push reads Git's outgoing refs directly, scans outgoing history for secrets, and checks every outgoing commit's diff before deciding whether the final snapshot needs code checks. This catches code changed and later reverted. New branches or unavailable remote bases conservatively scan all reachable history. Ref deletions have no new content to validate. Dirty working files do not affect the snapshots.
+
+The old `commit-with-hooks.sh` and `push-with-hooks.sh` entrypoints install the hooks and invoke ordinary Git; they do not run duplicate checks. Native Git bypasses such as `--no-verify` remain available, so CI remains the shared enforcement boundary.
+
+Each hook records per-phase durations in `<git-common-dir>/check-timings/` (newest 50 runs); `bun run checks:timings [count]` shows them. Validation leaves working files unchanged. Index comparisons detect staging changes during validation but do not atomically lock the final operation.
 
 ## Setup and recovery
 
@@ -34,4 +38,4 @@ For the current test and audit status, see [Testing](../../TESTING.md).
 
 ## Shared enforcement
 
-PR CI invokes the same check implementations without committing or pushing. Its secret scan covers the introduced commits, including secrets deleted by a later commit. The stable `Agent checks` status must be required on `main` after the workflow has run successfully. Local files are an agent convention; branch protection is the shared enforcement boundary.
+PR CI invokes the same check implementations without committing or pushing. Its secret scan covers the introduced commits, including secrets deleted by a later commit. The stable `Agent checks` status must be required on `main` after the workflow has run successfully. Local hooks provide early feedback; branch protection is the shared enforcement boundary.
