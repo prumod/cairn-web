@@ -1,7 +1,8 @@
 import { execFileSync } from "node:child_process";
 
 const [base, head] = process.argv.slice(2);
-const git = (...args) => execFileSync("git", args);
+// Tracked files such as the .tldraw research export exceed the 1 MiB default.
+const git = (...args) => execFileSync("git", args, { maxBuffer: 256 * 1024 * 1024 });
 const paths = git("diff", "--name-only", "--no-renames", "-z", base, head)
   .toString()
   .split("\0")

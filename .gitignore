@@ -31,3 +31,6 @@ infra/**/*.tfplan
 
 # Local agent worktrees
 .claude/worktrees/
+
+# here.now publish state (claim tokens and local paths)
+.herenow/
