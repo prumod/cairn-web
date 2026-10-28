@@ -43,15 +43,16 @@ bun run mutation:incremental
 
 - `packages/infra/src/deployment.ts` → `packages/infra/src/deployment.test.ts`
 - `apps/web/src/server/config.server.ts` → `apps/web/src/server/config.server.spec.ts`
+- `apps/web/src/server/shared/observability/observability.ts` → `apps/web/src/server/shared/observability/observability.spec.ts`
 - `packages/db/src/index.ts` → `packages/db/src/index.spec.ts`
 
-These Node-environment tests import source directly and need neither a built Worker nor the disposable database. Stryker uses per-test coverage and concurrency 2. Built Worker integration and browser tests run code in a separate process/build; they cannot observe these instrumented source modules and are excluded from this pilot. The pilot does not measure the whole application's test effectiveness or mutate the new observability modules. Runner 10.1.1 is intentional: 10.0.0 ran no tests for nested Vitest 5 test names.
+These Node-environment tests import source directly and need neither a built Worker nor the disposable database. Stryker uses per-test coverage and concurrency 2. Built Worker integration and browser tests run code in a separate process/build; they cannot observe these instrumented source modules and are excluded from this pilot. The pilot does not measure the whole application's test effectiveness. Runner 10.1.1 is intentional: 10.0.0 ran no tests for nested Vitest 5 test names.
 
 Open `reports/mutation/mutation.html` for the HTML report; machine-readable results are in `reports/mutation/mutation.json`. Incremental runs use `reports/mutation/incremental.json`. Reports and `.stryker-tmp/` are ignored. Incremental results reuse prior work: run a fresh `bun run mutation` when assessing a candidate revision, especially after changing configuration, dependencies, or the test environment.
 
 `.github/workflows/mutation.yml` runs on pull requests, pushes to `main`, and manual dispatch. Its `Mutation report (advisory)` job has `continue-on-error: true`, and always attempts to upload `reports/mutation/` as artifact `mutation-report`; if no reports exist it warns. The pilot has `thresholds.break: 0`, so there is no fixed minimum mutation score or merge gate. Inspect surviving/uncovered mutants rather than treating an advisory job as acceptance evidence.
 
-The implementation worker reported 120/122 for the initial pilot, approximately 40 seconds on Node 24 and 30 seconds on Node 22. These are worker-reported initial results, not a rerun of the final working-tree change. Final checks and a fresh final mutation report remain unverified here.
+The current working-tree run passed all 65 direct tests. A fresh Stryker run tested 217 mutants: 209 killed (96.31%), 8 survived, 0 uncovered, 0 timeouts, and 0 errors. The observability helper killed 89 of 95 mutants (93.68%); all its mutants were covered. The report reflects this working tree and is not evidence of CI or a deployed revision. Review survivors in the HTML report instead of treating the score as a merge gate.
 
 ## Observability test boundary
 

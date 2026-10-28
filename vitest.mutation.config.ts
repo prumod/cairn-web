@@ -8,6 +8,7 @@ export default defineConfig({
     include: [
       "packages/infra/src/deployment.test.ts",
       "apps/web/src/server/config.server.spec.ts",
+      "apps/web/src/server/shared/observability/observability.spec.ts",
       "packages/db/src/index.spec.ts",
     ],
     allowOnly: false,

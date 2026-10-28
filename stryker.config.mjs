@@ -20,6 +20,7 @@ export default {
   mutate: [
     "packages/infra/src/deployment.ts",
     "apps/web/src/server/config.server.ts",
+    "apps/web/src/server/shared/observability/observability.ts",
     "packages/db/src/index.ts",
   ],
   // Runner 10.1.1 supports Vitest 5 per-test name filtering; 10.0.0 runs no tests for nested names.
