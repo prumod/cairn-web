@@ -15,6 +15,7 @@ import { Route as HealthzRouteImport } from './routes/healthz'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as ApiAnalyticsConfigRouteImport } from './routes/api/analytics-config'
 import { Route as ApiCompanyProfileRouteImport } from './routes/api/company-profile'
 import { Route as ApiMeRouteImport } from './routes/api/me'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -51,6 +52,11 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAnalyticsConfigRoute = ApiAnalyticsConfigRouteImport.update({
+  id: '/api/analytics-config',
+  path: '/api/analytics-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCompanyProfileRoute = ApiCompanyProfileRouteImport.update({
   id: '/api/company-profile',
   path: '/api/company-profile',
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/api/$': typeof ApiSplatRoute
+  '/api/analytics-config': typeof ApiAnalyticsConfigRoute
   '/api/company-profile': typeof ApiCompanyProfileRoute
   '/api/me': typeof ApiMeRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/api/$': typeof ApiSplatRoute
+  '/api/analytics-config': typeof ApiAnalyticsConfigRoute
   '/api/company-profile': typeof ApiCompanyProfileRoute
   '/api/me': typeof ApiMeRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/api/$': typeof ApiSplatRoute
+  '/api/analytics-config': typeof ApiAnalyticsConfigRoute
   '/api/company-profile': typeof ApiCompanyProfileRoute
   '/api/me': typeof ApiMeRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/api/$'
+    | '/api/analytics-config'
     | '/api/company-profile'
     | '/api/me'
     | '/api/auth/$'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/api/$'
+    | '/api/analytics-config'
     | '/api/company-profile'
     | '/api/me'
     | '/api/auth/$'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/api/$'
+    | '/api/analytics-config'
     | '/api/company-profile'
     | '/api/me'
     | '/api/auth/$'
@@ -166,6 +178,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   ApiSplatRoute: typeof ApiSplatRoute
+  ApiAnalyticsConfigRoute: typeof ApiAnalyticsConfigRoute
   ApiCompanyProfileRoute: typeof ApiCompanyProfileRoute
   ApiMeRoute: typeof ApiMeRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -217,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/analytics-config': {
+      id: '/api/analytics-config'
+      path: '/api/analytics-config'
+      fullPath: '/api/analytics-config'
+      preLoaderRoute: typeof ApiAnalyticsConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/company-profile': {
       id: '/api/company-profile'
       path: '/api/company-profile'
@@ -262,6 +282,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   ApiSplatRoute: ApiSplatRoute,
+  ApiAnalyticsConfigRoute: ApiAnalyticsConfigRoute,
   ApiCompanyProfileRoute: ApiCompanyProfileRoute,
   ApiMeRoute: ApiMeRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

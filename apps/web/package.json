@@ -20,6 +20,7 @@
     "drizzle-orm": "catalog:",
     "lucide-react": "^1.61.0",
     "next-themes": "catalog:",
+    "posthog-js": "^1.441.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "sonner": "catalog:",

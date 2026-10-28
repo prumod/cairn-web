@@ -43,6 +43,9 @@ const authSecret = Effect.gen(function* () {
 // the Worker's own URL, so the deployment config is resolved here and passed as plain values.
 export const web = Effect.gen(function* () {
   const { domain, workersDev, appEnv, revision } = yield* deployment;
+  const stage = yield* Alchemy.Stage;
+  const posthogToken =
+    stage === "production" ? yield* Config.NonEmptyString("POSTHOG_PROJECT_TOKEN") : "";
   return yield* Cloudflare.Website.Vite("web", {
     rootDir: "../../apps/web",
     domain,
@@ -50,6 +53,11 @@ export const web = Effect.gen(function* () {
     compatibility: {
       date: "2026-10-09",
       flags: ["nodejs_compat"],
+    },
+    observability: {
+      enabled: true,
+      logs: { enabled: true, invocationLogs: true, headSamplingRate: 1 },
+      traces: { enabled: true, headSamplingRate: 1 },
     },
     env: {
       DATABASE_URL: database,
@@ -61,6 +69,8 @@ export const web = Effect.gen(function* () {
       BOOTSTRAP_ADMIN_EMAIL: Config.NonEmptyString("BOOTSTRAP_ADMIN_EMAIL"),
       APP_ENV: appEnv,
       GIT_SHA: revision,
+      DEPLOYMENT_STAGE: stage,
+      POSTHOG_PROJECT_TOKEN: posthogToken,
     },
     dev: {
       port: 3001,

@@ -34,3 +34,7 @@ infra/**/*.tfplan
 
 # here.now publish state (claim tokens and local paths)
 .herenow/
+
+# Mutation testing output and sandboxes
+reports/mutation/
+.stryker-tmp/

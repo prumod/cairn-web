@@ -34,6 +34,8 @@ export default Alchemy.Stack(
         BOOTSTRAP_ADMIN_EMAIL: required("BOOTSTRAP_ADMIN_EMAIL"),
         APP_ENV: "test",
         GIT_SHA: required("GIT_SHA"),
+        DEPLOYMENT_STAGE: "test",
+        POSTHOG_PROJECT_TOKEN: "",
       },
     });
     return { app: worker.url };
