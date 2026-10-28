@@ -3,6 +3,11 @@ set -euo pipefail
 root=$(git rev-parse --show-toplevel)
 scanner="${GITLEAKS_BIN:-$root/.tools/gitleaks}"
 
+# A new linked worktree has no .tools/, so fetch the pinned scanner once.
+if [[ ! -x "$scanner" && "$scanner" == "$root/.tools/gitleaks" ]]; then
+  bash "$(dirname "${BASH_SOURCE[0]}")/install-gitleaks.sh" >&2
+fi
+
 if [[ ! -x "$scanner" ]]; then
   printf 'Gitleaks is missing. Execute scripts/install-gitleaks.sh first.\n' >&2
   exit 2
