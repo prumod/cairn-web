@@ -17,10 +17,17 @@ function safeFrames(error: unknown) {
   return error.stack
     .split("\n")
     .slice(1)
-    .map((line) => line.match(/^\s*at ([\w.$]+) \([^()\s?#]*\/([\w.-]+\.(?:js|ts)):(\d+):(\d+)\)$/))
-    .filter((match): match is RegExpMatchArray => match !== null)
-    .slice(0, 5)
-    .map((match) => `${match[1]} ${match[2]}:${match[3]}:${match[4]}`);
+    .map((line) => {
+      const match = line.match(
+        /^\s*at (?:async )?(?:(?<function>[\w.$]+) )?\(?(?<location>[^()\s?#]+):(?<line>\d+):(?<column>\d+)\)?$/,
+      );
+      if (!match?.groups) return undefined;
+      const filename = match.groups.location?.split(/[\\/]/).at(-1);
+      if (!filename || !/^[\w.-]+\.(?:[cm]?js|ts)$/.test(filename)) return undefined;
+      return `${match.groups.function ? `${match.groups.function} ` : ""}${filename}:${match.groups.line}:${match.groups.column}`;
+    })
+    .filter((frame): frame is string => frame !== undefined)
+    .slice(0, 5);
 }
 
 export async function handleRequest(
