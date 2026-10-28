@@ -56,6 +56,66 @@ test("a failed Worker request keeps bundle frames and redacts absolute paths", a
   expect(JSON.stringify(log.mock.calls)).not.toContain("secret-token");
 });
 
+test("a failed Worker request keeps the first frame when the stack has no header", async () => {
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  const error = new Error("secret-token");
+  error.stack = [
+    "    at firstFrame (worker.js:123:45)",
+    "    at secondFrame (/private/worker.js:34:5)",
+  ].join("\n");
+
+  await handleRequest("save_company_profile", "revision-123", async () => {
+    throw error;
+  });
+
+  expect(log.mock.calls[0]?.[0].stack).toEqual([
+    "firstFrame worker.js:123:45",
+    "secondFrame worker.js:34:5",
+  ]);
+  expect(JSON.stringify(log.mock.calls)).not.toContain("/private");
+});
+
+test("a failed Worker request records no more than five stack frames", async () => {
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  const error = new Error("secret-token");
+  error.stack = [
+    "Error: secret-token",
+    ...Array.from(
+      { length: 7 },
+      (_, index) => `    at operation${index} (/app/worker-${index}.js:${index + 1}:3)`,
+    ),
+  ].join("\n");
+
+  await handleRequest("save_company_profile", "revision-123", async () => {
+    throw error;
+  });
+
+  expect(log.mock.calls[0]?.[0].stack).toEqual([
+    "operation0 worker-0.js:1:3",
+    "operation1 worker-1.js:2:3",
+    "operation2 worker-2.js:3:3",
+    "operation3 worker-3.js:4:3",
+    "operation4 worker-4.js:5:3",
+  ]);
+});
+
+test("a failed Worker request omits frames with unsafe basenames", async () => {
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  const error = new Error("secret-token");
+  error.stack = [
+    "Error: secret-token",
+    "    at unsafe (/app/bad!worker.js:1:2)",
+    "    at suffixed (/app/worker.js.extra:3:4)",
+    "    at safe (/app/worker.js:5:6)",
+  ].join("\n");
+
+  await handleRequest("save_company_profile", "revision-123", async () => {
+    throw error;
+  });
+
+  expect(log.mock.calls[0]?.[0].stack).toEqual(["safe worker.js:5:6"]);
+});
+
 test("a failure without a stack records an empty frame list", async () => {
   const log = vi.spyOn(console, "error").mockImplementation(() => {});
   const error = new Error("secret-token");
