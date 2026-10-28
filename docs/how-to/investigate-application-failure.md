@@ -23,7 +23,7 @@ Use this sequence to investigate a failed company-profile save without collectin
 
 5. If a recording is available, verify masking with synthetic values before using recordings for investigation: text, inputs, and element attributes must be masked; hidden/file inputs, images, video, and canvas blocked; request bodies, headers, and browser console excluded. Check that ordinary event URL/referrer metadata is absent and recorded network names contain origins only. These controls are configured in source but actual hosted replay behavior remains unverified. Browser exceptions are generic and may include a same-origin asset basename with line/column, not the original error message.
 
-6. In Cloudflare, look for the platform invocation/trace in the same Worker, time window, and operation context. Alchemy declares logs/traces with head sampling `1`, but there is no application-created trace ID or automatic cross-provider link. Do not treat the request UUID as a platform trace ID. The Vite `ssr` build generates server source maps; a local build produced maps under `apps/web/dist/server` and none under `apps/web/dist/client`. Alchemy's map upload and usable original-source frames in Cloudflare remain unverified. The sanitized application stack contains strings, which may not be remapped by Cloudflare. Live replay/event/log/trace correlation also remains unverified.
+6. In Cloudflare, look for the platform invocation/trace in the same Worker, time window, and operation context. Alchemy declares logs/traces with head sampling `1`, but there is no application-created trace ID or automatic PostHog-to-Cloudflare link. Do not treat the request UUID as a platform trace ID. A testing-stage REST query matched seven health-event Cloudflare trace IDs to trace summaries; matching a successful application's `X-Request-ID` to a platform event or trace was not verified. The Vite `ssr` build generates server source maps; a local build produced maps under `apps/web/dist/server` and none under `apps/web/dist/client`. Alchemy's map upload and usable original-source frames in Cloudflare remain unverified. The sanitized application stack contains strings, which may not be remapped by Cloudflare. Live replay/event/log/trace correlation also remains unverified.
 
 Expected result: a report containing stage, revision, UTC window, operation, HTTP status, request ID, and sanitized findings, with each missing signal stated. Do not include tokens, emails, profile data, or local Alchemy state.
 
@@ -38,8 +38,51 @@ curl --fail --silent --show-error "$CAIRN_DIAGNOSTIC_ORIGIN/api/analytics-config
 
 Testing/dev/test should return null (`enabled: False`). Production should return a matching EU host and token format. This checks public configuration, not ingestion, project permissions, recordings, or provider billing. Do not paste the endpoint's raw JSON into reports.
 
-## API and agent query limits
+## Query Cloudflare events and traces
 
-The local implementation and test definitions establish the request-ID/header contract and configured SDK options. Earlier live `/healthz`, OAuth, and profile checks are recorded in [Run the company profile](run-company-profile.md#verification-and-deployment-limits) for a specific older revision. They do not verify these observability changes. No authenticated Cloudflare log/trace query, PostHog event/replay query, or observability MCP tool has been verified by this documentation task.
+The account's Workers Observability token is stored at `~/.config/cairn/cloudflare-observability-token` with mode `0600`. It has the account-scoped Workers Observability Edit permission; Cloudflare requires this write permission for the telemetry query API, even for a dry query. Keep the token outside the repository and do not print it. Use the dashboard or your environment to find the account ID and the affected stage's Worker name. From the repository root, set both values and query the last hour:
 
-API/MCP automation is a proposed next step: verify a currently available read-only query interface and its actual schema against one known request before automating it. Scope credentials to the relevant account/project and read access; keep them outside the browser configuration and repository. Use the same Worker/time/revision/request-ID filters above. Do not assume a tool name, API route, global credential location, project ID, or trace correlation capability. No deployment or destroy command is part of this investigation. For any later deployment, follow the existing explicit stage-approval and local-state preparation policy in the deployment guide.
+```sh
+export CAIRN_ACCOUNT_ID='<Cloudflare account ID>'
+export CAIRN_WORKER_NAME='<testing Worker name>'
+python3 - <<'PY'
+import json, os, time, urllib.error, urllib.request
+from pathlib import Path
+
+account = os.environ['CAIRN_ACCOUNT_ID']
+worker = os.environ['CAIRN_WORKER_NAME']
+token = (Path.home() / '.config/cairn/cloudflare-observability-token').read_text().strip()
+now = int(time.time() * 1000)
+url = f'https://api.cloudflare.com/client/v4/accounts/{account}/workers/observability/telemetry/query'
+
+def query(view):
+    payload = {
+        'queryId': 'cairn-safe-health-audit',
+        'timeframe': {'from': now - 3600000, 'to': now},
+        'dry': True,
+        'limit': 200,
+        'view': view,
+        'parameters': {'datasets': ['cloudflare-workers'], 'needle': {'value': worker}},
+    }
+    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method='POST',
+        headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'})
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            body = json.load(response)
+    except urllib.error.HTTPError as error:
+        raise SystemExit(f'Cloudflare {view} query failed: HTTP {error.code}') from None
+    if not body.get('success'):
+        raise SystemExit(f'Cloudflare {view} query was not successful')
+    return body['result']
+
+events_result, traces_result = query('events'), query('traces')
+events = events_result.get('events', {}).get('events', [])
+traces = traces_result.get('traces', [])
+event_ids = {e.get('$metadata', {}).get('traceId') or e.get('$metadata.traceId') for e in events}
+trace_ids = {t.get('traceId') for t in traces}
+print({'events': len(events), 'traces': len(traces),
+       'matched_trace_ids': len((event_ids & trace_ids) - {None})})
+PY
+```
+
+The example prints counts only; it does not print the token or raw telemetry, which may contain sensitive data. It limits each view to 200 results, so matching counts are not a complete audit. Adjust the time window and Worker for the report. The endpoint accepts `view` at the top level: `events` and `traces` are separate queries. Compare Cloudflare's event `$metadata.traceId` with a trace summary's `traceId`; do not equate those IDs with the application's `X-Request-ID`. This query was verified for testing health events and traces, not for a failed company-profile save or PostHog replay. No authenticated PostHog event/replay query or observability MCP tool is verified here.
