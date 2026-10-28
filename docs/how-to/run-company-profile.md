@@ -70,11 +70,12 @@ A cloud deploy needs these inputs from a human:
 - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
 - `BOOTSTRAP_ADMIN_EMAIL`
 - `GIT_SHA`, the full 40-character lowercase hexadecimal commit
+- `POSTHOG_PROJECT_TOKEN` for production: the public write-only PostHog project token, supplied through ignored local configuration or the process environment; never a personal API key
 - Cloudflare authorization for Alchemy
 
-Put secrets in the ignored `packages/infra/.env.local` (Varlock loads it over `.env.schema`) or in the process environment. Never commit them. Each deployed stage uses its own generated secrets and its own Google OAuth client in Google Cloud project `cairn`. Both clients use an External/Testing consent screen; the test users are `tiagojacintodev@gmail.com` and `tiagojacinto7@gmail.com`. For production deploys, export the production client's `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; these override the testing values in `packages/infra/.env.local`.
+Put secrets in the ignored `packages/infra/.env.local` (Varlock loads it over `.env.schema`) or in the process environment. Never commit them. Each deployed stage uses its own generated secrets and its own Google OAuth client in Google Cloud project `cairn`. Both clients use an External/Testing consent screen; the test users are `tiagojacintodev@gmail.com` and `tiagojacinto7@gmail.com`. For production deploys, supply the production client's `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; process variables override the local file. Do not assume a worktree contains the earlier stage inputs.
 
-For routine deploys of an existing stage, set `NEON_API_KEY` to that stage's project-scoped key. An exported variable overrides `packages/infra/.env.local`, which currently contains the testing scoped key. The keys `cairn-testing-scoped` and `cairn-production-scoped` returned 200 for their own project and 404 for the other project, project listing, and project creation; they cannot delete projects or create keys. Creating a new stage or running `destroy:<stage>` requires the organization API key `cairn-alchemy`, kept outside the repository and `.env.local`. A no-op deploy does not call Neon, so an Alchemy Neon update with a scoped key has not yet been verified.
+For routine deploys of an existing stage, set `NEON_API_KEY` to that stage's project-scoped key. An exported variable overrides `packages/infra/.env.local`; confirm its stage without printing its values. The earlier deployment used a testing scoped key in that file, which is not a guarantee about this checkout. The keys `cairn-testing-scoped` and `cairn-production-scoped` returned 200 for their own project and 404 for the other project, project listing, and project creation; they cannot delete projects or create keys. Creating a new stage or running `destroy:<stage>` requires the organization API key `cairn-alchemy`, kept outside the repository and `.env.local`. A no-op deploy does not call Neon, so an Alchemy Neon update with a scoped key has not yet been verified.
 
 Neon project-scoped keys can be created only with a personal API key or OAuth session; an organization key is rejected. After `neonctl auth`, create one with `neonctl api-keys create --name <name> --project-id <project-id>`. Neon shows the key once. It stops working if the project is transferred out of the organization. `ALCHEMY_PASSWORD` appears only as an empty key in `packages/infra/.env.schema`; no value is configured.
 
@@ -83,9 +84,27 @@ These steps cannot be infrastructure code and stay manual:
 - Create a separate Google OAuth Web client for each environment in Google Cloud Console, with redirect URI `https://<domain>/api/auth/callback/google`.
 - Change the nameservers and the DNSSEC DS record at the registrar, Spaceship.
 
+### Prepare the existing stage safely
+
+Before planning from a new worktree, locate the checkout that owns the stage's existing Alchemy state. The earlier cloud deployment used a separate worktree; this checkout's `.alchemy` directory is not proof that it owns either hosted stage. Confirm the stage, Worker resource, Neon project, and expected revision with the state owner. Do not deploy with an empty or unrelated state directory: it can propose duplicate resources.
+
+With that owner, back up the existing `packages/infra/.alchemy` locally and prepare the intended stage state and ignored inputs in the deployment checkout. Preserve restrictive permissions (`umask 077`, directories `0700`, files `0600`) for state, backups, and credential files. Do not concatenate, dump, commit, or attach these files to a report: Alchemy state contains plaintext credentials. Do not invent a source path or copy all stage inputs blindly; confirm which stage each input belongs to. Check that local input files are ignored without displaying their contents:
+
+```sh
+git check-ignore packages/infra/.env.local packages/infra/.alchemy/state
+```
+
+Supply the correct stage's Neon key, OAuth client, Cloudflare authorization, and approved `GIT_SHA`; production also needs `POSTHOG_PROJECT_TOKEN`. Keep values out of command transcripts and shell tracing. Review the plan privately because provider output can contain sensitive details. Stop if an update to the existing stage instead proposes unexpected resource creation or deletion; reconcile state with its owner. Do not destroy resources or clear state to resolve this mismatch.
+
+### Configure observability inputs
+
+Alchemy sets `DEPLOYMENT_STAGE` to its selected stage. Both hosted stages set `APP_ENV=production`; only `DEPLOYMENT_STAGE=production` enables PostHog. Do not override the stage binding to test capture on testing. The development and acceptance stacks disable browser capture. The production stack requires a non-empty `POSTHOG_PROJECT_TOKEN`; the browser accepts only a `phc_` token and `https://eu.i.posthog.com`. Obtain the project's public write-only token from the intended EU project; no token value or external project ID is prescribed by this guide. Account/project provisioning and query credentials are separate from this binding.
+
+The Worker declaration explicitly enables invocation logs, application logs, and traces, with log and trace head sampling set to `1`. These settings do not establish actual hosted ingestion or free-tier usage. See [Architecture](../../ARCHITECTURE.md#observability) for privacy controls and [Investigate an application failure](investigate-application-failure.md) for verification without printing credentials. Source-map generation/upload and live replay/log/trace correlation for this change have not been verified.
+
 ### Plan and deploy testing
 
-From `packages/infra`, review the testing plan for the exact approved 40-character lowercase commit SHA. Replace the placeholder below with that SHA:
+After the stage preparation above, from `packages/infra`, review the testing plan for the exact approved 40-character lowercase commit SHA. Replace the placeholder below with that SHA:
 
 ```sh
 env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<approved-full-SHA>' bun node_modules/alchemy/bin/cli.js plan --stage testing --detailed
@@ -101,7 +120,7 @@ Replace `<40-hex>` with the approved revision's full 40-character lowercase hexa
 
 ### Plan and deploy production
 
-From `packages/infra`, export the production OAuth client's `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. These override the testing values in `.env.local`. Then deploy the approved revision:
+After the stage preparation above, from `packages/infra`, supply the production OAuth client's `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Process values override `.env.local`; confirm the inputs belong to production. Then deploy the approved revision:
 
 ```sh
 env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<40-hex>' bun run deploy:production --no-input --yes
@@ -127,7 +146,7 @@ Cloudflare Billable usage and Invoices showed “No invoices”; Cloudflare Work
 
 On 2026-10-22, the Cloudflare Workers dashboard showed 708 production invocations in 24 hours, 0 errors, and 4 ms CPU time. Testing recorded 862 requests with a 4.9 ms median. The Workers Free CPU limit is 10 ms; p99 was not read. After about 7 minutes idle, `/healthz` (which runs `SELECT 1`) took 0.90 s, 0.67 s, and 0.24 s. Warm responses took 0.17–0.34 s. These are observed timings, not load-test results.
 
-The `/privacy` and `/terms` pages match the data stored by the code, but do not identify the data controller or contact, state a retention period, or describe data-subject rights. A legal review remains outstanding.
+The current `/privacy` page also describes production analytics and masked replay; its deployment with this change is unverified. The legal pages do not identify the data controller or contact, state a retention period, or describe data-subject rights. A legal review remains outstanding.
 
 The package scripts are `deploy:testing`, `deploy:production`, `destroy:testing`, and `destroy:production`; each fixes its stage, and there are no implicit `deploy` or `destroy` aliases. These script names are documented for identification, not as ready-to-run commands. They can change remote resources when run with valid Cloudflare or Neon authentication, including persistent Alchemy OAuth/token credentials; unsetting `CLOUDFLARE_API_KEY` and `CLOUDFLARE_ACCOUNT_ID` alone does not prevent that. Any deploy or destroy requires separate explicit approval for that operation and stage, plus verified isolated credentials and other inputs. For reference, the scripts are run with working directory `packages/infra`.
 

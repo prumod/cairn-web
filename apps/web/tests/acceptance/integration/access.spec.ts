@@ -14,6 +14,7 @@ test("a pending user cannot retrieve company data", async () => {
   const response = await app.request("/api/company-profile", user.cookie);
   // result verification
   expect(response.status).toBe(403);
+  expect(response.headers.get("x-request-id")).toMatch(/^[0-9a-f-]{36}$/);
   expect(await response.json()).toEqual({ error: "Account awaits approval." });
   const currentUser = await app.request("/api/me", user.cookie);
   expect(currentUser.status).toBe(200);
@@ -23,6 +24,12 @@ test("a pending user cannot retrieve company data", async () => {
     approved: false,
     administrator: false,
   });
+});
+
+test("the acceptance Worker never exposes production analytics configuration", async () => {
+  const response = await app.request("/api/analytics-config");
+  expect(response.status).toBe(200);
+  expect(await response.json()).toBeNull();
 });
 
 test("an administrator can approve a user who can then read the empty profile", async () => {

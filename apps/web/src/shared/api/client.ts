@@ -2,6 +2,7 @@ export class ApiError extends Error {
   constructor(
     public readonly status: number,
     message: string,
+    public readonly requestId: string | null = null,
   ) {
     super(message);
   }
@@ -14,7 +15,7 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
       typeof body === "object" && body !== null && "error" in body && typeof body.error === "string"
         ? body.error
         : "Não foi possível concluir o pedido. Tente novamente.";
-    throw new ApiError(response.status, message);
+    throw new ApiError(response.status, message, response.headers.get("x-request-id"));
   }
   return response.json() as Promise<T>;
 }

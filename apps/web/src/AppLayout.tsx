@@ -1,6 +1,7 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { request } from "./shared/api/client.js";
+import { identify, reset } from "./shared/analytics/analytics.js";
 
 type CurrentUser = { id: string; email: string; approved: boolean; administrator: boolean };
 
@@ -15,7 +16,11 @@ export function AppLayout() {
   useEffect(() => {
     if (isPublicLegalPage) return;
     request<CurrentUser | null>("/api/me")
-      .then(setUser)
+      .then((current) => {
+        setUser(current);
+        if (current) void identify(current.id);
+        else void reset();
+      })
       .catch(() =>
         setError("Não foi possível carregar a sessão. Atualize a página para tentar novamente."),
       );
@@ -42,6 +47,7 @@ export function AppLayout() {
         headers: { "Content-Type": "application/json" },
         body: "{}",
       });
+      await reset();
       window.location.assign("/");
     } catch {
       setError("Não foi possível terminar a sessão. Tente novamente.");

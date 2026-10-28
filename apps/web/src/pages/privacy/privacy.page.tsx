@@ -28,6 +28,17 @@ export function PrivacyPage() {
         PostgreSQL através do cliente Neon HTTP. A aplicação corre num Cloudflare Worker e liga-se à
         base de dados configurada.
       </p>
+      <h2>Utilização e diagnóstico</h2>
+      <p>
+        Na versão de produção, o Cairn usa o PostHog na União Europeia para registar a abertura do
+        perfil e as tentativas e resultados de gravação. Um identificador técnico liga estes eventos
+        à conta, sem enviar o nome ou a morada da empresa nos eventos.
+      </p>
+      <p>
+        As gravações de sessão ocultam texto, campos e atributos dos elementos. O Cairn não envia
+        corpos ou cabeçalhos de pedidos nem registos da consola do navegador nas gravações.
+        Identificadores de pedidos e registos técnicos no Cloudflare ajudam a investigar falhas.
+      </p>
     </section>
   );
 }

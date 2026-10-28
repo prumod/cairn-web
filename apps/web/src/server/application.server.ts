@@ -6,19 +6,16 @@ import {
   parseCompanyProfile,
 } from "./modules/company/profile.js";
 import { getRuntime } from "./runtime.server.js";
+import { ENV } from "../env.server.js";
+import { DependencyUnavailable, handleRequest } from "./shared/observability/observability.js";
+import { publicAnalyticsConfig } from "./shared/observability/analyticsConfig.js";
 
 function json(value: unknown, status = 200) {
   return Response.json(value, { status, headers: { "Cache-Control": "no-store" } });
 }
 
-async function protect(action: () => Promise<Response>) {
-  try {
-    return await action();
-  } catch (error) {
-    if (error instanceof SyntaxError) return json({ error: "Invalid JSON." }, 400);
-    console.error("Request failed.");
-    return json({ error: "Request failed. Try again." }, 500);
-  }
+function protect(operation: string, action: () => Promise<Response>) {
+  return handleRequest(operation, ENV.GIT_SHA ?? "local", action);
 }
 
 async function signedIn(request: Request) {
@@ -34,19 +31,19 @@ function sameOrigin(request: Request, expectedOrigin: string) {
 }
 
 export function getHealth() {
-  return protect(async () => {
+  return protect("health", async () => {
     const runtime = await getRuntime();
     try {
       await runtime.db.execute(sql.raw("SELECT 1"));
-      return json({ status: "ready", revision: runtime.config.revision });
-    } catch {
-      return json({ status: "unavailable" }, 503);
+    } catch (error) {
+      throw new DependencyUnavailable(error);
     }
+    return json({ status: "ready", revision: runtime.config.revision });
   });
 }
 
 export function getCurrentUser(request: Request) {
-  return protect(async () => {
+  return protect("get_current_user", async () => {
     const current = await signedIn(request);
     if (!current.session || !current.access) return json(null);
     return json({
@@ -58,8 +55,14 @@ export function getCurrentUser(request: Request) {
   });
 }
 
+export function getAnalyticsConfig() {
+  return protect("get_analytics_config", async () =>
+    json(publicAnalyticsConfig(ENV.DEPLOYMENT_STAGE, ENV.POSTHOG_PROJECT_TOKEN)),
+  );
+}
+
 export function getUsers(request: Request) {
-  return protect(async () => {
+  return protect("list_users", async () => {
     const current = await signedIn(request);
     if (!current.session) return json({ error: "Sign in required." }, 401);
     if (!current.access?.administrator || !current.access.approved) {
@@ -70,7 +73,7 @@ export function getUsers(request: Request) {
 }
 
 export function updateUserAccess(request: Request, userId: string) {
-  return protect(async () => {
+  return protect("update_user_access", async () => {
     const runtime = await getRuntime();
     if (!sameOrigin(request, runtime.config.origin)) {
       return json({ error: "Same-origin request required." }, 403);
@@ -99,7 +102,7 @@ export function updateUserAccess(request: Request, userId: string) {
 }
 
 export function getCompanyProfileRoute(request: Request) {
-  return protect(async () => {
+  return protect("get_company_profile", async () => {
     const current = await signedIn(request);
     if (!current.session) return json({ error: "Sign in required." }, 401);
     if (!current.access?.approved) return json({ error: "Account awaits approval." }, 403);
@@ -108,7 +111,7 @@ export function getCompanyProfileRoute(request: Request) {
 }
 
 export function updateCompanyProfile(request: Request) {
-  return protect(async () => {
+  return protect("save_company_profile", async () => {
     const runtime = await getRuntime();
     if (!sameOrigin(request, runtime.config.origin)) {
       return json({ error: "Same-origin request required." }, 403);

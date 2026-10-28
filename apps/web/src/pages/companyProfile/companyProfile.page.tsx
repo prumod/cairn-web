@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { ApiError, put, request } from "../../shared/api/client";
+import { track } from "../../shared/analytics/analytics";
 
 type Profile = { name: string; address: string; radiusKm: number };
 export function CompanyProfilePage() {
@@ -10,6 +11,7 @@ export function CompanyProfilePage() {
   const [saved, setSaved] = useState(false);
   useEffect(() => {
     let active = true;
+    void track("company_profile_viewed");
     request<Profile | null>("/api/company-profile")
       .then((data) => {
         if (active) setProfile(data);
@@ -31,6 +33,7 @@ export function CompanyProfilePage() {
     setSaving(true);
     setSaved(false);
     setError("");
+    void track("company_profile_save_attempted");
     const form = new FormData(event.currentTarget);
     try {
       const updated = await put<Profile>("/api/company-profile", {
@@ -40,7 +43,13 @@ export function CompanyProfilePage() {
       });
       setProfile(updated);
       setSaved(true);
+      void track("company_profile_save_succeeded");
     } catch (failure) {
+      const requestId = failure instanceof ApiError ? failure.requestId : null;
+      void track("company_profile_save_failed", {
+        ...(failure instanceof ApiError ? { status: failure.status } : {}),
+        ...(requestId && /^[0-9a-f-]{36}$/.test(requestId) ? { request_id: requestId } : {}),
+      });
       if (failure instanceof ApiError && failure.status === 403) setPending(true);
       else
         setError(failure instanceof Error ? failure.message : "Não foi possível guardar o perfil.");
