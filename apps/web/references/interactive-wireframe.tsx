@@ -1,4 +1,4 @@
-// Future features only: Now (N01–N04, N13, N14) lives in the main prototype, web/references/prototype-discovery/.
+// Later and Maybe features only. Now (N01–N04, N13, N14) lives in web/references/final-visual/.
 import { useState, type FormEvent, type ReactNode } from "react";
 
 type Page =
@@ -37,7 +37,7 @@ type Opportunity = {
 };
 
 const referenceDate = "2026-10-01";
-// The company profile is edited in the main prototype (N01); here it is a fixed example.
+// The company profile is edited in the Now prototype (N01); here it is a fixed example.
 const licence = "Classe 3 demonstrativa";
 const originalOpportunities: Opportunity[] = [
   {

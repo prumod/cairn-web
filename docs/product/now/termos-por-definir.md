@@ -1,6 +1,6 @@
 # Cairn — termos por definir no percurso Now
 
-Lista de trabalho para resolver o vocabulário de [Now](funcionalidades.md), ordenada do maior para o menor grau de certeza sobre o significado. A certeza indicada é uma avaliação qualitativa do apoio nas fontes, não uma aprovação pelo utilizador ou uma validação jurídica.
+Lista de trabalho para resolver o vocabulário de [Now](https://github.com/prumod/cairn-web/issues/104), ordenada do maior para o menor grau de certeza sobre o significado. A certeza indicada é uma avaliação qualitativa do apoio nas fontes, não uma aprovação pelo utilizador ou uma validação jurídica.
 
 Nenhum destes termos é tratado como definitivamente resolvido. O [GLOSSARY.md](../../../GLOSSARY.md) fica reservado às definições sem incerteza; não contém atualmente estas definições propostas.
 
@@ -94,4 +94,4 @@ A T3 moveu a decisão de participar, o dossier, a checklist, os preços e a pass
 
 Regras associadas a estas funcionalidades, também em aberto: tratamento de impostos, margem e arredondamento; documentos obrigatórios e condições de prontidão de cada proposta.
 
-As fontes e os limites atualmente conhecidos estão em [funcionalidades.md](funcionalidades.md). Esta lista não amplia o âmbito Now nem aprova funcionalidades ou regras novas.
+O âmbito Now está no [PRD de Now](https://github.com/prumod/cairn-web/issues/104). Esta lista não amplia o âmbito Now nem aprova funcionalidades ou regras novas.
