@@ -4,7 +4,7 @@ Run `bun run hooks:install` once per clone (also run by setup/update) to configu
 
 The pre-commit hook scans the actual staged diff for secrets and validates a disposable snapshot. This supports Git's normal content selection, including `commit -a` and path arguments. Linked worktrees still require the author configured as described in `AGENTS.md`.
 
-Both hooks classify the diff. If every changed path is Markdown and no non-Markdown tracked file references its filename, only the secret scan runs. References are checked in both snapshots; dynamic Markdown loaders conservatively require code checks. Any other change runs the existing checks: formatting, lint, boundaries and transcriptions at commit; typecheck and build additionally at push. The policy is the same for every author. Tests and dependency audits remain in CI and `bun run check`.
+Both hooks scan for secrets and check that relative Markdown links in the commit or pushed tree point to tracked files (`scripts/check-doc-links.mjs`; anchors are not checked). They then classify the diff. If every changed path is Markdown and no non-Markdown tracked file consumes a changed document, nothing else runs. A file consumes a document when it names the document's path, or its filename when no other tracked file shares it. A file that reads Markdown (a loader) also consumes the documents in a directory it names, and every document when it uses a wildcard or recursion. Consumers are checked in both snapshots; a loader that builds paths from segments is not matched, so CI remains the backstop. Any other change runs the existing checks: formatting, lint, boundaries and transcriptions at commit; typecheck and build additionally at push. The policy is the same for every author. Tests and dependency audits remain in CI and `bun run check`.
 
 Pre-push reads Git's outgoing refs directly, scans outgoing history for secrets, and checks every outgoing commit's diff before deciding whether the final snapshot needs code checks. This catches code changed and later reverted. New branches or unavailable remote bases conservatively scan all reachable history. Ref deletions have no new content to validate. Dirty working files do not affect the snapshots.
 
@@ -16,9 +16,11 @@ Each hook records per-phase durations in `<git-common-dir>/check-timings/` (newe
 
 With host prerequisites installed, execute `scripts/setup.sh` to prepare the locked dependencies, scanner, and browser. The human `setup-project` wizards also provision missing host tools, including Docker, start the development database from `compose.dev.yaml`, apply its migrations, and write the ignored `packages/infra/.env.local`.
 
-The gates need Bash, Git, Bun 1.3.14, Node.js 22.12+, and Gitleaks 8.30.0. Execute `scripts/install-gitleaks.sh` on Linux x64/arm64 to install the checksum-verified scanner into ignored `.tools/`. On other hosts, set `GITLEAKS_BIN` to an absolute path to that version.
+The gates need Bash, Git, Bun 1.3.14, Node.js 22.12+, and Gitleaks 8.30.0. On Linux x64/arm64 the hooks run `scripts/install-gitleaks.sh` when `.tools/gitleaks` is missing, which installs the checksum-verified scanner into ignored `.tools/`; each linked worktree installs it once. On other hosts, set `GITLEAKS_BIN` to an absolute path to that version.
 
 Install Chromium with `PLAYWRIGHT_SKIP_BROWSER_GC=1 bunx --no-install playwright install chromium` before running browser scenarios. This preserves browsers used by other local tools. CI installs its system dependencies too.
+
+Each commit or push that needs code checks runs `bun install --frozen-lockfile` in a clean snapshot. Recorded runs range from 1 s, with warm caches, to 12 minutes after the Bun cache was purged or the lockfile changed. The hook prints a notice before it starts. Run `bun run checks:timings` to see where a run spent its time, and do not pipe the Git command through `tail`, which hides its exit status.
 
 The full check (CI and `bun run check`) audits all locked dependencies, including development tools, with `bun audit`. Any reported vulnerability or unavailable advisory service blocks it. The commit and push gates omit this network-dependent step. Auditing reports findings without changing dependencies or the lockfile.
 

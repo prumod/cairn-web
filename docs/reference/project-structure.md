@@ -13,6 +13,10 @@ apps/web/
   src/server/shared/<module>/         # server-only support
   tests/acceptance/integration/       # HTTP/database integration tests
   tests/acceptance/e2e/               # Playwright-BDD step bindings
+  references/                         # reference designs and prototypes, outside the app
+    interactive-wireframe.tsx         #   wireframe of the future features
+    prototype-discovery/              #   main prototype (`bun run --cwd apps/web prototype`)
+    visual-design/index.html          #   static visual design with light and dark modes
   dist/                               # generated Worker entry and client assets
 packages/
   auth/src/                           # Better Auth and provider configuration
@@ -27,6 +31,8 @@ features/<capability>/<use-case>.feature  # root Playwright-BDD contracts
 ```
 
 The repository is a Bun workspace over `apps/*` and `packages/*`. `apps/web` is a TanStack Start application built for Cloudflare Workers. `packages/infra` uses Alchemy to run the app locally and declares a Cloudflare target and, for cloud stages, a Neon project; the test fixture separately serves the compiled Worker in `workerd`. `packages/db` uses Drizzle with the Neon serverless HTTP driver. `packages/auth` configures Better Auth and Google. These package roles describe code structure, not a verified cloud deployment.
+
+Nothing in `apps/web/src` imports `apps/web/references/`, and `lint:boundaries` does not scan it. `apps/web` `check-types` type-checks its `.tsx` files through `tsconfig.references.json`. See [the prototype contract](../product/system/prototype.md) for what each reference covers.
 
 Generated build output, `.alchemy`/`.tanstack` local state/cache, and generated environment types are ignored. Keep secrets in ignored local environment files. The tracked `.env.schema` files define safe environment inputs.
 

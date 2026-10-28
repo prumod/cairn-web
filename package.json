@@ -36,6 +36,7 @@
     "lint": "oxlint .",
     "lint:boundaries": "node scripts/check-boundaries.mjs",
     "check:transcriptions": "bun test scripts/transcriptions-pending.test.mjs",
+    "check:links": "node scripts/check-doc-links.mjs",
     "test:boundaries": "node scripts/prove-boundaries.mjs",
     "audit": "bun audit",
     "test": "bash scripts/test.sh",

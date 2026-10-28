@@ -24,6 +24,7 @@ test("ordinary commits and pushes scan docs, reject secrets, and validate refere
       "check-secrets.sh",
       "timing.sh",
       "check-scope.mjs",
+      "check-doc-links.mjs",
       "install-git-hooks.sh",
     ]) {
       cpSync(join(source, "scripts", file), join(dir, "scripts", file));
@@ -47,6 +48,9 @@ test("ordinary commits and pushes scan docs, reject secrets, and validate refere
     writeFileSync(join(dir, "note.md"), "TEST_SECRET\n");
     git("add", "note.md");
     assert.throws(() => git("commit", "-m", "secret"));
+    writeFileSync(join(dir, "note.md"), "[missing](missing.md)\n");
+    git("add", "note.md");
+    assert.throws(() => git("commit", "-m", "broken link"));
     writeFileSync(join(dir, "note.md"), "hello again\n");
     git("add", "note.md");
     git("commit", "-m", "docs again");

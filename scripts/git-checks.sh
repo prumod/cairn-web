@@ -29,6 +29,7 @@ check_tree() {
   timed "Snapshot" snapshot_tree "$tree" "$snapshot"
   (
     cd "$snapshot"
+    printf 'Installing dependencies in a clean snapshot: from 1 s to 10 minutes or more, depending on the Bun and file caches.\n'
     timed "Install dependencies" bun install --frozen-lockfile --ignore-scripts
     bash scripts/check.sh "$scope"
   )
