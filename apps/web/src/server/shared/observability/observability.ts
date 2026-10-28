@@ -16,7 +16,6 @@ function safeFrames(error: unknown) {
   if (!(error instanceof Error) || !error.stack) return [];
   return error.stack
     .split("\n")
-    .slice(1)
     .map((line) => {
       const match = line.match(
         /^\s*at (?:async )?(?:(?<function>[\w.$]+) )?\(?(?<location>[^()\s?#]+):(?<line>\d+):(?<column>\d+)\)?$/,
