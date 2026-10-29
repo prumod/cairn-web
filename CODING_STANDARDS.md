@@ -2,7 +2,7 @@
 
 ## Sources of truth
 
-Formatting, linting, and compiler rules live in the native tool configuration and root `package.json`; use the existing checks instead of maintaining a second style guide. Follow [Architecture](ARCHITECTURE.md) for system boundaries and [Testing](TESTING.md) for test contracts.
+Formatting, linting, and compiler rules live in the native tool configuration and root `package.json`; use the existing checks instead of maintaining a second style guide. Custom lint rules are vendored in `tools/oxlint/anti-slop/` as repository-owned code; record their upstream source and local deviations in its `UPSTREAM.md`. `bun run lint` runs them; fix findings instead of suppressing them, and justify each type assertion with a `// SAFETY:` comment. Follow [Architecture](ARCHITECTURE.md) for system boundaries and [Testing](TESTING.md) for test contracts.
 
 ## Code and contracts
 

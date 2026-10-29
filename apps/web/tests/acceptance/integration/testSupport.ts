@@ -10,6 +10,7 @@ import { createServer as createNetServer } from "node:net";
 import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
+import { z } from "zod";
 import { betterAuth } from "better-auth";
 import { testUtils } from "better-auth/plugins";
 import { authOptions } from "@cairn/auth";
@@ -29,6 +30,12 @@ const environmentKeys = [
   "TEST_IDENTITY_KEY",
 ] as const;
 
+const ListeningAddress = z.object({ port: z.number() });
+
+const Health = z.object({ status: z.literal("ready") });
+
+const IdentityRequest = z.object({ identity: z.enum(["admin", "pending", "editor"]) });
+
 async function findAvailablePort(requested: number) {
   if (requested !== 0) return requested;
   const server = createNetServer();
@@ -36,38 +43,48 @@ async function findAvailablePort(requested: number) {
     server.once("error", reject);
     server.listen(0, "127.0.0.1", resolve);
   });
-  const address = server.address();
-  if (!address || typeof address === "string") throw new Error("No available test port.");
+  const address = ListeningAddress.safeParse(server.address());
+
+  if (!address.success) throw new Error("No available test port.");
   await new Promise<void>((resolve, reject) =>
     server.close((error) => (error ? reject(error) : resolve())),
   );
-  return address.port;
+
+  return address.data.port;
 }
 
 function captureOutput(child: ChildProcess) {
   const lines: string[] = [];
+
   const record = (chunk: Buffer) => {
     lines.push(chunk.toString());
+
     if (lines.length > 40) lines.shift();
   };
+
   child.stdout?.on("data", record);
   child.stderr?.on("data", record);
+
   return () => lines.join("");
 }
 
 async function stop(child: ChildProcess | undefined) {
   if (!child || child.exitCode !== null || child.signalCode !== null) return;
   const closed = new Promise<void>((resolve) => child.once("close", () => resolve()));
+
   if (process.platform === "win32") child.kill("SIGTERM");
   else if (child.pid) process.kill(-child.pid, "SIGTERM");
   let timer: NodeJS.Timeout | undefined;
+
   const stopped = await Promise.race([
     closed.then(() => true),
     new Promise<false>((resolve) => {
       timer = setTimeout(() => resolve(false), 10_000);
     }),
   ]);
+
   if (timer) clearTimeout(timer);
+
   if (!stopped) {
     if (process.platform === "win32") child.kill("SIGKILL");
     else if (child.pid) process.kill(-child.pid, "SIGKILL");
@@ -82,16 +99,19 @@ async function closeServer(server: Server | undefined) {
   );
 }
 
-async function readJson(request: IncomingMessage) {
+async function readText(request: IncomingMessage) {
   const chunks: Buffer[] = [];
   let size = 0;
+
   for await (const chunk of request) {
     const buffer = Buffer.from(chunk);
     size += buffer.length;
+
     if (size > 4096) throw new Error("Test identity payload is too large.");
     chunks.push(buffer);
   }
-  return JSON.parse(Buffer.concat(chunks).toString("utf8")) as unknown;
+
+  return Buffer.concat(chunks).toString("utf8");
 }
 
 export async function createTestApplication(
@@ -99,11 +119,13 @@ export async function createTestApplication(
   { testControlProxy = false }: { testControlProxy?: boolean } = {},
 ) {
   const connectionString = process.env.TEST_DATABASE_URL;
+
   if (!connectionString) throw new Error("Run tests via the PostgreSQL test wrapper.");
 
   const previousEnvironment = new Map(
     environmentKeys.map((key) => [key, process.env[key]] as const),
   );
+
   const name = "cairn_test_" + randomUUID().replaceAll("-", "");
   const identifier = pg.escapeIdentifier(name);
   const rootPool = new pg.Pool({ connectionString });
@@ -115,6 +137,7 @@ export async function createTestApplication(
   async function restoreEnvironment() {
     for (const key of environmentKeys) {
       const value = previousEnvironment.get(key);
+
       if (value === undefined) delete process.env[key];
       else process.env[key] = value;
     }
@@ -122,6 +145,7 @@ export async function createTestApplication(
 
   async function cleanup() {
     const errors: unknown[] = [];
+
     async function attempt(operation: () => Promise<void>) {
       try {
         await operation();
@@ -129,17 +153,22 @@ export async function createTestApplication(
         errors.push(error);
       }
     }
+
     await attempt(() => closeServer(proxyServer));
     await attempt(() => stop(appServer));
+
     if (pool) await attempt(() => pool!.end());
+
     if (databaseCreated) {
       await attempt(async () => {
         // Neon’s HTTP proxy keeps pooled connections after the Worker stops.
         await rootPool.query({ text: "DROP DATABASE " + identifier + " WITH (FORCE)" });
       });
     }
+
     await attempt(() => rootPool.end());
     await attempt(restoreEnvironment);
+
     if (errors.length > 0) throw new AggregateError(errors, "Test application cleanup failed.");
   }
 
@@ -150,6 +179,7 @@ export async function createTestApplication(
     url.pathname = "/" + name;
     pool = new pg.Pool({ connectionString: url.toString() });
     const neonPort = process.env.TEST_NEON_PORT;
+
     if (!neonPort) throw new Error("Run tests via the disposable PostgreSQL/Neon proxy wrapper.");
     const neonURL = new URL(url);
     neonURL.hostname = "db.localtest.me";
@@ -169,6 +199,7 @@ export async function createTestApplication(
     const origin = "http://127.0.0.1:" + publicPort;
     const appOrigin = "http://127.0.0.1:" + appPort;
     const key = "isolated-local-browser-test";
+
     const environment = {
       APP_ORIGIN: origin,
       BETTER_AUTH_URL: origin,
@@ -182,22 +213,24 @@ export async function createTestApplication(
       NODE_ENV: "test",
       PORT: String(appPort),
       TEST_IDENTITY_KEY: key,
-      ...(process.env.HOME === undefined ? {} : { HOME: process.env.HOME }),
-      ...(process.env.PATH === undefined ? {} : { PATH: process.env.PATH }),
     };
+
     Object.assign(process.env, environment);
 
     const auth = betterAuth({
       ...authOptions(environment, db),
       plugins: [testUtils()],
     });
+
     const helpers = (await auth.$context).test;
 
     async function createIdentity(email: string, verified = true, google = true) {
       const testContext = await auth.$context;
+
       const userRecord = await helpers.saveUser(
         helpers.createUser({ email, emailVerified: verified }),
       );
+
       if (google) {
         await testContext.internalAdapter.createAccount({
           userId: userRecord.id,
@@ -205,7 +238,9 @@ export async function createTestApplication(
           accountId: randomUUID(),
         });
       }
+
       const login = await helpers.login({ userId: userRecord.id });
+
       return {
         user: userRecord,
         cookie: login.headers.get("cookie") ?? "",
@@ -214,6 +249,7 @@ export async function createTestApplication(
     }
 
     type Identity = Awaited<ReturnType<typeof createIdentity>>;
+
     const identities = new Map<string, Identity>();
     const infraRoot = fileURLToPath(new URL("../../../../../packages/infra/", import.meta.url));
     appServer = spawn(
@@ -229,12 +265,13 @@ export async function createTestApplication(
       ],
       {
         cwd: infraRoot,
-        env: environment,
+        env: { ...environment, HOME: process.env.HOME, PATH: process.env.PATH },
         detached: process.platform !== "win32",
         stdio: ["ignore", "pipe", "pipe"],
       },
     );
     const output = captureOutput(appServer);
+
     const exited = new Promise<never>((_resolve, reject) => {
       appServer!.once("error", reject);
       appServer!.once("close", (code, signal) => {
@@ -245,6 +282,7 @@ export async function createTestApplication(
     let ready = false;
     let lastObservation = "no response";
     const deadline = Date.now() + 180_000;
+
     while (!ready && Date.now() < deadline) {
       const response = await Promise.race([
         fetch(appOrigin + "/healthz", {
@@ -253,22 +291,18 @@ export async function createTestApplication(
         }).catch(() => null),
         exited,
       ]);
+
       if (response) {
         const contentType = response.headers.get("content-type") ?? "unknown content type";
         const body = await response.text().catch(() => "unreadable response");
         lastObservation = `HTTP ${response.status} (${contentType}): ${body.slice(0, 160)}`;
+
         if (response.status >= 500 && response.status !== 503) {
           throw new Error(`TanStack Start returned ${lastObservation}: ${output()}`);
         }
+
         try {
-          const health: unknown = JSON.parse(body);
-          if (
-            response.ok &&
-            typeof health === "object" &&
-            health !== null &&
-            "status" in health &&
-            health.status === "ready"
-          ) {
+          if (response.ok && Health.safeParse(JSON.parse(body)).success) {
             ready = true;
             break;
           }
@@ -276,8 +310,10 @@ export async function createTestApplication(
           // Continue until the app responds with its database-backed readiness state.
         }
       }
+
       await delay(100);
     }
+
     if (!ready) {
       throw new Error(`TanStack Start server was not ready (${lastObservation}): ${output()}`);
     }
@@ -288,41 +324,57 @@ export async function createTestApplication(
           if (request.headers["x-test-identity-key"] !== key) {
             response.writeHead(403);
             response.end();
+
             return;
           }
+
           let body: unknown;
+
           try {
-            body = await readJson(request);
+            body = JSON.parse(await readText(request));
           } catch {
             response.writeHead(400, { "Content-Type": "application/json" });
             response.end(JSON.stringify({ error: "Invalid test identity request." }));
+
             return;
           }
-          const role =
-            typeof body === "object" && body !== null && "identity" in body ? body.identity : null;
-          if (role !== "admin" && role !== "pending" && role !== "editor") {
+
+          const identityRequest = IdentityRequest.safeParse(body);
+
+          if (!identityRequest.success) {
             response.writeHead(400, { "Content-Type": "application/json" });
             response.end(JSON.stringify({ error: "Unknown test identity." }));
+
             return;
           }
+
+          const role = identityRequest.data.identity;
           let identity = identities.get(role);
+
           if (!identity) {
             identity = await createIdentity(role + "@example.test");
             identities.set(role, identity);
           }
+
           const cookies = identity.cookies.map((cookie) => {
             const parts = [cookie.name + "=" + cookie.value, "Path=" + cookie.path];
+
             if (cookie.httpOnly) parts.push("HttpOnly");
+
             if (cookie.secure) parts.push("Secure");
+
             if (cookie.sameSite) parts.push("SameSite=" + cookie.sameSite);
+
             return parts.join("; ");
           });
+
           response.writeHead(200, {
             "Cache-Control": "no-store",
             "Content-Type": "application/json",
             "Set-Cookie": cookies,
           });
           response.end(JSON.stringify({ userId: identity.user.id, email: identity.user.email }));
+
           return;
         }
 
@@ -339,6 +391,7 @@ export async function createTestApplication(
             upstreamResponse.pipe(response);
           },
         );
+
         upstream.on("error", () => {
           if (!response.headersSent) response.writeHead(502);
           response.end();
@@ -358,16 +411,25 @@ export async function createTestApplication(
       baseURL: origin,
       createIdentity,
       identity: createIdentity,
-      request(path: string, cookie = "", method = "GET", body?: unknown, requestOrigin = origin) {
-        return fetch(origin + path, {
+      request<Body>(
+        path: string,
+        cookie = "",
+        method = "GET",
+        body?: Body,
+        requestOrigin = origin,
+      ) {
+        const init: RequestInit = {
           method,
           headers: {
             cookie,
             origin: requestOrigin,
             "content-type": "application/json",
           },
-          ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-        });
+        };
+
+        if (body !== undefined) init.body = JSON.stringify(body);
+
+        return fetch(origin + path, init);
       },
       async reset() {
         await pool!.query({
@@ -382,6 +444,7 @@ export async function createTestApplication(
     } catch (cleanupError) {
       throw new AggregateError([error, cleanupError], "Test startup and cleanup failed.");
     }
+
     throw error;
   }
 }

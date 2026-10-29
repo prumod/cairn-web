@@ -13,6 +13,7 @@ const deployment = Effect.gen(function* () {
   const { dev } = yield* Alchemy.AlchemyContext;
   const stage = yield* Alchemy.Stage;
   const revision = dev ? undefined : yield* Config.NonEmptyString("GIT_SHA");
+
   return yield* Effect.sync(() => deploymentConfig(stage, dev, revision));
 });
 
@@ -21,7 +22,9 @@ const deployment = Effect.gen(function* () {
 // them from the environment.
 const database = Effect.gen(function* () {
   const { managed } = yield* deployment;
+
   if (!managed) return yield* Config.Redacted("DATABASE_URL");
+
   const project = yield* Neon.Project("database", {
     region: "aws-eu-central-1",
     // Alchemy asks for 24 h by default; Neon Free caps history retention at 6 h and rejects the
@@ -29,11 +32,13 @@ const database = Effect.gen(function* () {
     historyRetentionSeconds: 21600,
     migrations: "../db/migrations",
   });
+
   return Output.map(project.pooledConnectionUri, Redacted.make);
 });
 
 const authSecret = Effect.gen(function* () {
   const { managed } = yield* deployment;
+
   return managed
     ? yield* Alchemy.makeRandom("better-auth-secret")
     : yield* Config.Redacted("BETTER_AUTH_SECRET");
@@ -44,8 +49,10 @@ const authSecret = Effect.gen(function* () {
 export const web = Effect.gen(function* () {
   const { domain, workersDev, appEnv, revision } = yield* deployment;
   const stage = yield* Alchemy.Stage;
+
   const posthogToken =
     stage === "production" ? yield* Config.NonEmptyString("POSTHOG_PROJECT_TOKEN") : "";
+
   return yield* Cloudflare.Website.Vite("web", {
     rootDir: "../../apps/web",
     domain,

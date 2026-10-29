@@ -5,5 +5,6 @@ import { readConfig } from "./config.server.js";
 export async function getRuntime() {
   const config = readConfig(ENV);
   const db = getDb();
+
   return { config, db, auth: await createAuth(db) };
 }

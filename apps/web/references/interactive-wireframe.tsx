@@ -37,8 +37,10 @@ type Opportunity = {
 };
 
 const referenceDate = "2026-10-01";
+
 // The company profile is edited in the Now prototype (N01); here it is a fixed example.
 const licence = "Classe 3 demonstrativa";
+
 const originalOpportunities: Opportunity[] = [
   {
     id: "obra-escola",
@@ -163,7 +165,7 @@ const pageTitles: Record<Page, string> = {
   "padroes-contratos": "Padrões em contratos públicos",
 };
 
-const initialPrices: Record<string, number> = {
+const initialPrices = {
   "Preparação e proteção": 0,
   "Reparação de cobertura": 36,
   "Pintura interior": 0,
@@ -171,12 +173,13 @@ const initialPrices: Record<string, number> = {
   "Mobiliário urbano": 790,
   "Desmontagem da cobertura": 12,
   "Painel sandwich": 52,
-};
-const initialPreparedByOpportunity: Record<string, string[]> = {
+} satisfies Record<string, number>;
+
+const initialPreparedByOpportunity = {
   "obra-escola": ["Declaração de proposta"],
   "obra-praca": ["Declaração de proposta"],
   "obra-cobertura": ["Declaração de proposta", "Memória descritiva", "Lista de preços"],
-};
+} satisfies Record<string, string[]>;
 
 function money(value: number) {
   return new Intl.NumberFormat("pt-PT", {
@@ -210,21 +213,29 @@ export function InteractiveWireframe() {
   const [opportunities, setOpportunities] = useState(originalOpportunities);
   const [selectedId, setSelectedId] = useState("obra-escola");
   const [notice, setNotice] = useState("");
+
   const [decisions, setDecisions] = useState<Record<string, string>>({
     "obra-escola": "Em preparação",
     "obra-praca": "Não concorrer",
     "obra-cobertura": "Submetida",
   });
-  const [preparedDocuments, setPreparedDocuments] = useState(initialPreparedByOpportunity);
-  const [prices, setPrices] = useState(initialPrices);
+
+  const [preparedDocuments, setPreparedDocuments] = useState<Record<string, string[]>>(
+    initialPreparedByOpportunity,
+  );
+
+  const [prices, setPrices] = useState<Record<string, number>>(initialPrices);
+
   const [scheduleRequirements, setScheduleRequirements] = useState<Record<string, boolean>>({
     "obra-escola": true,
     "obra-praca": false,
     "obra-cobertura": true,
   });
+
   const [readySchedules, setReadySchedules] = useState<Record<string, boolean>>({
     "obra-cobertura": true,
   });
+
   const [simulatedSubmittedId, setSimulatedSubmittedId] = useState<string | null>(null);
   const [simulateFailure, setSimulateFailure] = useState(false);
   const [showDemoControls, setShowDemoControls] = useState(false);
@@ -232,6 +243,7 @@ export function InteractiveWireframe() {
   const [supplierName, setSupplierName] = useState("Materiais do Mondego");
   const [quotePrice, setQuotePrice] = useState("8,40");
   const [quoteValidUntil, setQuoteValidUntil] = useState("2026-10-30");
+
   const [quoteRows, setQuoteRows] = useState([
     {
       supplier: "Materiais do Mondego",
@@ -246,17 +258,21 @@ export function InteractiveWireframe() {
       validUntil: "2026-09-15",
     },
   ]);
+
   const [workProgress, setWorkProgress] = useState<Record<string, number>>({
     Estrutura: 100,
     Cobertura: 55,
     Acabamentos: 15,
   });
+
   const [selectedTask, setSelectedTask] = useState("Cobertura");
   const [selectedDocument, setSelectedDocument] = useState("Memória descritiva");
   const [previewDocument, setPreviewDocument] = useState("Memória descritiva de demonstração.pdf");
+
   const [assistantQuestion, setAssistantQuestion] = useState(
     "Que anúncios de obras estão dentro do meu raio?",
   );
+
   const [assistantAnswer, setAssistantAnswer] = useState("");
   const [competitor, setCompetitor] = useState("Construtora do Centro");
   const [demoImport, setDemoImport] = useState("Mapa de medições de demonstração.csv");
@@ -273,21 +289,27 @@ export function InteractiveWireframe() {
 
   const selected =
     opportunities.find((item) => item.id === selectedId) ?? originalOpportunities[0]!;
+
   const prepared = preparedDocuments[selected.id] ?? [];
+
   const checklistDocument = selected.documents.includes(selectedDocument)
     ? selectedDocument
     : (selected.documents[0] ?? "");
+
   const financialScheduleRequired = scheduleRequirements[selected.id] ?? false;
   const scheduleReady = readySchedules[selected.id] ?? false;
   const simulatedSubmitted = simulatedSubmittedId === selected.id;
+
   const proposalTotal = selected.quantities.reduce(
     (total, item) => total + item.quantity * (prices[item.item] ?? 0),
     0,
   );
+
   const missingPrices = selected.quantities.filter((item) => (prices[item.item] ?? 0) <= 0);
   const missingDocuments = selected.documents.filter((item) => !prepared.includes(item));
   const deadlinePassed = selected.deadline < referenceDate;
   const financialPercentageTotal = Number(periodOne) + Number(periodTwo);
+
   const proposalReady =
     missingPrices.length === 0 &&
     missingDocuments.length === 0 &&
@@ -296,6 +318,7 @@ export function InteractiveWireframe() {
 
   function setScheduleRequired(required: boolean) {
     setScheduleRequirements((current) => ({ ...current, [selected.id]: required }));
+
     if (!required) {
       setReadySchedules((current) => ({ ...current, [selected.id]: false }));
     }
@@ -381,9 +404,11 @@ export function InteractiveWireframe() {
   function markPrepared(documentName: string, isPrepared: boolean) {
     setPreparedDocuments((current) => {
       const existing = current[selected.id] ?? [];
+
       const updated = isPrepared
         ? [...new Set([...existing, documentName])]
         : existing.filter((item) => item !== documentName);
+
       return { ...current, [selected.id]: updated };
     });
   }
@@ -393,20 +418,26 @@ export function InteractiveWireframe() {
       setNotice(
         "Este exemplo já está marcado como submetido. Não pode simular uma segunda submissão.",
       );
+
       return;
     }
+
     if (!proposalReady) {
       setNotice(
         "A proposta tem itens por resolver. Regresse à checklist, aos preços ou ao cronograma antes de continuar.",
       );
+
       return;
     }
+
     if (simulateFailure) {
       setNotice(
         "A demonstração simulou uma falha ao abrir a plataforma externa. Nenhum documento foi enviado. Pode tentar novamente ou voltar à preparação.",
       );
+
       return;
     }
+
     setSimulatedSubmittedId(selected.id);
     setDecisions((current) => ({ ...current, [selected.id]: "Submetida" }));
     setNotice(
@@ -417,6 +448,7 @@ export function InteractiveWireframe() {
   function addQuote(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const parsedPrice = Number(quotePrice.replace(",", "."));
+
     if (
       !supplierName.trim() ||
       !Number.isFinite(parsedPrice) ||
@@ -426,8 +458,10 @@ export function InteractiveWireframe() {
       setNotice(
         "Indique fornecedor, preço positivo e validade para registar a cotação demonstrativa.",
       );
+
       return;
     }
+
     setQuoteRows((current) => [
       ...current,
       {
@@ -443,6 +477,7 @@ export function InteractiveWireframe() {
   function answerAssistant(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const question = assistantQuestion.toLocaleLowerCase("pt-PT");
+
     if (
       question.includes("finance") ||
       question.includes("despesa") ||
@@ -1373,6 +1408,7 @@ export function InteractiveWireframe() {
           {Object.entries(workProgress).map(([task, progress], index) => {
             const y = 20 + index * 50;
             const x = 155 + index * 80;
+
             return (
               <g key={task}>
                 <rect

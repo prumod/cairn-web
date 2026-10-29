@@ -27,6 +27,7 @@ packages/
   infra/test/alchemy.run.ts           # local acceptance Worker stack
   config/                             # workspace configuration package
 shared/src/<module>/                  # optional runtime-independent cross-workspace code
+tools/oxlint/anti-slop/               # vendored anti-slop Oxlint plugin (developer tooling)
 features/<capability>/<use-case>.feature  # root Playwright-BDD contracts
 ```
 

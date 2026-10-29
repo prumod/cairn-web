@@ -44,6 +44,7 @@ export async function verifiedGoogleIdentity(db: Database, userId: string, email
       ),
     )
     .limit(1);
+
   return matches.length === 1;
 }
 

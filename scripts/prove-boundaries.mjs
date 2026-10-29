@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const repository = fileURLToPath(new URL("../", import.meta.url));
 const sandbox = mkdtempSync(join(tmpdir(), "cairn-boundaries-"));
+
 const roots = [
   "apps/web/src/pages",
   "apps/web/src/shared",
@@ -23,7 +24,9 @@ function write(path, content) {
 
 function importing(from, to) {
   let path = relative(dirname(from), to).replaceAll("\\", "/").replace(/\.ts$/, "");
+
   if (!path.startsWith(".")) path = `./${path}`;
+
   return `import { value } from "${path}"; export { value };\n`;
 }
 
@@ -40,8 +43,10 @@ function cruise(expectedRule) {
     ],
     { cwd: sandbox, encoding: "utf8" },
   );
+
   if (result.error) throw result.error;
   const output = `${result.stdout}\n${result.stderr}`;
+
   if (expectedRule) {
     assert.equal(result.status, 1, output);
     assert.ok(output.includes(expectedRule), output);
@@ -75,6 +80,7 @@ try {
     );
     write(`${root}/two/entry.ts`, "export const value = 1;\n");
   }
+
   write("packages/auth/src/index.ts", "export const value = 1;\n");
   write("packages/db/src/index.ts", "export const value = 1;\n");
   write("packages/infra/alchemy.run.ts", "export const value = 1;\n");
@@ -108,6 +114,7 @@ try {
       `tests-private-${root.replaceAll("/", "-")}`,
     );
   }
+
   prove(
     "apps/web/src/main.ts",
     "apps/web/src/pages/one/implementation/value.ts",
@@ -133,6 +140,7 @@ try {
     "apps/web/src/server/modules/one/entry.ts",
     "client-cannot-import-server",
   );
+
   for (const target of [
     "packages/auth/src/index.ts",
     "packages/db/src/index.ts",
@@ -141,6 +149,7 @@ try {
     prove("apps/web/src/pages/two/probe.ts", target, "client-cannot-import-server");
     prove("packages/ui/src/probe.ts", target, "client-cannot-import-server");
   }
+
   prove(
     "apps/web/src/server/modules/two/probe.ts",
     "apps/web/src/pages/one/entry.ts",

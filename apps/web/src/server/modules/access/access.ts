@@ -6,6 +6,7 @@ import { user } from "@cairn/db/schema/auth";
 
 export async function getAccess(db: Database, userId: string, bootstrapEmail: string) {
   const existing = await db.select().from(accessTable).where(eq(accessTable.userId, userId));
+
   if (existing[0]) return existing[0];
   const administrator = await verifiedGoogleIdentity(db, userId, bootstrapEmail);
   await db
@@ -13,7 +14,9 @@ export async function getAccess(db: Database, userId: string, bootstrapEmail: st
     .values({ userId, administrator, approved: administrator })
     .onConflictDoNothing();
   const result = (await db.select().from(accessTable).where(eq(accessTable.userId, userId)))[0];
+
   if (!result) throw new Error("Unable to initialize access.");
+
   return result;
 }
 
@@ -32,10 +35,12 @@ export function listUsers(db: Database) {
 
 export async function changeApproval(db: Database, userId: string, approved: boolean) {
   const exists = await db.select({ id: user.id }).from(user).where(eq(user.id, userId));
+
   if (!exists[0]) return false;
   await db.insert(accessTable).values({ userId, approved }).onConflictDoUpdate({
     target: accessTable.userId,
     set: { approved },
   });
+
   return true;
 }

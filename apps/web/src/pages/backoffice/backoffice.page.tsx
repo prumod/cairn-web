@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import { put, request } from "../../shared/api/client";
 
-type UserAccess = { id: string; email: string; approved: boolean; administrator: boolean };
+const UserAccess = z.object({
+  id: z.string(),
+  email: z.string(),
+  approved: z.boolean(),
+  administrator: z.boolean(),
+});
+
+type UserAccess = z.infer<typeof UserAccess>;
+
+const UserAccessList = z.array(UserAccess);
+
+const ApprovalChange = z.object({ approved: z.boolean() });
+
 export function BackofficePage() {
   const [users, setUsers] = useState<UserAccess[]>();
   const [error, setError] = useState("");
   const [saving, setSaving] = useState<string | null>(null);
   useEffect(() => {
-    request<UserAccess[]>("/api/users")
+    request("/api/users", UserAccessList)
       .then(setUsers)
       .catch(() =>
         setError(
@@ -15,19 +28,23 @@ export function BackofficePage() {
         ),
       );
   }, []);
+
   async function change(user: UserAccess) {
     setSaving(user.id);
     setError("");
+
     try {
-      await put("/api/users/" + encodeURIComponent(user.id) + "/access", {
+      await put("/api/users/" + encodeURIComponent(user.id) + "/access", ApprovalChange, {
         approved: !user.approved,
       });
-      setUsers(await request<UserAccess[]>("/api/users"));
+      setUsers(await request("/api/users", UserAccessList));
     } catch {
       setError("Não foi possível alterar o acesso. Tente novamente.");
     }
+
     setSaving(null);
   }
+
   return (
     <section>
       <h1>Gerir acessos</h1>

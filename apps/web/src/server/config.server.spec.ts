@@ -22,6 +22,7 @@ test("the local Worker accepts HTTP even when the build mode is production", () 
     BOOTSTRAP_ADMIN_EMAIL: "admin@example.test",
     ...{ NODE_ENV: "production" },
   });
+
   expect(config.origin).toBe("http://localhost:3001");
 });
 

@@ -7,6 +7,7 @@ const marker = [
   "[T2](transcriptions/transcricao2_gestao_obras.txt) e ",
   "[notas visuais](<transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>)",
 ].join("");
+
 const order = ["transcricao1_gestao_obras.md", "b.txt", "a.txt", "untracked.txt"];
 const addedAt = (file) => (file === "untracked.txt" ? Infinity : order.indexOf(file));
 
@@ -16,6 +17,7 @@ test("nothing is pending when the marker document links every source", () => {
     "transcricao2_gestao_obras.txt",
     "transcricao1_Notas Iniciais Projeto.jpeg",
   ];
+
   assert.deepEqual(pendingTranscriptions({ files, marker, addedAt }), {
     pending: [],
     next: null,

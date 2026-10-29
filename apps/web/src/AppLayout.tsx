@@ -1,23 +1,32 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import { request } from "./shared/api/client.js";
 import { identify, reset } from "./shared/analytics/analytics.js";
 
-type CurrentUser = { id: string; email: string; approved: boolean; administrator: boolean };
+const CurrentUser = z
+  .object({ id: z.string(), email: z.string(), approved: z.boolean(), administrator: z.boolean() })
+  .nullable();
+
+type CurrentUser = z.infer<typeof CurrentUser>;
+
+const SignInRedirect = z.object({ url: z.string() });
 
 export function AppLayout() {
   const isPublicLegalPage = useRouterState({
     select: (state) =>
       state.location.pathname === "/privacy" || state.location.pathname === "/terms",
   });
-  const [user, setUser] = useState<CurrentUser | null | undefined>();
+
+  const [user, setUser] = useState<CurrentUser | undefined>();
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (isPublicLegalPage) return;
-    request<CurrentUser | null>("/api/me")
+    request("/api/me", CurrentUser)
       .then((current) => {
         setUser(current);
+
         if (current) void identify(current.id);
         else void reset();
       })
@@ -28,12 +37,14 @@ export function AppLayout() {
 
   async function signIn() {
     setError("");
+
     try {
-      const result = await request<{ url: string }>("/api/auth/sign-in/social", {
+      const result = await request("/api/auth/sign-in/social", SignInRedirect, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ provider: "google", callbackURL: window.location.origin }),
       });
+
       window.location.assign(result.url);
     } catch {
       setError("Não foi possível iniciar sessão. Tente novamente.");
@@ -42,7 +53,7 @@ export function AppLayout() {
 
   async function signOut() {
     try {
-      await request("/api/auth/sign-out", {
+      await request("/api/auth/sign-out", z.unknown(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: "{}",
