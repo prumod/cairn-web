@@ -6,6 +6,7 @@ import { resolve, join } from "node:path";
 import { execFileSync } from "node:child_process";
 
 const source = resolve(".");
+const lefthook = join(source, "node_modules/.bin/lefthook");
 
 test("ordinary commits and pushes scan docs, reject secrets, and validate referenced docs", () => {
   const dir = mkdtempSync(join(tmpdir(), "cairn-hooks-"));
@@ -17,6 +18,7 @@ test("ordinary commits and pushes scan docs, reject secrets, and validate refere
   const env = {
     ...process.env,
     GITLEAKS_BIN: join(dir, "scanner"),
+    LEFTHOOK_BIN: lefthook,
     PATH: `${dir}/bin:${process.env.PATH}`,
   };
 
@@ -30,12 +32,13 @@ test("ordinary commits and pushes scan docs, reject secrets, and validate refere
       "timing.sh",
       "check-scope.mjs",
       "check-doc-links.mjs",
-      "install-git-hooks.sh",
+      "pre-commit.sh",
+      "pre-push.sh",
     ]) {
       cpSync(join(source, "scripts", file), join(dir, "scripts", file));
     }
 
-    cpSync(join(source, ".githooks"), join(dir, ".githooks"), { recursive: true });
+    cpSync(join(source, "lefthook.yml"), join(dir, "lefthook.yml"));
     writeFileSync(
       join(dir, "scanner"),
       '#!/bin/bash\nif [[ "$*" == *--pipe* ]]; then ! grep -q TEST_SECRET; fi\n',
@@ -47,7 +50,7 @@ test("ordinary commits and pushes scan docs, reject secrets, and validate refere
     git("config", "user.email", "hook@example.test");
     git("add", ".");
     git("-c", "core.hooksPath=/dev/null", "commit", "-m", "baseline");
-    execFileSync("bash", ["scripts/install-git-hooks.sh"], { cwd: dir });
+    execFileSync(lefthook, ["install"], { cwd: dir, env, stdio: "pipe" });
     writeFileSync(join(dir, "note.md"), "hello\n");
     git("add", "note.md");
     git("commit", "-m", "docs");
