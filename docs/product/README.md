@@ -2,7 +2,7 @@
 
 ## Organização
 
-- [Now](now/funcionalidades.md): funcionalidades prioritárias.
+- [Now](https://github.com/prumod/cairn-web/issues/104): PRD das funcionalidades prioritárias, numa GitHub Issue.
 - [Termos por definir (Now)](now/termos-por-definir.md): vocabulário a confirmar.
 - [Later](later/funcionalidades.md): funcionalidades pretendidas para depois.
 - [Maybe](maybe/funcionalidades.md): ideias a validar antes de compromisso.
@@ -11,7 +11,7 @@
 - [System](system/): [ideia inicial](system/ideia_inicial.txt) e [contrato do protótipo interativo](system/prototype.md).
 - [Research](research/): [questões de investigação](research/README.md), [investigação técnica](research/pesquisa_arquitetura_cairn.md), [pesquisa de mercado](research/pesquisa_mercado_cairn.md) e [fluxo de capturas e anotações](research/screenshots/canvas-workflow.md).
 
-O wireframe interativo mostra as funcionalidades futuras; o protótipo principal mostra as que estão em decisão agora (hoje, Now). Quando uma funcionalidade ganha protótipo principal, sai do wireframe. Em cada implementação, evolui-se o mesmo código: primeiro estrutura e comportamento, depois design visual próximo da produção. UX e UI são revistas ao longo dessa evolução. Mockups são representações visuais de apoio, normalmente estáticas; não substituem o protótipo interativo.
+O wireframe interativo mostra só as funcionalidades de Later e Maybe. As de Now evoluem por três estados, cada um com a sua pasta em `apps/web/references/`: `ux-prototype/`, `ui-prototype/` e `final-visual/`; hoje só existe `final-visual/`. Ao passar ao estado seguinte apaga-se a versão anterior, e o `final-visual/` é depois replicado exatamente no frontend de produção, com os serviços de backend de produção. O [método de evolução](system/prototype.md#método-de-evolução) descreve cada estado. A especificação final é um PRD numa GitHub Issue; as funcionalidades ainda não finais ficam nos ficheiros de Later, Maybe e Never. Mockups são representações visuais de apoio, normalmente estáticas; não substituem o protótipo interativo.
 
 ## Quatro níveis de prioridade
 
@@ -52,6 +52,8 @@ A classificação é uma decisão de produto, não uma divisão da interface. O 
 ## Estatuto das fontes e convenções
 
 As prioridades foram acordadas com o utilizador, mas ainda precisam de validação com o entrevistado. As entrevistas são textos revistos com trechos incertos; não são regras jurídicas nem documentação de APIs. T1, T2 e T3 identificam as entrevistas, não versões de documentos derivados. T1 e T2 citam secções; T3 cita instantes da gravação.
+
+Fontes: [T1](transcriptions/transcricao1_gestao_obras.md), [T2](transcriptions/transcricao2_gestao_obras.txt) e [T3](transcriptions/transcricao_3_gestao_obras.txt). Contexto adicional: [ideia inicial](system/ideia_inicial.txt) e [notas visuais](<transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>).
 
 Só os registos em `transcriptions/` usam numeração de entrevista. Os documentos derivados têm nomes descritivos e são atualizados diretamente, com histórico no Git; não se criam conjuntos `transcricao_3_*` ou snapshots numerados.
 

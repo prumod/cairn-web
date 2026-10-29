@@ -3,9 +3,9 @@ import { readdirSync, readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 export const transcriptionsDir = "docs/product/transcriptions";
-// The Now feature list links every incorporated source in its "Fontes e estatuto"
-// header, so a link there is the record that a transcription was incorporated.
-export const markerDoc = "docs/product/now/funcionalidades.md";
+// The product README links every incorporated source in "Estatuto das fontes e
+// convenções", so a link there is the record that a transcription was incorporated.
+export const markerDoc = "docs/product/README.md";
 
 // Sensor and controller in one pass: list sources the marker document does not
 // link yet, and select the oldest one as the next interview to incorporate.
@@ -16,9 +16,7 @@ export function pendingTranscriptions({ files, marker, addedAt }) {
   const pending = files
     .filter((file) => !linked(file))
     .toSorted((a, b) => addedAt(a) - addedAt(b) || a.localeCompare(b));
-  const interviews = [...marker.matchAll(/\[T(\d+)\]\(\.\.\/transcriptions\//g)].map((m) =>
-    Number(m[1]),
-  );
+  const interviews = [...marker.matchAll(/\[T(\d+)\]\(transcriptions\//g)].map((m) => Number(m[1]));
   const lastInterview = Math.max(0, ...interviews);
   return {
     pending,

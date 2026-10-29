@@ -1,6 +1,6 @@
 # Como criar um design
 
-Este guia mostra como criar ou renovar o design de um ecrã, desde a direção visual até ao código. Para o contexto do produto e a relação entre wireframe e protótipo, leia [Contexto do produto](../product/README.md).
+Este guia mostra como criar ou renovar o design de um ecrã, desde a direção visual até ao código. Para o contexto do produto e os estados do protótipo, leia [Contexto do produto](../product/README.md).
 
 ## Com agentes no T3
 
@@ -15,9 +15,9 @@ Este guia mostra como criar ou renovar o design de um ecrã, desde a direção v
 ## Manualmente
 
 1. Siga os passos 1 a 4 de [Como desenvolver uma funcionalidade](desenvolver-uma-funcionalidade.md).
-2. Desenhe os ecrãs principais e o percurso do utilizador como wireframe, sem detalhe visual. O wireframe de referência está em `apps/web/references/interactive-wireframe.tsx`.
-3. Valide o wireframe com o sénior ou o programador intermédio, na Issue.
-4. Implemente o design nas páginas em `apps/web/src/pages/` e nos estilos em `apps/web/src/style.css`.
+2. Construa os ecrãs principais e o percurso do utilizador numa pasta com o nome do estado em `apps/web/references/`, sem detalhe visual. As funcionalidades de Later e Maybe ficam no wireframe `apps/web/references/interactive-wireframe.tsx`.
+3. Valide o protótipo com o sénior ou o programador intermédio, na Issue. Depois evolua-o para `ui-prototype/` e `final-visual/`, apagando cada versão anterior (consulte o [método de evolução](../product/system/prototype.md#método-de-evolução)).
+4. Replique o `final-visual/` exatamente nas páginas em `apps/web/src/pages/` e nos estilos em `apps/web/src/style.css`.
 5. Siga os passos 6 a 10 do mesmo guia. Inclua capturas de ecrã na Pull Request.
 
 O resultado é uma Pull Request com o novo design implementado e capturas de ecrã para revisão.

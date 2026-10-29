@@ -1,21 +1,62 @@
-# Cairn — contrato do protótipo interativo
+# Cairn — método de evolução e contrato do protótipo interativo
 
 ## Objetivo e estatuto
 
-Representar a experiência completa do utilizador antes de implementar o backend. O protótipo interativo permite rever o que cada pessoa vê, introduz, altera e faz, e usar essa experiência para compreender abstrações, responsabilidades e estruturas de dados futuras. Ecrãs e tipos de frontend não se convertem automaticamente em tabelas de base de dados.
+Representar a experiência completa do utilizador antes de implementar o backend e, depois, replicá-la exatamente num frontend de produção. O protótipo interativo permite rever o que cada pessoa vê, introduz, altera e faz, e usar essa experiência para compreender abstrações, responsabilidades e estruturas de dados futuras. Ecrãs e tipos de frontend não se convertem automaticamente em tabelas de base de dados.
 
-Este documento regista o âmbito acordado e as regras das duas implementações abaixo. React no Vite existente é a abordagem recomendada, não uma arquitetura de backend aprovada.
+Este documento regista o âmbito acordado, o método de evolução e as regras de cada estado. React no Vite existente é a abordagem recomendada, não uma arquitetura de backend aprovada.
 
-## Duas implementações
+## Método de evolução
 
-- **Wireframe interativo** ([`apps/web/references/interactive-wireframe.tsx`](../../../apps/web/references/interactive-wireframe.tsx)): mostra o futuro, isto é, as funcionalidades que ainda não têm protótipo principal. Serve para ver como essas funcionalidades se ligam e que informação as interações precisam.
-- **Protótipo principal** ([`apps/web/references/prototype-discovery/`](../../../apps/web/references/prototype-discovery/)): mostra a experiência das funcionalidades em decisão agora. Hoje cobre as funcionalidades Now. Fica fora da aplicação, sem sessão nem backend; corre com `bun run --cwd apps/web prototype`. Enquanto não houver implementação de produção, é a fonte de verdade do comportamento Now, e os documentos que divergem dele são atualizados.
+O wireframe interativo mostra só as funcionalidades de [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md). As funcionalidades de [Now](https://github.com/prumod/cairn-web/issues/104) evoluem por estados, do protótipo de UX à produção. O nome da pasta ou do ficheiro diz em que estado está a funcionalidade.
 
-Cada funcionalidade está numa só implementação. Quando uma funcionalidade ganha protótipo principal, a sua parte é apagada do wireframe; não se mantêm as duas versões. As prioridades e os identificadores não mudam por isso. O [mapa de cobertura](prototype-coverage.md) indica onde está cada funcionalidade.
+| Estado                        | Onde                                                                                                      | Funcionalidades | Passa ao estado seguinte quando                                                         |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------- | --------------- | --------------------------------------------------------------------------------------- |
+| Wireframe interativo          | [`apps/web/references/interactive-wireframe.tsx`](../../../apps/web/references/interactive-wireframe.tsx) | Later e Maybe   | A funcionalidade passa a Now: a sua parte sai do wireframe e começa em `ux-prototype/`. |
+| `ux-prototype` (apagado)      | Apagado. A última versão está no histórico do Git, em `apps/web/references/prototype-discovery/`.         | Now             | Passou diretamente a `final-visual`.                                                    |
+| `ui-prototype` (saltado)      | Nunca criada.                                                                                             | —               | —                                                                                       |
+| `final-visual` (estado atual) | [`apps/web/references/final-visual/`](../../../apps/web/references/final-visual/)                         | Now             | A aparência final está aprovada.                                                        |
+| Produção (próximo passo)      | `apps/web/src/`                                                                                           | Now             | —                                                                                       |
+
+Regras:
+
+- **Evoluir é substituir.** Quando uma funcionalidade passa ao estado seguinte, a versão anterior é apagada na mesma alteração. Só existe a pasta do estado atual; o histórico fica no Git. Evolui-se a partir da versão anterior, não em paralelo.
+- **Uma funcionalidade, um estado.** Cada funcionalidade está num só estado. O [mapa de cobertura](prototype-coverage.md) indica onde está cada uma.
+- **Um estado pode ser saltado** quando a pessoa que revê o decide. A pasta do estado saltado nunca chega a existir.
+- As prioridades e os identificadores não mudam por a funcionalidade mudar de estado.
+- **A especificação final é uma issue; a não final é um ficheiro.** O PRD é uma GitHub Issue: o de Now é a [issue #104](https://github.com/prumod/cairn-web/issues/104), que substituiu `now/funcionalidades.md`, já apagado. As funcionalidades ainda não finais ficam em `docs/product/{later,maybe,never}/funcionalidades.md`. Quando uma funcionalidade de Later ou Maybe ganha PRD, a sua entrada é apagada do ficheiro.
+
+### Wireframe interativo — Later e Maybe
+
+Usar elementos HTML semânticos e a apresentação nativa do browser, sem CSS de apresentação, estilos inline, biblioteca visual ou trabalho de identidade gráfica. O objetivo é ver como as funcionalidades futuras se ligam e que informação as interações precisam, não aprovar a aparência. Rótulos, associação entre campos, foco por teclado e estrutura legível continuam necessários.
+
+«Sem estilos» não significa ausência de representação visual. Mapas, cronogramas e gráficos podem usar a geometria e os atributos gráficos mínimos necessários para representar informação e permitir interação, sem decoração nem trabalho de identidade gráfica. A tecnologia usada não fica definida por esta regra.
+
+Mapas, Gantt e outras visualizações devem representar a interação e a informação necessárias, sem polimento visual nem serviços externos. Não substituir automaticamente uma experiência visual relevante por uma tabela sem revisão.
+
+### `ux-prototype` — estrutura e comportamento
+
+Em Now este estado foi concluído e a pasta foi apagada; a última versão está no histórico do Git. As regras de estrutura e comportamento continuam a valer quando uma funcionalidade nova começa: rever ecrãs, navegação, campos, controlos, interações, validações, alterações de estado, resultados vazios, informação em falta e correção de erros. Não se aprova a aparência. Pode ter estilos quando a interação a explorar depende deles. Rótulos, associação entre campos, foco por teclado e estrutura legível continuam necessários.
+
+### `ui-prototype` — interface
+
+Em Now, este estado foi saltado: a funcionalidade passou de `ux-prototype` diretamente a `final-visual`. Refinar o estado anterior até uma interface completa: layout, hierarquia, controlos, componentes, estados visuais e comportamento responsivo. CSS e estilos de apresentação são permitidos; a escolha de ferramentas não está decidida por este documento. A passagem parte da revisão dos percursos, informação, interações e estados. Rever também a UX quando a interface revelar problemas, sem perder a cobertura acordada.
+
+### `final-visual` — aparência final
+
+Fixar a aparência final: tipografia, cores, espaçamento, componentes, estados visuais e comportamento responsivo, de modo que a produção a possa replicar sem decisões visuais novas. Mockups e outras ferramentas podem apoiar a exploração, mas o resultado fica na pasta `final-visual/`, não em ficheiros paralelos. Mantém dados fictícios e ações simuladas.
+
+Em todos os estados com interface, manter semântica, operação por teclado, foco visível, contraste adequado e estados compreensíveis; não depender apenas de cor para transmitir informação. Aparência final não comprova prontidão para produção nem autoriza dados reais, backend ou integrações.
+
+### Produção — réplica exata do `final-visual`
+
+O `final-visual/` é a especificação visual da produção. O frontend de produção, em `apps/web/src/`, replica-o exatamente (layout, hierarquia, tipografia, cores, espaçamento, componentes, estados e comportamento responsivo) e usa os serviços de backend de produção em vez de dados fictícios e ações simuladas. Segue a arquitetura e as convenções do repositório. Quando a produção replica o `final-visual/`, esta pasta é apagada e a produção passa a ser a fonte de verdade.
+
+Enquanto não houver implementação de produção, a pasta do estado atual de Now é a fonte de verdade do seu comportamento, e os documentos que divergem dela são atualizados. O `final-visual/` é um único ficheiro HTML, sem sessão nem backend.
 
 ## Cobertura e prioridades
 
-- Cobrir todas as funcionalidades documentadas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md). A lista atual, com o estado de cada funcionalidade, está em [prototype-coverage.md](prototype-coverage.md).
+- Cobrir todas as funcionalidades documentadas em [Now](https://github.com/prumod/cairn-web/issues/104), [Later](../later/funcionalidades.md) e [Maybe](../maybe/funcionalidades.md). A lista atual, com o estado de cada funcionalidade, está em [prototype-coverage.md](prototype-coverage.md).
 - Não criar ecrãs para as exclusões de [Never](../never/funcionalidades.md) nem inventar outras.
 - Representar a experiência completa: ecrãs, navegação, campos, controlos, interações, validações, alterações de estado, resultados vazios, informação em falta, erros e correção/regresso quando aplicáveis.
 - Later e Maybe não se limitam a um painel estático de âmbito. Devem demonstrar as respetivas experiências; isso não altera a prioridade nem confirma viabilidade técnica, valor ou regras de negócio.
@@ -24,83 +65,55 @@ Cada funcionalidade está numa só implementação. Quando uma funcionalidade ga
 
 ## Terminologia
 
-- **Protótipo interativo:** demonstração navegável com comportamento simulado. É o nome do trabalho completo, desde a estrutura sem estilos até à aproximação visual à produção.
-- **Wireframe:** representação da estrutura, conteúdo, navegação, campos e estados. Neste projeto, corresponde à fase inicial sem estilos do protótipo.
+- **Wireframe interativo:** representação sem estilos da estrutura, conteúdo, navegação, campos e estados das funcionalidades Later e Maybe.
+- **Protótipo interativo:** demonstração navegável com comportamento simulado. Nome comum dos estados `ux-prototype`, `ui-prototype` e `final-visual`; em Now, só `final-visual` existe.
 - **Mockup:** representação da aparência proposta — layout, tipografia, cores, espaçamento e componentes — normalmente estática. Pode apoiar decisões visuais, mas não substitui a demonstração interativa dos percursos.
 - **UX (User Experience / experiência do utilizador):** compreensão e realização das tarefas, incluindo navegação, feedback, acessibilidade e recuperação de erros.
-- **UI (User Interface / interface do utilizador):** controlos, layout e apresentação visual com que a pessoa interage. As decisões de UI também afetam a UX; não são fases independentes nem sinónimos de mockup e wireframe.
-
-## Evolução do protótipo
-
-Cada funcionalidade passa do wireframe para o protótipo principal; dentro de cada implementação, evolui-se o mesmo código, sem versões paralelas de wireframe e mockup. O histórico fica no Git. As fases abaixo orientam esse trabalho. O protótipo principal pode começar já com estilos quando a interação a explorar depende deles (por exemplo, a seleção no mapa). A passagem à fase visual deve partir da revisão dos percursos, informação, interações e estados; não significa que a UX fique fechada.
-
-### Fase de wireframe — estrutura e comportamento
-
-Usar elementos HTML semânticos e a apresentação nativa do browser, sem CSS de apresentação, estilos inline, biblioteca visual ou trabalho de identidade gráfica. Esta restrição aplica-se apenas à fase inicial. O objetivo é rever como as tarefas funcionam, não aprovar a aparência. Rótulos, associação entre campos, foco por teclado e estrutura legível continuam necessários.
-
-«Sem estilos» não significa ausência de representação visual. Mapas, cronogramas e gráficos podem usar a geometria e os atributos gráficos mínimos necessários para representar informação e permitir interação, sem decoração nem trabalho de identidade gráfica. A tecnologia usada não fica definida por esta regra.
-
-Mapas, Gantt e outras visualizações devem representar a interação e a informação necessárias, sem polimento visual nem serviços externos. Não substituir automaticamente uma experiência visual relevante por uma tabela sem revisão. Na revisão do protótipo Now, a tabela de obras passou a ser a vista principal e o mapa ficou no popover do filtro de localidade; a decisão foi tomada com a pessoa que revê o protótipo.
-
-### Fase de design visual — aproximação à produção
-
-Refinar o protótipo interativo para se aproximar da aparência pretendida em produção: layout, hierarquia, tipografia, cores, espaçamento, componentes, estados visuais e comportamento responsivo. CSS e estilos de apresentação passam a ser permitidos; a escolha de ferramentas não está decidida por este documento.
-
-Rever também a UX quando o design visual revelar problemas: reorganizar conteúdo, controlos ou percursos quando necessário, sem perder a cobertura acordada. Mockups podem ajudar a explorar alternativas, mas o resultado deve estar integrado no mesmo protótipo interativo.
-
-Manter semântica, operação por teclado, foco visível, contraste adequado e estados compreensíveis; não depender apenas de cor para transmitir informação. Aparência próxima de produção não comprova prontidão para produção nem autoriza dados reais, backend ou integrações.
+- **UI (User Interface / interface do utilizador):** controlos, layout e apresentação visual com que a pessoa interage. As decisões de UI também afetam a UX: o `ux-prototype` foca-se na UX e o `ui-prototype` na UI, mas nenhum fecha o outro. UI não é sinónimo de mockup nem de wireframe.
 
 ## Sem dados reais nem efeitos externos
 
-Estes limites aplicam-se a ambas as implementações e a ambas as fases, mesmo quando a interface se aproximar da produção.
+Estes limites aplicam-se ao wireframe interativo e aos estados de protótipo, incluindo `final-visual`, mesmo quando a interface se aproximar da produção. A produção usa os serviços de produção.
 
 - Usar exemplos fictícios coerentes, pré-visualizações incluídas na demonstração e estado local descartável. Sem backend, base de dados, autenticação externa ou persistência de produção.
 - Simular localmente os resultados de pesquisa, sugestões de IA, importações, documentos, e-mails, integrações e restantes ações externas. Não consultar DR, BASE, IMPIC, fornecedores, mapas, ERP ou plataformas reais.
 - Não recolher dados pessoais, ler caixas de correio, carregar documentos reais, enviar mensagens, comprar selos, assinar documentos, efetuar pagamentos ou submeter propostas.
-- Distinguir claramente a demonstração de uma operação real, sem expor a classificação de prioridades. Uma confirmação de submissão deve indicar que nada foi enviado.
-- Disponibilizar reinício da demonstração. Exemplos de datas e estados devem ser determinísticos, sem depender de prazos ou avisos de produção.
+- No wireframe e em qualquer estado anterior a `final-visual` que exista, distinguir claramente a demonstração de uma operação real, sem expor a classificação de prioridades, e disponibilizar reinício da demonstração. Uma confirmação de submissão deve indicar que nada foi enviado. O `final-visual` não tem aviso nem reinício de demonstração, porque a produção o replica exatamente.
+- Exemplos de datas e estados devem ser determinísticos, sem depender de prazos ou avisos de produção.
 - Cálculos e validações demonstrativos não são regras jurídicas ou contabilísticas aprovadas. Incertezas devem ficar documentadas, não escondidas em automatismos.
 
 ## Percursos a representar
 
 ### Descoberta e proposta
 
-Now: perfil da empresa → anúncios de obras do dia → tabela de todas as obras dentro do raio → filtro de localidade (popover com mapa ou lista de caixas) → vista do concurso, com o assistente ao lado da tabela. Incluir um dia sem anúncios, filtros sem resultados e um pedido ao assistente sobre um ou vários concursos selecionados.
+Now: perfil da empresa → anúncios de obras do dia → tabela de todas as obras dentro do raio → filtro de localidade (diálogo com o mapa e a lista de caixas lado a lado) → vista do concurso, com o assistente ao lado da tabela. Incluir um dia sem anúncios, filtros sem resultados e um pedido ao assistente sobre um ou vários concursos selecionados.
 
-A seleção de obras limita-se às obras presentes na lista atual. Alterar filtros, aplicar outra localidade ou limpar filtros remove da seleção as obras que deixem de ser mostradas. As localidades escolhidas no popover só passam a filtro com «Aplicar», e «Cancelar» descarta-as. Os comentários já preparados no assistente mantêm-se. «Limpar filtros» (botão, menu ou pedido ao assistente) limpa todos os filtros, incluindo as localidades e os resultados mostrados pelo assistente.
+A seleção de obras limita-se às obras presentes na lista atual. Alterar filtros, aplicar outra localidade ou limpar filtros remove da seleção as obras que deixem de ser mostradas. As localidades escolhidas no diálogo só passam a filtro com «Confirmar», e «Cancelar», Escape ou um clique fora descartam-nas. Os comentários já preparados no assistente mantêm-se. «Limpar filtros» (botão ou pedido ao assistente) limpa todos os filtros, incluindo as localidades e os resultados mostrados pelo assistente.
 
 Later continua o percurso: convites, prazos, revisão de requisitos e decisão de participar → dossier e checklist → preços unitários e total → revisão → submissão simulada, mais a navegação pelo assistente e a vista por fases. Incluir informação de habilitação em falta/incompatível, recusa, preparação incompleta, regresso à preparação, proposta pronta e prazo ultrapassado. A submissão simulada pode alimentar os exemplos de acompanhamento posterior.
 
-### Opções do agente
+### Assistente e opções
 
-O cabeçalho tem um painel «⚙ Opções» (fecha com Escape ou clique fora), que se mantém ao reiniciar a demonstração:
+O assistente fica sempre ao lado da tabela. Aplica as suas ações logo e mostra os resultados só na tabela, com a indicação «Lista do assistente: N obras» e uma ação para a limpar. Cada resposta mostra os passos dados e o efeito de cada um, sem os poder revisitar nem desfazer (Maybe M23). Não há seletor de variações: o comportamento é fixo (Maybe M24).
 
-- **Resultados do agente — «No chat»:** desligado por omissão, os resultados aparecem só na tabela. Ligado, o chat mostra os resultados com duas escolhas independentes: «Lista no chat» (ligado por omissão) e «Mapa no chat» (desligado por omissão). Podem estar ligadas as duas.
-- **Localidade — «Mapa» ou «Lista»:** «Mapa» (por omissão) abre o mapa no popover do botão Localidade; «Lista» abre no mesmo popover uma lista com «Selecionar todos» e uma caixa por localidade. Em ambas, «Aplicar» define o filtro e «Cancelar» descarta a escolha.
-- **Ações do agente:** «Imediatas» (por omissão) alteram a tabela logo; «Com proposta» alteram-na só depois de «Aplicar», e uma proposta pendente fica rejeitada quando a pessoa envia outro pedido.
+O cabeçalho tem um painel «⚙ Opções» (fecha com Escape ou clique fora) com a referência da empresa, onde se podem alterar o raio de pesquisa e as categorias prioritárias.
 
-A conversa fica sempre ao lado da tabela. Não há seletor de variações.
+### Seleção, comentários e citações
 
-### Seleção por retângulo na lista de obras
+Obras e localidades são unidades selecionáveis, de seleções separadas. A interação segue os gestos e atalhos mais comuns do Explorador de Ficheiros do Windows 11 para selecionar e abrir unidades, sem as mover: clique, Ctrl/Meta+clique, Shift+clique (só nas obras, porque as localidades não têm ordem), duplo clique e os atalhos de teclado abaixo. Não há seleção por retângulo, menus de contexto nem atalhos avançados (Later L19–L21).
 
-Na tabela de obras, arrastar a partir de qualquer espaço vazio do painel de obras (incluindo as margens laterais) ou das margens interiores de uma linha inicia um retângulo de seleção. Arrastar sobre texto citável continua a selecionar texto para citação; controlos, cabeçalhos, o título, a barra de seleção e o texto de ajuda do painel não iniciam o retângulo e o seu texto seleciona-se normalmente. Sem obras na lista, a mensagem é texto simples: não inicia retângulo, não limpa a seleção ao clique e não abre o menu de contexto de seleção.
+Na lista de obras, o clique no vazio e Escape limpam a seleção de obras. Uma barra visível oferece abrir, comparar, comentar e limpar a seleção, ativas quando há obras selecionadas. Sem obras na lista, a mensagem é texto simples e não limpa a seleção ao clique.
 
-As linhas intercetadas pelo retângulo apresentam uma pré-visualização da seleção. Sem modificador, o arrasto substitui a seleção de obras; Shift acrescenta obras; Ctrl/Meta alterna as obras intercetadas relativamente à seleção existente no início do arrasto.
+Ao guardar um comentário sobre localidades ou obras, o que foi comentado deixa de estar selecionado. Se a pessoa remove um comentário ainda sem texto, as obras a que se referia voltam a ficar selecionadas, apenas as que continuam listadas; as localidades não voltam a ser selecionadas. Na lista de comentários preparados no assistente, «Remover» apaga o comentário. Comentários sem texto não são enviados como contexto. Citar um excerto (dos dados de uma obra, na consulta do concurso, ou de uma resposta do assistente) acrescenta-o à mesma lista, com uma nota.
 
-Ao largar, a seleção fica aplicada e é oferecido um comentário para as unidades recém-selecionadas, sem abrir obras nem enviar mensagens. Escape ou cancelamento do gesto pelo dispositivo preserva a seleção original. Obras e localidades são unidades selecionáveis. A interação segue os controlos do Explorador de Ficheiros do Windows 11 para selecionar e abrir unidades, sem as mover, e preserva clique, duplo clique, menu de contexto e atalhos de teclado.
-
-No mapa, a seleção por retângulo segue o mesmo gesto e o mesmo aspeto da lista: o cursor é o normal ao passar sobre o mapa e passa a cruz apenas durante o arrasto; o retângulo tracejado, a pré-visualização, Shift, Ctrl/Meta e Escape comportam-se como na lista.
-
-Ao guardar um comentário sobre localidades ou obras, o que foi comentado deixa de estar selecionado. Na lista de comentários preparados no assistente, cada comentário tem dois botões: ✕ apaga-o e ↩ («Descomentar») retira-o e volta a selecionar as localidades e as obras a que se referia, abrindo de novo as localidades dessas obras para que continuem na lista. O texto do comentário perde-se.
-
-Ações que descartam unidades pedem confirmação num diálogo modal («Tem a certeza?»), com «Cancelar» em foco e a ação destrutiva a vermelho. O limiar depende do esforço investido: só selecionadas, a partir de 10 unidades; num comentário guardado sem texto, a partir de 3; num comentário com texto escrito, sempre (valores de protótipo, pois há poucas obras nos dados; localidades e obras contam-se somadas). Aplica-se a: limpar a seleção (botão «Desselecionar tudo» na barra de seleção, que limpa localidades e obras; clique no vazio, Escape, menu «Limpar seleção», desmarcar a lista inteira, arrastar um retângulo que apenas desseleciona), fechar a lista com obras selecionadas, apagar um comentário e descomentar. «Limpar tudo» nos itens para enviar pede sempre confirmação. Abaixo do limiar, a ação executa-se logo. Substituir a seleção por outra não pede confirmação.
+Só se pede confirmação ao apagar um comentário com texto, num diálogo modal («Tem a certeza?»), com «Cancelar» em foco e a ação destrutiva a vermelho. «Limpar tudo» nos itens para enviar também a pede quando algum comentário tem texto. Limpar uma seleção nunca pede confirmação.
 
 ### Seleção por teclado no mapa e na lista
 
-Os atalhos atuam na região com foco e não interferem com a escrita em campos de texto. Ctrl/⌘+A funciona também quando o foco está na página, depois de clicar no vazio: atua na última zona usada (mapa ou lista de obras) e nunca seleciona o texto da página nessas zonas. Estão disponíveis:
+Os atalhos atuam na região com foco e não interferem com a escrita em campos de texto. Estão disponíveis:
 
-- **Mapa:** Tab percorre os marcadores; Espaço alterna a seleção do marcador com foco; Enter abre as localidades selecionadas ou, sem seleção, a localidade do marcador com foco. Escape fecha o popover de Localidade e descarta as localidades escolhidas, bem como um botão de comentário aberto. Ctrl+A seleciona todas as localidades; Shift+F10 abre o menu de contexto.
-- **Lista de obras:** Cima/Baixo move o foco e substitui a seleção; Espaço alterna a seleção da obra com foco; Shift+Cima/Baixo seleciona um intervalo; Ctrl+A seleciona todas as obras visíveis; Home/End selecionam a primeira e a última obra (com Shift, estendem a seleção); Ctrl+Cima/Baixo/Home/End movem apenas o foco. Enter abre a obra selecionada ou compara as obras selecionadas; Escape limpa apenas a seleção de obras; Shift+F10 abre o menu de contexto.
+- **Mapa:** Tab percorre os marcadores; Espaço alterna a seleção do marcador com foco; Enter abre as localidades selecionadas ou, sem seleção, a localidade do marcador com foco. Escape fecha o diálogo de Localidade e descarta as localidades escolhidas, bem como um botão de comentário aberto. Ctrl+A seleciona todas as localidades.
+- **Lista de obras:** Cima/Baixo move o foco e substitui a seleção; Espaço alterna a seleção da obra com foco; Shift+Cima/Baixo seleciona um intervalo; Ctrl+A seleciona todas as obras visíveis; Enter abre a obra selecionada ou compara as obras selecionadas; Escape limpa apenas a seleção de obras.
 
 ### Preparação adicional da proposta — Later
 
@@ -120,8 +133,9 @@ Durante a revisão, identificar informação necessária, relações entre conce
 
 A verificação futura deve:
 
-- Em ambas as fases, percorrer todas as funcionalidades, confirmar a coerência dos exemplos e estados, a ausência de etiquetas de prioridade, o reinício e a inexistência de chamadas ou efeitos externos.
-- Na fase de wireframe, confirmar a apresentação nativa sem estilos e rever estrutura, tarefas, navegação, validações e recuperação.
-- Na fase de design visual, rever a aproximação à aparência pretendida para produção, consistência da UI, adaptação a tamanhos de ecrã, acessibilidade e eventuais alterações de UX. Repetir a revisão funcional após essas alterações.
+- Em todos os estados, percorrer todas as funcionalidades, confirmar a coerência dos exemplos e estados, a ausência de etiquetas de prioridade, o reinício (exceto no `final-visual`) e a inexistência de chamadas ou efeitos externos.
+- No wireframe interativo, confirmar a apresentação nativa sem estilos. No `ux-prototype`, quando uma funcionalidade começar nesse estado, rever estrutura, tarefas, navegação, validações e recuperação.
+- No `ui-prototype`, quando existir, e no `final-visual`, rever a aparência pretendida para produção, consistência da UI, adaptação a tamanhos de ecrã, acessibilidade e eventuais alterações de UX. Repetir a revisão funcional após essas alterações.
+- Na produção, confirmar que o frontend replica exatamente o `final-visual` e usa os serviços de produção.
 
 Uma build bem-sucedida, por si só, não prova uma experiência completa nem valida a UX/UI.

@@ -13,13 +13,13 @@ Lista das perguntas por responder cuja resposta decide uma funcionalidade. É a 
 
 ## Perguntas
 
-| Pergunta                                                                                     | Desbloqueia                                | Estado         | Conclusão | Data | Evidência                                              |
-| -------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------- | --------- | ---- | ------------------------------------------------------ |
-| INCM: existe API, licença ou sandbox para os anúncios do Diário da República, e a que custo? | [N02](../now/funcionalidades.md) (recolha) | por investigar | —         | —    | [arquitetura §5, §10.3](pesquisa_arquitetura_cairn.md) |
-| BASE: o projeto obtém token? Que cobertura tem de anúncios de obras, e qual o limite de uso? | N02 (fonte alternativa ou complementar)    | por investigar | —         | —    | [arquitetura §5, §10.2](pesquisa_arquitetura_cairn.md) |
-| dados.gov.pt: que datasets cobrem anúncios de obras, com que licença e atualização?          | N02 (fonte alternativa)                    | por investigar | —         | —    | [arquitetura §5, §10.4](pesquisa_arquitetura_cairn.md) |
-| O anúncio do Diário da República inclui o prazo de submissão, ou só a plataforma o indica?   | [N04](../now/funcionalidades.md) (prazos)  | por investigar | —         | —    | T3 [00:28:51]–[00:32:04]; nota no «Limite» de N04      |
-| IMPIC: há pesquisa ou serviço para validar o alvará de uma empresa?                          | N01 e N04 (alvará); L12                    | por investigar | —         | —    | [arquitetura §5, §10.5](pesquisa_arquitetura_cairn.md) |
+| Pergunta                                                                                     | Desbloqueia                                                     | Estado         | Conclusão | Data | Evidência                                              |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------------- | --------- | ---- | ------------------------------------------------------ |
+| INCM: existe API, licença ou sandbox para os anúncios do Diário da República, e a que custo? | [N02](https://github.com/prumod/cairn-web/issues/104) (recolha) | por investigar | —         | —    | [arquitetura §5, §10.3](pesquisa_arquitetura_cairn.md) |
+| BASE: o projeto obtém token? Que cobertura tem de anúncios de obras, e qual o limite de uso? | N02 (fonte alternativa ou complementar)                         | por investigar | —         | —    | [arquitetura §5, §10.2](pesquisa_arquitetura_cairn.md) |
+| dados.gov.pt: que datasets cobrem anúncios de obras, com que licença e atualização?          | N02 (fonte alternativa)                                         | por investigar | —         | —    | [arquitetura §5, §10.4](pesquisa_arquitetura_cairn.md) |
+| O anúncio do Diário da República inclui o prazo de submissão, ou só a plataforma o indica?   | [N04](https://github.com/prumod/cairn-web/issues/104) (prazos)  | por investigar | —         | —    | T3 [00:28:51]–[00:32:04]; nota no «Limite» de N04      |
+| IMPIC: há pesquisa ou serviço para validar o alvará de uma empresa?                          | N01 e N04 (alvará); L12                                         | por investigar | —         | —    | [arquitetura §5, §10.5](pesquisa_arquitetura_cairn.md) |
 
 ## Fora da tabela
 

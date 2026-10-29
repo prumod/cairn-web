@@ -5,7 +5,7 @@ Write the final response in European Portuguese, as GitHub-flavored Markdown. It
 ```markdown
 Incorpora a transcrição N (`docs/product/transcriptions/<file>`) nos documentos derivados.
 
-- Now: <IDs atuais e o que mudou>
+- Now: <decisões sobre Now, listadas abaixo; não aplicadas>
 - Later: <movimentos, por exemplo N05 → L10, e novas>
 - Maybe: <movimentos e novas>
 - Never: <novas exclusões>
@@ -17,6 +17,14 @@ Incorpora a transcrição N (`docs/product/transcriptions/<file>`) nos documento
 | Anterior | Atual | Base          | Motivo         |
 | -------- | ----- | ------------- | -------------- |
 | N05      | L10   | TN [hh:mm:ss] | <motivo curto> |
+
+## Mudanças em Now
+
+Decisões sobre as capacidades Now (N01–N04, N13, N14) ou propostas de passagem a Now. Não foram aplicadas: o PRD é a issue #104 e o protótipo está em `apps/web/references/final-visual/`.
+
+- <decisão> (TN [hh:mm:ss])
+
+Escrever "Nenhuma." quando não houver.
 
 ## Por decidir
 

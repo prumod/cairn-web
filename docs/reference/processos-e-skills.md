@@ -31,9 +31,9 @@ Use para uma funcionalidade ou alteração com problema ainda por esclarecer. Ca
 Use para uma funcionalidade com ecrãs novos, do planeamento à verificação num ambiente semelhante a produção.
 
 1. **Planeamento.** Clarifique o pedido. Skills úteis: `grill-with-docs`, `triage`.
-2. **Protótipo de UX.** Faça wireframes dos ecrãs principais, do conceito e do percurso do utilizador, sem design visual detalhado. Skill: `prototype`. O wireframe de referência está em `apps/web/references/interactive-wireframe.tsx`.
-3. **PRD.** Descreva o que quer implementar. Skills: `rpi-create-prd` ou `to-spec`.
-4. **Design system.** Peça ao agente, por exemplo: "Identifica os ecrãs principais e contesta qualquer experiência prescrita. Usa o teu julgamento para escolher a melhor experiência." Descreva a sensação da experiência para cada utilizador do sistema (por exemplo, no Claude Design). Skill: `impeccable`.
+2. **Protótipo de UX.** Construa os ecrãs principais de Now em `apps/web/references/`, numa pasta com o nome do estado, o conceito e o percurso do utilizador, sem design visual detalhado. Skill: `prototype`. As funcionalidades de Later e Maybe ficam no wireframe `apps/web/references/interactive-wireframe.tsx`. O [método de evolução](../product/system/prototype.md#método-de-evolução) descreve os estados `ux-prototype`, `ui-prototype` e `final-visual`.
+3. **PRD.** Descreva o que quer implementar e publique-o como GitHub Issue. Skills: `rpi-create-prd` ou `to-spec`. Quando uma funcionalidade de Later ou Maybe ganha PRD, apague a sua entrada de `docs/product/{later,maybe}/funcionalidades.md`.
+4. **Design system.** Peça ao agente, por exemplo: "Identifica os ecrãs principais e contesta qualquer experiência prescrita. Usa o teu julgamento para escolher a melhor experiência." Descreva a sensação da experiência para cada utilizador do sistema (por exemplo, no Claude Design). Skill: `impeccable`. Evolua o protótipo para `ui-prototype/` e depois para `final-visual/`, apagando cada versão anterior. A produção replica o `final-visual/` exatamente.
 5. **Fechar o ciclo ponta a ponta.** Peça ao agente que teste a funcionalidade num ambiente semelhante a produção: `bun run test:browser` localmente ou o ambiente testing, `https://cairn-testing.prumod.eu`. Não execute deploy sem aprovação.
 
 ### Design visual

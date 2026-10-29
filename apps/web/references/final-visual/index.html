@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cairn Now · prova de conceito</title>
+    <title>Cairn · prova de conceito</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -27,6 +27,8 @@
         --amber: #b45309;
         --accentSoft: #e4edfc;
         --amberSoft: #fbebd7;
+        --danger: #b42318;
+        --onDanger: #ffffff;
         --shadow: rgba(23, 32, 43, 0.18);
       }
       @media (prefers-color-scheme: dark) {
@@ -43,6 +45,8 @@
           --amber: #f5b041;
           --accentSoft: #142538;
           --amberSoft: #33270f;
+          --danger: #f2706a;
+          --onDanger: #1a0605;
           --shadow: rgba(0, 0, 0, 0.6);
         }
       }
@@ -59,6 +63,8 @@
         --amber: #f5b041;
         --accentSoft: #142538;
         --amberSoft: #33270f;
+        --danger: #f2706a;
+        --onDanger: #1a0605;
         --shadow: rgba(0, 0, 0, 0.6);
       }
       html,
@@ -108,8 +114,8 @@
         position: sticky;
         top: 0;
         z-index: 30;
-        height: 48px;
-        padding: 0 8px 0 16px;
+        min-height: 48px;
+        padding: 4px 8px 4px 16px;
         display: flex;
         align-items: center;
         gap: 12px;
@@ -125,18 +131,28 @@
         gap: 6px;
         white-space: nowrap;
       }
-      .bar .brand span {
-        color: var(--accent);
+      .bar .co {
+        min-width: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0 16px;
+        font-size: 12.5px;
+        line-height: 1.35;
+        color: var(--fg);
+      }
+      .bar .co > span {
+        white-space: nowrap;
+      }
+      .bar .co > .co-p {
+        white-space: normal;
+      }
+      .bar .co .co-n {
+        font-size: 13px;
         font-weight: 600;
       }
-      .bar .co {
-        font-weight: 500;
-        font-size: 13px;
+      .bar .co .k {
         color: var(--muted);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        min-width: 0;
       }
       .bar .sp {
         flex: 1;
@@ -226,10 +242,11 @@
       :root {
         --aw: 50%;
         --rh: 560px;
+        --barh: 48px;
       }
       .app {
         flex: none;
-        height: calc(100dvh - 48px);
+        height: calc(100dvh - var(--barh));
         min-height: 560px;
         padding: 12px;
         display: grid;
@@ -377,6 +394,15 @@
         border-color: var(--accent);
         font-weight: 600;
       }
+      .btn.danger {
+        background: var(--danger);
+        color: var(--onDanger);
+        border-color: var(--danger);
+        font-weight: 600;
+      }
+      .btn.danger:hover:not(:disabled) {
+        border-color: var(--fg);
+      }
       .btn.sm {
         padding: 2px 7px;
         font-size: 11.5px;
@@ -388,16 +414,6 @@
       .btn.ghost:hover:not(:disabled) {
         background: var(--panel2);
         border-color: var(--line);
-      }
-      .btn.link {
-        background: none;
-        border: 0;
-        padding: 0 2px;
-        color: var(--accent);
-        font-size: 11.5px;
-      }
-      .btn.link:hover:not(:disabled) {
-        text-decoration: underline;
       }
       .field {
         margin-bottom: 14px;
@@ -721,18 +737,39 @@
         font-weight: 600;
       }
       .row {
+        position: relative;
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 4px 14px;
-        padding: 8px 10px 8px 12px;
+        padding: 8px 10px 8px 34px;
         border-bottom: 1px solid var(--line);
         cursor: pointer;
+      }
+      .row .ck {
+        position: absolute;
+        left: 11px;
+        top: 10px;
+        width: 15px;
+        height: 15px;
+        display: grid;
+        place-items: center;
+        border-radius: 4px;
+        background: var(--accent);
+        color: var(--onaccent);
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        visibility: hidden;
+      }
+      .row.sel .ck {
+        visibility: visible;
       }
       .row:hover {
         background: var(--panel2);
       }
       .row.sel {
         background: var(--accentSoft);
+        box-shadow: inset 3px 0 0 var(--accent);
       }
       .row.sel .tt {
         color: var(--fg);
@@ -930,23 +967,6 @@
       .sugs button:focus-visible {
         outline: 2px solid var(--accent);
       }
-      #optP .assistant-settings {
-        display: grid;
-        gap: 10px;
-        margin-top: 14px;
-        padding-top: 12px;
-        border-top: 1px solid var(--line);
-      }
-      #optP .assistant-settings h3 {
-        margin: 0;
-        font-size: 13px;
-      }
-      #optP .assistant-settings label {
-        display: grid;
-        gap: 4px;
-        font-size: 12px;
-        color: var(--muted);
-      }
       .chat {
         flex: 1;
         overflow: auto;
@@ -982,6 +1002,30 @@
         opacity: 0.85;
         margin-top: 3px;
       }
+      .sctx {
+        margin: 4px 0 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .sctx li {
+        padding: 4px 7px;
+        border: 1px solid color-mix(in srgb, var(--onaccent) 35%, transparent);
+        border-radius: 6px;
+        background: color-mix(in srgb, var(--onaccent) 10%, transparent);
+        font-size: 11.5px;
+      }
+      .sctx .sk {
+        font-weight: 600;
+      }
+      .sctx q {
+        display: block;
+        margin: 2px 0;
+        font-style: italic;
+        quotes: "«" "»";
+      }
       .steps {
         margin: 0 0 8px;
         padding: 0 8px;
@@ -1012,87 +1056,23 @@
       .steps b {
         color: var(--accent);
       }
-      .steps .undone .l {
-        text-decoration: line-through;
-        color: var(--muted);
-      }
-      .pend {
-        padding: 5px 7px;
-        border: 1px solid var(--amber);
-        background: var(--amberSoft);
-        border-radius: 7px;
-        margin-bottom: 7px;
-        font-size: 11.5px;
-        display: flex;
-        gap: 6px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .pend span {
-        flex: 1;
-        min-width: 120px;
-      }
-      .rl {
-        margin: 8px 0 0;
-        padding: 0;
-        list-style: none;
-        font-size: 12px;
-        border-top: 1px solid var(--line);
-      }
-      .rl li {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 2px 10px;
-        padding: 5px 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .rl .sub {
-        grid-column: 1;
-      }
-      .rl .mono {
-        text-align: right;
-        font-family: Inter, system-ui, sans-serif;
-        font-weight: 600;
-      }
-      .rl .tag {
-        margin-left: 4px;
-      }
-      .rl .sub {
-        display: flex;
-        gap: 6px;
-      }
-      .rl button {
-        all: unset;
-        cursor: pointer;
-        color: var(--fg);
-        font-weight: 600;
-      }
-      .rl button:hover {
-        color: var(--accent);
-        text-decoration: underline;
-      }
-      .rl button:focus-visible {
-        outline: 2px solid var(--accent);
-      }
-      .msg svg {
-        width: 100%;
-        height: auto;
-        max-height: 220px;
-        display: block;
-        margin-top: 6px;
-        border-radius: 6px;
-        border: 1px solid var(--line);
-      }
       .foot {
         border-top: 1px solid var(--line);
-        padding: 8px 12px 10px;
         display: flex;
         flex-direction: column;
-        gap: 7px;
         background: var(--panel);
         flex: none;
-        max-height: 40%;
+        max-height: 50%;
+      }
+      #ctxW {
+        flex: 0 1 auto;
+        min-height: 0;
         overflow: auto;
+        padding: 8px 12px 0;
+      }
+      .compw {
+        flex: none;
+        padding: 8px 12px 10px;
       }
       .ctxh {
         display: flex;
@@ -1140,10 +1120,6 @@
       .comp {
         display: flex;
         gap: 6px;
-        position: sticky;
-        bottom: 0;
-        background: var(--panel);
-        padding-top: 2px;
       }
       .chat:focus-visible,
       .cmp:focus-visible,
@@ -1165,12 +1141,18 @@
         background: rgba(0, 0, 0, 0.5);
       }
       #locD {
-        width: 720px;
+        width: 960px;
       }
       #locD .in {
         display: flex;
         flex-direction: column;
         max-height: 94vh;
+        outline: none;
+      }
+      #locD .locb {
+        display: flex;
+        flex: 1 1 auto;
+        min-height: 0;
       }
       #locD header {
         padding: 10px 14px;
@@ -1182,6 +1164,8 @@
         font-size: 14px;
       }
       #locD .mapw {
+        flex: 1 1 0;
+        min-width: 0;
         overflow: auto;
         min-height: 0;
         background: var(--panel2);
@@ -1195,6 +1179,71 @@
         width: 100%;
         height: auto;
         display: block;
+      }
+      #locD .locl {
+        position: relative;
+        flex: none;
+        width: 264px;
+        overflow: auto;
+        padding: 10px 10px 12px;
+        border-left: 1px solid var(--line);
+      }
+      #locD .locl h3 {
+        margin: 0 0 6px 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .lrow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 6px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12.5px;
+      }
+      .lrow:hover {
+        background: var(--panel2);
+      }
+      .lrow input {
+        flex: none;
+        margin: 0;
+        accent-color: var(--accent);
+      }
+      .lrow .ln {
+        flex: 1;
+        min-width: 0;
+      }
+      .lrow .lc {
+        min-width: 26px;
+        padding: 0 6px;
+        border: 1.5px solid var(--accent);
+        border-radius: 999px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .lrow.on .lc {
+        background: var(--accent);
+        color: var(--onaccent);
+      }
+      .lrow.zero {
+        color: var(--muted);
+      }
+      .lrow.zero .lc {
+        border: 1.5px dashed var(--muted);
+      }
+      .lrow.zero.on .lc {
+        background: var(--muted);
+        border-style: solid;
+        color: var(--panel);
+      }
+      .lall {
+        margin-bottom: 4px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--line);
+        border-radius: 0;
+        font-weight: 600;
       }
       #locD footer {
         padding: 10px 14px;
@@ -1212,6 +1261,10 @@
       #cfm form {
         padding: 16px;
         max-width: 380px;
+      }
+      #cfm h2 {
+        margin: 0 0 6px;
+        font-size: 14px;
       }
       #cfm p {
         margin: 0 0 14px;
@@ -1290,40 +1343,7 @@
           sans-serif;
         fill: var(--muted);
       }
-      /* menu + quote */
-      #cm {
-        position: fixed;
-        z-index: 50;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        box-shadow: 0 4px 12px var(--shadow);
-        padding: 4px;
-        min-width: 200px;
-        display: none;
-      }
-      #cm.on {
-        display: block;
-      }
-      #cm button {
-        all: unset;
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
-        padding: 6px 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 12.5px;
-      }
-      #cm button:hover,
-      #cm button:focus {
-        background: var(--accentSoft);
-        outline: 2px solid transparent;
-      }
-      #cm button:focus-visible {
-        outline: 2px solid var(--accent);
-        outline-offset: -2px;
-      }
+      /* quote */
       #qb {
         position: fixed;
         z-index: 60;
@@ -1343,6 +1363,17 @@
         html,
         body {
           height: auto;
+        }
+        .bar {
+          flex-wrap: wrap;
+          row-gap: 2px;
+          padding-top: 6px;
+          padding-bottom: 6px;
+        }
+        .bar .co {
+          order: 3;
+          flex: 1 0 100%;
+          gap: 0 14px;
         }
         .app {
           height: auto;
@@ -1371,13 +1402,33 @@
         .detail dl {
           grid-template-columns: 1fr;
         }
+        #locD .locb {
+          flex-direction: column;
+          overflow: auto;
+        }
+        #locD .mapw {
+          flex: none;
+          overflow: visible;
+        }
+        #locD .locl {
+          width: auto;
+          overflow: visible;
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
       }
     </style>
   </head>
   <body>
     <header class="bar">
-      <div class="brand">Cairn <span>Now</span></div>
-      <div class="co" title="Empresa">Construções Liz, Lda.</div>
+      <div class="brand">Cairn</div>
+      <div class="co" role="group" aria-label="Referência da empresa">
+        <span class="co-n">Construções Liz, Lda.</span>
+        <span><span class="k">Localidade</span> Leiria</span>
+        <span><span class="k">Raio</span> <span id="coRad"></span></span>
+        <span><span class="k">Classe</span> 3</span>
+        <span class="co-p"><span class="k">Prioritárias</span> <span id="coPrio"></span></span>
+      </div>
       <div class="sp"></div>
       <button
         class="ibtn"
@@ -1432,25 +1483,6 @@
       />
       <div class="fl" style="margin: 8px 0 3px"><span>Categorias prioritárias</span></div>
       <div id="prioL"></div>
-      <div class="assistant-settings" role="group" aria-labelledby="assistantSettingsTitle">
-        <h3 id="assistantSettingsTitle">Assistente</h3>
-        <label
-          >Aplicar alterações
-          <select class="inp" id="mode">
-            <option value="now">Imediatamente</option>
-            <option value="appr">Após aprovação</option>
-          </select></label
-        >
-        <label
-          >Resultados na resposta
-          <select class="inp" id="showIn">
-            <option value="none">Não mostrar</option>
-            <option value="list" selected>Lista</option>
-            <option value="map">Mapa</option>
-            <option value="both">Lista e mapa</option>
-          </select></label
-        >
-      </div>
     </div>
     <div class="pop" id="calP" role="dialog" aria-label="Escolher data de publicação">
       <h2 class="cal-title">Data de publicação</h2>
@@ -1636,29 +1668,43 @@
         ></div>
         <div class="foot">
           <div id="ctxW"></div>
-          <form class="comp" id="comp">
-            <input
-              class="inp"
-              id="msg"
-              placeholder="Pergunte sobre as obras…"
-              aria-label="Mensagem"
-              autocomplete="off"
-            /><button class="btn primary" type="submit">Enviar</button>
-          </form>
+          <div class="compw">
+            <form class="comp" id="comp">
+              <input
+                class="inp"
+                id="msg"
+                placeholder="Pergunte sobre as obras…"
+                aria-label="Mensagem"
+                aria-describedby="msgH"
+                autocomplete="off"
+              /><button class="btn primary" type="submit">Enviar</button>
+            </form>
+            <div class="hint" id="msgH" role="status"></div>
+          </div>
         </div>
       </section>
     </div>
 
     <dialog id="locD" aria-labelledby="locT">
-      <div class="in">
+      <div class="in" tabindex="-1">
         <header>
           <h2 id="locT">Localidades</h2>
           <div class="mut" style="font-size: 11.5px">
-            Clique, Ctrl/⌘+clique ou Shift+clique. Tab percorre, Espaço alterna, Ctrl/⌘+A seleciona
-            todas. A escolha só vale ao confirmar.
+            No mapa ou na lista. Clique escolhe uma localidade, Ctrl/⌘+clique alterna. Tab percorre,
+            Espaço alterna, Enter aplica as escolhidas (ou a do foco), Ctrl/⌘+A seleciona todas. A
+            escolha só vale ao confirmar.
           </div>
         </header>
-        <div class="mapw" id="locMap"></div>
+        <div class="locb">
+          <div class="mapw" id="locMap"></div>
+          <div class="locl" role="group" aria-labelledby="locLT">
+            <h3 id="locLT">Lista de localidades</h3>
+            <label class="lrow lall"
+              ><input type="checkbox" id="locAll" /><span class="ln">Selecionar todos</span></label
+            >
+            <div id="locList"></div>
+          </div>
+        </div>
         <footer>
           <span id="locC" class="mut" aria-live="polite"></span><span class="sp"></span>
           <button class="btn" id="locClr">Limpar escolha</button>
@@ -1669,17 +1715,17 @@
       </div>
     </dialog>
 
-    <dialog id="cfm" aria-labelledby="cfmT">
+    <dialog id="cfm" aria-labelledby="cfmT" aria-describedby="cfmM">
       <form method="dialog">
-        <p id="cfmT"></p>
+        <h2 id="cfmT">Tem a certeza?</h2>
+        <p id="cfmM"></p>
         <div class="acts">
           <button class="btn" value="no" autofocus>Cancelar</button
-          ><button class="btn primary" value="yes">Descartar</button>
+          ><button class="btn danger" value="yes">Apagar</button>
         </div>
       </form>
     </dialog>
 
-    <div id="cm" role="menu" aria-label="Ações sobre a seleção"></div>
     <div id="qb"><button class="btn primary sm" id="qBtn">❝ Citar excerto</button></div>
 
     <script>
@@ -1724,7 +1770,6 @@
         { id: "ourem", n: "Ourém", x: 440, y: 400, km: 34 },
       ];
       const LOC = (id) => LOCS.find((l) => l.id === id);
-      const SRC = "https://example.org/diario-da-republica/anuncio/";
       const W = [
         {
           id: "w1",
@@ -1847,7 +1892,6 @@
           kw: ["biblioteca", "coimbra"],
         },
       ];
-      W.forEach((w) => (w.src = SRC + w.id));
       const byId = (id) => W.find((w) => w.id === id);
       const ENTS = [...new Set(W.filter((w) => w.km <= 60).map((w) => w.ent))].sort();
       const FAILED = ["2026-10-21"];
@@ -1897,11 +1941,7 @@
         anchor: null,
         focus: null,
         ctx: [],
-        mode: "now",
-        showIn: "list",
-        zone: "list",
         draft: null,
-        dAnchor: null,
         chat: [],
       };
       S.v = defV();
@@ -1956,14 +1996,16 @@
         clearTimeout(noticeT);
         noticeT = setTimeout(() => (n.className = "notice"), 7000);
       }
-      function confirmD(msg, label = "Descartar") {
+      /* the only confirmation in the app: deleting a comment that has text */
+      function confirmD(msg, label) {
         return new Promise((res) => {
           const d = $("#cfm");
-          $("#cfmT").textContent = msg;
-          $("#cfm .primary").textContent = label;
+          $("#cfmM").textContent = msg;
+          $("#cfm .danger").textContent = label;
           d.returnValue = "";
           d.addEventListener("close", () => res(d.returnValue === "yes"), { once: true });
           d.showModal();
+          $("#cfm [value=no]").focus();
         });
       }
 
@@ -1984,6 +2026,8 @@
       function renderFilters() {
         const f = V();
         $("#radV").textContent = S.radius + " km";
+        $("#coRad").textContent = S.radius + " km";
+        $("#coPrio").textContent = TYPES.filter((t) => S.prio.has(t)).join(", ") || "nenhuma";
         $("#rad").value = S.radius;
         const d = $("#dist");
         d.max = S.radius;
@@ -2156,13 +2200,11 @@
         }
       });
       addEventListener("resize", placePop);
-      /* anchored popovers and the context menu close when anything scrolls underneath them */
+      /* anchored popovers close when anything scrolls underneath them */
       document.addEventListener(
         "scroll",
         (e) => {
           if (pop && !pop.el.contains(e.target)) closePop();
-          const m = $("#cm");
-          if (m.classList.contains("on") && !m.contains(e.target)) hideMenu(false);
         },
         true,
       );
@@ -2334,7 +2376,7 @@
         const sel = S.sel.has(w.id),
           pr = S.prio.has(w.type);
         return `<div class="row${sel ? " sel" : ""}${S.focus === w.id ? " kf" : ""}" role="option" id="r-${w.id}" data-id="${w.id}" aria-selected="${sel}">
-   <div><div class="tt">${esc(w.t)}${pr ? '<span class="tag" title="Categoria prioritária">★<span class="sr"> Prioritária</span></span>' : ""}</div><div class="sub">${esc(w.type)} · ${esc(w.ent)}</div></div>
+   <span class="ck" aria-hidden="true">✓</span><div><div class="tt">${esc(w.t)}${pr ? '<span class="tag" title="Categoria prioritária">★<span class="sr"> Prioritária</span></span>' : ""}</div><div class="sub">${esc(w.type)} · ${esc(w.ent)}</div></div>
    <div class="side"><span class="mono val-amt">${eur(w.val)}</span><span class="del">${delHTML(w)}${dueHTML(w)}</span></div></div>`;
       }
       function renderList() {
@@ -2422,12 +2464,12 @@
         $("#listW").hidden = true;
         const pr = S.prio.has(w.type);
         dw.innerHTML = `<div class="detail" role="region" aria-label="Detalhe da obra"><div class="detail-h" style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="back">← Voltar à lista</button></div>
-  <h2 tabindex="-1" id="dh" class="quotable">${esc(w.t)}${pr ? '<span class="tag">★ Prioritária</span>' : ""}</h2><div class="sub quotable">${esc(w.type)}</div>
-  <dl class="quotable"><dt>Entidade adjudicante</dt><dd>${esc(w.ent)}</dd><dt>Localidade e distância</dt><dd>${esc(LOC(w.loc).n)} · a <span class="mono">${w.km} km</span> da empresa</dd>
+  <div class="quotable"><h2 tabindex="-1" id="dh">${esc(w.t)}${pr ? '<span class="tag">★ Prioritária</span>' : ""}</h2><div class="sub">${esc(w.type)}</div>
+  <dl><dt>Entidade adjudicante</dt><dd>${esc(w.ent)}</dd><dt>Localidade e distância</dt><dd>${esc(LOC(w.loc).n)} · a <span class="mono">${w.km} km</span> da empresa</dd>
   <dt>Valor anunciado</dt><dd class="mono">${eur(w.val)}</dd><dt>Prazo de execução</dt><dd class="mono">${w.days} dias</dd>
   <dt>Entrega</dt><dd>${w.del ? `<span class="mono">${fmtDel(w.del)}</span>` : "consta da plataforma"}</dd><dt>Alvará exigido</dt><dd>${esc(w.lic)}</dd>
   <dt>Plataforma</dt><dd>${esc(w.plat)}</dd><dt>Data de publicação</dt><dd class="mono">${fmtDate(w.pub)}</dd>
-  <dt>Anúncio de origem</dt><dd><a href="${w.src}" target="_blank" rel="noopener noreferrer">Abrir no Diário da República ↗</a></dd></dl>
+  <dt>Anúncio de origem</dt><dd>O anúncio de origem não está disponível nesta demonstração.</dd></dl></div>
   <div class="note">Mostrar o alvará exigido não verifica a elegibilidade.</div></div>`;
       }
       function renderResults() {
@@ -2482,9 +2524,7 @@
         if (n >= 2) return doCompare();
         doOpen();
       }
-      async function clearSel() {
-        if (S.sel.size >= 10 && !(await confirmD(`Descartar a seleção de ${S.sel.size} obras?`)))
-          return;
+      function clearSel() {
         S.sel.clear();
         paintSel();
       }
@@ -2499,14 +2539,12 @@
       function initList() {
         const list = $("#list");
         list.addEventListener("focus", () => {
-          S.zone = "list";
           if (!S.focus && L().length) {
             S.focus = L()[0].id;
             paintSel();
           } else paintSel();
         });
         list.addEventListener("mousedown", (e) => {
-          S.zone = "list";
           if (e.shiftKey) e.preventDefault();
         });
         list.addEventListener("click", (e) => {
@@ -2514,10 +2552,7 @@
           const a = e.target.closest("[data-act]");
           if (a && a.dataset.act === "reset") return resetAll();
           if (!r) {
-            if (!e.target.closest(".empty") && !(e.ctrlKey || e.metaKey || e.shiftKey)) {
-              S.sel.clear();
-              paintSel();
-            }
+            if (e.target === list && !(e.ctrlKey || e.metaKey || e.shiftKey)) clearSel();
             return;
           }
           const id = r.dataset.id;
@@ -2537,21 +2572,6 @@
           const r = e.target.closest(".row");
           if (r) openWork(r.dataset.id);
         });
-        list.addEventListener("contextmenu", (e) => {
-          e.preventDefault();
-          const r = e.target.closest(".row");
-          if (r) {
-            const id = r.dataset.id;
-            if (!S.sel.has(id)) {
-              S.sel = new Set([id]);
-              S.anchor = id;
-            }
-            S.focus = id;
-            paintSel();
-          }
-          list.focus({ preventScroll: true });
-          showMenu(e.clientX, e.clientY);
-        });
         list.addEventListener("keydown", (e) => {
           const ids = L().map((w) => w.id);
           if (!ids.length) return;
@@ -2561,9 +2581,7 @@
           const go = (idx) => {
             idx = Math.max(0, Math.min(ids.length - 1, idx));
             const id = ids[idx];
-            if (ctrl) {
-              S.focus = id;
-            } else if (e.shiftKey) {
+            if (e.shiftKey) {
               const an = S.anchor || S.focus || id;
               S.anchor = an;
               S.sel = new Set(rangeIds(an, id));
@@ -2576,10 +2594,8 @@
             paintSel();
             e.preventDefault();
           };
-          if (k === "ArrowDown") return go(cur < 0 ? 0 : cur + 1);
-          if (k === "ArrowUp") return go(cur < 0 ? ids.length - 1 : cur - 1);
-          if (k === "Home") return go(0);
-          if (k === "End") return go(ids.length - 1);
+          if (!ctrl && k === "ArrowDown") return go(cur < 0 ? 0 : cur + 1);
+          if (!ctrl && k === "ArrowUp") return go(cur < 0 ? ids.length - 1 : cur - 1);
           if (k === " ") {
             e.preventDefault();
             if (S.focus) {
@@ -2603,16 +2619,6 @@
           if (k === "Escape") {
             e.preventDefault();
             return clearSel();
-          }
-          if (k === "ContextMenu" || (k === "F10" && e.shiftKey)) {
-            e.preventDefault();
-            const row = $("#r-" + (S.focus || ids[0])) || list;
-            const b = row.getBoundingClientRect();
-            if (!S.focus) {
-              S.focus = ids[0];
-              paintSel();
-            }
-            showMenu(b.left + 24, b.bottom - 4);
           }
         });
         $("#bOpen").onclick = doOpen;
@@ -2639,93 +2645,19 @@
           const a = e.target.dataset.act;
           if (a === "back") closeWork();
         };
-        document.addEventListener("keydown", (e) => {
-          // Ctrl+A on the page after a click on empty space
-          if (
-            (e.key === "a" || e.key === "A") &&
-            (e.ctrlKey || e.metaKey) &&
-            document.activeElement === document.body &&
-            S.zone === "list" &&
-            !S.v.open &&
-            !$("dialog[open]")
-          ) {
-            e.preventDefault();
-            S.sel = new Set(L().map((w) => w.id));
-            paintSel();
-          }
-        });
-      }
-
-      /* ---------- context menu ---------- */
-      let menuOpener = null;
-      function showMenu(x, y) {
-        const m = $("#cm");
-        menuOpener = document.activeElement;
-        const items = [
-          ["open", "Abrir"],
-          ["compare", "Comparar"],
-          ["comment", "Comentar"],
-          ["locs", "Filtrar por localidades"],
-          ["clear", "Limpar seleção"],
-        ];
-        m.innerHTML = items
-          .map((i) => `<button role="menuitem" data-a="${i[0]}" tabindex="-1">${i[1]}</button>`)
-          .join("");
-        m.classList.add("on");
-        const r = m.getBoundingClientRect();
-        m.style.left = Math.min(x, innerWidth - r.width - 8) + "px";
-        m.style.top = Math.min(y, innerHeight - r.height - 8) + "px";
-        m.querySelector("button").focus();
-      }
-      function hideMenu(back = true) {
-        const m = $("#cm");
-        if (!m.classList.contains("on")) return;
-        m.classList.remove("on");
-        if (back) (menuOpener && menuOpener.isConnected ? menuOpener : $("#list")).focus();
-      }
-      function initMenu() {
-        const m = $("#cm");
-        m.addEventListener("click", (e) => {
-          const b = e.target.closest("button");
-          if (!b) return;
-          const a = b.dataset.a;
-          hideMenu();
-          if (a === "open") doOpen();
-          if (a === "compare") doCompare();
-          if (a === "comment") commentWorks(selIds());
-          if (a === "locs") {
-            const ids = selIds();
-            openLoc(ids.length ? new Set(ids.map((i) => byId(i).loc)) : V().locs);
-          }
-          if (a === "clear") clearSel();
-        });
-        m.addEventListener("keydown", (e) => {
-          const bs = $$("button", m),
-            i = bs.indexOf(document.activeElement);
-          if (e.key === "ArrowDown") {
-            e.preventDefault();
-            bs[(i + 1) % bs.length].focus();
-          } else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            bs[(i - 1 + bs.length) % bs.length].focus();
-          } else if (e.key === "Escape") {
-            e.preventDefault();
-            hideMenu();
-          } else if (e.key === "Tab") {
-            e.preventDefault();
-            hideMenu();
-          }
-        });
-        document.addEventListener("mousedown", (e) => {
-          if (!e.target.closest("#cm")) hideMenu(false);
-        });
-        addEventListener("resize", () => hideMenu(false));
       }
 
       /* ---------- comments & quotes ---------- */
       function commentWorks(ids, keepSel) {
         if (!ids.length) return;
-        const c = { id: uid(), type: "comment", kind: "obras", ids: [...ids], text: "" };
+        const c = {
+          id: uid(),
+          type: "comment",
+          kind: "obras",
+          ids: [...ids],
+          text: "",
+          clearedSel: !keepSel,
+        };
         S.ctx.push(c);
         if (!keepSel) {
           S.sel.clear();
@@ -2748,6 +2680,33 @@
               : LOC(i).n,
           )
           .join(", ");
+      /* a comment without text is not context: it stays in the list to be written or removed */
+      const isContext = (c) => c.type !== "comment" || c.text.trim() !== "";
+      const ctxTitle = () => `Contexto (${S.ctx.filter(isContext).length}) · só segue ao Enviar`;
+      /* removing an empty comment gives back the works its save cleared; only listed works can be selected */
+      function reselect(c) {
+        const listed = new Set(L().map((w) => w.id));
+        c.ids.forEach((id) => listed.has(id) && S.sel.add(id));
+        paintSel();
+      }
+      /* where a quote came from: a field of a work (detail view) or an assistant reply */
+      const quoteSrc = (f) =>
+        f.kind === "obra" ? `${f.title} · ${f.field}` : "Resposta do assistente";
+      /* what travels to the assistant for one prepared item (also what the sent bubble shows) */
+      const ctxItem = (c) =>
+        c.type === "comment"
+          ? { type: "comment", kind: c.kind, units: unitNames(c), text: c.text }
+          : { type: "quote", text: c.text, note: c.note, from: { ...c.from } };
+      const sentCtxHTML = (items) =>
+        items.length
+          ? `<div class="cx">Contexto enviado · ${plural(items.length, "item", "itens")}</div><ul class="sctx" aria-label="Contexto enviado">${items
+              .map((c) =>
+                c.type === "comment"
+                  ? `<li><span class="sk">Comentário · ${c.kind}</span>: ${esc(c.units)}<div>${esc(c.text)}</div></li>`
+                  : `<li><span class="sk">Citação</span>: ${esc(quoteSrc(c.from))}<q>${esc(c.text)}</q>${c.note.trim() ? `<div>Nota: ${esc(c.note)}</div>` : ""}</li>`,
+              )
+              .join("")}</ul>`
+          : "";
       function renderCtx() {
         const w = $("#ctxW");
         if (!S.ctx.length) {
@@ -2756,12 +2715,12 @@
           return;
         }
         w.innerHTML =
-          `<div class="ctxh" style="margin-bottom:4px"><span>Contexto (${S.ctx.length}) · só segue ao Enviar</span><button class="btn sm" data-a="clearctx">Limpar contexto</button></div><div style="display:flex;flex-direction:column;gap:5px">` +
+          `<div class="ctxh" style="margin-bottom:4px"><span>${ctxTitle()}</span><button class="btn sm" data-a="clearctx">Limpar tudo</button></div><div style="display:flex;flex-direction:column;gap:5px">` +
           S.ctx
             .map((c) =>
               c.type === "comment"
-                ? `<div class="ci" data-id="${c.id}"><div class="chd"><b>Comentário · ${c.kind === "obras" ? "obras" : "localidades"}</b><span class="mut">${plural(c.ids.length, "unidade", "unidades")}</span></div><div class="mut" style="margin-bottom:3px">${esc(unitNames(c))}</div><textarea rows="2" aria-label="Texto do comentário" placeholder="Escreva o comentário…">${esc(c.text)}</textarea><div class="acts"><button class="btn sm" data-a="uncomment">Descomentar</button><button class="btn sm" data-a="rm">Remover</button></div></div>`
-                : `<div class="ci" data-id="${c.id}"><div class="chd"><b>Citação</b></div><q>${esc(c.text)}</q><input aria-label="Nota da citação" placeholder="Nota (o que quer saber)…" value="${esc(c.note)}"><div class="acts"><button class="btn sm" data-a="rm">Remover</button></div></div>`,
+                ? `<div class="ci" data-id="${c.id}"><div class="chd"><b>Comentário · ${c.kind === "obras" ? "obras" : "localidades"}</b><span class="mut">${plural(c.ids.length, "unidade", "unidades")}</span></div><div class="mut" style="margin-bottom:3px">${esc(unitNames(c))}</div><textarea rows="2" aria-label="Texto do comentário" placeholder="Escreva o comentário…">${esc(c.text)}</textarea><div class="acts"><button class="btn sm" data-a="rm">Remover</button></div></div>`
+                : `<div class="ci" data-id="${c.id}"><div class="chd"><b>Citação</b></div><div class="mut" style="margin-bottom:3px">${esc(quoteSrc(c.from))}</div><q>${esc(c.text)}</q><input aria-label="Nota da citação" placeholder="Nota (o que quer saber)…" value="${esc(c.note)}"><div class="acts"><button class="btn sm" data-a="rm">Remover</button></div></div>`,
             )
             .join("") +
           "</div>";
@@ -2772,51 +2731,42 @@
           const ci = e.target.closest(".ci");
           if (!ci) return;
           const c = S.ctx.find((x) => x.id === ci.dataset.id);
-          if (c.type === "comment") c.text = e.target.value;
-          else c.note = e.target.value;
+          if (c.type === "comment") {
+            c.text = e.target.value;
+            // a comment gains or loses its place in the count as it is written; the list itself is not redrawn
+            $("#ctxW .ctxh span").textContent = ctxTitle();
+          } else c.note = e.target.value;
         });
         w.addEventListener("click", async (e) => {
           const b = e.target.closest("button[data-a]");
           if (!b) return;
-          const a = b.dataset.a;
-          if (a === "clearctx") {
-            if (await confirmD("Descartar todo o contexto preparado para o assistente?")) {
-              S.ctx = [];
-              renderCtx();
-            }
+          if (b.dataset.a === "clearctx") {
+            const written = S.ctx.filter((x) => x.type === "comment" && x.text.trim()).length;
+            if (
+              written &&
+              !(await confirmD(
+                `Vai apagar ${plural(S.ctx.length, "item preparado", "itens preparados")}, incluindo ${plural(written, "comentário com texto", "comentários com texto")}. Nada disto foi enviado.`,
+                "Limpar tudo",
+              ))
+            )
+              return;
+            S.ctx = [];
+            renderCtx();
             return;
           }
           const c = S.ctx.find((x) => x.id === b.closest(".ci").dataset.id);
-          const has = c.type === "comment" ? !!c.text.trim() : !!c.note.trim();
-          const need = c.type === "comment" ? has || c.ids.length >= 3 : has;
           if (
-            need &&
+            c.type === "comment" &&
+            c.text.trim() &&
             !(await confirmD(
-              c.type === "comment"
-                ? "Descartar este comentário?"
-                : "Descartar esta citação e a sua nota?",
+              `Vai apagar o comentário sobre ${unitNames(c)}. Nada disto foi enviado.`,
+              "Apagar",
             ))
           )
             return;
           S.ctx = S.ctx.filter((x) => x !== c);
+          if (c.clearedSel && !c.text.trim()) reselect(c);
           renderCtx();
-          if (a === "uncomment" && c.type === "comment") {
-            if (c.kind === "obras") {
-              const ids = new Set(L().map((x) => x.id));
-              const back = c.ids.filter((i) => ids.has(i));
-              S.sel = new Set(back);
-              S.focus = back[back.length - 1] || S.focus;
-              S.anchor = back[0] || null;
-              paintSel();
-              notify(
-                back.length === c.ids.length
-                  ? `Seleção restaurada: ${plural(back.length, "obra", "obras")}.`
-                  : `Restauradas ${back.length} de ${c.ids.length} obras; as restantes já não estão listadas.`,
-                back.length < c.ids.length,
-              );
-              $("#list").focus();
-            } else openLoc(new Set(c.ids));
-          }
         });
         document.addEventListener("mouseup", () => setTimeout(updateQuoteBtn, 0));
         document.addEventListener("keyup", (e) => {
@@ -2834,15 +2784,62 @@
         $("#qBtn").onmousedown = (e) => e.preventDefault();
         $("#qBtn").onclick = makeQuote;
       }
+      /* a quote needs one selection whose text all sits inside ONE .quotable region, and only that
+         text is quoted. A paragraph selection (triple click) ends at the start of the next block;
+         that empty overshoot is allowed, a range that reaches other text is not. */
       function currentQuote() {
         const s = getSelection();
-        if (!s || s.isCollapsed) return null;
-        const t = s.toString().trim();
-        if (!t) return null;
-        const n =
-          s.anchorNode && (s.anchorNode.nodeType === 1 ? s.anchorNode : s.anchorNode.parentElement);
-        if (!n || !n.closest(".quotable")) return null;
-        return { t, r: s.getRangeAt(0) };
+        if (!s || s.isCollapsed || s.rangeCount !== 1) return null;
+        const r = s.getRangeAt(0),
+          of = (n) => (n.nodeType === 1 ? n : n.parentElement)?.closest(".quotable"),
+          a = of(r.startContainer),
+          q = a || of(r.endContainer);
+        if (!q) return null;
+        const eff = document.createRange(),
+          rest = document.createRange();
+        eff.selectNodeContents(q);
+        if (r.compareBoundaryPoints(Range.START_TO_START, eff) > 0)
+          eff.setStart(r.startContainer, r.startOffset);
+        else {
+          rest.setStart(r.startContainer, r.startOffset);
+          rest.setEnd(eff.startContainer, eff.startOffset);
+          if (rest.toString().trim()) return null;
+        }
+        if (r.compareBoundaryPoints(Range.END_TO_END, eff) < 0)
+          eff.setEnd(r.endContainer, r.endOffset);
+        else {
+          rest.setStart(eff.endContainer, eff.endOffset);
+          rest.setEnd(r.endContainer, r.endOffset);
+          if (rest.toString().trim()) return null;
+        }
+        const t = eff.toString().trim();
+        return t ? { t, r: eff, q } : null;
+      }
+      /* the work and the field label(s) the selection touches, or the assistant reply */
+      function quoteFrom(r, q) {
+        if (q.closest("#chat")) return { kind: "assistente" };
+        const w = byId(S.v.open),
+          fields = [];
+        $$("h2, .sub, dt, dd", q).forEach((el) => {
+          if (!r.intersectsNode(el)) return;
+          const part = document.createRange();
+          part.selectNodeContents(el);
+          if (r.compareBoundaryPoints(Range.START_TO_START, part) > 0)
+            part.setStart(r.startContainer, r.startOffset);
+          if (r.compareBoundaryPoints(Range.END_TO_END, part) < 0)
+            part.setEnd(r.endContainer, r.endOffset);
+          if (!part.toString().trim()) return;
+          const f =
+            el.tagName === "H2"
+              ? "Obra"
+              : el.tagName === "DD"
+                ? el.previousElementSibling.textContent
+                : el.tagName === "DT"
+                  ? el.textContent
+                  : "Tipo de obra";
+          if (!fields.includes(f)) fields.push(f);
+        });
+        return { kind: "obra", id: w.id, title: w.t, field: fields.join(" / ") || "Obra" };
       }
       function updateQuoteBtn() {
         const q = currentQuote(),
@@ -2859,7 +2856,13 @@
       function makeQuote() {
         const q = currentQuote();
         if (!q) return;
-        const c = { id: uid(), type: "quote", text: q.t.slice(0, 400), note: "" };
+        const c = {
+          id: uid(),
+          type: "quote",
+          text: q.t.slice(0, 400),
+          note: "",
+          from: quoteFrom(q.r, q.q),
+        };
         S.ctx.push(c);
         getSelection().removeAllRanges();
         $("#qb").classList.remove("on");
@@ -2868,17 +2871,14 @@
       }
 
       /* ---------- locality modal (map) ---------- */
-      function mapSVG(o = {}) {
-        const R = S.radius * 4,
-          counts = o.counts;
-        const pins = LOCS.filter((l) => o.interactive || (counts.get(l.id) || 0) > 0)
-          .map((l) => {
-            const c = counts.get(l.id) || 0,
-              on = o.interactive && S.draft.has(l.id);
-            return `<g class="pin${c ? "" : " zero"}${on ? " on" : ""}" ${o.interactive ? `data-id="${l.id}" tabindex="0" role="checkbox" aria-checked="${on}" aria-label="${l.n}, ${c ? plural(c, "obra", "obras") : "sem obras nos filtros atuais"}${on ? ", selecionada" : ""}"` : 'aria-hidden="true"'} transform="translate(${l.x} ${l.y})"><circle class="ringf" r="21"/><circle class="dot" r="15"/><text class="cnt" y="4">${c}</text><text y="33">${l.n}</text></g>`;
-          })
-          .join("");
-        return `<svg viewBox="0 0 640 520" ${o.interactive ? 'id="mapSvg" role="group" aria-label="Mapa estilizado da região de Leiria"' : 'role="img" aria-label="Mapa das localidades dos resultados"'}>
+      function mapSVG(counts) {
+        const R = S.radius * 4;
+        const pins = LOCS.map((l) => {
+          const c = counts.get(l.id) || 0,
+            on = S.draft.has(l.id);
+          return `<g class="pin${c ? "" : " zero"}${on ? " on" : ""}" data-id="${l.id}" tabindex="0" role="checkbox" aria-checked="${on}" aria-label="${l.n}, ${c ? plural(c, "obra", "obras") : "sem obras nos filtros atuais"}${on ? ", selecionada" : ""}" transform="translate(${l.x} ${l.y})"><circle class="ringf" r="21"/><circle class="dot" r="15"/><text class="cnt" y="4">${c}</text><text y="33">${l.n}</text></g>`;
+        }).join("");
+        return `<svg viewBox="0 0 640 520" id="mapSvg" role="group" aria-label="Mapa estilizado da região de Leiria">
    <rect class="mapbg" width="640" height="520" fill="var(--panel2)"/>
    <path d="M0 0H150C118 100 172 180 140 262S108 420 150 520H0Z" fill="var(--accent)" opacity=".12"/>
    <path d="M150 0C118 100 172 180 140 262S108 420 150 520" fill="none" stroke="var(--accent)" stroke-width="2" opacity=".35"/>
@@ -2895,27 +2895,33 @@
         baseOf(S.v, true).forEach((w) => m.set(w.loc, (m.get(w.loc) || 0) + 1));
         return m;
       }
-      function paintMap() {
-        $("#locMap").innerHTML = mapSVG({ interactive: true, counts: locCounts() });
-        $("#locC").textContent = `${S.draft.size} de ${LOCS.length} localidades escolhidas`;
+      function renderLocList() {
+        const counts = locCounts();
+        $("#locList").innerHTML = LOCS.map((l) => {
+          const c = counts.get(l.id) || 0;
+          return `<label class="lrow${c ? "" : " zero"}" data-id="${l.id}"><input type="checkbox" data-id="${l.id}"><span class="ln">${l.n}</span><span class="lc mono" aria-hidden="true">${c}</span><span class="sr">, ${c ? plural(c, "obra", "obras") : "sem obras nos filtros atuais"}</span></label>`;
+        }).join("");
       }
-      let locFocus = null;
+      /* the map and the list are two views of S.draft; both repaint from it */
+      function paintMap() {
+        $("#locMap").innerHTML = mapSVG(locCounts());
+        const n = S.draft.size,
+          all = $("#locAll");
+        $$("#locList .lrow").forEach((r) => {
+          const on = S.draft.has(r.dataset.id);
+          r.classList.toggle("on", on);
+          $("input", r).checked = on;
+        });
+        all.checked = n === LOCS.length;
+        all.indeterminate = n > 0 && n < LOCS.length;
+        $("#locC").textContent = `${n} de ${LOCS.length} localidades escolhidas`;
+      }
       function openLoc(initial) {
         S.draft = new Set(initial);
-        S.dAnchor = null;
-        S.zone = "map";
+        renderLocList();
         paintMap();
         $("#locD").showModal();
-        $("#locD .in").blur();
-      }
-      async function cancelLoc() {
-        const d = $("#locD");
-        if (
-          S.draft.size >= 10 &&
-          !(await confirmD("Descartar a escolha de " + S.draft.size + " localidades?"))
-        )
-          return;
-        d.close();
+        $("#locD .in").focus();
       }
       function initLoc() {
         const d = $("#locD"),
@@ -2925,65 +2931,65 @@
           $(`#locMap [data-id="${id}"]`)?.focus();
         };
         const ord = LOCS.map((l) => l.id);
+        const applyLoc = (set) => {
+          V().locs = new Set(set);
+          d.close();
+          filterChanged();
+          $("#openMap").focus();
+        };
+        /* localities have no order: Shift+click is a plain click */
         mw.addEventListener("click", (e) => {
           const p = e.target.closest(".pin");
           if (!p) return;
           const id = p.dataset.id;
-          if (e.ctrlKey || e.metaKey) {
-            S.draft.has(id) ? S.draft.delete(id) : S.draft.add(id);
-            S.dAnchor = id;
-          } else if (e.shiftKey) {
-            const a = ord.indexOf(S.dAnchor || id),
-              b = ord.indexOf(id);
-            S.draft = new Set(ord.slice(Math.min(a, b), Math.max(a, b) + 1));
-          } else {
-            S.draft = new Set([id]);
-            S.dAnchor = id;
-          }
+          if (e.ctrlKey || e.metaKey) S.draft.has(id) ? S.draft.delete(id) : S.draft.add(id);
+          else S.draft = new Set([id]);
           refocus(id);
         });
         mw.addEventListener("keydown", (e) => {
           const p = e.target.closest(".pin");
-          if (p && e.key === " ") {
+          if (!p) return;
+          const id = p.dataset.id;
+          if (e.key === " ") {
             e.preventDefault();
-            const id = p.dataset.id;
             S.draft.has(id) ? S.draft.delete(id) : S.draft.add(id);
-            S.dAnchor = id;
             refocus(id);
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            applyLoc(S.draft.size ? S.draft : [id]);
           }
+        });
+        $("#locList").addEventListener("change", (e) => {
+          const id = e.target.dataset.id;
+          e.target.checked ? S.draft.add(id) : S.draft.delete(id);
+          paintMap();
+        });
+        $("#locAll").addEventListener("change", (e) => {
+          S.draft = new Set(e.target.checked ? ord : []);
+          paintMap();
         });
         d.addEventListener("keydown", (e) => {
           if (
             (e.key === "a" || e.key === "A") &&
             (e.ctrlKey || e.metaKey) &&
-            !e.target.closest("input,textarea")
+            !e.target.closest("textarea, input:not([type=checkbox])")
           ) {
             e.preventDefault();
+            const pin = e.target.closest(".pin")?.dataset.id;
             S.draft = new Set(ord);
-            paintMap();
+            if (pin) refocus(pin);
+            else paintMap();
           }
         });
-        d.addEventListener("cancel", (e) => {
-          e.preventDefault();
-          cancelLoc();
-        });
         d.addEventListener("click", (e) => {
-          if (e.target === d) cancelLoc();
+          if (e.target === d) d.close();
         });
-        d.addEventListener("close", () => {
-          S.zone = "list";
-        });
-        $("#locNo").onclick = cancelLoc;
+        $("#locNo").onclick = () => d.close();
         $("#locClr").onclick = () => {
           S.draft = new Set();
           paintMap();
         };
-        $("#locOk").onclick = () => {
-          V().locs = new Set(S.draft);
-          d.close();
-          filterChanged();
-          $("#openMap").focus();
-        };
+        $("#locOk").onclick = () => applyLoc(S.draft);
         $("#locCom").onclick = () => {
           if (!S.draft.size) {
             $("#locC").textContent = "Escolha primeiro uma ou mais localidades.";
@@ -3172,7 +3178,6 @@
             return {
               actions: [A.open(w)],
               reply: () => `Aberto: ${w.t}, ${LOC(w.loc).n}, a ${w.km} km.`,
-              ids: () => [w.id],
             };
           return {
             actions: [],
@@ -3245,16 +3250,14 @@
           return { actions: [A.loc(l)], reply: (v) => `${nC(v)} em ${l.n}.` };
         return { actions: [], reply: () => `Não sei fazer isso. Sei: ${CAN}.` };
       }
-      function exec(actions, mutate) {
-        let v = cloneV(S.v);
-        const steps = [];
-        for (const a of actions) {
-          const before = cloneV(v);
+      /* assistant actions apply at once: each step keeps only its label and effect */
+      function exec(actions) {
+        const v = cloneV(S.v);
+        const steps = actions.map((a) => {
           a.run(v);
-          const after = cloneV(v);
-          steps.push({ label: a.label, eff: a.eff(v), before, after, state: "applied" });
-        }
-        if (mutate) S.v = v;
+          return { label: a.label, eff: a.eff(v) };
+        });
+        S.v = v;
         return { steps, v };
       }
       function afterView() {
@@ -3264,81 +3267,32 @@
       function send(text) {
         text = text.trim();
         if (!text) return;
-        const ctxN = S.ctx.length;
-        S.chat.push({ role: "u", text, ctxN });
-        S.ctx = [];
+        $("#msgH").textContent = "";
+        S.chat.push({ role: "u", text, context: S.ctx.filter(isContext).map(ctxItem) });
+        S.ctx = S.ctx.filter((c) => !isContext(c));
         renderCtx();
         const p = interpret(text),
           plan = p.planOf ? p.planOf(S.v) : p;
-        const msg = {
-          role: "a",
-          actions: plan.actions,
-          replyFn: plan.reply,
-          steps: [],
-          text: "",
-          pending: false,
-          resultIds: null,
-          idsFn: p.ids,
-        };
+        const msg = { role: "a", steps: [], text: "" };
         if (plan.actions.length) {
-          if (S.mode === "now") {
-            const r = exec(plan.actions, true);
-            msg.steps = r.steps;
-            msg.text = plan.reply(r.v, r.steps);
-            msg.resultIds = p.ids ? p.ids() : listedOf(r.v).map((w) => w.id);
-            afterView();
-          } else {
-            const r = exec(plan.actions, false);
-            msg.steps = r.steps.map((s) => ({ ...s, state: "pending" }));
-            msg.text = plan.reply(r.v, r.steps);
-            msg.pending = true;
-            msg.resultIds = p.ids ? p.ids() : listedOf(r.v).map((w) => w.id);
-          }
+          const r = exec(plan.actions);
+          msg.steps = r.steps;
+          msg.text = plan.reply(r.v, r.steps);
+          afterView();
         } else msg.text = plan.reply(S.v, []);
         S.chat.push(msg);
         renderChat(true);
       }
-      function renderResultsIn(m) {
-        const mode = S.showIn;
-        if (mode === "none" || !m.resultIds || !m.resultIds.length) return "";
-        const ws = m.resultIds.map(byId);
-        let h = "";
-        if (mode === "list" || mode === "both")
-          h += `<ol class="rl">${ws.map((w) => `<li><span><button data-open="${w.id}">${esc(w.t)}</button></span><span class="mono">${eur(w.val)}</span><span class="sub">${esc(LOC(w.loc).n)}${S.prio.has(w.type) ? '<span class="tag" title="Categoria prioritária">★<span class="sr"> Prioritária</span></span>' : ""}</span></li>`).join("")}</ol>`;
-        if (mode === "map" || mode === "both") {
-          const c = new Map();
-          ws.forEach((w) => c.set(w.loc, (c.get(w.loc) || 0) + 1));
-          h += mapSVG({ counts: c });
-        }
-        return h;
-      }
       function renderChat(scroll) {
         const c = $("#chat");
         c.innerHTML = S.chat
-          .map((m, mi) => {
+          .map((m) => {
             if (m.role === "u")
-              return `<div class="msg u">${esc(m.text)}${m.ctxN ? `<div class="cx">+ ${plural(m.ctxN, "item de contexto", "itens de contexto")}</div>` : ""}</div>`;
-            let h = "";
-            if (m.steps.length) {
-              h +=
-                `<ul class="steps" aria-label="Passos dados">` +
-                m.steps
-                  .map(
-                    (s, i) =>
-                      `<li class="${s.state === "undone" ? "undone" : ""}"><span class="n mono">${i + 1}</span><span class="l">${esc(s.label)} → <b>${esc(s.eff)}</b>${s.state === "pending" ? ' <span class="mut">(proposto)</span>' : s.state === "undone" ? ' <span class="mut">(desfeito)</span>' : ""}</span>${m.pending ? "" : `<button class="btn link" data-m="${mi}" data-i="${i}" data-a="view">Ver</button><button class="btn link" data-m="${mi}" data-i="${i}" data-a="undo">Desfazer</button>`}</li>`,
-                  )
-                  .join("") +
-                `</ul>`;
-              if (m.pending)
-                h += `<div class="pend"><span>Alterações por aprovar: nada foi aplicado.</span><button class="btn sm primary" data-m="${mi}" data-a="approve">Aprovar</button><button class="btn sm" data-m="${mi}" data-a="reject">Rejeitar</button></div>`;
-              else if (m.steps.length > 1)
-                h += `<div style="margin-bottom:6px"><button class="btn link" data-m="${mi}" data-a="undoall">Desfazer todas as alterações</button></div>`;
-            }
-            if (m.rejected)
-              h += `<div class="mut" style="margin-bottom:4px">Proposta rejeitada.</div>`;
-            h +=
-              `<div class="quotable">${esc(m.text)}</div>` + (m.rejected ? "" : renderResultsIn(m));
-            return `<div class="msg a">${h}</div>`;
+              return `<div class="msg u">${esc(m.text)}${sentCtxHTML(m.context)}</div>`;
+            const steps = m.steps.length
+              ? `<ul class="steps" aria-label="Passos dados">${m.steps.map((s, i) => `<li><span class="n mono">${i + 1}</span><span class="l">${esc(s.label)} → <b>${esc(s.eff)}</b></span></li>`).join("")}</ul>`
+              : "";
+            return `<div class="msg a">${steps}<div class="quotable">${esc(m.text)}</div></div>`;
           })
           .join("");
         if (scroll) c.scrollTop = c.scrollHeight;
@@ -3352,56 +3306,15 @@
         $("#comp").onsubmit = (e) => {
           e.preventDefault();
           const i = $("#msg");
+          if (!i.value.trim()) {
+            $("#msgH").textContent = "Escreva o pedido para o assistente.";
+            i.focus();
+            return;
+          }
           send(i.value);
           i.value = "";
         };
-        $("#mode").onchange = (e) => (S.mode = e.target.value);
-        $("#showIn").onchange = (e) => {
-          S.showIn = e.target.value;
-          renderChat();
-        };
-        $("#chat").addEventListener("click", (e) => {
-          const o = e.target.closest("[data-open]");
-          if (o) return openWork(o.dataset.open);
-          const b = e.target.closest("button[data-a]");
-          if (!b) return;
-          const m = S.chat[+b.dataset.m],
-            a = b.dataset.a,
-            i = +b.dataset.i;
-          if (a === "view") {
-            S.v = cloneV(m.steps[i].after);
-            m.steps[i].state = "applied";
-            afterView();
-            renderChat();
-          }
-          if (a === "undo") {
-            S.v = cloneV(m.steps[i].before);
-            m.steps[i].state = "undone";
-            afterView();
-            renderChat();
-          }
-          if (a === "undoall") {
-            S.v = cloneV(m.steps[0].before);
-            m.steps.forEach((s) => (s.state = "undone"));
-            afterView();
-            renderChat();
-          }
-          if (a === "approve") {
-            const r = exec(m.actions, true);
-            m.steps = r.steps;
-            m.text = m.replyFn(r.v, r.steps);
-            m.pending = false;
-            m.resultIds = m.idsFn ? m.idsFn() : listedOf(r.v).map((w) => w.id);
-            afterView();
-            renderChat();
-          }
-          if (a === "reject") {
-            m.pending = false;
-            m.rejected = true;
-            m.steps.forEach((s) => (s.state = "undone"));
-            renderChat();
-          }
-        });
+        $("#msg").addEventListener("input", () => ($("#msgH").textContent = ""));
       }
 
       /* ---------- theme ---------- */
@@ -3541,10 +3454,12 @@
         addEventListener("resize", apply);
         apply();
       }
+      new ResizeObserver(() =>
+        document.documentElement.style.setProperty("--barh", $(".bar").offsetHeight + "px"),
+      ).observe($(".bar"));
       initFilters();
       initResize();
       initList();
-      initMenu();
       initCtx();
       initLoc();
       initAssistant();
@@ -3554,7 +3469,6 @@
         role: "a",
         steps: [],
         text: "Olá. Peça-me para filtrar, mostrar, abrir ou comparar obras, ou use uma sugestão acima. Só altero o que está a ser mostrado, nunca os dados das obras.",
-        actions: [],
       });
       renderChat();
     </script>

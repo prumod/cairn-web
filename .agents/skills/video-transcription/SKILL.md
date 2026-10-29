@@ -59,7 +59,7 @@ Append a `# Transcrição <N>` section to `docs/product/transcriptions/transcric
 
 ## 7. Propose the product changes
 
-Compare the new interview with `docs/product/{now,later,maybe,never}/funcionalidades.md` and `now/termos-por-definir.md`. Present to the user, with T<N> citations:
+Compare the new interview with the Now PRD (GitHub issue #104, `gh issue view 104`), `docs/product/{later,maybe,never}/funcionalidades.md` and `now/termos-por-definir.md`. Present to the user, with T<N> citations:
 
 - new capabilities and the level for each;
 - capabilities that change level;
@@ -71,7 +71,7 @@ Priority is the user's decision. Apply step 8 only to the changes the user appro
 
 Follow the conventions in `docs/product/README.md`: a capability that changes level gets a new identifier, and old identifiers are not reused.
 
-1. Update the feature files, `now/termos-por-definir.md`, and `docs/product/README.md` (counts, the identifier mapping, and the source list).
+1. Update the Later, Maybe and Never feature files, `now/termos-por-definir.md`, and `docs/product/README.md` (counts, the identifier mapping, and the source list). Apply the approved changes to Now to the PRD, issue #104, with `gh issue edit 104`.
 2. If identifiers changed, update the identifier note at the top of each document in `docs/product/research/`.
 3. Update `apps/web/references/interactive-wireframe.tsx` and `docs/product/system/prototype-coverage.md` as in step 3, items 4 and 5, of `.agents/skills/incorporate-transcription/SKILL.md`.
 
