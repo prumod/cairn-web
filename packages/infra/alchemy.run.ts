@@ -55,11 +55,12 @@ export const web = Effect.gen(function* () {
 
   return yield* Cloudflare.Website.Vite("web", {
     rootDir: "../../apps/web",
+    main: "src/server/worker.ts",
     domain,
     workersDev,
     compatibility: {
       date: "2026-10-09",
-      flags: ["nodejs_compat"],
+      flags: [],
     },
     observability: {
       enabled: true,
