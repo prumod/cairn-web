@@ -1,6 +1,8 @@
 # Agent Git gates
 
-Run `bun run hooks:install` once per clone (also run by setup/update) to configure the repository-owned `.githooks` directory. The setting applies to linked worktrees too. Installation refuses to replace another configured hook directory or existing native commit/push hooks.
+[Lefthook](https://lefthook.dev/) runs the Git hooks that `lefthook.yml` declares: `scripts/pre-commit.sh` and `scripts/pre-push.sh`. Run `bun run hooks:install` once per clone (setup and update run it after `bun install`). Git shares the installed hooks with linked worktrees, and each worktree runs its own `lefthook.yml` and scripts. Lefthook refuses to install while `core.hooksPath` is set; a clone that used the earlier `.githooks` directory must first run `git config --unset-all --local core.hooksPath`. Lefthook renames existing native hooks to `<hook>.old`.
+
+The installed hooks run the worktree's pinned `node_modules/.bin/lefthook`, never a global copy, and `min_version` rejects an older one. In a worktree without `bun install`, they fail with `node_modules/.bin/lefthook: not found`; run `bun install` and retry.
 
 The pre-commit hook scans the actual staged diff for secrets and validates a disposable snapshot. This supports Git's normal content selection, including `commit -a` and path arguments. Linked worktrees still require the author configured as described in `AGENTS.md`.
 
@@ -8,7 +10,7 @@ Both hooks scan for secrets and check that relative Markdown links in the commit
 
 Pre-push reads Git's outgoing refs directly, scans outgoing history for secrets, and checks every outgoing commit's diff before deciding whether the final snapshot needs code checks. This catches code changed and later reverted. New branches or unavailable remote bases conservatively scan all reachable history. Ref deletions have no new content to validate. Dirty working files do not affect the snapshots.
 
-The old `commit-with-hooks.sh` and `push-with-hooks.sh` entrypoints install the hooks and invoke ordinary Git; they do not run duplicate checks. Native Git bypasses such as `--no-verify` remain available, so CI remains the shared enforcement boundary.
+Native Git bypasses such as `--no-verify` and `LEFTHOOK=0` remain available, so CI remains the shared enforcement boundary.
 
 Each hook records per-phase durations in `<git-common-dir>/check-timings/` (newest 50 runs); `bun run checks:timings [count]` shows them. Validation leaves working files unchanged. Index comparisons detect staging changes during validation but do not atomically lock the final operation.
 

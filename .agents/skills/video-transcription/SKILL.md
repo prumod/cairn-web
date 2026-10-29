@@ -77,4 +77,4 @@ Follow the conventions in `docs/product/README.md`: a capability that changes le
 
 ## 9. Open the pull request
 
-Run `bun run check`. Commit with `scripts/commit-with-hooks.sh`, push with `scripts/push-with-hooks.sh`, and open a pull request titled `docs: process transcription <N>`. In the description, list the approved priority changes, the VISÃO gaps, and what was verified.
+Run `bun run check`. Commit with `git commit`, push with `git push`, and open a pull request titled `docs: process transcription <N>`. In the description, list the approved priority changes, the VISÃO gaps, and what was verified.

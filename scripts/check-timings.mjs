@@ -17,9 +17,7 @@ try {
   files = [];
 }
 if (files.length === 0) {
-  console.log(
-    "No gate runs recorded yet. Run scripts/commit-with-hooks.sh or scripts/push-with-hooks.sh.",
-  );
+  console.log("No gate runs recorded yet. Run git commit or git push with the hooks installed.");
   process.exit(0);
 }
 
