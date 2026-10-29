@@ -1,11 +1,9 @@
 import { createHash } from "node:crypto";
 import { expect, type Page } from "@playwright/test";
-import { createBdd, test as base, type DataTable } from "playwright-bdd";
-
-type Profile = { name: string; address: string; radiusKm: number };
+import { createBdd, test as base } from "playwright-bdd";
 
 export const test = base.extend<{
-  scenario: { email: string; adminPage: Page; profile?: Profile };
+  scenario: { email: string; adminPage: Page };
 }>({
   scenario: async ({ browser }, use) => {
     const adminContext = await browser.newContext({ baseURL: "http://127.0.0.1:4173" });
@@ -65,28 +63,22 @@ Given("a user has signed in with Google", async ({ page, scenario }) => {
 });
 
 Given("that user awaits approval", async ({ page }) => {
-  expect((await page.request.get("/api/company-profile")).status()).toBe(403);
+  expect(await (await page.request.get("/api/me")).json()).toMatchObject({ approved: false });
 });
 
-When("the user requests the company profile", async ({ page }) => {
-  await page.goto("/");
+When("the user checks their session", async ({ page }) => {
+  await page.reload();
 });
 
-Then("access is denied", async ({ page }) => {
-  // result verification
-  expect((await page.request.get("/api/company-profile")).status()).toBe(403);
-  await expect(page.getByRole("textbox", { name: "Nome da empresa" })).toHaveCount(0);
-});
-
-Then("the user sees that their account awaits approval", async ({ page }) => {
-  await expect(page.getByText("A sua conta aguarda aprovação.")).toBeVisible();
+Then("their account remains unapproved", async ({ page }) => {
+  expect(await (await page.request.get("/api/me")).json()).toMatchObject({ approved: false });
+  await expect(page.getByRole("link", { name: "Gerir acessos" })).toHaveCount(0);
 });
 
 Given("an approved user has an active session", async ({ page, scenario }) => {
   scenario.email = (await signIn(page, "editor")).email;
   await approve(scenario.adminPage, scenario.email);
-  await page.reload();
-  await expect(page.getByRole("textbox", { name: "Nome da empresa" })).toBeVisible();
+  expect(await (await page.request.get("/api/me")).json()).toMatchObject({ approved: true });
 });
 
 Given("an administrator is signed in", async ({ scenario }) => {
@@ -107,57 +99,25 @@ When("the administrator revokes that user's access", async ({ scenario }) => {
   ).toBeVisible();
 });
 
-Then("further company profile reads and edits are denied", async ({ page }) => {
-  // result verification
-  expect((await page.request.get("/api/company-profile")).status()).toBe(403);
-  expect(
-    (
-      await page.request.put("/api/company-profile", {
-        headers: {
-          origin: "http://127.0.0.1:4173",
-        },
-        data: { name: "Blocked", address: "Porto", radiusKm: 25 },
-      })
-    ).status(),
-  ).toBe(403);
+Then("their existing session reports that approval was revoked", async ({ page }) => {
+  expect(await (await page.request.get("/api/me")).json()).toMatchObject({ approved: false });
 });
 
 Given("a signed-in user has been approved by the administrator", async ({ page, scenario }) => {
   scenario.email = (await signIn(page, "editor")).email;
   await approve(scenario.adminPage, scenario.email);
-  await page.reload();
 });
 
-Given("no company profile has been saved", async ({ page }) => {
-  expect(await (await page.request.get("/api/company-profile")).json()).toBeNull();
+When("the user opens the home page", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Sair" })).toBeVisible();
 });
 
-When("the user saves these company details:", async ({ page, scenario }, table: DataTable) => {
-  const fields = Object.fromEntries(table.rows().map(([field, value]) => [field, value]));
-  const name = fields["company name"];
-  const address = fields["reference address"];
-  const radius = fields["search radius km"];
-
-  if (!name || !address || !radius) throw new Error("Missing company example fields.");
-  scenario.profile = { name, address, radiusKm: Number(radius) };
-  await page.getByRole("textbox", { name: "Nome da empresa" }).fill(name);
-  await page.getByRole("textbox", { name: "Morada de referência" }).fill(address);
-  await page.getByRole("spinbutton", { name: "Raio de pesquisa (km)" }).fill(radius);
-  await page.getByRole("button", { name: "Guardar perfil" }).click();
-  await expect(page.getByRole("status")).toHaveText("Perfil guardado.");
+Then("no company profile editor is available", async ({ page }) => {
+  await expect(page.getByRole("textbox", { name: "Nome da empresa" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Guardar perfil" })).toHaveCount(0);
 });
 
-Then("those details remain available after reloading the page", async ({ page, scenario }) => {
-  // state verification
-  await page.reload();
-  const profile = scenario.profile;
-
-  if (!profile) throw new Error("No profile was supplied by the scenario.");
-  await expect(page.getByRole("textbox", { name: "Nome da empresa" })).toHaveValue(profile.name);
-  await expect(page.getByRole("textbox", { name: "Morada de referência" })).toHaveValue(
-    profile.address,
-  );
-  await expect(page.getByRole("spinbutton", { name: "Raio de pesquisa (km)" })).toHaveValue(
-    String(profile.radiusKm),
-  );
+Then("the former company endpoint is unavailable", async ({ page }) => {
+  expect((await page.request.get("/api/company-profile")).status()).toBe(404);
 });

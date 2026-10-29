@@ -11,13 +11,8 @@ afterAll(async () => {
   await app?.close();
 });
 
-test("a pending user cannot retrieve company data", async () => {
+test("a pending user retains an unapproved session", async () => {
   const user = await app.identity("pending@example.test");
-  const response = await app.request("/api/company-profile", user.cookie);
-  // result verification
-  expect(response.status).toBe(403);
-  expect(response.headers.get("x-request-id")).toMatch(/^[0-9a-f-]{36}$/);
-  expect(await response.json()).toEqual({ error: "Account awaits approval." });
   const currentUser = await app.request("/api/me", user.cookie);
   expect(currentUser.status).toBe(200);
   expect(await currentUser.json()).toEqual({
@@ -34,7 +29,7 @@ test("the acceptance Worker never exposes production analytics configuration", a
   expect(await response.json()).toBeNull();
 });
 
-test("an administrator can approve a user who can then read the empty profile", async () => {
+test("an administrator can approve and revoke an existing user session", async () => {
   const admin = await app.identity("admin@example.test");
   const user = await app.identity("approved@example.test");
 
@@ -45,9 +40,19 @@ test("an administrator can approve a user who can then read the empty profile", 
 
   // state verification
   expect(response.status).toBe(200);
-  const profile = await app.request("/api/company-profile", user.cookie);
-  expect(profile.status).toBe(200);
-  expect(await profile.json()).toBeNull();
+  expect(await (await app.request("/api/me", user.cookie)).json()).toMatchObject({
+    approved: true,
+  });
+
+  const revoked = await app.rpc("changeAccess", admin.cookie, {
+    userId: user.user.id,
+    approved: false,
+  });
+
+  expect(revoked.status).toBe(200);
+  expect(await (await app.request("/api/me", user.cookie)).json()).toMatchObject({
+    approved: false,
+  });
 });
 
 test("RPC rejects anonymous and non-administrator users and does not cache private responses", async () => {
@@ -73,7 +78,7 @@ test("RPC validates Zod input before writes and forbids self-access and cross-or
     { userId: member.user.id },
   ]) {
     const response = await app.rpc("changeAccess", admin.cookie, data);
-    expect(await response.text()).toContain("ZodError");
+    expect(await response.text()).toContain(data.userId === "" ? "too_small" : "invalid_type");
     expect(response.headers.get("cache-control")).toBe("no-store");
   }
 

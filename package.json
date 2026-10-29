@@ -64,6 +64,7 @@
     "oxfmt": "^0.74.0",
     "oxlint": "1.89.0",
     "playwright-bdd": "9.2.1",
+    "seroval": "1.6.11",
     "tsx": "4.23.15",
     "typescript": "^7.0.2",
     "varlock": "catalog:",

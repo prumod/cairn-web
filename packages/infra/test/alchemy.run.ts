@@ -1,6 +1,7 @@
 import * as Alchemy from "alchemy";
 import * as Cloudflare from "alchemy/Cloudflare";
 import * as Effect from "effect/Effect";
+import { writeFileSync } from "node:fs";
 import { URL, fileURLToPath } from "node:url";
 
 function required(name: string) {
@@ -19,12 +20,17 @@ export default Alchemy.Stack(
     state: Alchemy.localState(),
   },
   Effect.gen(function* () {
+    // Start exports shared chunk symbols; workerd entrypoints must expose only handlers.
+    const entry = new URL("../../../apps/web/dist/server/worker.js", import.meta.url);
+
+    writeFileSync(entry, 'export { default } from "./server.js";\n');
+
     const worker = yield* Cloudflare.Worker("app", {
-      main: fileURLToPath(new URL("../../../apps/web/dist/server/server.js", import.meta.url)),
+      main: fileURLToPath(entry),
       assets: {
         directory: fileURLToPath(new URL("../../../apps/web/dist/client", import.meta.url)),
       },
-      compatibility: { date: "2026-10-09", flags: ["nodejs_compat"] },
+      compatibility: { date: "2026-10-09", flags: [] },
       dev: { port: Number(required("PORT")) },
       env: {
         DATABASE_URL: required("DATABASE_URL"),

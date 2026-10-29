@@ -1,3 +1,4 @@
+import { toJSON } from "seroval";
 import { createHash, randomUUID } from "node:crypto";
 import { spawn, type ChildProcess } from "node:child_process";
 import {
@@ -247,11 +248,15 @@ export async function createTestApplication(
 
       const login = await helpers.login({ userId: userRecord.id });
 
-      return {
+      const identity = {
         user: userRecord,
         cookie: login.headers.get("cookie") ?? "",
         cookies: login.cookies,
       };
+
+      identities.set(email, identity);
+
+      return identity;
     }
 
     type Identity = Awaited<ReturnType<typeof createIdentity>>;
@@ -416,7 +421,13 @@ export async function createTestApplication(
       origin,
       baseURL: origin,
       createIdentity,
-      identity: createIdentity,
+      async identity(email: string, verified = true, google = true) {
+        const existing = identities.get(email);
+
+        if (existing) return existing;
+
+        return createIdentity(email, verified, google);
+      },
       request<Body>(
         path: string,
         cookie = "",
@@ -460,7 +471,7 @@ export async function createTestApplication(
           },
         };
 
-        if (name === "changeAccess") init.body = JSON.stringify({ data });
+        if (name === "changeAccess") init.body = JSON.stringify(toJSON({ data }));
 
         return fetch(origin + "/_serverFn/" + id, init);
       },

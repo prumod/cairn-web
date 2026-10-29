@@ -4,7 +4,7 @@
 
 Vitest discovers colocated tests under `{apps/web,shared}/src/**/*.{spec,test}.{ts,tsx}` and `packages/*/src/**/*.{spec,test}.{ts,tsx}`. It also discovers acceptance/typical integration tests under `apps/web/tests/{acceptance,typical}/integration/`. Playwright-BDD discovers capability contracts under `features/company/` and `features/access/`, with step bindings under `apps/web/tests/acceptance/e2e/`.
 
-The access integration and browser tests target the built TanStack Start Worker, including the feature-owned server-function transport, database-backed access, origin checks, and authentication handling. Colocated backoffice tests cover infrastructure-independent application rules, the application-failure-to-HTTP mapping, and Query behavior with injected fakes. The Worker integration tests cover Zod input rejection, session and origin checks, and no-store responses. Company-profile scenarios still refer to the removed page/API and need revision. Browser identities are controlled fixtures; they do not run Google's OAuth redirect, consent, state, or PKCE flow.
+The access integration and browser tests target the built TanStack Start Worker, including the feature-owned server-function transport, database-backed access, origin checks, and authentication handling. Colocated backoffice tests cover infrastructure-independent application rules, the application-failure-to-HTTP mapping, and Query behavior with injected fakes. The Worker integration tests cover Zod input rejection, session and origin checks, and no-store responses. The company scenarios check that the removed profile editor and `/api/company-profile` endpoint stay unavailable; the access scenarios check that approval and revocation are reflected in the user's existing session. Browser identities are controlled fixtures; they do not run Google's OAuth redirect, consent, state, or PKCE flow.
 
 Lint rejects module mocking (`vi.mock`); tests inject fake dependencies through the public interface instead.
 
@@ -68,7 +68,9 @@ Colocated tests cover public analytics configuration gating, SDK privacy options
 
 ## Feature-structure verification limits
 
-The feature-structure implementation passed formatting, lint, boundary lint and proofs, type checks, the production build, the dependency audit, and the 103 colocated fast tests. The built Worker contains the renamed server-function IDs that the integration helper computes. Worker integration execution remains unverified: Alchemy 2.0.0-beta.83 rejects the redundant `nodejs_compat` flag at Worker startup (it is the default for compatibility dates from 2026-08-04), so the three integration spec files and the browser suite could not start the Worker. Existing company-profile acceptance scenarios are also stale after the feature removal. These results do not establish passing Worker integration or browser suites.
+`bun run check` passes locally: formatting, lint, boundary lint and proofs, type checks, the production build, the dependency audit, 111 fast tests, and 3 Chromium scenarios.
+
+The acceptance Worker stack (`packages/infra/test/alchemy.run.ts`) starts a generated `dist/server/worker.js` that re-exports only the default handler. TanStack Start's `server.js` also exports shared chunk symbols, and the current workerd rejects non-handler exports from an entrypoint. The stack sets no compatibility flags, because `nodejs_compat` is the default for compatibility dates from 2026-08-04 and workerd rejects a redundant flag. The integration helper encodes server-function input with Seroval, matching Start's transport. The production stack in `packages/infra/alchemy.run.ts` still lists `nodejs_compat`; local `bun run dev` and deployment with it are unverified.
 
 ## Historical migration verification
 

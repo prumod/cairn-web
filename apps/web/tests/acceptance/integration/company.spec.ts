@@ -11,20 +11,25 @@ afterAll(async () => {
   await app?.close();
 });
 
-test("an approved user saves and retrieves the shared company profile", async () => {
+test("the removed company endpoint is unavailable to anonymous, pending and approved users", async () => {
   const admin = await app.identity("admin@example.test");
-  const user = await app.identity("editor@example.test");
+  const pending = await app.identity("pending@example.test");
+  const approved = await app.identity("approved@example.test");
+  expect(
+    (await app.rpc("changeAccess", admin.cookie, { userId: approved.user.id, approved: true }))
+      .status,
+  ).toBe(200);
 
-  const approval = await app.rpc("changeAccess", admin.cookie, {
-    userId: user.user.id,
-    approved: true,
-  });
+  for (const cookie of ["", pending.cookie, approved.cookie, admin.cookie]) {
+    for (const method of ["GET", "PUT"]) {
+      const response = await app.request(
+        "/api/company-profile",
+        cookie,
+        method,
+        method === "PUT" ? { name: "Removed" } : undefined,
+      );
 
-  expect(approval.status).toBe(200);
-  const profile = { name: "Example Company", address: "Rua do Comércio, Porto", radiusKm: 25 };
-  const saved = await app.request("/api/company-profile", user.cookie, "PUT", profile);
-  // state verification
-  expect(saved.status).toBe(200);
-  const response = await app.request("/api/company-profile", user.cookie);
-  expect(await response.json()).toEqual(profile);
+      expect(response.status).toBe(404);
+    }
+  }
 });
