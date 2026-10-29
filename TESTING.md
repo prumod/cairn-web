@@ -150,7 +150,7 @@ Colocated tests cover public analytics configuration gating, SDK privacy options
 
 `bun run check` passes locally: formatting, lint, boundary lint and proofs, type checks, the production build, the dependency audit, 111 fast tests, and 3 Chromium scenarios.
 
-The acceptance Worker stack (`packages/infra/test/alchemy.run.ts`) starts a generated `dist/server/worker.js` that re-exports only the default handler. TanStack Start's `server.js` also exports shared chunk symbols, and the current workerd rejects non-handler exports from an entrypoint. The stack sets no compatibility flags, because `nodejs_compat` is the default for compatibility dates from 2026-08-04 and workerd rejects a redundant flag. The integration helper encodes server-function input with Seroval, matching Start's transport. The production stack in `packages/infra/alchemy.run.ts` still lists `nodejs_compat`; local `bun run dev` and deployment with it are unverified.
+The acceptance Worker stack (`packages/infra/test/alchemy.run.ts`) starts a generated `dist/server/worker.js` that re-exports only the default handler. TanStack Start's `server.js` also exports shared chunk symbols, and the current workerd rejects non-handler exports from an entrypoint. The stack sets no compatibility flags, because `nodejs_compat` is the default for compatibility dates from 2026-08-04 and workerd rejects a redundant flag. The integration helper encodes server-function input with Seroval, matching Start's transport. The deployed web Worker entry is `apps/web/src/server/worker.ts` with no compatibility flags, using the same handler-only pattern as the acceptance stack.
 
 ## Historical migration verification
 

@@ -64,37 +64,24 @@ The infra `.env.schema` marks imported `DATABASE_URL` and `BETTER_AUTH_SECRET` a
 
 Alchemy reads the Worker `domain` and `workersDev` props before resolving Effect-valued props. `alchemy.run.ts` therefore resolves `deploymentConfig` inside the stack Effect and passes plain values. Passing Effect values for these props makes deployment fail with `Cloudflare zone not found for undefined`.
 
-A cloud deploy needs these inputs from a human:
+### Configure the testing pipeline
 
-- `NEON_API_KEY`
-- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
-- `BOOTSTRAP_ADMIN_EMAIL`
-- `GIT_SHA`, the full 40-character lowercase hexadecimal commit
-- `POSTHOG_PROJECT_TOKEN` for production: the public write-only PostHog project token, supplied through ignored local configuration or the process environment; never a personal API key
-- Cloudflare authorization for Alchemy
+1. Bootstrap the Cloudflare state store once from `packages/infra` with `alchemy provider cloudflare bootstrap`. The store is named `alchemy-state-store`. Its state is encrypted. Its token and encryption key are held in the account's Secrets Store. Preserve the existing testing state when switching stores; an empty store can propose duplicate resources.
+2. Create the GitHub environment `testing`. Allow deployments only from `main`.
+3. Add the environment secrets `CLOUDFLARE_API_TOKEN`, `NEON_API_KEY`, `GOOGLE_CLIENT_ID`, and `GOOGLE_CLIENT_SECRET`. Add the environment variables `CLOUDFLARE_ACCOUNT_ID` and `BOOTSTRAP_ADMIN_EMAIL`.
+4. Give the CI Cloudflare API token Workers scripts edit, Secrets Store edit, and Zone DNS edit permissions. Scope it to the account and the `prumod.eu` zone. Keep all values private.
+5. Use the testing Google OAuth Web client with redirect URI `https://cairn-testing.prumod.eu/api/auth/callback/google`. Configure that client in Google Cloud Console. Registrar nameserver and DNSSEC DS changes remain manual at Spaceship.
 
-Put secrets in the ignored `packages/infra/.env.local` (Varlock loads it over `.env.schema`) or in the process environment. Never commit them. Each deployed stage uses its own generated secrets and its own Google OAuth client in Google Cloud project `cairn`. Both clients use an External/Testing consent screen; the test users are `tiagojacintodev@gmail.com` and `tiagojacinto7@gmail.com`. For production deploys, supply the production client's `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; process variables override the local file. Do not assume a worktree contains the earlier stage inputs.
+Do not supply `DATABASE_URL` or `BETTER_AUTH_SECRET` to CI. Alchemy owns the testing database and generated auth secret. Use the testing project's scoped `NEON_API_KEY` for routine updates. Creating a Neon project requires an appropriate organization key. Do not print credentials or state contents in logs or reports.
 
-For routine deploys of an existing stage, set `NEON_API_KEY` to that stage's project-scoped key. An exported variable overrides `packages/infra/.env.local`; confirm its stage without printing its values. The earlier deployment used a testing scoped key in that file, which is not a guarantee about this checkout. The keys `cairn-testing-scoped` and `cairn-production-scoped` returned 200 for their own project and 404 for the other project, project listing, and project creation; they cannot delete projects or create keys. Creating a new stage or running `destroy:<stage>` requires the organization API key `cairn-alchemy`, kept outside the repository and `.env.local`. A no-op deploy does not call Neon, so an Alchemy Neon update with a scoped key has not yet been verified.
+### Operate the testing pipeline
 
-Neon project-scoped keys can be created only with a personal API key or OAuth session; an organization key is rejected. After `neonctl auth`, create one with `neonctl api-keys create --name <name> --project-id <project-id>`. Neon shows the key once. It stops working if the project is transferred out of the organization. `ALCHEMY_PASSWORD` appears only as an empty key in `packages/infra/.env.schema`; no value is configured.
+1. Push the intended commit to `main` through the repository contribution workflow. This starts `Agent checks` in `.github/workflows/checks.yml`.
+2. After `Agent checks` succeeds on `main`, inspect `Deploy testing` in `.github/workflows/deploy.yml`. It starts automatically, with no manual step, in the GitHub environment `testing`.
+3. Inspect the deployment result. The workflow supplies the deployed commit SHA and runs `bun run --cwd packages/infra deploy:testing`.
+4. Inspect the health check result. The workflow polls `https://cairn-testing.prumod.eu/healthz` until `revision` equals the deployed commit SHA.
 
-These steps cannot be infrastructure code and stay manual:
-
-- Create a separate Google OAuth Web client for each environment in Google Cloud Console, with redirect URI `https://<domain>/api/auth/callback/google`.
-- Change the nameservers and the DNSSEC DS record at the registrar, Spaceship.
-
-### Prepare the existing stage safely
-
-Before planning from a new worktree, locate the checkout that owns the stage's existing Alchemy state. The earlier cloud deployment used a separate worktree; this checkout's `.alchemy` directory is not proof that it owns either hosted stage. Confirm the stage, Worker resource, Neon project, and expected revision with the state owner. Do not deploy with an empty or unrelated state directory: it can propose duplicate resources.
-
-With that owner, back up the existing `packages/infra/.alchemy` locally and prepare the intended stage state and ignored inputs in the deployment checkout. Preserve restrictive permissions (`umask 077`, directories `0700`, files `0600`) for state, backups, and credential files. Do not concatenate, dump, commit, or attach these files to a report: Alchemy state contains plaintext credentials. Do not invent a source path or copy all stage inputs blindly; confirm which stage each input belongs to. Check that local input files are ignored without displaying their contents:
-
-```sh
-git check-ignore packages/infra/.env.local packages/infra/.alchemy/state
-```
-
-Supply the correct stage's Neon key, OAuth client, Cloudflare authorization, and approved `GIT_SHA`; production also needs `POSTHOG_PROJECT_TOKEN`. Keep values out of command transcripts and shell tracing. Review the plan privately because provider output can contain sensitive details. Stop if an update to the existing stage instead proposes unexpected resource creation or deletion; reconcile state with its owner. Do not destroy resources or clear state to resolve this mismatch.
+A successful check run alone does not establish a successful deployment. The first live pipeline run and its `/healthz` result are recorded in the lead's validation notes, not here.
 
 ### Configure observability inputs
 
@@ -104,37 +91,17 @@ The Worker declaration explicitly enables invocation logs, application logs, and
 
 The Vite server maps were generated and included in the testing Worker upload as `application/source-map`. Live remapping to original-source frames remains unverified. Cloudflare trace querying was verified for testing health events; linking an application request ID to a platform trace is unverified. See [Architecture](../../ARCHITECTURE.md#observability) for privacy controls, [Testing](../../TESTING.md#merged-and-hosted-verification-2026-10-28) for the evidence summary, and [Investigate an application failure](investigate-application-failure.md) for query steps that do not print credentials.
 
-### Plan and deploy testing
+### Production follow-up
 
-After the stage preparation above, from `packages/infra`, review the testing plan for the exact approved 40-character lowercase commit SHA. Replace the placeholder below with that SHA:
+Production automation is a follow-up. It needs a copy of its existing local state into the Cloudflare state store and a switch to that store. It also needs a deploy job, a GitHub environment with an approval gate, its secrets and variables, and a `/healthz` revision check. These are not built by the testing pipeline.
 
-```sh
-env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<approved-full-SHA>' bun node_modules/alchemy/bin/cli.js plan --stage testing --detailed
-```
-
-The plan describes the changes Alchemy intends to make; it does not itself verify the live application, billing, or sign-in. Deploy only after separate approval for that exact SHA. For a non-interactive run, pass both `--no-input` and `--yes`:
-
-```sh
-env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<40-hex>' bun run deploy:testing --no-input --yes
-```
-
-Replace `<40-hex>` with the approved revision's full 40-character lowercase hexadecimal SHA.
-
-### Plan and deploy production
-
-After the stage preparation above, from `packages/infra`, supply the production OAuth client's `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Process values override `.env.local`; confirm the inputs belong to production. Then deploy the approved revision:
-
-```sh
-env -u CLOUDFLARE_API_KEY -u CLOUDFLARE_ACCOUNT_ID GIT_SHA='<40-hex>' bun run deploy:production --no-input --yes
-```
-
-Replace `<40-hex>` with the approved revision's full 40-character lowercase hexadecimal SHA. `destroy:testing` and `destroy:production` delete the corresponding Neon project and its data.
+Production keeps local state for now. Before a separately approved production operation, locate the checkout that owns that state. Back up `packages/infra/.alchemy` privately and preserve the production inputs. Production also requires `POSTHOG_PROJECT_TOKEN`. Confirm the stage and intended revision with the state owner before planning or deploying. Stop if the plan proposes unexpected resource creation or deletion.
 
 ### State and recovery
 
-Alchemy state is local (`Alchemy.localState()`, `packages/infra/.alchemy/state`); remote state is not enabled. It contains generated credentials: Alchemy's state encoding serializes redacted secrets as plaintext JSON. `Redacted` masks logs; it does not encrypt state. Use `umask 077`, keep `.alchemy` and backup directories at mode `0700` and files at `0600`, and do not commit or store state or backups remotely. Preserve `.alchemy` and ignored credentials such as `.env.local` across deployment attempts; losing state loses Alchemy's record of resources and the generated auth secret.
+Testing uses the encrypted Cloudflare state store `alchemy-state-store`. Local development and the `dev` stage keep local state under `packages/infra/.alchemy`. Production also keeps local state for now. Local state contains plaintext credentials; `Redacted` masks logs but does not encrypt that state. Keep local state and backups private, with directories at mode `0700` and files at `0600`. Never commit them.
 
-After a partial failure, inspect the plan for the same stage and `GIT_SHA`. A failed Neon project create can leave an orphan project outside Alchemy state; inspect the Neon console or API and delete it manually before retrying. After addressing the failure, rerun the deploy command for the same revision. Do not use `--adopt` or `--force`, or remove state. A code rollback is safe only to a compatible prior revision after assessing its database migrations; the first deploy has no prior deployed revision. Do not use `destroy:testing` as rollback: in installed Alchemy `2.0.0-beta.83`, the `Neon.Project` delete handler deletes the Neon project, including its database.
+After a failed testing deployment, inspect the workflow failure privately before retrying the same revision. Confirm that it uses the testing environment and existing testing state. Do not clear state or use `--adopt` or `--force` to bypass a mismatch. A failed Neon project create can leave an orphan outside Alchemy state; reconcile it with the state owner before retrying. A rollback needs a compatible prior revision and an assessment of database migrations. `destroy:testing` is not a rollback: it deletes the Neon project and its data.
 
 ## Verification and deployment limits
 
