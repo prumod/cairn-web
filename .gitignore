@@ -1,8 +1,13 @@
 # Dependencies and generated output
 node_modules/
 dist/
+.output/
+.tanstack/
+.alchemy/
+apps/web/src/env.ts
 .tools/
 .features-gen/
+.vitest/
 test-results/
 playwright-report/
 
@@ -10,9 +15,26 @@ playwright-report/
 .env
 .env.*
 !.env.example
+!.env.schema
+
+# OpenTofu local state and plugins may contain secrets or provider caches
+infra/**/.terraform/
+infra/**/*.tfstate
+infra/**/*.tfstate.*
+infra/**/*.tfplan
 
 # Local editor and operating-system files
 .lavish/
 .DS_Store
 .idea/
 .vscode/
+
+# Local agent worktrees
+.claude/worktrees/
+
+# here.now publish state (claim tokens and local paths)
+.herenow/
+
+# Mutation testing output and sandboxes
+reports/mutation/
+.stryker-tmp/

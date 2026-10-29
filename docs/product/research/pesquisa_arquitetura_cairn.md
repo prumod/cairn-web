@@ -1,5 +1,9 @@
 # Investigação técnica end-to-end — Cairn
 
+> Os identificadores de funcionalidades neste documento são anteriores à transcrição 3. Consultar a [correspondência de identificadores](../README.md#correspondência-de-identificadores).
+
+> Fotografia de 07-10-2026; não é mantida. As perguntas por responder e as conclusões atuais estão em [research/README.md](README.md).
+
 **Idioma:** Português (Portugal) · **Acesso de pesquisa:** 07-10-2026 · **Natureza:** investigação técnica com recomendações; não é aprovação do entrevistado, compromisso de implementação, protótipo construído nem aconselhamento jurídico.
 
 **Atualização de âmbito:** esta investigação foi escrita com a hipótese de um protótipo limitado a Now. Essa hipótese, as recomendações de painel Later/Maybe estático e o respetivo roteiro estão superados pelo [contrato atual do protótipo interativo](../system/prototype.md): experiência completa de Now, Later e Maybe, evoluindo de wireframe sem estilos para UI próxima da produção, sempre com dados fictícios e ações locais simuladas; prioridades apenas em código/comentários/documentação. O restante texto preserva as conclusões e recomendações originais, não é autorização para integrações nem especificação atual do protótipo.
@@ -17,7 +21,7 @@ Para produção, recomendação (inferência): começar por monólito modular HT
 A investigação original leu os 19 ficheiros de contexto então existentes e o README. Esta reorganização não constitui uma nova consulta de fontes externas. As localizações atuais dos materiais preservados são:
 
 - [README do repositório](../../README.md): scaffold, comandos e intenções de deployment.
-- [Prioridades](../README.md), desdobradas em [Now](../now/funcionalidades.md), [Later](../later/funcionalidades.md), [Maybe](../maybe/funcionalidades.md) e [Never](../never/funcionalidades.md): 32 funcionalidades; Gantt em Maybe e Never vazio.
+- [Prioridades](../README.md), desdobradas em [Now](https://github.com/prumod/cairn-web/issues/104), [Later](../later/funcionalidades.md), [Maybe](../maybe/funcionalidades.md) e [Never](../never/funcionalidades.md): 32 funcionalidades; Gantt em Maybe e Never vazio.
 - [T1](../transcriptions/transcricao1_gestao_obras.md): entrevista revista, especialmente fontes, propostas, convites, prazos, cotações e pós-obra.
 - [T2](../transcriptions/transcricao2_gestao_obras.txt): entrevista revista, especialmente descoberta, plataformas, habilitações e fluxo após entrega.
 - [Ideia inicial](../system/ideia_inicial.txt): capacidades exploratórias, não âmbito aprovado por si só.
@@ -37,7 +41,7 @@ A investigação original leu os 19 ficheiros de contexto então existentes e o 
 
 **Recomendação:** frontend estático React/Vite, sem servidor e sem chamadas de rede; fixtures TypeScript/JSON versionadas e exclusivamente fictícias; cálculo local puro; estado descartável em memória (ou armazenamento local explicitamente demonstrativo); botão «Reiniciar demonstração» limpa tudo e volta ao estado inicial. Manter os dados numa camada `demo/fixtures`, repositórios simulados e selectors puros para que a UI não se acople a serviços futuros. Não incluir tokens, telemetria de conteúdo nem pedidos de rede.
 
-Fixtures determinísticas: conjunto pequeno com anúncio relevante, convite, pesquisa vazia, dado de habilitação em falta/incompatível, preparação incompleta, prazo vencido e caso pronto. Utilizar identificadores, entidades, locais, datas e valores inequivocamente fictícios; data de referência fixa para N05; coerência dos mesmos resultados no mapa/lista/prazos. Coordenadas podem ser fictícias; mapa apenas ilustrativo. Não mostrar dados atuais do governo nem alegar que a classe/licença está validada [funcionalidades Now, N01–N07](../now/funcionalidades.md) e [contrato atual do protótipo interativo](../system/prototype.md).
+Fixtures determinísticas: conjunto pequeno com anúncio relevante, convite, pesquisa vazia, dado de habilitação em falta/incompatível, preparação incompleta, prazo vencido e caso pronto. Utilizar identificadores, entidades, locais, datas e valores inequivocamente fictícios; data de referência fixa para N05; coerência dos mesmos resultados no mapa/lista/prazos. Coordenadas podem ser fictícias; mapa apenas ilustrativo. Não mostrar dados atuais do governo nem alegar que a classe/licença está validada [funcionalidades Now, N01–N07](https://github.com/prumod/cairn-web/issues/104) e [contrato atual do protótipo interativo](../system/prototype.md).
 
 Estados de UI: inicial; carregamento local (se visualmente útil); resultados/vazio; detalhe; decisão «participar/não concorrer»; preparação com faltas; prazo ultrapassado; pronto; modal/painel de simulação e confirmação final. A simulação só ocorre no cenário completo e dentro do prazo; revisão permite regressar a preparação; recusa e expiração encerram localmente. Indicar persistentemente «Demonstração — dados fictícios; nenhuma submissão será enviada» e, ao concluir: «Submissão simulada — nenhum documento foi enviado». Não apresentar botão operacional que possa ser confundido com ação real. Bloquear uploads reais; usar pré-visualizações incluídas no bundle. Reset também apaga os estados locais.
 

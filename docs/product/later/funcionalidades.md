@@ -2,7 +2,7 @@
 
 ## Fontes e estatuto
 
-As prioridades foram acordadas com o utilizador; não constituem aprovação do entrevistado nem validação técnica ou jurídica. T1 e T2 referem-se às secções das [transcrições](../transcriptions/): [T1](../transcriptions/transcricao1_gestao_obras.md) e [T2](../transcriptions/transcricao2_gestao_obras.txt). Contexto adicional: [ideia inicial](../system/ideia_inicial.txt) e [notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>).
+As prioridades foram acordadas com o utilizador; não constituem aprovação do entrevistado nem validação técnica ou jurídica. T1, T2 e T3 referem-se às [transcrições](../transcriptions/): [T1](../transcriptions/transcricao1_gestao_obras.md), [T2](../transcriptions/transcricao2_gestao_obras.txt) e [T3](../transcriptions/transcricao_3_gestao_obras.txt). T3 cita instantes da gravação (`[hh:mm:ss]`). Contexto adicional: [ideia inicial](../system/ideia_inicial.txt) e [notas visuais](<../transcriptions/transcricao1_Notas Iniciais Projeto.jpeg>).
 
 Consultar as [definições de prioridade](../README.md) e o [contrato do protótipo interativo](../system/prototype.md). A prioridade de produção não limita a cobertura do protótipo: Now, Later e Maybe são demonstrados primeiro como wireframe sem estilos e depois com UI próxima da produção, sempre com dados fictícios e ações simuladas. Os limites abaixo descrevem cada prioridade; não impedem demonstrar capacidades de outros níveis no mesmo protótipo.
 
@@ -25,5 +25,33 @@ As classificações seguintes foram aceites na conversa. As fontes justificam a 
   - **Base:** T1 §6; T2 §6.
   - **Limite:** não implementar na fase Now nem condicionar a revisão ou submissão simulada Now à sua preparação. A T2 admite que parte deste detalhe pode ultrapassar a apresentação inicial. Não confundir com o Gantt de execução nem com recebimentos reais. A edição/importação/exportação avançada permanece em Maybe M11.
   - **Termo por definir:** distribui produção prevista, valores da proposta, pagamentos previstos ou uma combinação destes? Não representa recebimentos reais nem o Gantt de execução. Esta questão foi retirada da lista de termos Now e permanece por confirmar.
+
+## Adiado de Now pela T3
+
+Na T3, o âmbito Now ficou reduzido a mapa, assistente, vista do concurso e filtros; o dossier e a checklist ficam «para depois» e AcinGov fica para o fim (T3 [00:32:04]–[00:32:26], [01:26:42]–[01:28:55]). As funcionalidades seguintes saíram de Now com os mesmos objetivos e limites; os identificadores antigos estão entre parênteses. Continuam a pertencer à preparação da proposta, não à execução da obra.
+
+- **L10 — Linha temporal dos prazos de propostas (antes N05):** datas-limite numa linha temporal/lista ordenada, com «próximo do prazo» e «prazo ultrapassado». Em Now, «Quais os prazos mais urgentes?» é respondido pelo assistente N13 e pelos filtros N14. A T3 sugere uma visualização temporal sobre o mapa (T3 [00:07:52]–[00:08:21], [00:46:10]). Não é o cronograma de execução. Base: T1 §8; T2 §§8, 14.
+- **L11 — Oportunidades recebidas por convite (antes N06):** convite fictício com aviso por e-mail e acesso demonstrativo ao procedimento; decisão registada localmente. O e-mail é apenas aviso; a aceitação ou recusa formal acontece na plataforma externa. Base: T1 §7; notas iniciais da transcrição 1.
+- **L12 — Rever requisitos e decidir participar (antes N07):** comparar requisitos, incluindo o alvará exigido, com o perfil N01; mostrar informação em falta ou incompatibilidade aparente; registar interesse, «Participar» ou «Não concorrer». A recusa não deve impedir consórcios com outra empresa (T3 [01:10:29]). Apoio à revisão humana, não parecer jurídico. Base: T1 §7; T2 §§5, 9; T3 [00:30:45], [01:18:26]–[01:19:36].
+- **L13 — Dossier: peças do concurso (antes N08):** listar desenhos, memorial descritivo, mapas e requisitos; pré-visualizações fictícias; assinalar peças obtidas na plataforma indicada. Sem autenticação externa nem descarregamento real. Base: T1 §6; T2 §5; T3 [01:26:42].
+- **L14 — Checklist de documentos com pré-verificação (antes N09):** listar os documentos exigidos pelo concurso; o assistente compara-os com os documentos da empresa, classifica cada documento, assinala os que não conseguiu classificar e indica «quase pronto» ou o que falta. A pessoa confirma cada item; o assistente não marca a proposta como completa sem confirmação humana. A recolha automática a partir de uma pasta configurada é uma opção a validar. Não pressupor uma checklist universal nem verificar autenticidade ou validade legal. Base: T1 §§6, 15; T2 §§6, 16; T3 [00:11:30]–[00:12:49], [00:35:16]–[00:38:41], [01:26:59].
+- **L15 — Lista de preços unitários e total (antes N10):** editar preços de itens, unidades e quantidades fictícias; subtotais e total; itens sem preço. Não aplicar automaticamente 25 % de margem. Base: T1 §§6, 9, 11–13; T2 §6.
+- **L16 — Rever a proposta e simular a passagem à plataforma (antes N12):** resumir documentos, peças, preços e valor; mostrar omissões e prazo ultrapassado; «Simular submissão» com «Submissão simulada — nenhum documento foi enviado». AcinGov/Vortal continua a ser o local da submissão real e a T3 coloca esta integração no fim (T3 [00:32:26]). L09 não é condição de prontidão. Base: T1 §§6, 8, 15; T2 §§6, 14, 21.
+
+## Novas funcionalidades da T3
+
+- **L17 — Navegação pelo assistente:** o assistente abre o ecrã, a vista e os filtros pedidos (por exemplo, «quero ver a Torreira em lista»). Escrito «Navegação (Later)» no quadro final. Base: T3 [00:45:19]–[00:45:49], [01:27:07]–[01:27:58].
+- **L18 — Vista agrupada por fases:** segunda vista, além do mapa, com as oportunidades agrupadas por estado — vista, interessante, inscrita — numa única tabela com filtro de fase, em vez de vários quadros. Inclui consultar em tabela os concursos em que a empresa demonstrou interesse, sem os acumular no mapa. Base: T3 [00:09:13]–[00:09:42], [01:18:08]–[01:19:44], [01:30:00]–[01:31:46].
+
+## Retiradas do PRD de Now
+
+O [PRD de Now](https://github.com/prumod/cairn-web/issues/104) fica com as interações de seleção, comentário e citação mais familiares e mais usadas. As seguintes passaram para Later; existiam no protótipo de UX e ficam no histórico do Git.
+
+- **L19 — Seleção por retângulo:** arrastar um retângulo a partir de um espaço vazio da lista de obras ou do mapa seleciona as unidades abrangidas, com pré-visualização; Shift acrescenta, Ctrl/⌘ alterna, Escape cancela e mantém a seleção anterior, e arrastar sobre texto citável continua a selecionar texto. Ao largar, oferece comentar as unidades recém-selecionadas. Na lista, Shift+clique e Ctrl+A cumprem a mesma função; no mapa, a lista de localidades.
+- **L20 — Atalhos avançados de seleção:** Home/End (com Shift, estendem a seleção), Ctrl/⌘+↑/↓/Home/End movem só o foco, e Ctrl/⌘+A atua na última zona usada (mapa ou lista) quando o foco está na página.
+- **L21 — Menus de contexto sobre a seleção:** botão direito e Shift+F10, sobre obras e localidades, com abrir, comparar, comentar, filtrar por localidades e limpar a seleção. A barra de ações visível cobre as ações das obras em Now.
+- **L22 — Descomentar:** retirar um comentário e voltar a selecionar as obras e localidades a que se referia, reabrindo as localidades dessas obras; o texto do comentário perde-se. Apagar um comentário continua em Now.
+- **L23 — Citar a partir de linhas, da tabela de comparação e do texto do anúncio:** além da consulta do concurso e das respostas do assistente, que ficam em Now.
+- **L24 — Confirmação por esforço:** confirmar o descarte conforme o trabalho perdido, por exemplo uma seleção a partir de 10 unidades ou um comentário sem texto a partir de 3 (valores de protótipo, a calibrar). Em Now só se confirma apagar um comentário com texto.
 
 As integrações reais e a persistência são trabalho técnico posterior ao protótipo com dados fictícios, não uma funcionalidade adicional nem uma integração já aprovada. As fontes públicas, APIs, mapas e cobertura de dados precisam de validação separada (T2 §§2, 19, 22–24).

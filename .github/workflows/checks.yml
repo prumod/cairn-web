@@ -3,7 +3,7 @@ name: Agent checks
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, feat/63-company-profile]
 
 permissions:
   contents: read

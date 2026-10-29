@@ -1,5 +1,7 @@
 # Tenderlake Monitor — interfaces reais
 
+> Os identificadores de funcionalidades neste documento são anteriores à transcrição 3. Consultar a [correspondência de identificadores](../../../README.md#correspondência-de-identificadores).
+
 Capturas de 08-10-2026, obtidas numa sessão autenticada pelo utilizador através do browser. O ecrã Home confirmou trial gratuito com fim em 15-10-2026. Não se trata de acesso gratuito permanente.
 
 Foi criado um único AI Search, identificado como `Cairn research demo — Portuguese construction`, com descrição fictícia em português e país Portugal. A análise da descrição devolveu 7/10 e o Save confirmou a gravação. Usa 1 dos 5 AI Searches disponíveis no plano. Não foram comprados créditos nem ativados serviços pagos.

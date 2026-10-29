@@ -1,0 +1,2 @@
+ALTER TABLE "company_profile" DROP CONSTRAINT "one_company_profile", ADD CONSTRAINT "one_company_profile" CHECK ("id" = 1);--> statement-breakpoint
+ALTER TABLE "company_profile" DROP CONSTRAINT "positive_finite_radius", ADD CONSTRAINT "positive_finite_radius" CHECK ("radius_km" > 0 AND "radius_km" < 'Infinity'::float8);

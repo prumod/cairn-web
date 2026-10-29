@@ -1,0 +1,3476 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cairn · prova de conceito</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      :root {
+        color-scheme: light;
+        --canvas: #edf0f4;
+        --panel: #ffffff;
+        --panel2: #f1f4f8;
+        --line: #d3dae3;
+        --fg: #17202b;
+        --muted: #566474;
+        --accent: #1d5fd6;
+        --onaccent: #ffffff;
+        --amber: #b45309;
+        --accentSoft: #e4edfc;
+        --amberSoft: #fbebd7;
+        --danger: #b42318;
+        --onDanger: #ffffff;
+        --shadow: rgba(23, 32, 43, 0.18);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          color-scheme: dark;
+          --canvas: #06080b;
+          --panel: #121923;
+          --panel2: #1a222e;
+          --line: #2a3646;
+          --fg: #e1e8f0;
+          --muted: #8e9cae;
+          --accent: #5ba8f5;
+          --onaccent: #04121f;
+          --amber: #f5b041;
+          --accentSoft: #142538;
+          --amberSoft: #33270f;
+          --danger: #f2706a;
+          --onDanger: #1a0605;
+          --shadow: rgba(0, 0, 0, 0.6);
+        }
+      }
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --canvas: #06080b;
+        --panel: #121923;
+        --panel2: #1a222e;
+        --line: #2a3646;
+        --fg: #e1e8f0;
+        --muted: #8e9cae;
+        --accent: #5ba8f5;
+        --onaccent: #04121f;
+        --amber: #f5b041;
+        --accentSoft: #142538;
+        --amberSoft: #33270f;
+        --danger: #f2706a;
+        --onDanger: #1a0605;
+        --shadow: rgba(0, 0, 0, 0.6);
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--line) transparent;
+      }
+      body {
+        min-height: 100dvh;
+        font-feature-settings:
+          "tnum" 1,
+          "cv11" 1;
+        display: flex;
+        flex-direction: column;
+        background: var(--canvas);
+        color: var(--fg);
+        font:
+          13px/1.4 Inter,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      .mono {
+        font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-variant-numeric: tabular-nums;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+      .bar {
+        flex: none;
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        min-height: 48px;
+        padding: 4px 8px 4px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--line);
+      }
+      .bar .brand {
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: -0.01em;
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        white-space: nowrap;
+      }
+      .bar .co {
+        min-width: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0 16px;
+        font-size: 12.5px;
+        line-height: 1.35;
+        color: var(--fg);
+      }
+      .bar .co > span {
+        white-space: nowrap;
+      }
+      .bar .co > .co-p {
+        white-space: normal;
+      }
+      .bar .co .co-n {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .bar .co .k {
+        color: var(--muted);
+      }
+      .bar .sp {
+        flex: 1;
+      }
+      .ibtn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        color: var(--muted);
+      }
+      .ibtn:hover,
+      .ibtn[aria-expanded="true"] {
+        background: var(--panel2);
+        color: var(--fg);
+      }
+      .ibtn svg,
+      .btn svg {
+        width: 16px;
+        height: 16px;
+        flex: none;
+      }
+      .pop {
+        position: fixed;
+        z-index: 40;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        box-shadow: 0 4px 16px var(--shadow);
+        padding: 12px;
+        display: none;
+        overflow: auto;
+      }
+      .pop.on {
+        display: block;
+      }
+      #optP {
+        width: 280px;
+      }
+      #optP h2 {
+        margin: 0 0 8px;
+        font-size: 13px;
+      }
+      #calP {
+        width: 248px;
+      }
+      .dbtn {
+        width: 100%;
+        height: 32px;
+        justify-content: space-between;
+        padding: 0 10px;
+      }
+      .cb {
+        position: relative;
+      }
+      .cb ul {
+        position: fixed;
+        margin: 0;
+        padding: 3px;
+        list-style: none;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px var(--shadow);
+        z-index: 20;
+        display: none;
+      }
+      .cb ul.on {
+        display: block;
+      }
+      .cb li {
+        padding: 4px 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12.5px;
+      }
+      .cb li[aria-selected="true"],
+      .cb li:hover {
+        background: var(--accentSoft);
+        color: var(--accent);
+      }
+      :root {
+        --aw: 50%;
+        --rh: 560px;
+        --barh: 48px;
+      }
+      .app {
+        flex: none;
+        height: calc(100dvh - var(--barh));
+        min-height: 560px;
+        padding: 12px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 12px var(--aw);
+        grid-template-areas: "r sb a";
+      }
+      .pr {
+        grid-area: r;
+      }
+      .pa {
+        grid-area: a;
+      }
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 14px;
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        background: var(--panel);
+      }
+      .filters .fh {
+        flex: 1 1 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .filters h2 {
+        margin: 0;
+        font-size: 13px;
+      }
+      .filters .field {
+        flex: 1 1 180px;
+        margin: 0;
+        min-width: 160px;
+      }
+      .sep {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: none;
+        cursor: col-resize;
+        outline: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .sep::before {
+        content: "";
+        width: 3px;
+        height: 32px;
+        border-radius: 2px;
+        background: var(--line);
+      }
+      .sep::after {
+        content: "";
+        position: absolute;
+        inset: 0 -3px;
+      }
+      .sep:hover::before,
+      .sep.drag::before {
+        background: var(--accent);
+      }
+      .sep:focus-visible::before {
+        background: var(--accent);
+        box-shadow:
+          0 0 0 2px var(--canvas),
+          0 0 0 4px var(--accent);
+      }
+      #sepB {
+        grid-area: sb;
+      }
+      #sepH {
+        display: none;
+        cursor: row-resize;
+        height: 12px;
+      }
+      #sepH::before {
+        width: 32px;
+        height: 3px;
+      }
+      body.resizing {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      body.resizing.rx {
+        cursor: col-resize;
+      }
+      body.resizing.ry {
+        cursor: row-resize;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        min-width: 0;
+        overflow: hidden;
+        position: relative;
+      }
+      .ph {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        height: 42px;
+        padding: 0 12px;
+        border-bottom: 1px solid var(--line);
+        font-weight: 600;
+        font-size: 13px;
+        flex: none;
+      }
+      .ph small {
+        font-weight: 500;
+        color: var(--muted);
+        font-size: 11.5px;
+      }
+      .pb {
+        padding: 12px;
+        overflow: auto;
+        min-height: 0;
+        flex: 1;
+      }
+      .btn {
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 5px 9px;
+        font-size: 12.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn:hover:not(:disabled) {
+        border-color: var(--accent);
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: var(--onaccent);
+        border-color: var(--accent);
+        font-weight: 600;
+      }
+      .btn.danger {
+        background: var(--danger);
+        color: var(--onDanger);
+        border-color: var(--danger);
+        font-weight: 600;
+      }
+      .btn.danger:hover:not(:disabled) {
+        border-color: var(--fg);
+      }
+      .btn.sm {
+        padding: 2px 7px;
+        font-size: 11.5px;
+      }
+      .btn.ghost {
+        background: transparent;
+        border-color: transparent;
+      }
+      .btn.ghost:hover:not(:disabled) {
+        background: var(--panel2);
+        border-color: var(--line);
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      .fl {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--fg);
+        margin-bottom: 5px;
+      }
+      .fl .val {
+        color: var(--fg);
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: 12px;
+      }
+      .inp {
+        width: 100%;
+        height: 32px;
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 0 10px;
+        font-size: 12.5px;
+      }
+      .ci .inp,
+      .comp .inp {
+        height: auto;
+        padding: 6px 8px;
+      }
+      .inp:focus {
+        border-color: var(--accent);
+      }
+      select.inp {
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 28px;
+        background-image:
+          linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+          linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+        background-position:
+          calc(100% - 15px) 50%,
+          calc(100% - 10px) 50%;
+        background-size: 5px 5px;
+        background-repeat: no-repeat;
+      }
+      .inp::placeholder {
+        font-family: Inter, system-ui, sans-serif;
+        color: var(--muted);
+      }
+      .row2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 7px;
+      }
+      .chip {
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 3px 9px;
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .chip:hover {
+        border-color: var(--accent);
+      }
+      .chip[aria-pressed="true"] {
+        background: var(--accentSoft);
+        border-color: var(--accent);
+        color: var(--accent);
+        font-weight: 600;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+        margin: 2px 0;
+      }
+      .scale {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10.5px;
+        color: var(--muted);
+      }
+      .hint {
+        font-size: 11.5px;
+        color: var(--amber);
+        margin-top: 4px;
+      }
+      .hint:empty {
+        display: none;
+      }
+      .mut {
+        color: var(--muted);
+      }
+      /* company */
+      #optP label.ck {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin: 2px 0;
+        font-size: 12px;
+      }
+      #optP dl {
+        margin: 0 0 8px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 3px 10px;
+        font-size: 12px;
+      }
+      #optP dt {
+        color: var(--muted);
+      }
+      #optP dd {
+        margin: 0;
+      }
+      /* calendar */
+      #calP {
+        width: 304px;
+        max-width: calc(100vw - 16px);
+        padding: 16px;
+      }
+      .cal-title {
+        margin: 0 0 12px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .cal {
+        padding: 0;
+      }
+      .cal-h {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .cal-h button {
+        all: unset;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        font-size: 20px;
+      }
+      .cal-h button:hover {
+        color: var(--accent);
+      }
+      .cal-h button:focus-visible {
+        outline: 2px solid var(--accent);
+      }
+      .cal-g {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 3px;
+        text-align: center;
+      }
+      .cal-g span {
+        font-size: 10px;
+        color: var(--muted);
+        padding: 0 0 6px;
+      }
+      .cal-g button {
+        all: unset;
+        cursor: pointer;
+        font-size: 12px;
+        min-height: 36px;
+        border-radius: 7px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        line-height: 1.2;
+      }
+      .cal-g button:hover {
+        background: var(--panel2);
+      }
+      .cal-g button[aria-current="date"] {
+        box-shadow: inset 0 0 0 1px var(--accent);
+      }
+      .cal-g button[aria-pressed="true"] {
+        background: var(--accent);
+        color: var(--onaccent);
+        font-weight: 700;
+      }
+      .cal-g button:focus-visible {
+        outline: 2px solid var(--accent);
+      }
+      .cal-g i {
+        font-style: normal;
+        font-size: 9px;
+        height: 10px;
+        line-height: 10px;
+      }
+      .st-works {
+        color: var(--accent);
+      }
+      .st-fail {
+        color: var(--amber);
+        font-weight: 700;
+      }
+      .st-notrun,
+      .st-empty {
+        color: var(--muted);
+      }
+      button[aria-pressed="true"] i {
+        color: inherit;
+      }
+      .legend {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px 12px;
+        font-size: 10.5px;
+        color: var(--muted);
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+      .cal-footer {
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+      #calInfo {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      #clearDate {
+        flex: none;
+      }
+      /* results */
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        min-height: 36px;
+        padding: 3px 8px 3px 12px;
+        background: var(--panel2);
+        border-bottom: 1px solid var(--line);
+        font-size: 12px;
+        flex: none;
+      }
+      .toolbar .sp {
+        flex: 1;
+      }
+      .notice {
+        margin: 8px 12px 0;
+        padding: 6px 10px;
+        border-radius: 7px;
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        font-size: 12px;
+        display: none;
+      }
+      .notice.on {
+        display: block;
+        position: sticky;
+        top: 6px;
+        z-index: 4;
+      }
+      .notice.warn {
+        background: var(--amberSoft);
+        border-color: var(--amber);
+        color: var(--fg);
+      }
+      .banner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin: 8px 12px 0;
+        padding: 5px 10px;
+        border-radius: 7px;
+        background: var(--accentSoft);
+        border: 1px solid var(--accent);
+        font-size: 12px;
+      }
+      .list {
+        outline: none;
+        padding: 0 0 12px;
+        user-select: none;
+        -webkit-user-select: none;
+        min-height: 60px;
+      }
+      .list:focus-visible .row.kf {
+        outline: 2px solid var(--accent);
+        outline-offset: -2px;
+      }
+      .grp {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--panel2);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 6px 10px 6px 12px;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        font-size: 12px;
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .row {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 4px 14px;
+        padding: 8px 10px 8px 34px;
+        border-bottom: 1px solid var(--line);
+        cursor: pointer;
+      }
+      .row .ck {
+        position: absolute;
+        left: 11px;
+        top: 10px;
+        width: 15px;
+        height: 15px;
+        display: grid;
+        place-items: center;
+        border-radius: 4px;
+        background: var(--accent);
+        color: var(--onaccent);
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        visibility: hidden;
+      }
+      .row.sel .ck {
+        visibility: visible;
+      }
+      .row:hover {
+        background: var(--panel2);
+      }
+      .row.sel {
+        background: var(--accentSoft);
+        box-shadow: inset 3px 0 0 var(--accent);
+      }
+      .row.sel .tt {
+        color: var(--fg);
+      }
+      .row .tt {
+        font-weight: 600;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 11.5px;
+      }
+      .row .side {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 1px;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+      .val-amt {
+        font-family: Inter, system-ui, sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .due {
+        display: inline-block;
+        min-width: 54px;
+        margin-left: 8px;
+        text-align: right;
+        font-family: Inter, system-ui, sans-serif;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .due.soon {
+        color: var(--amber);
+        font-weight: 600;
+      }
+      .due.past {
+        color: var(--muted);
+        font-style: italic;
+      }
+      .del {
+        color: var(--muted);
+        font-size: 11.5px;
+      }
+      .del .unk {
+        font-family: Inter, system-ui, sans-serif;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 11px;
+        color: var(--amber);
+        font-weight: 700;
+        margin-left: 6px;
+        vertical-align: 0;
+      }
+      .empty {
+        margin: 24px 12px;
+        padding: 22px 16px;
+        text-align: center;
+        border: 1px solid var(--line);
+        background: var(--panel2);
+        border-radius: 8px;
+        color: var(--muted);
+      }
+      .empty b {
+        display: block;
+        color: var(--fg);
+        font-size: 14px;
+        margin: 4px 0;
+      }
+      .empty .ic {
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .empty.fail {
+        border: 1px solid var(--amber);
+        background: var(--amberSoft);
+      }
+      .empty.fail .ic,
+      .empty.fail b {
+        color: var(--amber);
+      }
+      .empty .btn {
+        margin-top: 8px;
+      }
+      /* compare + detail */
+      .cmp {
+        max-height: 50vh;
+        margin: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: auto;
+        user-select: text;
+      }
+      .cmp .ch {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        background: var(--panel2);
+        font-weight: 600;
+      }
+      .cmp table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 480px;
+      }
+      .cmp th,
+      .cmp td {
+        padding: 5px 10px;
+        border-top: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 12px;
+      }
+      .cmp th {
+        color: var(--muted);
+        font-weight: 600;
+        width: 110px;
+      }
+      .detail-h {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        background: var(--panel);
+        padding: 10px 0 8px;
+        margin-bottom: 2px;
+        border-bottom: 1px solid var(--line);
+      }
+      .detail {
+        padding: 0 14px 12px;
+        user-select: text;
+        overflow-wrap: anywhere;
+      }
+      .detail h2 {
+        margin: 6px 0 2px;
+        font-size: 16px;
+        line-height: 1.25;
+      }
+      .detail h2:focus {
+        outline: none;
+      }
+      body:has(#locD[open]) #bCom {
+        visibility: hidden;
+      }
+      .detail dl {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        gap: 6px 12px;
+        margin: 12px 0;
+      }
+      .detail dt {
+        color: var(--muted);
+      }
+      .detail dd {
+        margin: 0;
+      }
+      .note {
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+      }
+      a {
+        color: var(--accent);
+      }
+      /* assistant */
+      .sugs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 10px 12px 8px;
+        flex: none;
+        max-height: 35%;
+        overflow: auto;
+      }
+      .sugs button {
+        all: unset;
+        cursor: pointer;
+        box-sizing: border-box;
+        padding: 3px 9px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel2);
+        font-size: 12px;
+        color: var(--fg);
+      }
+      .sugs button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .sugs button:focus-visible {
+        outline: 2px solid var(--accent);
+      }
+      .chat {
+        flex: 1;
+        overflow: auto;
+        padding: 14px 12px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        min-height: 0;
+      }
+      .msg {
+        max-width: 96%;
+        padding: 7px 10px;
+        border-radius: 10px;
+        font-size: 12.5px;
+        overflow-wrap: anywhere;
+      }
+      .msg.u {
+        align-self: flex-end;
+        max-width: 85%;
+        background: var(--accent);
+        color: var(--onaccent);
+        border-bottom-right-radius: 3px;
+      }
+      .msg.a {
+        align-self: stretch;
+        max-width: 100%;
+        background: var(--panel2);
+        border: 1px solid var(--line);
+        border-bottom-left-radius: 3px;
+      }
+      .msg .cx {
+        font-size: 11px;
+        opacity: 0.85;
+        margin-top: 3px;
+      }
+      .sctx {
+        margin: 4px 0 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .sctx li {
+        padding: 4px 7px;
+        border: 1px solid color-mix(in srgb, var(--onaccent) 35%, transparent);
+        border-radius: 6px;
+        background: color-mix(in srgb, var(--onaccent) 10%, transparent);
+        font-size: 11.5px;
+      }
+      .sctx .sk {
+        font-weight: 600;
+      }
+      .sctx q {
+        display: block;
+        margin: 2px 0;
+        font-style: italic;
+        quotes: "«" "»";
+      }
+      .steps {
+        margin: 0 0 8px;
+        padding: 0 8px;
+        list-style: none;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+      }
+      .steps li {
+        display: flex;
+        gap: 6px;
+        align-items: baseline;
+        padding: 5px 0;
+        border-top: 1px solid var(--line);
+        font-size: 11.5px;
+        flex-wrap: wrap;
+      }
+      .steps li:first-child {
+        border-top: 0;
+      }
+      .steps .n {
+        color: var(--muted);
+      }
+      .steps .l {
+        flex: 1;
+        min-width: 120px;
+      }
+      .steps b {
+        color: var(--accent);
+      }
+      .foot {
+        border-top: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        background: var(--panel);
+        flex: none;
+        max-height: 50%;
+      }
+      #ctxW {
+        flex: 0 1 auto;
+        min-height: 0;
+        overflow: auto;
+        padding: 8px 12px 0;
+      }
+      .compw {
+        flex: none;
+        padding: 8px 12px 10px;
+      }
+      .ctxh {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .ci {
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 5px 7px;
+        background: var(--panel2);
+        font-size: 11.5px;
+      }
+      .ci .chd {
+        display: flex;
+        justify-content: space-between;
+        gap: 6px;
+        align-items: baseline;
+        margin-bottom: 3px;
+      }
+      .ci textarea,
+      .ci input {
+        width: 100%;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        padding: 3px 6px;
+        font-size: 12px;
+        resize: vertical;
+      }
+      .ci q {
+        display: block;
+        color: var(--muted);
+        font-style: italic;
+        margin-bottom: 3px;
+        quotes: "«" "»";
+      }
+      .ci .acts {
+        display: flex;
+        gap: 5px;
+        margin-top: 4px;
+      }
+      .comp {
+        display: flex;
+        gap: 6px;
+      }
+      .chat:focus-visible,
+      .cmp:focus-visible,
+      #detailW:focus-visible {
+        outline-offset: -3px;
+      }
+      /* dialogs */
+      dialog {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0;
+        background: var(--panel);
+        color: var(--fg);
+        box-shadow: 0 8px 32px var(--shadow);
+        max-width: 94vw;
+        max-height: 94vh;
+      }
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.5);
+      }
+      #locD {
+        width: 960px;
+      }
+      #locD .in {
+        display: flex;
+        flex-direction: column;
+        max-height: 94vh;
+        outline: none;
+      }
+      #locD .locb {
+        display: flex;
+        flex: 1 1 auto;
+        min-height: 0;
+      }
+      #locD header {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        flex: none;
+      }
+      #locD header h2 {
+        margin: 0;
+        font-size: 14px;
+      }
+      #locD .mapw {
+        flex: 1 1 0;
+        min-width: 0;
+        overflow: auto;
+        min-height: 0;
+        background: var(--panel2);
+        position: relative;
+        isolation: isolate;
+      }
+      #locD .mapbg {
+        fill: transparent;
+      }
+      #locD svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      #locD .locl {
+        position: relative;
+        flex: none;
+        width: 264px;
+        overflow: auto;
+        padding: 10px 10px 12px;
+        border-left: 1px solid var(--line);
+      }
+      #locD .locl h3 {
+        margin: 0 0 6px 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .lrow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 6px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12.5px;
+      }
+      .lrow:hover {
+        background: var(--panel2);
+      }
+      .lrow input {
+        flex: none;
+        margin: 0;
+        accent-color: var(--accent);
+      }
+      .lrow .ln {
+        flex: 1;
+        min-width: 0;
+      }
+      .lrow .lc {
+        min-width: 26px;
+        padding: 0 6px;
+        border: 1.5px solid var(--accent);
+        border-radius: 999px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .lrow.on .lc {
+        background: var(--accent);
+        color: var(--onaccent);
+      }
+      .lrow.zero {
+        color: var(--muted);
+      }
+      .lrow.zero .lc {
+        border: 1.5px dashed var(--muted);
+      }
+      .lrow.zero.on .lc {
+        background: var(--muted);
+        border-style: solid;
+        color: var(--panel);
+      }
+      .lall {
+        margin-bottom: 4px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--line);
+        border-radius: 0;
+        font-weight: 600;
+      }
+      #locD footer {
+        padding: 10px 14px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        flex: none;
+      }
+      #locD footer .sp {
+        flex: 1;
+        min-width: 10px;
+      }
+      #cfm form {
+        padding: 16px;
+        max-width: 380px;
+      }
+      #cfm h2 {
+        margin: 0 0 6px;
+        font-size: 14px;
+      }
+      #cfm p {
+        margin: 0 0 14px;
+        font-size: 13px;
+      }
+      #cfm .acts {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+      .pin {
+        cursor: pointer;
+        outline: none;
+      }
+      .pin .dot {
+        fill: var(--panel);
+        stroke: var(--accent);
+        stroke-width: 2.5;
+      }
+      .pin .ringf {
+        fill: none;
+        stroke: var(--amber);
+        stroke-width: 3;
+        opacity: 0;
+      }
+      .pin:focus-visible .ringf {
+        opacity: 1;
+      }
+      .pin text {
+        font:
+          600 11px Inter,
+          system-ui,
+          sans-serif;
+        fill: var(--fg);
+        text-anchor: middle;
+        paint-order: stroke;
+        stroke: var(--panel2);
+        stroke-width: 3px;
+      }
+      .pin text.cnt {
+        font:
+          600 12px "IBM Plex Mono",
+          ui-monospace,
+          monospace;
+        stroke: none;
+        fill: var(--fg);
+      }
+      .pin.zero .dot {
+        fill: var(--panel2);
+        stroke: var(--muted);
+        stroke-dasharray: 3 3;
+        stroke-width: 1.5;
+      }
+      .pin.zero text {
+        fill: var(--muted);
+      }
+      .pin.on .dot {
+        fill: var(--accent);
+        stroke: var(--accent);
+        stroke-dasharray: none;
+      }
+      .pin.on text.cnt {
+        fill: var(--onaccent);
+      }
+      .pin.zero.on .dot {
+        fill: var(--muted);
+        stroke: var(--muted);
+      }
+      .pin.zero.on text.cnt {
+        fill: var(--panel);
+      }
+      .maplbl {
+        font:
+          600 10.5px Inter,
+          system-ui,
+          sans-serif;
+        fill: var(--muted);
+      }
+      /* quote */
+      #qb {
+        position: fixed;
+        z-index: 60;
+        display: none;
+      }
+      #qb.on {
+        display: block;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+      @media (max-width: 720px) {
+        html,
+        body {
+          height: auto;
+        }
+        .bar {
+          flex-wrap: wrap;
+          row-gap: 2px;
+          padding-top: 6px;
+          padding-bottom: 6px;
+        }
+        .bar .co {
+          order: 3;
+          flex: 1 0 100%;
+          gap: 0 14px;
+        }
+        .app {
+          height: auto;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+        }
+        .pr {
+          margin-bottom: 0;
+        }
+        .pr {
+          height: var(--rh);
+          flex: none;
+        }
+        #sepB {
+          display: none;
+        }
+        #sepH {
+          display: flex;
+        }
+        .pa {
+          height: min(560px, 80dvh);
+          flex: none;
+          margin-top: 12px;
+        }
+        .detail dl {
+          grid-template-columns: 1fr;
+        }
+        #locD .locb {
+          flex-direction: column;
+          overflow: auto;
+        }
+        #locD .mapw {
+          flex: none;
+          overflow: visible;
+        }
+        #locD .locl {
+          width: auto;
+          overflow: visible;
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bar">
+      <div class="brand">Cairn</div>
+      <div class="co" role="group" aria-label="Referência da empresa">
+        <span class="co-n">Construções Liz, Lda.</span>
+        <span><span class="k">Localidade</span> Leiria</span>
+        <span><span class="k">Raio</span> <span id="coRad"></span></span>
+        <span><span class="k">Classe</span> 3</span>
+        <span class="co-p"><span class="k">Prioritárias</span> <span id="coPrio"></span></span>
+      </div>
+      <div class="sp"></div>
+      <button
+        class="ibtn"
+        id="theme"
+        aria-pressed="false"
+        aria-label="Modo escuro"
+        title="Ativar modo escuro"
+      ></button>
+      <button
+        class="ibtn"
+        id="optBtn"
+        aria-label="Opções"
+        title="Opções"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="optP"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"
+          />
+        </svg>
+      </button>
+    </header>
+    <div class="pop" id="optP" role="dialog" aria-label="Opções">
+      <h2>Opções · Construções Liz, Lda.</h2>
+      <dl>
+        <dt>Localidade</dt>
+        <dd>Leiria</dd>
+        <dt>Classe</dt>
+        <dd class="mono">3</dd>
+        <dt>Raio</dt>
+        <dd class="mono" id="radV"></dd>
+      </dl>
+      <input
+        type="range"
+        id="rad"
+        min="10"
+        max="60"
+        step="5"
+        aria-label="Raio de pesquisa da empresa em quilómetros"
+        style="width: 100%"
+      />
+      <div class="fl" style="margin: 8px 0 3px"><span>Categorias prioritárias</span></div>
+      <div id="prioL"></div>
+    </div>
+    <div class="pop" id="calP" role="dialog" aria-label="Escolher data de publicação">
+      <h2 class="cal-title">Data de publicação</h2>
+      <div class="cal">
+        <div class="cal-h">
+          <button id="pm" aria-label="Mês anterior">‹</button
+          ><span id="calT" aria-live="polite"></span
+          ><button id="nm" aria-label="Mês seguinte">›</button>
+        </div>
+        <div class="cal-g" id="calG" role="group" aria-label="Dias do mês"></div>
+      </div>
+      <div class="legend">
+        <span><i class="st-works">●</i> com obras</span
+        ><span><i class="st-empty">○</i> sem obras</span
+        ><span><i class="st-fail">!</i> falhada</span
+        ><span><i class="st-notrun">–</i> por correr</span>
+      </div>
+      <div class="cal-footer">
+        <span id="calInfo" aria-live="polite"></span
+        ><button class="btn sm" id="clearDate">Limpar data</button>
+      </div>
+    </div>
+    <div class="app">
+      <!-- FILTROS -->
+
+      <!-- RESULTADOS -->
+      <section class="panel pr" aria-label="Resultados">
+        <div class="ph">
+          <span>Resultados <small id="count" aria-live="polite"></small></span
+          ><small>Prioritárias primeiro · entrega mais próxima</small>
+        </div>
+        <div class="toolbar" id="tb">
+          <span id="selN" class="mut"></span><span class="sp"></span>
+          <button class="btn sm" id="bOpen">Abrir</button>
+          <button class="btn sm" id="bCmp">Comparar</button>
+          <button class="btn sm" id="bCom">Comentar</button>
+          <button class="btn sm" id="bClr">Limpar seleção</button>
+        </div>
+        <div class="pb" id="resBody" style="padding: 0">
+          <section class="filters" id="filters" aria-label="Filtros">
+            <div class="fh">
+              <h2>Filtros</h2>
+              <button class="btn sm" id="reset">Limpar filtros</button>
+            </div>
+
+            <div class="field">
+              <div class="fl"><span>Distância</span><span class="val" id="distV"></span></div>
+              <input
+                type="range"
+                id="dist"
+                min="0"
+                max="50"
+                step="1"
+                aria-label="Distância máxima em quilómetros"
+              />
+              <div class="scale"><span>0</span><span id="sc2"></span><span id="sc3"></span></div>
+              <button class="btn dbtn" id="openMap" style="margin-top: 8px">
+                <span>Localidades <span class="mut" id="locN"></span></span
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 21s-7-6.1-7-11.5a7 7 0 0 1 14 0C19 14.9 12 21 12 21Z" />
+                  <circle cx="12" cy="9.5" r="2.5" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="field">
+              <div class="fl"><span>Valor anunciado</span><span class="val" id="valV"></span></div>
+              <div class="row2">
+                <div class="cb">
+                  <input
+                    class="inp mono"
+                    id="vmin"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    role="combobox"
+                    aria-expanded="false"
+                    aria-controls="vminL"
+                    aria-autocomplete="list"
+                    placeholder="Mín €"
+                    aria-label="Valor mínimo em euros"
+                  />
+                  <ul id="vminL" role="listbox" aria-label="Sugestões de valor mínimo"></ul>
+                </div>
+                <div class="cb">
+                  <input
+                    class="inp mono"
+                    id="vmax"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    role="combobox"
+                    aria-expanded="false"
+                    aria-controls="vmaxL"
+                    aria-autocomplete="list"
+                    placeholder="Máx €"
+                    aria-label="Valor máximo em euros"
+                  />
+                  <ul id="vmaxL" role="listbox" aria-label="Sugestões de valor máximo"></ul>
+                </div>
+              </div>
+              <div class="hint" id="valH" role="status"></div>
+            </div>
+
+            <div class="field">
+              <div class="fl"><span>Data de publicação</span></div>
+              <button
+                class="btn dbtn"
+                id="dateBtn"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+                aria-controls="calP"
+              >
+                <span id="dateV"></span
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="5" width="18" height="16" rx="2" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="field">
+              <div class="fl"><span>Entidade adjudicante</span></div>
+              <select class="inp" id="entSel" aria-label="Entidade adjudicante"></select>
+            </div>
+
+            <div class="field">
+              <div class="fl">
+                <span>Tipo de obra</span><span class="val mut" id="typeV"></span>
+              </div>
+              <div
+                class="chips"
+                id="types"
+                style="margin-top: 0"
+                role="group"
+                aria-label="Tipos de obra"
+              ></div>
+            </div>
+          </section>
+          <div class="notice" id="notice" role="status" aria-live="polite"></div>
+          <div id="detailW" hidden tabindex="-1" aria-label="Detalhe da obra"></div>
+          <div id="listW">
+            <div id="banner"></div>
+            <div id="cmpW"></div>
+            <div
+              class="list"
+              id="list"
+              role="listbox"
+              aria-multiselectable="true"
+              aria-label="Obras"
+              tabindex="0"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="sep" id="sepH"></div>
+      <div class="sep" id="sepB"></div>
+      <!-- ASSISTENTE -->
+      <section class="panel pa" aria-label="Assistente">
+        <div class="ph">Assistente <small>só usa comentários e citações</small></div>
+        <div class="sugs" id="sugs"></div>
+        <div
+          class="chat"
+          id="chat"
+          role="log"
+          aria-label="Conversa"
+          aria-live="polite"
+          tabindex="0"
+        ></div>
+        <div class="foot">
+          <div id="ctxW"></div>
+          <div class="compw">
+            <form class="comp" id="comp">
+              <input
+                class="inp"
+                id="msg"
+                placeholder="Pergunte sobre as obras…"
+                aria-label="Mensagem"
+                aria-describedby="msgH"
+                autocomplete="off"
+              /><button class="btn primary" type="submit">Enviar</button>
+            </form>
+            <div class="hint" id="msgH" role="status"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <dialog id="locD" aria-labelledby="locT">
+      <div class="in" tabindex="-1">
+        <header>
+          <h2 id="locT">Localidades</h2>
+          <div class="mut" style="font-size: 11.5px">
+            No mapa ou na lista. Clique escolhe uma localidade, Ctrl/⌘+clique alterna. Tab percorre,
+            Espaço alterna, Enter aplica as escolhidas (ou a do foco), Ctrl/⌘+A seleciona todas. A
+            escolha só vale ao confirmar.
+          </div>
+        </header>
+        <div class="locb">
+          <div class="mapw" id="locMap"></div>
+          <div class="locl" role="group" aria-labelledby="locLT">
+            <h3 id="locLT">Lista de localidades</h3>
+            <label class="lrow lall"
+              ><input type="checkbox" id="locAll" /><span class="ln">Selecionar todos</span></label
+            >
+            <div id="locList"></div>
+          </div>
+        </div>
+        <footer>
+          <span id="locC" class="mut" aria-live="polite"></span><span class="sp"></span>
+          <button class="btn" id="locClr">Limpar escolha</button>
+          <button class="btn" id="locCom">Comentar</button>
+          <button class="btn" id="locNo">Cancelar</button>
+          <button class="btn primary" id="locOk">Confirmar</button>
+        </footer>
+      </div>
+    </dialog>
+
+    <dialog id="cfm" aria-labelledby="cfmT" aria-describedby="cfmM">
+      <form method="dialog">
+        <h2 id="cfmT">Tem a certeza?</h2>
+        <p id="cfmM"></p>
+        <div class="acts">
+          <button class="btn" value="no" autofocus>Cancelar</button
+          ><button class="btn danger" value="yes">Apagar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="qb"><button class="btn primary sm" id="qBtn">❝ Citar excerto</button></div>
+
+    <script>
+      /* ---------- helpers ---------- */
+      const $ = (s, r = document) => r.querySelector(s),
+        $$ = (s, r = document) => [...r.querySelectorAll(s)];
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+        );
+      const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+      const eur = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " €";
+      const fmtDate = (d) => d.slice(8, 10) + "/" + d.slice(5, 7) + "/" + d.slice(0, 4);
+      const fmtDel = (d) => (d ? fmtDate(d) + " " + d.slice(11, 16) : null);
+      const delHTML = (w) =>
+        w.del
+          ? `<span class="mono">${fmtDel(w.del)}</span>`
+          : '<span class="unk">consta da plataforma</span>';
+      const dueHTML = (w) => {
+        if (!w.del) return "";
+        const d = Math.round((Date.parse(w.del.slice(0, 10)) - Date.parse(TODAY)) / 864e5);
+        return d < 0
+          ? '<span class="due past">terminou</span>'
+          : `<span class="due${d <= 3 ? " soon" : ""}">${d === 0 ? "hoje" : d === 1 ? "amanhã" : "em " + d + " dias"}</span>`;
+      };
+      const plural = (n, a, b) => n + " " + (n === 1 ? a : b);
+      let _u = 0;
+      const uid = () => "c" + ++_u;
+
+      /* ---------- fictional data ---------- */
+      const TODAY = "2026-10-27";
+      const TYPES = ["Edifícios", "Vias de comunicação", "Espaços públicos"];
+      const LOCS = [
+        { id: "leiria", n: "Leiria", x: 372, y: 292, km: 0 },
+        { id: "batalha", n: "Batalha", x: 322, y: 328, km: 11 },
+        { id: "mg", n: "Marinha Grande", x: 232, y: 214, km: 15 },
+        { id: "portomos", n: "Porto de Mós", x: 262, y: 376, km: 20 },
+        { id: "pombal", n: "Pombal", x: 350, y: 398, km: 27 },
+        { id: "alcobaca", n: "Alcobaça", x: 196, y: 322, km: 28 },
+        { id: "ansiao", n: "Ansião", x: 456, y: 322, km: 29 },
+        { id: "ourem", n: "Ourém", x: 440, y: 400, km: 34 },
+      ];
+      const LOC = (id) => LOCS.find((l) => l.id === id);
+      const W = [
+        {
+          id: "w1",
+          t: "Requalificação da Escola Básica de Marrazes",
+          type: "Edifícios",
+          ent: "Município de Leiria",
+          loc: "leiria",
+          km: 4,
+          pub: "2026-10-26",
+          val: 412000,
+          days: 180,
+          del: "2026-10-28T17:00",
+          lic: "Edifícios, classe 3",
+          plat: "AcinGov",
+          kw: ["escola", "marrazes"],
+        },
+        {
+          id: "w2",
+          t: "Pavimentação da Rua do Moinho",
+          type: "Vias de comunicação",
+          ent: "Município de Leiria",
+          loc: "leiria",
+          km: 7,
+          pub: "2026-10-20",
+          val: 96000,
+          days: 90,
+          del: "2026-10-24T12:00",
+          lic: "Vias de comunicação, classe 2",
+          plat: "AcinGov",
+          kw: ["moinho"],
+        },
+        {
+          id: "w3",
+          t: "Construção do Pavilhão Desportivo da Barosa",
+          type: "Edifícios",
+          ent: "Município de Leiria",
+          loc: "leiria",
+          km: 9,
+          pub: "2026-10-26",
+          val: 565000,
+          days: 240,
+          del: "2026-11-06T17:00",
+          lic: "Edifícios, classe 3",
+          plat: "Vortal",
+          kw: ["pavilhao", "barosa"],
+        },
+        {
+          id: "w4",
+          t: "Requalificação do Largo da Igreja",
+          type: "Espaços públicos",
+          ent: "Município da Batalha",
+          loc: "batalha",
+          km: 12,
+          pub: "2026-10-22",
+          val: 210000,
+          days: 120,
+          del: null,
+          lic: "Espaços públicos, classe 2",
+          plat: "Vortal",
+          kw: ["largo", "igreja"],
+        },
+        {
+          id: "w5",
+          t: "Ampliação do Cemitério de Ourém",
+          type: "Espaços públicos",
+          ent: "Município de Ourém",
+          loc: "ourem",
+          km: 34,
+          pub: "2026-10-26",
+          val: 150000,
+          days: 150,
+          del: "2026-11-12T12:00",
+          lic: "Espaços públicos, classe 1",
+          plat: "AcinGov",
+          kw: ["cemiterio"],
+        },
+        {
+          id: "w6",
+          t: "Reabilitação do Mercado Municipal de Pombal",
+          type: "Edifícios",
+          ent: "Município de Pombal",
+          loc: "pombal",
+          km: 27,
+          pub: "2026-10-23",
+          val: 780000,
+          days: 300,
+          del: "2026-11-30T17:00",
+          lic: "Edifícios, classe 4",
+          plat: "Vortal",
+          kw: ["mercado"],
+        },
+        {
+          id: "w7",
+          t: "Muro de suporte na EN 356",
+          type: "Vias de comunicação",
+          ent: "Infraestruturas da Região de Leiria, E.M.",
+          loc: "mg",
+          km: 15,
+          pub: "2026-10-27",
+          val: 89000,
+          days: 75,
+          del: "2026-11-04T17:00",
+          lic: "Vias de comunicação, classe 2",
+          plat: "AcinGov",
+          kw: ["muro", "en 356"],
+        },
+        {
+          id: "w8",
+          t: "Reabilitação da Biblioteca Municipal de Coimbra",
+          type: "Edifícios",
+          ent: "Município de Coimbra",
+          loc: "coimbra",
+          km: 62,
+          pub: "2026-10-26",
+          val: 530000,
+          days: 210,
+          del: "2026-11-10T17:00",
+          lic: "Edifícios, classe 3",
+          plat: "AcinGov",
+          kw: ["biblioteca", "coimbra"],
+        },
+      ];
+      const byId = (id) => W.find((w) => w.id === id);
+      const ENTS = [...new Set(W.filter((w) => w.km <= 60).map((w) => w.ent))].sort();
+      const FAILED = ["2026-10-21"];
+      const dayStatus = (d) =>
+        d > TODAY
+          ? "notrun"
+          : FAILED.includes(d)
+            ? "fail"
+            : W.some((w) => w.pub === d)
+              ? "works"
+              : "empty";
+      const STTXT = {
+        works: "recolha correu com obras",
+        empty: "recolha correu sem obras",
+        fail: "recolha falhada",
+        notrun: "recolha ainda não correu",
+      };
+      const STGLY = { works: "●", empty: "○", fail: "!", notrun: "–" };
+
+      /* ---------- state ---------- */
+      const defV = () => ({
+        f: {
+          dist: S ? S.radius : 50,
+          vmin: null,
+          vmax: null,
+          date: null,
+          ents: new Set(),
+          types: new Set(),
+          locs: new Set(),
+        },
+        shown: null,
+        open: null,
+        compare: null,
+      });
+      const cloneV = (v) => ({
+        f: { ...v.f, ents: new Set(v.f.ents), types: new Set(v.f.types), locs: new Set(v.f.locs) },
+        shown: v.shown ? [...v.shown] : null,
+        open: v.open,
+        compare: v.compare ? [...v.compare] : null,
+      });
+      let S = null;
+      S = {
+        radius: 50,
+        prio: new Set(["Edifícios"]),
+        v: null,
+        sel: new Set(),
+        anchor: null,
+        focus: null,
+        ctx: [],
+        draft: null,
+        chat: [],
+      };
+      S.v = defV();
+
+      const matches = (w, v, skipLocs) => {
+        const f = v.f;
+        return (
+          w.km <= S.radius &&
+          w.km <= f.dist &&
+          (f.vmin == null || w.val >= f.vmin) &&
+          (f.vmax == null || w.val <= f.vmax) &&
+          (!f.date || w.pub === f.date) &&
+          (!f.ents.size || f.ents.has(w.ent)) &&
+          (!f.types.size || f.types.has(w.type)) &&
+          (skipLocs || !f.locs.size || f.locs.has(w.loc))
+        );
+      };
+      const baseOf = (v, skipLocs) => W.filter((w) => matches(w, v, skipLocs));
+      const delKey = (w) => (w.del ? w.del : "9999");
+      const sortItems = (a) =>
+        [...a].sort(
+          (x, y) =>
+            S.prio.has(y.type) - S.prio.has(x.type) ||
+            delKey(x).localeCompare(delKey(y)) ||
+            x.t.localeCompare(y.t, "pt"),
+        );
+      function groupsOf(items) {
+        const m = new Map();
+        items.forEach((w) => {
+          if (!m.has(w.loc)) m.set(w.loc, []);
+          m.get(w.loc).push(w);
+        });
+        return [...m]
+          .map(([l, a]) => ({ loc: LOC(l), items: sortItems(a) }))
+          .sort(
+            (a, b) =>
+              b.items.some((w) => S.prio.has(w.type)) - a.items.some((w) => S.prio.has(w.type)) ||
+              a.loc.km - b.loc.km,
+          );
+      }
+      const listedOf = (v) =>
+        v.shown ? v.shown.map(byId).filter(Boolean) : groupsOf(baseOf(v)).flatMap((g) => g.items);
+      const L = () => listedOf(S.v);
+      const totalInRange = () => W.filter((w) => w.km <= S.radius).length;
+
+      /* ---------- notices / confirm ---------- */
+      let noticeT;
+      function notify(msg, warn) {
+        const n = $("#notice");
+        n.textContent = msg;
+        n.className = "notice on" + (warn ? " warn" : "");
+        clearTimeout(noticeT);
+        noticeT = setTimeout(() => (n.className = "notice"), 7000);
+      }
+      /* the only confirmation in the app: deleting a comment that has text */
+      function confirmD(msg, label) {
+        return new Promise((res) => {
+          const d = $("#cfm");
+          $("#cfmM").textContent = msg;
+          $("#cfm .danger").textContent = label;
+          d.returnValue = "";
+          d.addEventListener("close", () => res(d.returnValue === "yes"), { once: true });
+          d.showModal();
+          $("#cfm [value=no]").focus();
+        });
+      }
+
+      /* ---------- filters panel ---------- */
+      const V = () => S.v.f;
+      function filterChanged() {
+        S.v.shown = null;
+        S.v.compare = null;
+        prune();
+        renderAll();
+      }
+      function prune() {
+        const ids = new Set(L().map((w) => w.id));
+        S.sel = new Set([...S.sel].filter((i) => ids.has(i)));
+        if (S.focus && !ids.has(S.focus)) S.focus = null;
+        if (S.anchor && !ids.has(S.anchor)) S.anchor = null;
+      }
+      function renderFilters() {
+        const f = V();
+        $("#radV").textContent = S.radius + " km";
+        $("#coRad").textContent = S.radius + " km";
+        $("#coPrio").textContent = TYPES.filter((t) => S.prio.has(t)).join(", ") || "nenhuma";
+        $("#rad").value = S.radius;
+        const d = $("#dist");
+        d.max = S.radius;
+        d.value = f.dist;
+        $("#distV").textContent = "≤ " + f.dist + " km";
+        $("#sc2").textContent = Math.round(S.radius / 2);
+        $("#sc3").textContent = S.radius + " km";
+        $("#locN").textContent = f.locs.size ? f.locs.size + " de " + LOCS.length : "todas";
+        ["vmin", "vmax"].forEach((id) => {
+          const el = $("#" + id);
+          if (document.activeElement !== el) el.value = f[id] == null ? "" : f[id];
+        });
+        $("#valV").textContent =
+          f.vmin == null && f.vmax == null
+            ? "qualquer"
+            : (f.vmin != null ? eur(f.vmin) : "0 €") + " – " + (f.vmax != null ? eur(f.vmax) : "∞");
+        $("#valH").textContent =
+          f.vmin != null && f.vmax != null && f.vmin > f.vmax
+            ? "O mínimo é superior ao máximo."
+            : "";
+        $("#dateV").textContent = f.date ? fmtDate(f.date) : "Todas as datas";
+        $("#calInfo").textContent = f.date
+          ? fmtDate(f.date) + " · " + STTXT[dayStatus(f.date)]
+          : "Todas as datas";
+        $("#clearDate").disabled = !f.date;
+        $("#entSel").value = [...f.ents][0] || "";
+        $$("#types .chip").forEach((c) =>
+          c.setAttribute("aria-pressed", String(f.types.has(c.dataset.t))),
+        );
+        $("#typeV").textContent = f.types.size ? "" : "todos";
+        $$("#prioL input").forEach((i) => (i.checked = S.prio.has(i.value)));
+        renderCal();
+      }
+      function initFilters() {
+        $("#entSel").innerHTML =
+          '<option value="">Todas</option>' +
+          ENTS.map((e) => `<option value="${esc(e)}">${esc(e)}</option>`).join("");
+        $("#types").innerHTML = TYPES.map(
+          (t) => `<button class="chip" data-t="${esc(t)}" aria-pressed="false">${esc(t)}</button>`,
+        ).join("");
+        $("#prioL").innerHTML = TYPES.map(
+          (t) => `<label class="ck"><input type="checkbox" value="${esc(t)}">${esc(t)}</label>`,
+        ).join("");
+        $("#optBtn").onclick = () => togglePop($("#optP"), $("#optBtn"));
+        $("#rad").oninput = (e) => {
+          const old = S.radius;
+          S.radius = +e.target.value;
+          if (V().dist >= old || V().dist > S.radius) V().dist = S.radius;
+          filterChanged();
+        };
+        $("#prioL").onchange = (e) => {
+          const i = e.target;
+          i.checked ? S.prio.add(i.value) : S.prio.delete(i.value);
+          renderAll();
+        };
+        $("#dist").oninput = (e) => {
+          V().dist = +e.target.value;
+          filterChanged();
+        };
+        ["vmin", "vmax"].forEach((id) => initSuggest(id, [50000, 100000, 200000, 500000]));
+        $("#types").onclick = (e) => {
+          const b = e.target.closest(".chip");
+          if (!b) return;
+          const t = b.dataset.t;
+          V().types.has(t) ? V().types.delete(t) : V().types.add(t);
+          filterChanged();
+        };
+        $("#entSel").onchange = (e) => {
+          V().ents = e.target.value ? new Set([e.target.value]) : new Set();
+          filterChanged();
+        };
+        $("#reset").onclick = resetAll;
+        $("#openMap").onclick = () => openLoc(V().locs);
+        $("#dateBtn").onclick = () => {
+          if (togglePop($("#calP"), $("#dateBtn"))) {
+            const date = V().date || TODAY;
+            cal.y = +date.slice(0, 4);
+            cal.m = +date.slice(5, 7) - 1;
+            renderCal();
+            placePop();
+            $('#calG button[tabindex="0"]')?.focus();
+          }
+        };
+        $("#clearDate").onclick = () => {
+          V().date = null;
+          closePop();
+          filterChanged();
+          $("#dateBtn").focus();
+        };
+        $("#pm").onclick = () => {
+          cal.m--;
+          if (cal.m < 0) {
+            cal.m = 11;
+            cal.y--;
+          }
+          renderCal();
+        };
+        $("#nm").onclick = () => {
+          cal.m++;
+          if (cal.m > 11) {
+            cal.m = 0;
+            cal.y++;
+          }
+          renderCal();
+        };
+        $("#calG").onclick = (e) => {
+          const b = e.target.closest("button[data-d]");
+          if (!b) return;
+          const d = b.dataset.d;
+          V().date = V().date === d ? null : d;
+          closePop();
+          filterChanged();
+          $("#dateBtn").focus();
+        };
+        $("#calG").onkeydown = (e) => {
+          const b = e.target.closest("button[data-d]");
+          if (!b) return;
+          const k = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key];
+          if (!k) return;
+          e.preventDefault();
+          const dt = new Date(b.dataset.d + "T12:00:00Z");
+          dt.setUTCDate(dt.getUTCDate() + k);
+          const t = $(`#calG [data-d="${dt.toISOString().slice(0, 10)}"]`);
+          if (t) {
+            $$("#calG button").forEach((x) => (x.tabIndex = -1));
+            t.tabIndex = 0;
+            t.focus();
+          }
+        };
+      }
+      /* popovers (options, calendar): one open at a time; Escape or an outside press closes */
+      let pop = null;
+      function closePop(back) {
+        if (!pop) return;
+        pop.el.classList.remove("on");
+        pop.anchor.setAttribute("aria-expanded", "false");
+        const a = pop.anchor;
+        pop = null;
+        if (back) a.focus();
+      }
+      function placePop() {
+        if (!pop) return;
+        const r = pop.anchor.getBoundingClientRect(),
+          e = pop.el;
+        e.style.maxHeight = innerHeight - 16 + "px";
+        const w = e.offsetWidth,
+          h = e.offsetHeight;
+        e.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + "px";
+        let t = r.bottom + 4;
+        if (t + h > innerHeight - 8) t = Math.max(8, innerHeight - 8 - h);
+        e.style.top = t + "px";
+      }
+      function togglePop(el, anchor) {
+        const same = pop && pop.el === el;
+        closePop();
+        if (same) return false;
+        pop = { el, anchor };
+        el.classList.add("on");
+        anchor.setAttribute("aria-expanded", "true");
+        placePop();
+        return true;
+      }
+      document.addEventListener("mousedown", (e) => {
+        if (pop && !pop.el.contains(e.target) && !pop.anchor.contains(e.target)) closePop();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && pop && !$("dialog[open]")) {
+          e.preventDefault();
+          closePop(true);
+        }
+      });
+      addEventListener("resize", placePop);
+      /* anchored popovers close when anything scrolls underneath them */
+      document.addEventListener(
+        "scroll",
+        (e) => {
+          if (pop && !pop.el.contains(e.target)) closePop();
+        },
+        true,
+      );
+      /* min/max suggestion dropdowns: open on focus; each sets only its own field */
+      function initSuggest(id, presets) {
+        const inp = $("#" + id),
+          ul = $("#" + id + "L");
+        let act = -1,
+          items = [];
+        const num = (s) => {
+          const d = s.replace(/\D/g, "");
+          return d ? +d : null;
+        };
+        const fmt = (n) => (n >= 1000 && n % 1000 === 0 ? n / 1000 + "K" : String(n));
+        const close = () => {
+          ul.classList.remove("on");
+          inp.setAttribute("aria-expanded", "false");
+          act = -1;
+          inp.removeAttribute("aria-activedescendant");
+        };
+        const paint = () => {
+          ul.innerHTML = items
+            .map(
+              (n, i) =>
+                `<li role="option" id="${id}o${i}" data-v="${n}" aria-selected="${i === act}"><span class="mono">${fmt(n)}</span> <span class="mut mono">· ${eur(n)}</span></li>`,
+            )
+            .join("");
+          if (act >= 0) inp.setAttribute("aria-activedescendant", id + "o" + act);
+          else inp.removeAttribute("aria-activedescendant");
+        };
+        const open = () => {
+          const d = inp.value.replace(/\D/g, "");
+          const c = [...presets];
+          if (d && d.length <= 3) c.push(+d * 1000);
+          items = [...new Set(c)]
+            .filter((n) => !d || String(n).startsWith(d))
+            .sort((a, b) => a - b);
+          if (!items.length) {
+            close();
+            return;
+          }
+          act = -1;
+          paint();
+          ul.classList.add("on");
+          inp.setAttribute("aria-expanded", "true");
+          const r = inp.getBoundingClientRect();
+          ul.style.left = r.left + "px";
+          ul.style.top = r.bottom + 3 + "px";
+          ul.style.width = Math.max(r.width, 150) + "px";
+        };
+        const pick = (n) => {
+          inp.value = String(n);
+          V()[id] = n;
+          close();
+          filterChanged();
+        };
+        inp.addEventListener("focus", open);
+        inp.addEventListener("click", () => {
+          if (!ul.classList.contains("on")) open();
+        });
+        inp.addEventListener("input", () => {
+          V()[id] = num(inp.value);
+          filterChanged();
+          open();
+        });
+        inp.addEventListener("keydown", (e) => {
+          const on = ul.classList.contains("on");
+          if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            e.preventDefault();
+            if (!on) open();
+            if (!items.length) return;
+            act =
+              e.key === "ArrowDown"
+                ? (act + 1) % items.length
+                : act <= 0
+                  ? items.length - 1
+                  : act - 1;
+            paint();
+          } else if (e.key === "Enter" && on && act >= 0) {
+            e.preventDefault();
+            pick(items[act]);
+          } else if (e.key === "Escape" && on) {
+            e.preventDefault();
+            e.stopPropagation();
+            close();
+          }
+        });
+        ul.addEventListener("mousedown", (e) => {
+          const li = e.target.closest("li");
+          if (li) {
+            e.preventDefault();
+            pick(+li.dataset.v);
+          }
+        });
+        inp.addEventListener("blur", close);
+        document.addEventListener(
+          "scroll",
+          () => {
+            if (!ul.classList.contains("on")) return;
+            const r = inp.getBoundingClientRect();
+            if (r.bottom < 0 || r.top > innerHeight) close();
+            else {
+              ul.style.left = r.left + "px";
+              ul.style.top = r.bottom + 3 + "px";
+            }
+          },
+          true,
+        );
+      }
+      function resetAll() {
+        S.v.f = defV().f;
+        S.v.shown = null;
+        S.v.compare = null;
+        prune();
+        renderAll();
+        notify("Filtros repostos.");
+      }
+      const MONTHS = [
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro",
+      ];
+      const cal = { y: 2026, m: 9 };
+      function renderCal() {
+        $("#calT").textContent = MONTHS[cal.m] + " de " + cal.y;
+        const first = (new Date(Date.UTC(cal.y, cal.m, 1)).getUTCDay() + 6) % 7,
+          n = new Date(Date.UTC(cal.y, cal.m + 1, 0)).getUTCDate();
+        let h =
+          ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+            .map((x) => `<span>${x}</span>`)
+            .join("") + "<span></span>".repeat(first);
+        const sel = V().date,
+          pad = (x) => String(x).padStart(2, "0");
+        let tab = null;
+        const ds = [];
+        for (let d = 1; d <= n; d++) ds.push(`${cal.y}-${pad(cal.m + 1)}-${pad(d)}`);
+        tab = ds.includes(sel) ? sel : ds.includes(TODAY) ? TODAY : ds[0];
+        ds.forEach((iso, i) => {
+          const st = dayStatus(iso);
+          h += `<button data-d="${iso}" tabindex="${iso === tab ? 0 : -1}" aria-pressed="${iso === sel}"${iso === TODAY ? ' aria-current="date"' : ""} aria-label="${i + 1} de ${MONTHS[cal.m]} de ${cal.y}, ${STTXT[st]}">${i + 1}<i class="st-${st}" aria-hidden="true">${STGLY[st]}</i></button>`;
+        });
+        $("#calG").innerHTML = h;
+      }
+
+      /* ---------- results ---------- */
+      function emptyHTML() {
+        const f = V();
+        if (f.date) {
+          const st = dayStatus(f.date);
+          if (st === "fail")
+            return `<div class="empty fail"><div class="ic">!</div><b>Recolha falhada</b>A recolha de ${fmtDate(f.date)} falhou. Isto não significa que não houve obras.</div>`;
+          if (st === "notrun")
+            return `<div class="empty notrun"><div class="ic">◷</div><b>Ainda não correu</b>A recolha de ${fmtDate(f.date)} ainda não correu.</div>`;
+          if (st === "empty")
+            return `<div class="empty"><div class="ic">0</div><b>Sem obras anunciadas nesta data</b>A recolha de ${fmtDate(f.date)} correu e não encontrou obras.</div>`;
+        }
+        return `<div class="empty"><div class="ic">⊘</div><b>Os filtros excluem todas as obras</b>Há ${plural(totalInRange(), "obra", "obras")} dentro do raio, mas nenhuma cumpre os filtros.<br><button class="btn" data-act="reset">Limpar filtros</button></div>`;
+      }
+      function rowHTML(w) {
+        const sel = S.sel.has(w.id),
+          pr = S.prio.has(w.type);
+        return `<div class="row${sel ? " sel" : ""}${S.focus === w.id ? " kf" : ""}" role="option" id="r-${w.id}" data-id="${w.id}" aria-selected="${sel}">
+   <span class="ck" aria-hidden="true">✓</span><div><div class="tt">${esc(w.t)}${pr ? '<span class="tag" title="Categoria prioritária">★<span class="sr"> Prioritária</span></span>' : ""}</div><div class="sub">${esc(w.type)} · ${esc(w.ent)}</div></div>
+   <div class="side"><span class="mono val-amt">${eur(w.val)}</span><span class="del">${delHTML(w)}${dueHTML(w)}</span></div></div>`;
+      }
+      function renderList() {
+        const v = S.v,
+          items = listedOf(v);
+        let h = "";
+        if (!items.length) h = emptyHTML();
+        else if (v.shown)
+          h = `<div role="group" aria-label="Mostradas pelo assistente">${items.map(rowHTML).join("")}</div>`;
+        else
+          h = groupsOf(items)
+            .map(
+              (g) =>
+                `<div role="group" aria-label="${esc(g.loc.n)}"><div class="grp" aria-hidden="true"><span>${esc(g.loc.n)}</span><span>${plural(g.items.length, "obra", "obras")}</span></div>${g.items.map(rowHTML).join("")}</div>`,
+            )
+            .join("");
+        const l = $("#list");
+        l.innerHTML = h;
+        l.setAttribute("aria-activedescendant", S.focus ? "r-" + S.focus : "");
+        if (!items.length) l.removeAttribute("role");
+        else l.setAttribute("role", "listbox");
+      }
+      function paintSel() {
+        // light repaint, keeps DOM
+        $$("#list .row").forEach((r) => {
+          const id = r.dataset.id,
+            s = S.sel.has(id);
+          r.classList.toggle("sel", s);
+          r.classList.toggle("kf", S.focus === id);
+          r.setAttribute("aria-selected", s);
+        });
+        $("#list").setAttribute("aria-activedescendant", S.focus ? "r-" + S.focus : "");
+        $("#r-" + S.focus)?.scrollIntoView({ block: "nearest" });
+        renderToolbar();
+      }
+      function renderToolbar() {
+        const n = S.sel.size;
+        $("#selN").textContent = n
+          ? plural(n, "selecionada", "selecionadas")
+          : "Nenhuma obra selecionada";
+        ["bOpen", "bCmp", "bCom", "bClr"].forEach((id) => ($("#" + id).disabled = !n));
+        $("#bCom").disabled = !n && !S.v.open;
+        $("#bCom").textContent = S.v.open ? "Comentar esta obra" : "Comentar";
+      }
+      function renderCount() {
+        const n = L().length;
+        $("#count").textContent = `${n} de ${totalInRange()} obras`;
+      }
+      function renderBanner() {
+        $("#banner").innerHTML = S.v.shown
+          ? `<div class="banner"><span>Lista do assistente: ${plural(S.v.shown.length, "obra", "obras")}.</span><button class="btn sm" data-act="unshow">Voltar à lista</button></div>`
+          : "";
+      }
+      function renderCompare() {
+        const c = S.v.compare;
+        const w = $("#cmpW");
+        if (!c) {
+          w.innerHTML = "";
+          return;
+        }
+        const ws = c.map(byId);
+        const rows = [
+          ["Localidade e distância", (x) => `${esc(LOC(x.loc).n)} · ${x.km} km`],
+          ["Tipo", (x) => esc(x.type)],
+          ["Valor", (x) => `<span class="mono">${eur(x.val)}</span>`],
+          ["Execução", (x) => `<span class="mono">${x.days} dias</span>`],
+          ["Entrega", (x) => delHTML(x)],
+          ["Alvará exigido", (x) => esc(x.lic)],
+          ["Plataforma", (x) => esc(x.plat)],
+        ];
+        w.innerHTML = `<div class="cmp" role="region" aria-label="Comparação" tabindex="0"><div class="ch"><span>Comparação de ${ws.length} obras</span><button class="btn sm" data-act="closecmp">Fechar</button></div><table><thead><tr><th></th>${ws.map((x) => `<th scope="col" style="width:auto;color:var(--fg)">${esc(x.t)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr><th scope="row">${r[0]}</th>${ws.map((x) => `<td>${r[1](x)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+      }
+      function renderDetail() {
+        const id = S.v.open,
+          dw = $("#detailW");
+        renderToolbar();
+        $("#filters").hidden = !!id;
+        if (!id) {
+          dw.hidden = true;
+          $("#listW").hidden = false;
+          return;
+        }
+        const w = byId(id);
+        dw.hidden = false;
+        $("#listW").hidden = true;
+        const pr = S.prio.has(w.type);
+        dw.innerHTML = `<div class="detail" role="region" aria-label="Detalhe da obra"><div class="detail-h" style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="back">← Voltar à lista</button></div>
+  <div class="quotable"><h2 tabindex="-1" id="dh">${esc(w.t)}${pr ? '<span class="tag">★ Prioritária</span>' : ""}</h2><div class="sub">${esc(w.type)}</div>
+  <dl><dt>Entidade adjudicante</dt><dd>${esc(w.ent)}</dd><dt>Localidade e distância</dt><dd>${esc(LOC(w.loc).n)} · a <span class="mono">${w.km} km</span> da empresa</dd>
+  <dt>Valor anunciado</dt><dd class="mono">${eur(w.val)}</dd><dt>Prazo de execução</dt><dd class="mono">${w.days} dias</dd>
+  <dt>Entrega</dt><dd>${w.del ? `<span class="mono">${fmtDel(w.del)}</span>` : "consta da plataforma"}</dd><dt>Alvará exigido</dt><dd>${esc(w.lic)}</dd>
+  <dt>Plataforma</dt><dd>${esc(w.plat)}</dd><dt>Data de publicação</dt><dd class="mono">${fmtDate(w.pub)}</dd>
+  <dt>Anúncio de origem</dt><dd>O anúncio de origem não está disponível nesta demonstração.</dd></dl></div>
+  <div class="note">Mostrar o alvará exigido não verifica a elegibilidade.</div></div>`;
+      }
+      function renderResults() {
+        renderCount();
+        renderBanner();
+        renderCompare();
+        renderList();
+        renderDetail();
+        renderToolbar();
+      }
+      function renderAll() {
+        renderFilters();
+        renderResults();
+      }
+
+      /* detail / open / compare */
+      function openWork(id, focusH = true) {
+        S.v.open = id;
+        renderDetail();
+        if (focusH) $("#dh")?.focus();
+      }
+      function closeWork() {
+        S.v.open = null;
+        renderDetail();
+        $("#list").focus();
+      }
+      function selIds() {
+        return L()
+          .filter((w) => S.sel.has(w.id))
+          .map((w) => w.id);
+      }
+      function doOpen() {
+        const ids = selIds();
+        if (ids.length === 1) return openWork(ids[0]);
+        if (!ids.length && S.focus) return openWork(S.focus);
+        notify(`Para abrir, selecione uma só obra (selecionadas: ${ids.length}).`, true);
+      }
+      function doCompare() {
+        const ids = selIds();
+        if (ids.length < 2 || ids.length > 4) {
+          notify(`Para comparar, selecione de 2 a 4 obras (selecionadas: ${ids.length}).`, true);
+          return false;
+        }
+        S.v.open = null;
+        S.v.compare = ids;
+        renderResults();
+        $("#cmpW .ch button")?.focus();
+        return true;
+      }
+      function doEnter() {
+        const n = S.sel.size;
+        if (n >= 2) return doCompare();
+        doOpen();
+      }
+      function clearSel() {
+        S.sel.clear();
+        paintSel();
+      }
+
+      /* ---------- selection gestures ---------- */
+      const rangeIds = (a, b) => {
+        const l = L().map((w) => w.id),
+          i = l.indexOf(a),
+          j = l.indexOf(b);
+        return i < 0 || j < 0 ? [b] : l.slice(Math.min(i, j), Math.max(i, j) + 1);
+      };
+      function initList() {
+        const list = $("#list");
+        list.addEventListener("focus", () => {
+          if (!S.focus && L().length) {
+            S.focus = L()[0].id;
+            paintSel();
+          } else paintSel();
+        });
+        list.addEventListener("mousedown", (e) => {
+          if (e.shiftKey) e.preventDefault();
+        });
+        list.addEventListener("click", (e) => {
+          const r = e.target.closest(".row");
+          const a = e.target.closest("[data-act]");
+          if (a && a.dataset.act === "reset") return resetAll();
+          if (!r) {
+            if (e.target === list && !(e.ctrlKey || e.metaKey || e.shiftKey)) clearSel();
+            return;
+          }
+          const id = r.dataset.id;
+          if (e.ctrlKey || e.metaKey) {
+            S.sel.has(id) ? S.sel.delete(id) : S.sel.add(id);
+            S.anchor = id;
+          } else if (e.shiftKey) {
+            S.sel = new Set(rangeIds(S.anchor || S.focus || id, id));
+          } else {
+            S.sel = new Set([id]);
+            S.anchor = id;
+          }
+          S.focus = id;
+          paintSel();
+        });
+        list.addEventListener("dblclick", (e) => {
+          const r = e.target.closest(".row");
+          if (r) openWork(r.dataset.id);
+        });
+        list.addEventListener("keydown", (e) => {
+          const ids = L().map((w) => w.id);
+          if (!ids.length) return;
+          const ctrl = e.ctrlKey || e.metaKey,
+            k = e.key;
+          let cur = ids.indexOf(S.focus);
+          const go = (idx) => {
+            idx = Math.max(0, Math.min(ids.length - 1, idx));
+            const id = ids[idx];
+            if (e.shiftKey) {
+              const an = S.anchor || S.focus || id;
+              S.anchor = an;
+              S.sel = new Set(rangeIds(an, id));
+              S.focus = id;
+            } else {
+              S.sel = new Set([id]);
+              S.anchor = id;
+              S.focus = id;
+            }
+            paintSel();
+            e.preventDefault();
+          };
+          if (!ctrl && k === "ArrowDown") return go(cur < 0 ? 0 : cur + 1);
+          if (!ctrl && k === "ArrowUp") return go(cur < 0 ? ids.length - 1 : cur - 1);
+          if (k === " ") {
+            e.preventDefault();
+            if (S.focus) {
+              S.sel.has(S.focus) ? S.sel.delete(S.focus) : S.sel.add(S.focus);
+              S.anchor = S.focus;
+              paintSel();
+            }
+            return;
+          }
+          if ((k === "a" || k === "A") && ctrl) {
+            e.preventDefault();
+            S.sel = new Set(ids);
+            if (!S.focus) S.focus = ids[0];
+            paintSel();
+            return;
+          }
+          if (k === "Enter") {
+            e.preventDefault();
+            return doEnter();
+          }
+          if (k === "Escape") {
+            e.preventDefault();
+            return clearSel();
+          }
+        });
+        $("#bOpen").onclick = doOpen;
+        $("#bCmp").onclick = doCompare;
+        $("#bCom").onclick = () =>
+          S.v.open ? commentWorks([S.v.open], true) : commentWorks(selIds());
+        $("#bClr").onclick = clearSel;
+        $("#banner").onclick = (e) => {
+          if (e.target.dataset.act === "unshow") {
+            S.v.shown = null;
+            S.v.compare = null;
+            prune();
+            renderAll();
+          }
+        };
+        $("#cmpW").onclick = (e) => {
+          if (e.target.dataset.act === "closecmp") {
+            S.v.compare = null;
+            renderCompare();
+            $("#list").focus();
+          }
+        };
+        $("#detailW").onclick = (e) => {
+          const a = e.target.dataset.act;
+          if (a === "back") closeWork();
+        };
+      }
+
+      /* ---------- comments & quotes ---------- */
+      function commentWorks(ids, keepSel) {
+        if (!ids.length) return;
+        const c = {
+          id: uid(),
+          type: "comment",
+          kind: "obras",
+          ids: [...ids],
+          text: "",
+          clearedSel: !keepSel,
+        };
+        S.ctx.push(c);
+        if (!keepSel) {
+          S.sel.clear();
+          paintSel();
+        }
+        renderCtx();
+        $(`#ctxW [data-id="${c.id}"] textarea`)?.focus();
+        notify(
+          `Comentário criado sobre ${plural(ids.length, "obra", "obras")}. Reveja-o no Assistente; nada foi enviado.`,
+        );
+      }
+      const unitNames = (c) =>
+        c.ids
+          .map((i) =>
+            c.kind === "obras"
+              ? byId(i).t.replace(
+                  /^(Requalificação|Pavimentação|Construção|Ampliação|Reabilitação) (da |do |de )?/,
+                  "",
+                )
+              : LOC(i).n,
+          )
+          .join(", ");
+      /* a comment without text is not context: it stays in the list to be written or removed */
+      const isContext = (c) => c.type !== "comment" || c.text.trim() !== "";
+      const ctxTitle = () => `Contexto (${S.ctx.filter(isContext).length}) · só segue ao Enviar`;
+      /* removing an empty comment gives back the works its save cleared; only listed works can be selected */
+      function reselect(c) {
+        const listed = new Set(L().map((w) => w.id));
+        c.ids.forEach((id) => listed.has(id) && S.sel.add(id));
+        paintSel();
+      }
+      /* where a quote came from: a field of a work (detail view) or an assistant reply */
+      const quoteSrc = (f) =>
+        f.kind === "obra" ? `${f.title} · ${f.field}` : "Resposta do assistente";
+      /* what travels to the assistant for one prepared item (also what the sent bubble shows) */
+      const ctxItem = (c) =>
+        c.type === "comment"
+          ? { type: "comment", kind: c.kind, units: unitNames(c), text: c.text }
+          : { type: "quote", text: c.text, note: c.note, from: { ...c.from } };
+      const sentCtxHTML = (items) =>
+        items.length
+          ? `<div class="cx">Contexto enviado · ${plural(items.length, "item", "itens")}</div><ul class="sctx" aria-label="Contexto enviado">${items
+              .map((c) =>
+                c.type === "comment"
+                  ? `<li><span class="sk">Comentário · ${c.kind}</span>: ${esc(c.units)}<div>${esc(c.text)}</div></li>`
+                  : `<li><span class="sk">Citação</span>: ${esc(quoteSrc(c.from))}<q>${esc(c.text)}</q>${c.note.trim() ? `<div>Nota: ${esc(c.note)}</div>` : ""}</li>`,
+              )
+              .join("")}</ul>`
+          : "";
+      function renderCtx() {
+        const w = $("#ctxW");
+        if (!S.ctx.length) {
+          w.innerHTML =
+            '<div class="ctxh"><span>Sem contexto. Use «Comentar» ou cite um excerto; selecionar não conta.</span></div>';
+          return;
+        }
+        w.innerHTML =
+          `<div class="ctxh" style="margin-bottom:4px"><span>${ctxTitle()}</span><button class="btn sm" data-a="clearctx">Limpar tudo</button></div><div style="display:flex;flex-direction:column;gap:5px">` +
+          S.ctx
+            .map((c) =>
+              c.type === "comment"
+                ? `<div class="ci" data-id="${c.id}"><div class="chd"><b>Comentário · ${c.kind === "obras" ? "obras" : "localidades"}</b><span class="mut">${plural(c.ids.length, "unidade", "unidades")}</span></div><div class="mut" style="margin-bottom:3px">${esc(unitNames(c))}</div><textarea rows="2" aria-label="Texto do comentário" placeholder="Escreva o comentário…">${esc(c.text)}</textarea><div class="acts"><button class="btn sm" data-a="rm">Remover</button></div></div>`
+                : `<div class="ci" data-id="${c.id}"><div class="chd"><b>Citação</b></div><div class="mut" style="margin-bottom:3px">${esc(quoteSrc(c.from))}</div><q>${esc(c.text)}</q><input aria-label="Nota da citação" placeholder="Nota (o que quer saber)…" value="${esc(c.note)}"><div class="acts"><button class="btn sm" data-a="rm">Remover</button></div></div>`,
+            )
+            .join("") +
+          "</div>";
+      }
+      function initCtx() {
+        const w = $("#ctxW");
+        w.addEventListener("input", (e) => {
+          const ci = e.target.closest(".ci");
+          if (!ci) return;
+          const c = S.ctx.find((x) => x.id === ci.dataset.id);
+          if (c.type === "comment") {
+            c.text = e.target.value;
+            // a comment gains or loses its place in the count as it is written; the list itself is not redrawn
+            $("#ctxW .ctxh span").textContent = ctxTitle();
+          } else c.note = e.target.value;
+        });
+        w.addEventListener("click", async (e) => {
+          const b = e.target.closest("button[data-a]");
+          if (!b) return;
+          if (b.dataset.a === "clearctx") {
+            const written = S.ctx.filter((x) => x.type === "comment" && x.text.trim()).length;
+            if (
+              written &&
+              !(await confirmD(
+                `Vai apagar ${plural(S.ctx.length, "item preparado", "itens preparados")}, incluindo ${plural(written, "comentário com texto", "comentários com texto")}. Nada disto foi enviado.`,
+                "Limpar tudo",
+              ))
+            )
+              return;
+            S.ctx = [];
+            renderCtx();
+            return;
+          }
+          const c = S.ctx.find((x) => x.id === b.closest(".ci").dataset.id);
+          if (
+            c.type === "comment" &&
+            c.text.trim() &&
+            !(await confirmD(
+              `Vai apagar o comentário sobre ${unitNames(c)}. Nada disto foi enviado.`,
+              "Apagar",
+            ))
+          )
+            return;
+          S.ctx = S.ctx.filter((x) => x !== c);
+          if (c.clearedSel && !c.text.trim()) reselect(c);
+          renderCtx();
+        });
+        document.addEventListener("mouseup", () => setTimeout(updateQuoteBtn, 0));
+        document.addEventListener("keyup", (e) => {
+          if (e.shiftKey || e.key.startsWith("Arrow")) updateQuoteBtn();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.altKey && (e.key === "q" || e.key === "Q")) {
+            e.preventDefault();
+            makeQuote();
+          }
+        });
+        document.addEventListener("selectionchange", () => {
+          if (!currentQuote()) $("#qb").classList.remove("on");
+        });
+        $("#qBtn").onmousedown = (e) => e.preventDefault();
+        $("#qBtn").onclick = makeQuote;
+      }
+      /* a quote needs one selection whose text all sits inside ONE .quotable region, and only that
+         text is quoted. A paragraph selection (triple click) ends at the start of the next block;
+         that empty overshoot is allowed, a range that reaches other text is not. */
+      function currentQuote() {
+        const s = getSelection();
+        if (!s || s.isCollapsed || s.rangeCount !== 1) return null;
+        const r = s.getRangeAt(0),
+          of = (n) => (n.nodeType === 1 ? n : n.parentElement)?.closest(".quotable"),
+          a = of(r.startContainer),
+          q = a || of(r.endContainer);
+        if (!q) return null;
+        const eff = document.createRange(),
+          rest = document.createRange();
+        eff.selectNodeContents(q);
+        if (r.compareBoundaryPoints(Range.START_TO_START, eff) > 0)
+          eff.setStart(r.startContainer, r.startOffset);
+        else {
+          rest.setStart(r.startContainer, r.startOffset);
+          rest.setEnd(eff.startContainer, eff.startOffset);
+          if (rest.toString().trim()) return null;
+        }
+        if (r.compareBoundaryPoints(Range.END_TO_END, eff) < 0)
+          eff.setEnd(r.endContainer, r.endOffset);
+        else {
+          rest.setStart(eff.endContainer, eff.endOffset);
+          rest.setEnd(r.endContainer, r.endOffset);
+          if (rest.toString().trim()) return null;
+        }
+        const t = eff.toString().trim();
+        return t ? { t, r: eff, q } : null;
+      }
+      /* the work and the field label(s) the selection touches, or the assistant reply */
+      function quoteFrom(r, q) {
+        if (q.closest("#chat")) return { kind: "assistente" };
+        const w = byId(S.v.open),
+          fields = [];
+        $$("h2, .sub, dt, dd", q).forEach((el) => {
+          if (!r.intersectsNode(el)) return;
+          const part = document.createRange();
+          part.selectNodeContents(el);
+          if (r.compareBoundaryPoints(Range.START_TO_START, part) > 0)
+            part.setStart(r.startContainer, r.startOffset);
+          if (r.compareBoundaryPoints(Range.END_TO_END, part) < 0)
+            part.setEnd(r.endContainer, r.endOffset);
+          if (!part.toString().trim()) return;
+          const f =
+            el.tagName === "H2"
+              ? "Obra"
+              : el.tagName === "DD"
+                ? el.previousElementSibling.textContent
+                : el.tagName === "DT"
+                  ? el.textContent
+                  : "Tipo de obra";
+          if (!fields.includes(f)) fields.push(f);
+        });
+        return { kind: "obra", id: w.id, title: w.t, field: fields.join(" / ") || "Obra" };
+      }
+      function updateQuoteBtn() {
+        const q = currentQuote(),
+          b = $("#qb");
+        if (!q) {
+          b.classList.remove("on");
+          return;
+        }
+        const r = q.r.getBoundingClientRect();
+        b.classList.add("on");
+        b.style.left = Math.max(8, Math.min(innerWidth - 170, r.left)) + "px";
+        b.style.top = Math.max(8, r.top - 34) + "px";
+      }
+      function makeQuote() {
+        const q = currentQuote();
+        if (!q) return;
+        const c = {
+          id: uid(),
+          type: "quote",
+          text: q.t.slice(0, 400),
+          note: "",
+          from: quoteFrom(q.r, q.q),
+        };
+        S.ctx.push(c);
+        getSelection().removeAllRanges();
+        $("#qb").classList.remove("on");
+        renderCtx();
+        $(`#ctxW [data-id="${c.id}"] input`)?.focus();
+      }
+
+      /* ---------- locality modal (map) ---------- */
+      function mapSVG(counts) {
+        const R = S.radius * 4;
+        const pins = LOCS.map((l) => {
+          const c = counts.get(l.id) || 0,
+            on = S.draft.has(l.id);
+          return `<g class="pin${c ? "" : " zero"}${on ? " on" : ""}" data-id="${l.id}" tabindex="0" role="checkbox" aria-checked="${on}" aria-label="${l.n}, ${c ? plural(c, "obra", "obras") : "sem obras nos filtros atuais"}${on ? ", selecionada" : ""}" transform="translate(${l.x} ${l.y})"><circle class="ringf" r="21"/><circle class="dot" r="15"/><text class="cnt" y="4">${c}</text><text y="33">${l.n}</text></g>`;
+        }).join("");
+        return `<svg viewBox="0 0 640 520" id="mapSvg" role="group" aria-label="Mapa estilizado da região de Leiria">
+   <rect class="mapbg" width="640" height="520" fill="var(--panel2)"/>
+   <path d="M0 0H150C118 100 172 180 140 262S108 420 150 520H0Z" fill="var(--accent)" opacity=".12"/>
+   <path d="M150 0C118 100 172 180 140 262S108 420 150 520" fill="none" stroke="var(--accent)" stroke-width="2" opacity=".35"/>
+   <path d="M360 0C340 90 380 150 330 230S380 340 420 520" fill="none" stroke="var(--accent)" stroke-width="4" opacity=".28"/>
+   <path d="M170 140C240 200 300 240 340 276S470 380 560 520" fill="none" stroke="var(--line)" stroke-width="5"/>
+   <path d="M340 276C420 250 520 230 640 240" fill="none" stroke="var(--line)" stroke-width="4"/>
+   <circle cx="320" cy="260" r="${R}" fill="var(--accent)" fill-opacity=".05" stroke="var(--accent)" stroke-width="2" stroke-dasharray="7 6"/>
+   <text class="maplbl" x="${320 + R * 0.72}" y="${260 - R * 0.72 - 4}">raio ${S.radius} km</text>
+   <g transform="translate(320 260)"><path d="M0-9L9 0 0 9-9 0Z" fill="var(--amber)" stroke="var(--panel)" stroke-width="2"/></g>
+   <text class="maplbl" x="320" y="240" text-anchor="middle" style="fill:var(--amber)">Empresa</text>${pins}</svg>`;
+      }
+      function locCounts() {
+        const m = new Map();
+        baseOf(S.v, true).forEach((w) => m.set(w.loc, (m.get(w.loc) || 0) + 1));
+        return m;
+      }
+      function renderLocList() {
+        const counts = locCounts();
+        $("#locList").innerHTML = LOCS.map((l) => {
+          const c = counts.get(l.id) || 0;
+          return `<label class="lrow${c ? "" : " zero"}" data-id="${l.id}"><input type="checkbox" data-id="${l.id}"><span class="ln">${l.n}</span><span class="lc mono" aria-hidden="true">${c}</span><span class="sr">, ${c ? plural(c, "obra", "obras") : "sem obras nos filtros atuais"}</span></label>`;
+        }).join("");
+      }
+      /* the map and the list are two views of S.draft; both repaint from it */
+      function paintMap() {
+        $("#locMap").innerHTML = mapSVG(locCounts());
+        const n = S.draft.size,
+          all = $("#locAll");
+        $$("#locList .lrow").forEach((r) => {
+          const on = S.draft.has(r.dataset.id);
+          r.classList.toggle("on", on);
+          $("input", r).checked = on;
+        });
+        all.checked = n === LOCS.length;
+        all.indeterminate = n > 0 && n < LOCS.length;
+        $("#locC").textContent = `${n} de ${LOCS.length} localidades escolhidas`;
+      }
+      function openLoc(initial) {
+        S.draft = new Set(initial);
+        renderLocList();
+        paintMap();
+        $("#locD").showModal();
+        $("#locD .in").focus();
+      }
+      function initLoc() {
+        const d = $("#locD"),
+          mw = $("#locMap");
+        const refocus = (id) => {
+          paintMap();
+          $(`#locMap [data-id="${id}"]`)?.focus();
+        };
+        const ord = LOCS.map((l) => l.id);
+        const applyLoc = (set) => {
+          V().locs = new Set(set);
+          d.close();
+          filterChanged();
+          $("#openMap").focus();
+        };
+        /* localities have no order: Shift+click is a plain click */
+        mw.addEventListener("click", (e) => {
+          const p = e.target.closest(".pin");
+          if (!p) return;
+          const id = p.dataset.id;
+          if (e.ctrlKey || e.metaKey) S.draft.has(id) ? S.draft.delete(id) : S.draft.add(id);
+          else S.draft = new Set([id]);
+          refocus(id);
+        });
+        mw.addEventListener("keydown", (e) => {
+          const p = e.target.closest(".pin");
+          if (!p) return;
+          const id = p.dataset.id;
+          if (e.key === " ") {
+            e.preventDefault();
+            S.draft.has(id) ? S.draft.delete(id) : S.draft.add(id);
+            refocus(id);
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            applyLoc(S.draft.size ? S.draft : [id]);
+          }
+        });
+        $("#locList").addEventListener("change", (e) => {
+          const id = e.target.dataset.id;
+          e.target.checked ? S.draft.add(id) : S.draft.delete(id);
+          paintMap();
+        });
+        $("#locAll").addEventListener("change", (e) => {
+          S.draft = new Set(e.target.checked ? ord : []);
+          paintMap();
+        });
+        d.addEventListener("keydown", (e) => {
+          if (
+            (e.key === "a" || e.key === "A") &&
+            (e.ctrlKey || e.metaKey) &&
+            !e.target.closest("textarea, input:not([type=checkbox])")
+          ) {
+            e.preventDefault();
+            const pin = e.target.closest(".pin")?.dataset.id;
+            S.draft = new Set(ord);
+            if (pin) refocus(pin);
+            else paintMap();
+          }
+        });
+        d.addEventListener("click", (e) => {
+          if (e.target === d) d.close();
+        });
+        $("#locNo").onclick = () => d.close();
+        $("#locClr").onclick = () => {
+          S.draft = new Set();
+          paintMap();
+        };
+        $("#locOk").onclick = () => applyLoc(S.draft);
+        $("#locCom").onclick = () => {
+          if (!S.draft.size) {
+            $("#locC").textContent = "Escolha primeiro uma ou mais localidades.";
+            return;
+          }
+          const c = {
+            id: uid(),
+            type: "comment",
+            kind: "localidades",
+            ids: [...S.draft],
+            text: "",
+          };
+          S.ctx.push(c);
+          d.close();
+          renderCtx();
+          $(`#ctxW [data-id="${c.id}"] textarea`)?.focus();
+          notify(
+            "Comentário criado sobre localidades. A escolha foi descartada, sem efeito nos filtros.",
+          );
+        };
+      }
+
+      /* ---------- assistant (scripted mock) ---------- */
+      const SUGG = [
+        "Obras até 30 km",
+        "Os 2 prazos mais urgentes",
+        "Compara as obras de Leiria",
+        "Abre o mercado de Pombal",
+        "Limpa os filtros",
+      ];
+      const CAN =
+        "filtrar, filtrar por localidades, pesquisar os anúncios de uma data, mostrar concursos, abrir um concurso, comparar concursos";
+      const nC = (v) => plural(listedOf(v).length, "concurso", "concursos");
+      const A = {
+        reset: () => ({
+          label: "Limpar filtros",
+          run: (v) => {
+            v.f = defV().f;
+            v.shown = null;
+            v.compare = null;
+          },
+          eff: (v) => nC(v),
+        }),
+        dist: (n, cap) => ({
+          label: `Filtrar distância ≤ ${n} km` + (cap ? " (raio da empresa)" : ""),
+          run: (v) => {
+            v.f.dist = n;
+            v.shown = null;
+            v.compare = null;
+          },
+          eff: (v) => nC(v),
+        }),
+        loc: (l) => ({
+          label: `Filtrar por localidades: ${l.n}`,
+          run: (v) => {
+            v.f.locs = new Set([l.id]);
+            v.shown = null;
+            v.compare = null;
+          },
+          eff: (v) => nC(v),
+        }),
+        type: (t) => ({
+          label: `Filtrar por tipo: ${t}`,
+          run: (v) => {
+            v.f.types = new Set([t]);
+            v.shown = null;
+            v.compare = null;
+          },
+          eff: (v) => nC(v),
+        }),
+        date: (d) => ({
+          label: `Pesquisar anúncios de ${fmtDate(d)}`,
+          run: (v) => {
+            v.f.date = d;
+            v.shown = null;
+            v.compare = null;
+          },
+          eff: (v) => {
+            const s = dayStatus(d);
+            return s === "works"
+              ? nC(v)
+              : s === "empty"
+                ? "sem obras anunciadas"
+                : s === "fail"
+                  ? "recolha falhada"
+                  : "ainda não correu";
+          },
+        }),
+        show: (label, ids) => ({
+          label,
+          run: (v) => {
+            v.shown = ids;
+          },
+          eff: (v) => plural(v.shown.length, "concurso", "concursos"),
+        }),
+        open: (w) => ({
+          label: `Abrir concurso «${w.t}»`,
+          run: (v) => {
+            v.open = w.id;
+          },
+          eff: () => "aberto",
+        }),
+        cmp: (ids) => ({
+          label: `Comparar ${ids.length} concursos`,
+          run: (v) => {
+            v.compare = ids;
+          },
+          eff: () => "comparação aberta",
+        }),
+        sort: (label, k) => ({
+          label,
+          run: () => {},
+          eff: () => plural(k, "concurso", "concursos") + " com prazo",
+        }),
+      };
+      const NUMW = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5 };
+      function findLoc(n) {
+        return LOCS.slice()
+          .sort((a, b) => b.n.length - a.n.length)
+          .find((l) => n.includes(norm(l.n)));
+      }
+      function interpret(q) {
+        const n = norm(q).trim();
+        let m;
+        if (/\b(limpa|limpar|repoe|repor)\b.*filtros/.test(n))
+          return {
+            actions: [A.reset()],
+            reply: (v) =>
+              `Filtros repostos: ${plural(listedOf(v).length, "obra", "obras")} dentro do raio de ${S.radius} km.`,
+          };
+        if (/prazos?.*urgent|urgent.*prazos?/.test(n)) {
+          const k =
+            +(n.match(/\d+/) || [])[0] ||
+            NUMW[(n.match(/\b(um|uma|dois|duas|tres|quatro|cinco)\b/) || [])[1]] ||
+            2;
+          return {
+            planOf: (v) => {
+              const all = baseOf(v);
+              const known = all.filter((w) => w.del).sort((a, b) => a.del.localeCompare(b.del));
+              const top = known.slice(0, k);
+              return {
+                actions: [
+                  A.sort("Ordenar por prazo de entrega, sem prazos desconhecidos", known.length),
+                  A.show(
+                    `Mostrar os ${top.length} prazos mais urgentes`,
+                    top.map((w) => w.id),
+                  ),
+                ],
+                reply: () =>
+                  `${top.map((w, i) => `${i + 1}. ${w.t} (${fmtDel(w.del)})`).join("; ")}.` +
+                  (all.length - known.length
+                    ? ` ${plural(all.length - known.length, "obra fica de fora", "obras ficam de fora")} por ter o prazo desconhecido.`
+                    : ""),
+              };
+            },
+          };
+        }
+        if (/compar/.test(n)) {
+          const l = findLoc(n);
+          if (!l)
+            return {
+              actions: [],
+              reply: () =>
+                "Não percebi que obras comparar. Indique uma localidade, por exemplo «Compara as obras de Leiria».",
+            };
+          return {
+            planOf: (v) => {
+              const t = cloneV(v);
+              A.loc(l).run(t);
+              const ids = listedOf(t).map((w) => w.id);
+              const acts = [A.loc(l)];
+              if (ids.length >= 2 && ids.length <= 4) acts.push(A.cmp(ids));
+              return {
+                actions: acts,
+                reply: () =>
+                  ids.length >= 2 && ids.length <= 4
+                    ? `${l.n} tem ${plural(ids.length, "obra", "obras")}; comparação com localidade, distância, tipo, valor, execução, entrega, alvará e plataforma.`
+                    : `${l.n} tem ${plural(ids.length, "obra", "obras")} nos filtros atuais; só comparo de 2 a 4.`,
+              };
+            },
+          };
+        }
+        if (/\babr(e|ir)\b/.test(n)) {
+          const w = W.find((x) => x.kw.some((k) => n.includes(k)));
+          if (w && w.km <= S.radius)
+            return {
+              actions: [A.open(w)],
+              reply: () => `Aberto: ${w.t}, ${LOC(w.loc).n}, a ${w.km} km.`,
+            };
+          return {
+            actions: [],
+            reply: () => `Não encontrei essa obra entre as obras dentro do raio de ${S.radius} km.`,
+          };
+        }
+        if (
+          (m = n.match(/(\d{1,2})\/(\d{1,2})/)) &&
+          /(anunci|publica|obras|concursos|pesquis)/.test(n)
+        ) {
+          const d = `2026-${String(+m[2]).padStart(2, "0")}-${String(+m[1]).padStart(2, "0")}`;
+          if (!isNaN(new Date(d)) && +m[1] <= 31 && +m[2] <= 12)
+            return {
+              actions: [A.date(d)],
+              reply: (v) => {
+                const s = dayStatus(d);
+                return (
+                  `${fmtDate(d)}: ${STTXT[s]}.` +
+                  (s === "works" ? ` ${nC(v)} nos filtros atuais.` : "")
+                );
+              },
+            };
+        }
+        if ((m = n.match(/(\d+)\s*km/)) && /(obras|concursos|ate|menos|filtr|mostra)/.test(n)) {
+          const req = +m[1],
+            cap = req > S.radius,
+            k = cap ? S.radius : req;
+          return {
+            actions: [A.dist(k, cap)],
+            reply: (v) =>
+              (cap
+                ? `O raio da empresa é ${S.radius} km; a pesquisa vai até ${S.radius} km. `
+                : "") + `${nC(v)} até ${k} km.`,
+          };
+        }
+        const l = findLoc(n),
+          t = TYPES.find((x) => n.includes(norm(x)) || (x === "Edifícios" && /edificios?/.test(n)));
+        if (/(filtr|so as|apenas)/.test(n) && (l || t)) {
+          const a = l ? A.loc(l) : A.type(t);
+          return { actions: [a], reply: (v) => `${nC(v)} com este filtro.` };
+        }
+        if (/(mostra|mostrar|lista|listar)/.test(n) && (l || t || /priorit/.test(n))) {
+          return {
+            planOf: (v) => {
+              const items = sortItems(
+                baseOf(v).filter(
+                  (w) =>
+                    (!l || w.loc === l.id) &&
+                    (!t || w.type === t) &&
+                    (!/priorit/.test(n) || S.prio.has(w.type)),
+                ),
+              );
+              const what = l ? l.n : t ? t : "prioritárias";
+              return {
+                actions: [
+                  A.show(
+                    `Mostrar concursos: ${what}`,
+                    items.map((w) => w.id),
+                  ),
+                ],
+                reply: () =>
+                  items.length
+                    ? `${plural(items.length, "concurso", "concursos")}: prioritárias primeiro, depois a entrega mais próxima.`
+                    : "Nenhum concurso cumpre o pedido nos filtros atuais.",
+              };
+            },
+          };
+        }
+        if (/\bobras\b.*\b(de|em)\b/.test(n) && l)
+          return { actions: [A.loc(l)], reply: (v) => `${nC(v)} em ${l.n}.` };
+        return { actions: [], reply: () => `Não sei fazer isso. Sei: ${CAN}.` };
+      }
+      /* assistant actions apply at once: each step keeps only its label and effect */
+      function exec(actions) {
+        const v = cloneV(S.v);
+        const steps = actions.map((a) => {
+          a.run(v);
+          return { label: a.label, eff: a.eff(v) };
+        });
+        S.v = v;
+        return { steps, v };
+      }
+      function afterView() {
+        prune();
+        renderAll();
+      }
+      function send(text) {
+        text = text.trim();
+        if (!text) return;
+        $("#msgH").textContent = "";
+        S.chat.push({ role: "u", text, context: S.ctx.filter(isContext).map(ctxItem) });
+        S.ctx = S.ctx.filter((c) => !isContext(c));
+        renderCtx();
+        const p = interpret(text),
+          plan = p.planOf ? p.planOf(S.v) : p;
+        const msg = { role: "a", steps: [], text: "" };
+        if (plan.actions.length) {
+          const r = exec(plan.actions);
+          msg.steps = r.steps;
+          msg.text = plan.reply(r.v, r.steps);
+          afterView();
+        } else msg.text = plan.reply(S.v, []);
+        S.chat.push(msg);
+        renderChat(true);
+      }
+      function renderChat(scroll) {
+        const c = $("#chat");
+        c.innerHTML = S.chat
+          .map((m) => {
+            if (m.role === "u")
+              return `<div class="msg u">${esc(m.text)}${sentCtxHTML(m.context)}</div>`;
+            const steps = m.steps.length
+              ? `<ul class="steps" aria-label="Passos dados">${m.steps.map((s, i) => `<li><span class="n mono">${i + 1}</span><span class="l">${esc(s.label)} → <b>${esc(s.eff)}</b></span></li>`).join("")}</ul>`
+              : "";
+            return `<div class="msg a">${steps}<div class="quotable">${esc(m.text)}</div></div>`;
+          })
+          .join("");
+        if (scroll) c.scrollTop = c.scrollHeight;
+      }
+      function initAssistant() {
+        $("#sugs").innerHTML = SUGG.map((s) => `<button>${esc(s)}</button>`).join("");
+        $("#sugs").onclick = (e) => {
+          const b = e.target.closest("button");
+          if (b) send(b.textContent);
+        };
+        $("#comp").onsubmit = (e) => {
+          e.preventDefault();
+          const i = $("#msg");
+          if (!i.value.trim()) {
+            $("#msgH").textContent = "Escreva o pedido para o assistente.";
+            i.focus();
+            return;
+          }
+          send(i.value);
+          i.value = "";
+        };
+        $("#msg").addEventListener("input", () => ($("#msgH").textContent = ""));
+      }
+
+      /* ---------- theme ---------- */
+      const mq = matchMedia("(prefers-color-scheme: dark)");
+      let userTheme = false;
+      function setTheme(t) {
+        document.documentElement.dataset.theme = t;
+        const b = $("#theme");
+        b.setAttribute("aria-pressed", String(t === "dark"));
+        b.title = t === "dark" ? "Ativar modo claro" : "Ativar modo escuro";
+        b.innerHTML =
+          t === "dark"
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>';
+      }
+      setTheme(mq.matches ? "dark" : "light");
+      mq.addEventListener("change", (e) => {
+        if (!userTheme) setTheme(e.matches ? "dark" : "light");
+      });
+      $("#theme").onclick = () => {
+        userTheme = true;
+        setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+      };
+
+      /* ---------- init ---------- */
+      /* panel sizes: sidebars (wide/tablet) and results height (stacked); always re-clamped to the viewport */
+      function initResize() {
+        const root = document.documentElement,
+          KEY = "cairn-now-sizes-v2";
+        const half = () => Math.floor((innerWidth - 36) / 2),
+          defRh = () => Math.min(640, Math.round(innerHeight * 0.8));
+        const sz = { aw: null, rh: defRh() };
+        try {
+          Object.assign(sz, JSON.parse(localStorage.getItem(KEY) || "{}"));
+        } catch (e) {}
+        const lim = {
+          aw: () => ({ min: 280, max: Math.max(280, innerWidth - 36 - 360) }),
+          rh: () => ({ min: 240, max: Math.max(240, Math.round(innerHeight * 0.9)) }),
+        };
+        const defs = { aw: half, rh: defRh };
+        const seps = [
+          {
+            el: $("#sepB"),
+            k: "aw",
+            ax: "x",
+            dir: -1,
+            label: "Redimensionar largura do assistente",
+            vars: "--aw",
+          },
+          {
+            el: $("#sepH"),
+            k: "rh",
+            ax: "y",
+            dir: 1,
+            label: "Redimensionar altura dos resultados",
+            vars: "--rh",
+          },
+        ];
+        const eff = (k) => {
+          const l = lim[k]();
+          return Math.max(l.min, Math.min(l.max, Math.round(sz[k] == null ? defs[k]() : sz[k])));
+        };
+        function apply() {
+          seps.forEach((s) => {
+            const v = eff(s.k),
+              l = lim[s.k](),
+              e = s.el;
+            root.style.setProperty(s.vars, v + "px");
+            e.setAttribute("aria-valuemin", l.min);
+            e.setAttribute("aria-valuemax", l.max);
+            e.setAttribute("aria-valuenow", v);
+            e.setAttribute("aria-valuetext", v + " píxeis");
+          });
+        }
+        const save = () => {
+          try {
+            localStorage.setItem(KEY, JSON.stringify(sz));
+          } catch (e) {}
+        };
+        seps.forEach((s) => {
+          const e = s.el;
+          e.setAttribute("role", "separator");
+          e.setAttribute("aria-orientation", s.ax === "x" ? "vertical" : "horizontal");
+          e.setAttribute("aria-label", s.label);
+          e.tabIndex = 0;
+          e.title = s.label + " (setas; duplo clique repõe)";
+          e.addEventListener("pointerdown", (ev) => {
+            if (ev.button) return;
+            ev.preventDefault();
+            e.setPointerCapture(ev.pointerId);
+            e.classList.add("drag");
+            document.body.classList.add("resizing", s.ax === "x" ? "rx" : "ry");
+            e.focus({ preventScroll: true });
+            const st = s.ax === "x" ? ev.clientX : ev.clientY,
+              v0 = eff(s.k);
+            const mv = (m) => {
+              sz[s.k] = v0 + s.dir * ((s.ax === "x" ? m.clientX : m.clientY) - st);
+              apply();
+            };
+            const up = () => {
+              e.removeEventListener("pointermove", mv);
+              e.removeEventListener("pointerup", up);
+              e.removeEventListener("pointercancel", up);
+              e.classList.remove("drag");
+              document.body.classList.remove("resizing", "rx", "ry");
+              save();
+            };
+            e.addEventListener("pointermove", mv);
+            e.addEventListener("pointerup", up);
+            e.addEventListener("pointercancel", up);
+          });
+          e.addEventListener("keydown", (ev) => {
+            const step = ev.shiftKey ? 64 : 16,
+              l = lim[s.k]();
+            let d = 0;
+            const base = eff(s.k);
+            const [inc, dec] =
+              s.ax === "x" ? ["ArrowRight", "ArrowLeft"] : ["ArrowDown", "ArrowUp"];
+            if (ev.key === inc) d = s.dir * step;
+            else if (ev.key === dec) d = -s.dir * step;
+            else if (ev.key === "Home") {
+              sz[s.k] = l.min;
+            } else if (ev.key === "End") {
+              sz[s.k] = l.max;
+            } else return;
+            ev.preventDefault();
+            if (d) sz[s.k] = base + d;
+            apply();
+            save();
+          });
+          e.addEventListener("dblclick", () => {
+            sz[s.k] = s.k === "aw" ? null : defs[s.k]();
+            apply();
+            save();
+          });
+        });
+        addEventListener("resize", apply);
+        apply();
+      }
+      new ResizeObserver(() =>
+        document.documentElement.style.setProperty("--barh", $(".bar").offsetHeight + "px"),
+      ).observe($(".bar"));
+      initFilters();
+      initResize();
+      initList();
+      initCtx();
+      initLoc();
+      initAssistant();
+      renderCtx();
+      renderAll();
+      S.chat.push({
+        role: "a",
+        steps: [],
+        text: "Olá. Peça-me para filtrar, mostrar, abrir ou comparar obras, ou use uma sugestão acima. Só altero o que está a ser mostrado, nunca os dados das obras.",
+      });
+      renderChat();
+    </script>
+  </body>
+</html>
