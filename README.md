@@ -50,9 +50,7 @@ O trabalho começa numa GitHub Issue. O [quadro do projeto Cairn Web](https://gi
 
 - Use uma branch de curta duração a partir de `main`: `feat/123-descricao-curta`, `fix/123-descricao-curta` ou `chore/descricao-curta`.
 - Abra um pull request e associe a Issue, por exemplo com `Closes #123`. Indique o que verificou e, se não conseguiu executar uma verificação, diga-o.
-- As alterações à `main` exigem um pull request, mas não exigem uma aprovação. As proteções bloqueiam force pushes e a eliminação da `main`, também para administradores.
-- Exceção: quando o administrador do repositório pede um push direto para a `main`, o agente faz commit e `git push` para a `main` sem branch nem pull request, usando o bypass de administrador. Não usa `--no-verify` nem força o push.
-- Depois da revisão, faça squash e elimine a branch remota. Os agentes só fazem o merge e eliminam branches quando o utilizador o pede explicitamente.
+- As alterações à `main` exigem um pull request, mas não exigem uma aprovação. As proteções bloqueiam force pushes e a eliminação da `main`, também para administradores.- Depois da revisão, faça squash e elimine a branch remota. Os agentes só fazem o merge e eliminam branches quando o utilizador o pede explicitamente.
 
 Os passos completos estão em [Trabalhar com agentes no T3](docs/how-to/trabalhar-com-agentes-no-t3.md) e [Desenvolver uma funcionalidade](docs/how-to/desenvolver-uma-funcionalidade.md). Se não souber por onde começar, pergunte a um programador sénior ou intermédio.
 
