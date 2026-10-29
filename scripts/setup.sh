@@ -3,8 +3,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 # Prerequisites are supplied by the existing human setup wizard.
-bash scripts/install-git-hooks.sh
 bun install --frozen-lockfile --ignore-scripts
+bun run hooks:install
 if [[ -z "${GITLEAKS_BIN:-}" || ! -x "$GITLEAKS_BIN" ]]; then
   scripts/install-gitleaks.sh
 fi

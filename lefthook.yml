@@ -1,0 +1,12 @@
+# Git hooks; `bun run hooks:install` installs them. See docs/agents/checks.md.
+min_version: 2.2.2
+lefthook: node_modules/.bin/lefthook
+pre-commit:
+  jobs:
+    - name: agent checks
+      run: bash scripts/pre-commit.sh
+pre-push:
+  jobs:
+    - name: agent checks
+      run: bash scripts/pre-push.sh
+      use_stdin: true
