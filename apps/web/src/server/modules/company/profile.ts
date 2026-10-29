@@ -1,33 +1,15 @@
 import type { Database } from "@cairn/db";
+import { z } from "zod";
 import { companyProfileTable } from "./persistence/companyProfileTable.js";
 
-export type CompanyProfile = { name: string; address: string; radiusKm: number };
+export const CompanyProfile = z.object({
+  name: z.string().trim().min(1).max(200),
+  address: z.string().trim().min(1).max(500),
+  radiusKm: z.number().positive(),
+});
 
-export function parseCompanyProfile(input: unknown): CompanyProfile | null {
-  if (
-    typeof input !== "object" ||
-    input === null ||
-    !("name" in input) ||
-    !("address" in input) ||
-    !("radiusKm" in input) ||
-    typeof input.name !== "string" ||
-    typeof input.address !== "string" ||
-    typeof input.radiusKm !== "number"
-  )
-    return null;
-  const name = input.name.trim();
-  const address = input.address.trim();
-  if (
-    !name ||
-    name.length > 200 ||
-    !address ||
-    address.length > 500 ||
-    !Number.isFinite(input.radiusKm) ||
-    input.radiusKm <= 0
-  )
-    return null;
-  return { name, address, radiusKm: input.radiusKm };
-}
+export type CompanyProfile = z.infer<typeof CompanyProfile>;
+
 export async function getCompanyProfile(db: Database): Promise<CompanyProfile | null> {
   const profiles = await db
     .select({
@@ -36,12 +18,15 @@ export async function getCompanyProfile(db: Database): Promise<CompanyProfile | 
       radiusKm: companyProfileTable.radiusKm,
     })
     .from(companyProfileTable);
+
   return profiles[0] ?? null;
 }
+
 export async function saveCompanyProfile(db: Database, profile: CompanyProfile) {
   await db.insert(companyProfileTable).values(profile).onConflictDoUpdate({
     target: companyProfileTable.id,
     set: profile,
   });
+
   return profile;
 }

@@ -2,9 +2,11 @@ import { afterAll, beforeAll, expect, test } from "vitest";
 import { createTestApplication, type TestApplication } from "./testSupport.js";
 
 let app: TestApplication;
+
 beforeAll(async () => {
   app = await createTestApplication();
 });
+
 afterAll(async () => {
   await app?.close();
 });

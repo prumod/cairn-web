@@ -5,6 +5,7 @@ afterEach(() => vi.restoreAllMocks());
 
 test("a failed request returns an identifier that matches its sanitized log", async () => {
   const log = vi.spyOn(console, "error").mockImplementation(() => {});
+
   const response = await handleRequest("save_company_profile", "revision-123", async () => {
     throw new Error("secret-token and private company data");
   });
@@ -174,6 +175,7 @@ test("a failed request logs elapsed duration in milliseconds", async () => {
 
 test("invalid JSON remains a client error without logging the input", async () => {
   const log = vi.spyOn(console, "error").mockImplementation(() => {});
+
   const response = await handleRequest("save_company_profile", "revision-123", async () => {
     throw new SyntaxError("secret-token");
   });
@@ -185,6 +187,7 @@ test("invalid JSON remains a client error without logging the input", async () =
 
 test("a database readiness failure stays unavailable and is logged", async () => {
   const log = vi.spyOn(console, "error").mockImplementation(() => {});
+
   const response = await handleRequest("health", "revision-123", async () => {
     throw new DependencyUnavailable(new Error("postgres://user:password@host/database"));
   });
@@ -201,6 +204,7 @@ test("a database readiness failure stays unavailable and is logged", async () =>
 
 test("a readiness configuration failure remains an internal error", async () => {
   vi.spyOn(console, "error").mockImplementation(() => {});
+
   const response = await handleRequest("health", "revision-123", async () => {
     throw new Error("bad startup configuration");
   });

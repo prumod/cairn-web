@@ -13,11 +13,14 @@ export async function signInWithGoogleToken(
       maxRedirects: 0,
       timeout: 15_000,
     });
+
     const status = response.status();
     const headers = response.headers();
     const retryAfter = headers["retry-after"] ?? headers["x-retry-after"];
     await response.dispose();
+
     if (status === 200) return;
+
     // Only an explicit rate-limit rejection is safe to retry. Never relax the server limit.
     if (
       status !== 429 ||

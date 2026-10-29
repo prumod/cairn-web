@@ -1,8 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { z } from "zod";
 import { ApiError, put, request } from "../../shared/api/client";
-import { track } from "../../shared/analytics/analytics";
+import { track, type EventProperties } from "../../shared/analytics/analytics";
 
-type Profile = { name: string; address: string; radiusKm: number };
+const Profile = z.object({ name: z.string(), address: z.string(), radiusKm: z.number() });
+
+type Profile = z.infer<typeof Profile>;
+
 export function CompanyProfilePage() {
   const [profile, setProfile] = useState<Profile | null | undefined>();
   const [error, setError] = useState("");
@@ -12,22 +16,30 @@ export function CompanyProfilePage() {
   useEffect(() => {
     let active = true;
     void track("company_profile_viewed");
-    request<Profile | null>("/api/company-profile")
-      .then((data) => {
+
+    async function load() {
+      try {
+        const data = await request("/api/company-profile", Profile.nullable());
+
         if (active) setProfile(data);
-      })
-      .catch((failure: unknown) => {
+      } catch (failure) {
         if (!active) return;
+
         if (failure instanceof ApiError && failure.status === 403) setPending(true);
         else
           setError(
             failure instanceof Error ? failure.message : "Não foi possível carregar o perfil.",
           );
-      });
+      }
+    }
+
+    void load();
+
     return () => {
       active = false;
     };
   }, []);
+
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
@@ -35,27 +47,34 @@ export function CompanyProfilePage() {
     setError("");
     void track("company_profile_save_attempted");
     const form = new FormData(event.currentTarget);
+
     try {
-      const updated = await put<Profile>("/api/company-profile", {
+      const updated = await put("/api/company-profile", Profile, {
         name: form.get("name"),
         address: form.get("address"),
         radiusKm: Number(form.get("radiusKm")),
       });
+
       setProfile(updated);
       setSaved(true);
       void track("company_profile_save_succeeded");
     } catch (failure) {
       const requestId = failure instanceof ApiError ? failure.requestId : null;
-      void track("company_profile_save_failed", {
-        ...(failure instanceof ApiError ? { status: failure.status } : {}),
-        ...(requestId && /^[0-9a-f-]{36}$/.test(requestId) ? { request_id: requestId } : {}),
-      });
+      const properties: EventProperties = {};
+
+      if (failure instanceof ApiError) properties.status = failure.status;
+
+      if (requestId && /^[0-9a-f-]{36}$/.test(requestId)) properties.request_id = requestId;
+      void track("company_profile_save_failed", properties);
+
       if (failure instanceof ApiError && failure.status === 403) setPending(true);
       else
         setError(failure instanceof Error ? failure.message : "Não foi possível guardar o perfil.");
     }
+
     setSaving(false);
   }
+
   if (pending)
     return (
       <section>
@@ -63,6 +82,7 @@ export function CompanyProfilePage() {
         <p>A sua conta aguarda aprovação.</p>
       </section>
     );
+
   if (profile === undefined)
     return (
       <section>
@@ -76,6 +96,7 @@ export function CompanyProfilePage() {
         )}
       </section>
     );
+
   return (
     <section>
       <h1>Perfil da empresa</h1>

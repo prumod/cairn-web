@@ -1,24 +1,31 @@
 // @vitest-environment jsdom
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import type { PostHog } from "posthog-js";
+import { afterEach, expect, test, vi } from "vitest";
+import { createAnalytics } from "./analytics.js";
 
-const sdk = vi.hoisted(() => ({
-  init: vi.fn(),
-  identify: vi.fn(),
-  capture: vi.fn(),
-  captureException: vi.fn(),
-  reset: vi.fn(),
-}));
-vi.mock("posthog-js", () => ({ default: sdk }));
+function fakeSdk() {
+  return {
+    init: vi.fn<PostHog["init"]>(),
+    identify: vi.fn<PostHog["identify"]>(),
+    capture: vi.fn<PostHog["capture"]>(),
+    captureException: vi.fn<PostHog["captureException"]>(),
+    reset: vi.fn<PostHog["reset"]>(),
+  };
+}
 
-beforeEach(() => {
-  vi.resetModules();
-  vi.clearAllMocks();
-});
+function productionConfig() {
+  return Response.json({ token: "phc_synthetic", host: "https://eu.i.posthog.com" });
+}
+
 afterEach(() => vi.unstubAllGlobals());
 
 test("a nonproduction configuration never initializes or sends analytics", async () => {
-  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => null }));
-  const analytics = await import("./analytics.js");
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => Response.json(null)),
+  );
+  const sdk = fakeSdk();
+  const analytics = createAnalytics(async () => sdk);
   await analytics.track("company_profile_viewed");
   await analytics.identify("synthetic-user");
   expect(sdk.init).not.toHaveBeenCalled();
@@ -28,12 +35,10 @@ test("a nonproduction configuration never initializes or sends analytics", async
 test("production identifies by opaque ID and masks replay before emitting a product event", async () => {
   vi.stubGlobal(
     "fetch",
-    vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ token: "phc_synthetic", host: "https://eu.i.posthog.com" }),
-    }),
+    vi.fn(async () => productionConfig()),
   );
-  const analytics = await import("./analytics.js");
+  const sdk = fakeSdk();
+  const analytics = createAnalytics(async () => sdk);
   await analytics.identify("synthetic-user");
   await analytics.track("company_profile_viewed");
   expect(sdk.init).toHaveBeenCalledOnce();
@@ -55,28 +60,33 @@ test("production identifies by opaque ID and masks replay before emitting a prod
   );
   expect(sdk.identify).toHaveBeenCalledWith("synthetic-user");
   expect(sdk.capture).toHaveBeenCalledWith("company_profile_viewed", undefined);
-  const config = sdk.init.mock.calls[0]?.[1] as {
-    before_send: (event: { event: string; properties: Record<string, unknown> }) => {
-      properties: Record<string, unknown>;
-    };
-    session_recording: {
-      maskCapturedNetworkRequestFn: (request: { name: string }) => { name: string };
-    };
-  };
+
+  const config = sdk.init.mock.calls[0]?.[1];
+  const beforeSend = config?.before_send;
+  const maskRequest = config?.session_recording?.maskCapturedNetworkRequestFn;
+
+  if (!beforeSend || Array.isArray(beforeSend) || !maskRequest) {
+    throw new Error("Analytics was initialized without its privacy hooks.");
+  }
+
   expect(
-    config.before_send({
+    beforeSend({
+      uuid: "synthetic-event",
       event: "company_profile_viewed",
       properties: {
         $current_url: "https://example.test/?token=secret",
         $set: { $referrer: "secret" },
       },
-    }).properties,
+    })?.properties,
   ).toEqual({ $set: {} });
   expect(
-    config.session_recording.maskCapturedNetworkRequestFn({
+    maskRequest({
       name: "https://example.test/?token=secret",
+      entryType: "resource",
+      startTime: 0,
+      duration: 0,
     }),
-  ).toEqual({ name: "https://example.test" });
+  ).toMatchObject({ name: "https://example.test" });
   window.dispatchEvent(
     new ErrorEvent("error", {
       message: "private company data",
@@ -96,22 +106,21 @@ test("production identifies by opaque ID and masks replay before emitting a prod
 });
 
 test("sign-out while analytics is loading does not start an identified session", async () => {
-  let respond!: (value: unknown) => void;
+  let respond!: (response: Response) => void;
   vi.stubGlobal(
     "fetch",
-    vi.fn().mockReturnValue(
-      new Promise((resolve) => {
-        respond = resolve;
-      }),
+    vi.fn(
+      () =>
+        new Promise<Response>((resolve) => {
+          respond = resolve;
+        }),
     ),
   );
-  const analytics = await import("./analytics.js");
+  const sdk = fakeSdk();
+  const analytics = createAnalytics(async () => sdk);
   const identifying = analytics.identify("synthetic-user");
   await analytics.reset();
-  respond({
-    ok: true,
-    json: async () => ({ token: "phc_synthetic", host: "https://eu.i.posthog.com" }),
-  });
+  respond(productionConfig());
   await identifying;
   expect(sdk.init).not.toHaveBeenCalled();
   expect(sdk.identify).not.toHaveBeenCalled();
@@ -120,12 +129,10 @@ test("sign-out while analytics is loading does not start an identified session",
 test("reset clears the previous identity before a different user is identified", async () => {
   vi.stubGlobal(
     "fetch",
-    vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ token: "phc_synthetic", host: "https://eu.i.posthog.com" }),
-    }),
+    vi.fn(async () => productionConfig()),
   );
-  const analytics = await import("./analytics.js");
+  const sdk = fakeSdk();
+  const analytics = createAnalytics(async () => sdk);
   await analytics.identify("first-user");
   await analytics.reset();
   await analytics.identify("second-user");

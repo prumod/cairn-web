@@ -6,6 +6,8 @@ Vitest discovers colocated tests under `{apps/web,shared}/src/**/*.{spec,test}.{
 
 The suite covers local application behavior through the built TanStack Start Worker: routes, database-backed access, company-profile persistence, origin checks, and related authentication handling. Browser identities are controlled fixtures; they do not run Google's OAuth redirect, consent, state, or PKCE flow.
 
+Lint rejects module mocking (`vi.mock`); tests inject fake dependencies through the public interface instead.
+
 ## How local tests run
 
 Both `bun run test:fast` and `bun run test:browser` build the app before executing their tests. Docker Compose is required. `scripts/with-test-postgres.mjs` starts a uniquely named, disposable Compose project from `compose.test.yaml`:
@@ -62,7 +64,7 @@ The four survivors were reviewed: `DependencyUnavailable`'s message is not retur
 
 ## Observability test boundary
 
-Colocated tests cover public analytics configuration gating, SDK privacy options and identity/reset behavior with a mocked PostHog SDK, and request-ID/error sanitization with a captured console logger. The access integration suite also checks the compiled Worker's public analytics configuration. These tests do not establish hosted ingestion, replay privacy in a real recording, Cloudflare trace lookup, or source-map remapping. See the dated evidence below and the [diagnostic guide](docs/how-to/investigate-application-failure.md) for the current live checks and their limits.
+Colocated tests cover public analytics configuration gating, SDK privacy options and identity/reset behavior with a fake PostHog SDK injected through `createAnalytics`, and request-ID/error sanitization with a captured console logger. The access integration suite also checks the compiled Worker's public analytics configuration. These tests do not establish hosted ingestion, replay privacy in a real recording, Cloudflare trace lookup, or source-map remapping. See the dated evidence below and the [diagnostic guide](docs/how-to/investigate-application-failure.md) for the current live checks and their limits.
 
 ## Historical migration verification
 

@@ -9,9 +9,11 @@ const script = resolve("scripts/check-scope.mjs");
 // Commits `before`, then `change` on top, and returns the scope of the change.
 function scopeOf(before, change) {
   const repo = createRepo();
+
   try {
     const base = repo.commit(before);
     const head = repo.commit(change);
+
     return execFileSync("node", [script, base, head], { cwd: repo.dir }).toString().trim();
   } finally {
     repo.remove();
@@ -46,6 +48,7 @@ test("a filename shared by several documents is not enough to make one code", ()
     "b/notes.md": "one\n",
     "tool.mjs": 'export const doc = "a/notes.md";\n',
   };
+
   assert.equal(scopeOf(tree, { "b/notes.md": "two\n" }), "docs");
   assert.equal(scopeOf(tree, { "a/notes.md": "two\n" }), "code");
 });
@@ -62,6 +65,7 @@ test("a loader consumes the documents of the directory it names", () => {
     "docs/README.md": "one\n",
     "load.mjs": loader('const files = readdirSync("docs/in")'),
   };
+
   assert.equal(scopeOf(tree, { "docs/in/x.md": "two\n" }), "code");
   assert.equal(scopeOf(tree, { "docs/out/y.md": "two\n" }), "docs");
   assert.equal(scopeOf(tree, { "docs/README.md": "two\n" }), "docs");
@@ -72,5 +76,6 @@ test("a recursive loader consumes every document", () => {
     "docs/out/y.md": "one\n",
     "load.mjs": loader('const files = readdirSync("docs", { recursive: true })'),
   };
+
   assert.equal(scopeOf(tree, { "docs/out/y.md": "two\n" }), "code");
 });

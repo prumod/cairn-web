@@ -19,6 +19,7 @@ test.each([
       rowCount: 1,
     }),
   );
+
   vi.stubGlobal("fetch", fetchMock);
 
   const db = createDb({ DATABASE_URL: `postgresql://test:test@${host}/test` });

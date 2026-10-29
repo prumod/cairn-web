@@ -5,7 +5,9 @@ import { URL, fileURLToPath } from "node:url";
 
 function required(name: string) {
   const value = process.env[name];
+
   if (!value) throw new Error(name + " is required for the local acceptance Worker.");
+
   return value;
 }
 
@@ -38,6 +40,7 @@ export default Alchemy.Stack(
         POSTHOG_PROJECT_TOKEN: "",
       },
     });
+
     return { app: worker.url };
   }),
 );

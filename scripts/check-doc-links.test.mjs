@@ -9,9 +9,11 @@ const script = resolve("scripts/check-doc-links.mjs");
 // Commits `files` and runs the link check on that commit.
 function check(files) {
   const repo = createRepo();
+
   try {
     const commit = repo.commit(files);
     const { status, stderr } = spawnSync("node", [script, commit], { cwd: repo.dir });
+
     return { status, stderr: stderr.toString() };
   } finally {
     repo.remove();
@@ -27,6 +29,7 @@ test("links to tracked files and directories pass", () => {
     "[root](/docs/b.md) ![image](b.md)",
     "[ref]: b.md",
   ].join("\n");
+
   assert.deepEqual(check({ ...tree, "docs/a.md": page }), { status: 0, stderr: "" });
 });
 
@@ -48,5 +51,6 @@ test("URLs, other schemes, anchors, code spans, and fenced code are not checked"
     "[fenced](missing.md)",
     "```",
   ].join("\n");
+
   assert.deepEqual(check({ ...tree, "docs/a.md": page }), { status: 0, stderr: "" });
 });

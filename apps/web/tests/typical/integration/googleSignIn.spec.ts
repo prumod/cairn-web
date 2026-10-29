@@ -1,6 +1,7 @@
-import { createServer, type Server } from "node:http";
+import { createServer, type OutgoingHttpHeaders, type Server } from "node:http";
 import { request, type APIRequestContext } from "@playwright/test";
 import { afterEach, beforeEach, expect, test } from "vitest";
+import { z } from "zod";
 import { signInWithGoogleToken } from "../../support/googleSignIn.js";
 
 let server: Server;
@@ -8,7 +9,9 @@ let client: APIRequestContext;
 let origin: string;
 let attempts: number;
 let statuses: number[];
-let retryHeaders: Record<string, string>;
+let retryHeaders: OutgoingHttpHeaders;
+
+const ListeningAddress = z.object({ port: z.number() });
 
 beforeEach(async () => {
   attempts = 0;
@@ -21,9 +24,10 @@ beforeEach(async () => {
     response.end();
   });
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
-  const address = server.address();
-  if (!address || typeof address === "string") throw new Error("Missing local server port.");
-  origin = `http://127.0.0.1:${address.port}`;
+  const address = ListeningAddress.safeParse(server.address());
+
+  if (!address.success) throw new Error("Missing local server port.");
+  origin = `http://127.0.0.1:${address.data.port}`;
   client = await request.newContext();
 });
 

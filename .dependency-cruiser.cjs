@@ -6,6 +6,7 @@ const roots = [
   "apps/web/src/server/shared",
   "shared/src",
 ];
+
 const modulePath = `^(?:${roots.join("|")})/[^/]+/`;
 const internals = `^(?:${roots.join("|")})/[^/]+/[^/]+/`;
 const tests = "(?:\\.(?:spec|test)\\.[cm]?[jt]sx?$|(?:^|/)(?:tests|testSupport|fixtures)/)";

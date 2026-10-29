@@ -1,6 +1,7 @@
 export function deploymentConfig(stage: string, dev: boolean, revision?: string) {
   if (dev) {
     if (stage !== "dev") throw new Error("Local development stage must be dev");
+
     return {
       domain: undefined,
       workersDev: undefined,

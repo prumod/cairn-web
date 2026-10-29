@@ -13,19 +13,23 @@ export function createRepo() {
   git("config", "user.email", "script@example.test");
   git("config", "commit.gpgsign", "false");
   git("config", "core.hooksPath", "/dev/null");
+
   return {
     dir,
     commit(files) {
       for (const [path, content] of Object.entries(files)) {
         const full = join(dir, path);
+
         if (content === null) rmSync(full);
         else {
           mkdirSync(dirname(full), { recursive: true });
           writeFileSync(full, content);
         }
       }
+
       git("add", "--all");
       git("commit", "--quiet", "-m", "commit");
+
       return git("rev-parse", "HEAD");
     },
     remove: () => rmSync(dir, { recursive: true, force: true }),

@@ -6,19 +6,24 @@ import { resolve, join } from "node:path";
 import { execFileSync } from "node:child_process";
 
 const source = resolve(".");
+
 test("ordinary commits and pushes scan docs, reject secrets, and validate referenced docs", () => {
   const dir = mkdtempSync(join(tmpdir(), "cairn-hooks-"));
   const remote = `${dir}-remote`;
+
   const git = (...args) =>
     execFileSync("git", args, { cwd: dir, env, stdio: "pipe" }).toString().trim();
+
   const env = {
     ...process.env,
     GITLEAKS_BIN: join(dir, "scanner"),
     PATH: `${dir}/bin:${process.env.PATH}`,
   };
+
   try {
     mkdirSync(join(dir, "scripts"));
     mkdirSync(join(dir, "bin"));
+
     for (const file of [
       "git-checks.sh",
       "check-secrets.sh",
@@ -29,6 +34,7 @@ test("ordinary commits and pushes scan docs, reject secrets, and validate refere
     ]) {
       cpSync(join(source, "scripts", file), join(dir, "scripts", file));
     }
+
     cpSync(join(source, ".githooks"), join(dir, ".githooks"), { recursive: true });
     writeFileSync(
       join(dir, "scanner"),

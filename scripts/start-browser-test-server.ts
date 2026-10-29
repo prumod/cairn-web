@@ -11,4 +11,5 @@ async function close() {
 // Playwright signals the process group, and the wrapper also forwards the signal.
 // Keep the idempotent handler installed until async teardown has finished.
 process.on("SIGTERM", close);
+
 process.on("SIGINT", close);
