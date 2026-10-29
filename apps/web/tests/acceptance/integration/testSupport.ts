@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { spawn, type ChildProcess } from "node:child_process";
 import {
   createServer as createHttpServer,
@@ -112,6 +112,12 @@ async function readText(request: IncomingMessage) {
   }
 
   return Buffer.concat(chunks).toString("utf8");
+}
+
+// Tests send well-formed and deliberately malformed variants of one request shape.
+interface ChangeAccessBody {
+  userId?: string | number;
+  approved?: boolean | string;
 }
 
 export async function createTestApplication(
@@ -430,6 +436,33 @@ export async function createTestApplication(
         if (body !== undefined) init.body = JSON.stringify(body);
 
         return fetch(origin + path, init);
+      },
+      rpc(
+        name: "listUsers" | "changeAccess",
+        cookie = "",
+        data?: ChangeAccessBody,
+        requestOrigin = origin,
+      ) {
+        // Match Start's installed production compiler ID; exercise the built Worker transport.
+        const id = createHash("sha256")
+          .update(
+            `src/pages/backoffice/useCases/${name}/${name}.functions.ts--${name}_createServerFn_handler`,
+          )
+          .digest("hex");
+
+        const init: RequestInit = {
+          method: name === "listUsers" ? "GET" : "POST",
+          headers: {
+            cookie,
+            origin: requestOrigin,
+            "content-type": "application/json",
+            "x-tsr-serverFn": "true",
+          },
+        };
+
+        if (name === "changeAccess") init.body = JSON.stringify({ data });
+
+        return fetch(origin + "/_serverFn/" + id, init);
       },
       async reset() {
         await pool!.query({

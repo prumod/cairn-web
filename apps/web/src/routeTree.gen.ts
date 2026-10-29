@@ -16,11 +16,8 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as ApiAnalyticsConfigRouteImport } from './routes/api/analytics-config'
-import { Route as ApiCompanyProfileRouteImport } from './routes/api/company-profile'
 import { Route as ApiMeRouteImport } from './routes/api/me'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as ApiUsersIndexRouteImport } from './routes/api/users/index'
-import { Route as ApiUsersUserIdAccessRouteImport } from './routes/api/users/$userId/access'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -57,11 +54,6 @@ const ApiAnalyticsConfigRoute = ApiAnalyticsConfigRouteImport.update({
   path: '/api/analytics-config',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiCompanyProfileRoute = ApiCompanyProfileRouteImport.update({
-  id: '/api/company-profile',
-  path: '/api/company-profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiMeRoute = ApiMeRouteImport.update({
   id: '/api/me',
   path: '/api/me',
@@ -70,16 +62,6 @@ const ApiMeRoute = ApiMeRouteImport.update({
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiUsersIndexRoute = ApiUsersIndexRouteImport.update({
-  id: '/api/users/',
-  path: '/api/users/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiUsersUserIdAccessRoute = ApiUsersUserIdAccessRouteImport.update({
-  id: '/api/users/$userId/access',
-  path: '/api/users/$userId/access',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -91,11 +73,8 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/api/$': typeof ApiSplatRoute
   '/api/analytics-config': typeof ApiAnalyticsConfigRoute
-  '/api/company-profile': typeof ApiCompanyProfileRoute
   '/api/me': typeof ApiMeRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/users/': typeof ApiUsersIndexRoute
-  '/api/users/$userId/access': typeof ApiUsersUserIdAccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -105,11 +84,8 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/api/$': typeof ApiSplatRoute
   '/api/analytics-config': typeof ApiAnalyticsConfigRoute
-  '/api/company-profile': typeof ApiCompanyProfileRoute
   '/api/me': typeof ApiMeRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/users': typeof ApiUsersIndexRoute
-  '/api/users/$userId/access': typeof ApiUsersUserIdAccessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -120,11 +96,8 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/api/$': typeof ApiSplatRoute
   '/api/analytics-config': typeof ApiAnalyticsConfigRoute
-  '/api/company-profile': typeof ApiCompanyProfileRoute
   '/api/me': typeof ApiMeRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/users/': typeof ApiUsersIndexRoute
-  '/api/users/$userId/access': typeof ApiUsersUserIdAccessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -136,11 +109,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/$'
     | '/api/analytics-config'
-    | '/api/company-profile'
     | '/api/me'
     | '/api/auth/$'
-    | '/api/users/'
-    | '/api/users/$userId/access'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -150,11 +120,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/$'
     | '/api/analytics-config'
-    | '/api/company-profile'
     | '/api/me'
     | '/api/auth/$'
-    | '/api/users'
-    | '/api/users/$userId/access'
   id:
     | '__root__'
     | '/'
@@ -164,11 +131,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/$'
     | '/api/analytics-config'
-    | '/api/company-profile'
     | '/api/me'
     | '/api/auth/$'
-    | '/api/users/'
-    | '/api/users/$userId/access'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -179,11 +143,8 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ApiSplatRoute: typeof ApiSplatRoute
   ApiAnalyticsConfigRoute: typeof ApiAnalyticsConfigRoute
-  ApiCompanyProfileRoute: typeof ApiCompanyProfileRoute
   ApiMeRoute: typeof ApiMeRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  ApiUsersIndexRoute: typeof ApiUsersIndexRoute
-  ApiUsersUserIdAccessRoute: typeof ApiUsersUserIdAccessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -237,13 +198,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnalyticsConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/company-profile': {
-      id: '/api/company-profile'
-      path: '/api/company-profile'
-      fullPath: '/api/company-profile'
-      preLoaderRoute: typeof ApiCompanyProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/me': {
       id: '/api/me'
       path: '/api/me'
@@ -258,20 +212,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/users/': {
-      id: '/api/users/'
-      path: '/api/users'
-      fullPath: '/api/users/'
-      preLoaderRoute: typeof ApiUsersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/users/$userId/access': {
-      id: '/api/users/$userId/access'
-      path: '/api/users/$userId/access'
-      fullPath: '/api/users/$userId/access'
-      preLoaderRoute: typeof ApiUsersUserIdAccessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -283,11 +223,8 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ApiSplatRoute: ApiSplatRoute,
   ApiAnalyticsConfigRoute: ApiAnalyticsConfigRoute,
-  ApiCompanyProfileRoute: ApiCompanyProfileRoute,
   ApiMeRoute: ApiMeRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  ApiUsersIndexRoute: ApiUsersIndexRoute,
-  ApiUsersUserIdAccessRoute: ApiUsersUserIdAccessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

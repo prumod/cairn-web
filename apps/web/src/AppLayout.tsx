@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -13,6 +14,8 @@ type CurrentUser = z.infer<typeof CurrentUser>;
 const SignInRedirect = z.object({ url: z.string() });
 
 export function AppLayout() {
+  const queryClient = useQueryClient();
+
   const isPublicLegalPage = useRouterState({
     select: (state) =>
       state.location.pathname === "/privacy" || state.location.pathname === "/terms",
@@ -23,17 +26,29 @@ export function AppLayout() {
 
   useEffect(() => {
     if (isPublicLegalPage) return;
+    let active = true;
+
     request("/api/me", CurrentUser)
       .then((current) => {
+        if (!active) return;
+
+        // Session checks are the boundary between authenticated identities.
+        queryClient.clear();
         setUser(current);
 
         if (current) void identify(current.id);
         else void reset();
       })
-      .catch(() =>
-        setError("Não foi possível carregar a sessão. Atualize a página para tentar novamente."),
-      );
-  }, [isPublicLegalPage]);
+      .catch(() => {
+        if (active) {
+          setError("Não foi possível carregar a sessão. Atualize a página para tentar novamente.");
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isPublicLegalPage, queryClient]);
 
   async function signIn() {
     setError("");
@@ -59,6 +74,8 @@ export function AppLayout() {
         body: "{}",
       });
       await reset();
+      queryClient.clear();
+      setUser(null);
       window.location.assign("/");
     } catch {
       setError("Não foi possível terminar a sessão. Tente novamente.");
@@ -95,7 +112,7 @@ export function AppLayout() {
             <button onClick={signIn}>Entrar com Google</button>
           </section>
         ) : (
-          user && <Outlet />
+          user && <Outlet key={user.id} />
         )}
       </main>
       <footer>

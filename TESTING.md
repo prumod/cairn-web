@@ -4,7 +4,7 @@
 
 Vitest discovers colocated tests under `{apps/web,shared}/src/**/*.{spec,test}.{ts,tsx}` and `packages/*/src/**/*.{spec,test}.{ts,tsx}`. It also discovers acceptance/typical integration tests under `apps/web/tests/{acceptance,typical}/integration/`. Playwright-BDD discovers capability contracts under `features/company/` and `features/access/`, with step bindings under `apps/web/tests/acceptance/e2e/`.
 
-The suite covers local application behavior through the built TanStack Start Worker: routes, database-backed access, company-profile persistence, origin checks, and related authentication handling. Browser identities are controlled fixtures; they do not run Google's OAuth redirect, consent, state, or PKCE flow.
+The access integration and browser tests target the built TanStack Start Worker, including the feature-owned server-function transport, database-backed access, origin checks, and authentication handling. Colocated backoffice tests cover infrastructure-independent application rules, the application-failure-to-HTTP mapping, and Query behavior with injected fakes. The Worker integration tests cover Zod input rejection, session and origin checks, and no-store responses. Company-profile scenarios still refer to the removed page/API and need revision. Browser identities are controlled fixtures; they do not run Google's OAuth redirect, consent, state, or PKCE flow.
 
 Lint rejects module mocking (`vi.mock`); tests inject fake dependencies through the public interface instead.
 
@@ -65,6 +65,10 @@ The four survivors were reviewed: `DependencyUnavailable`'s message is not retur
 ## Observability test boundary
 
 Colocated tests cover public analytics configuration gating, SDK privacy options and identity/reset behavior with a fake PostHog SDK injected through `createAnalytics`, and request-ID/error sanitization with a captured console logger. The access integration suite also checks the compiled Worker's public analytics configuration. These tests do not establish hosted ingestion, replay privacy in a real recording, Cloudflare trace lookup, or source-map remapping. See the dated evidence below and the [diagnostic guide](docs/how-to/investigate-application-failure.md) for the current live checks and their limits.
+
+## Feature-structure verification limits
+
+The feature-structure implementation passed formatting, lint, boundary lint and proofs, type checks, the production build, the dependency audit, and the 103 colocated fast tests. The built Worker contains the renamed server-function IDs that the integration helper computes. Worker integration execution remains unverified: Alchemy 2.0.0-beta.83 rejects the redundant `nodejs_compat` flag at Worker startup (it is the default for compatibility dates from 2026-08-04), so the three integration spec files and the browser suite could not start the Worker. Existing company-profile acceptance scenarios are also stale after the feature removal. These results do not establish passing Worker integration or browser suites.
 
 ## Historical migration verification
 

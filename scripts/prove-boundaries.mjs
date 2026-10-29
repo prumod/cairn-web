@@ -48,7 +48,7 @@ function cruise(expectedRule) {
   const output = `${result.stdout}\n${result.stderr}`;
 
   if (expectedRule) {
-    assert.equal(result.status, 1, output);
+    assert.ok(result.status !== null && result.status > 0, output);
     assert.ok(output.includes(expectedRule), output);
   } else {
     assert.equal(result.status, 0, output);
@@ -97,8 +97,8 @@ try {
     ),
   );
   write(
-    "apps/web/src/routes/index.ts",
-    importing("apps/web/src/routes/index.ts", "apps/web/src/server/modules/one/entry.ts"),
+    "apps/web/src/routes/api/example.ts",
+    importing("apps/web/src/routes/api/example.ts", "apps/web/src/server/modules/one/entry.ts"),
   );
   cruise();
   console.log(
@@ -139,6 +139,78 @@ try {
     "apps/web/src/pages/two/probe.ts",
     "apps/web/src/server/modules/one/entry.ts",
     "client-cannot-import-server",
+  );
+
+  const page = "apps/web/src/pages/one/entry.ts";
+  const rpc = "apps/web/src/pages/one/useCases/action/action.functions.ts";
+  const useCase = "apps/web/src/pages/one/useCases/action/action.ts";
+  const otherUseCase = "apps/web/src/pages/one/useCases/other/other.ts";
+  const adapter = "apps/web/src/pages/one/infra/data.server.ts";
+
+  for (const path of [rpc, useCase, adapter]) write(path, "export const value = 1;\n");
+  write(page, importing(page, rpc));
+  write(rpc, importing(rpc, useCase));
+  write(adapter, importing(adapter, "packages/db/src/index.ts"));
+  cruise();
+  write(rpc, importing(rpc, adapter));
+  cruise();
+  console.log("PASS: same-feature UI → RPC → application/server adapter → database.");
+  prove(page, adapter, "client-cannot-import-server");
+  prove("apps/web/src/pages/two/probe.ts", rpc, "entrypoint-boundary-apps-web-src-pages");
+  prove(useCase, adapter, "feature-usecase-cannot-import-adapters");
+  prove(useCase, rpc, "feature-usecase-cannot-import-adapters");
+  write(otherUseCase, "export const value = 1;\n");
+  prove(useCase, otherUseCase, "feature-usecase-is-independent");
+  const domainRule = "apps/web/src/pages/one/domain/access.ts";
+  write(domainRule, "export const value = 1;\n");
+  write(useCase, importing(useCase, domainRule));
+  cruise();
+  write(useCase, "export const value = 1;\n");
+  prove(domainRule, useCase, "feature-domain-is-independent");
+  prove(domainRule, adapter, "feature-domain-is-independent");
+
+  for (const target of [
+    "packages/db/src/index.ts",
+    "apps/web/src/server/modules/one/entry.ts",
+    "apps/web/src/pages/one/entry.ts",
+  ]) {
+    prove(useCase, target, "feature-usecase-is-independent");
+  }
+
+  prove(rpc, "apps/web/src/pages/one/entry.ts", "rpc-cannot-import-client");
+  write(useCase, 'import { request as value } from "node:http"; export { value };\n');
+  cruise("feature-usecase-is-independent");
+  write(useCase, "export const value = 1;\n");
+  write("shared/src/one/pure.ts", "export const value = 1;\n");
+  write(useCase, importing(useCase, "shared/src/one/pure.ts"));
+  cruise();
+  prove(
+    "shared/src/one/pure.ts",
+    "packages/auth/src/index.ts",
+    "cross-application-shared-is-independent",
+  );
+  prove(
+    "apps/web/src/routes/index.tsx",
+    "apps/web/src/server/modules/one/entry.ts",
+    "client-cannot-import-server",
+  );
+
+  for (const packageName of ["react", "@tanstack/react-start", "drizzle-orm"]) {
+    const target = `node_modules/${packageName}/index.ts`;
+    write(target, "export const value = 1;\n");
+    prove(useCase, target, "feature-usecase-is-independent");
+    prove("shared/src/one/pure.ts", target, "cross-application-shared-is-independent");
+  }
+
+  // Indirect UI imports cannot hide server-only dependencies in a generic app helper.
+  write("apps/web/src/bridge.ts", "export const value = 1;\n");
+  write(page, importing(page, "apps/web/src/bridge.ts"));
+  prove("apps/web/src/bridge.ts", "packages/db/src/index.ts", "client-cannot-import-server");
+  prove("apps/web/src/bridge.ts", adapter, "client-cannot-import-server");
+  prove(
+    "shared/src/two/probe.ts",
+    "packages/db/src/index.ts",
+    "cross-application-shared-is-independent",
   );
 
   for (const target of [

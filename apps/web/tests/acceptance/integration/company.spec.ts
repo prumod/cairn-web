@@ -15,12 +15,10 @@ test("an approved user saves and retrieves the shared company profile", async ()
   const admin = await app.identity("admin@example.test");
   const user = await app.identity("editor@example.test");
 
-  const approval = await app.request(
-    "/api/users/" + user.user.id + "/access",
-    admin.cookie,
-    "PUT",
-    { approved: true },
-  );
+  const approval = await app.rpc("changeAccess", admin.cookie, {
+    userId: user.user.id,
+    approved: true,
+  });
 
   expect(approval.status).toBe(200);
   const profile = { name: "Example Company", address: "Rua do Comércio, Porto", radiusKm: 25 };

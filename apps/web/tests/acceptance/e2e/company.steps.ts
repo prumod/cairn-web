@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { expect, type Page } from "@playwright/test";
 import { createBdd, test as base, type DataTable } from "playwright-bdd";
 
@@ -32,11 +33,25 @@ async function signIn(page: Page, identity: string) {
 async function approve(adminPage: Page, email: string) {
   await signIn(adminPage, "admin");
   await adminPage.getByRole("link", { name: "Gerir acessos" }).click();
+
+  const changeAccessId = createHash("sha256")
+    .update(
+      "src/pages/backoffice/useCases/changeAccess/changeAccess.functions.ts--changeAccess_createServerFn_handler",
+    )
+    .digest("hex");
+
+  const mutationResponse = adminPage.waitForResponse(
+    (response) =>
+      response.url().endsWith(`/_serverFn/${changeAccessId}`) &&
+      response.request().method() === "POST",
+  );
+
   await adminPage
     .getByRole("row")
     .filter({ hasText: email })
     .getByRole("button", { name: "Aprovar", exact: true })
     .click();
+  expect((await mutationResponse).ok()).toBe(true);
   await expect(
     adminPage
       .getByRole("row")
