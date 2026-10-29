@@ -125,7 +125,7 @@ Demonstrar fornecedores/cotações, registos de obras/clientes, acompanhamento p
 
 ### Capacidades a validar
 
-Demonstrar as experiências propostas em Maybe: planeamento tipo Project/Gantt, análise de concorrentes, mapa 3D, caixa de entrada de anúncios, conversas por fase, perguntas sobre finanças, pesquisa de fornecedores por IA, extração de cotações, histórico/validade de preços, referências/margens, previsão de materiais, waterfall, edição/importação/exportação avançada e padrões de contratos públicos. Resultados são fictícios; não demonstram fraude, cobertura de fontes, previsões reais ou respostas de IA verificadas.
+Demonstrar as experiências propostas em Maybe: planeamento tipo Project/Gantt, navegação semântica pelas páginas, análise de concorrentes, mapa 3D, caixa de entrada de anúncios, conversas por fase, perguntas sobre finanças, pesquisa de fornecedores por IA, extração de cotações, histórico/validade de preços, referências/margens, previsão de materiais, waterfall, edição/importação/exportação avançada e padrões de contratos públicos. Resultados são fictícios; não demonstram fraude, cobertura de fontes, previsões reais ou respostas de IA verificadas.
 
 ## Revisão e aprendizagem para o backend
 
