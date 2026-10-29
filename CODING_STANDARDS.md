@@ -14,7 +14,7 @@ Formatting, linting, and compiler rules live in the native tool configuration an
 
 ## Comments
 
-Keep comments at the code site where they explain non-obvious rationale, invariants, external quirks or workarounds (including why they remain and when they can be removed), or safety-sensitive assumptions. Prefer clear names and tests for mechanics. Comments have no quota and should not narrate routine code.
+A comment records what the code cannot express; delete any comment a reader could write from the code next to it. Follow [Code comments](docs/reference/code-comments.md) for interface, data-structure, implementation, and cross-module comments, and for writing interface comments before the implementation.
 
 ## Documentation
 
