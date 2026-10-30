@@ -67,7 +67,7 @@
     "seroval": "1.6.11",
     "tsx": "4.23.15",
     "typescript": "^7.0.2",
-    "typescript-mappers": "npm:typescript@7.1.0-dev.20261023.1",
+    "typescript-mappers": "npm:typescript@7.1.0-beta",
     "varlock": "catalog:",
     "vitest": "5.0.5",
     "vitest-cucumber-context-mapper": "0.2.0"
