@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "skills": {
+    "atdd": {
+      "source": "TiagoJacinto/skills",
+      "sourceType": "github",
+      "skillPath": "atdd/SKILL.md",
+      "computedHash": "96f350e940cb86d392a35aab607e6496b6b3d5671b9e0ea4b1a34f3fafa2ac6c"
+    },
+    "before-and-after": {
+      "source": "vercel-labs/before-and-after",
+      "sourceType": "github",
+      "skillPath": "skill/SKILL.md",
+      "computedHash": "d3e059a03864cd72392d24e2b218ea825b3533383418b5dc1f947a9b084e3742"
+    },
+    "behavior-specification": {
+      "source": "TiagoJacinto/skills",
+      "sourceType": "github",
+      "skillPath": "behavior-specification/SKILL.md",
+      "computedHash": "11ac1a09ad44b3872adc3cc3c00e1621112b96548706d1525801ceabacdf78c6"
+    },
+    "codebase-design": {
+      "source": "TiagoJacinto/skills",
+      "sourceType": "github",
+      "skillPath": "codebase-design/SKILL.md",
+      "computedHash": "2b870fd042dd1e8ad447e4a10d78ad22575ed7153696b883b586dda08fae6493"
+    },
+    "gherkin": {
+      "source": "TiagoJacinto/skills",
+      "sourceType": "github",
+      "skillPath": "gherkin/SKILL.md",
+      "computedHash": "a9c3983a5504611a3391b250e8346f519c1f3d55d356c42e366c88e78ab0dd79"
+    },
+    "high-value-testing": {
+      "source": "TiagoJacinto/skills",
+      "sourceType": "github",
+      "skillPath": "high-value-testing/SKILL.md",
+      "computedHash": "35fbb62d42b31f7cba18c8154335865aa5700ec34ab5bfa30f488c10693a3efd"
+    },
+    "hvtdd": {
+      "source": "TiagoJacinto/skills",
+      "sourceType": "github",
+      "skillPath": "hvtdd/SKILL.md",
+      "computedHash": "e5dec51e01070bfc9cbc3ad6a7ae66092f8f4cb406a7d8553184631efd261da2"
+    },
+    "tdd": {
+      "source": "TiagoJacinto/skills",
+      "sourceType": "github",
+      "skillPath": "tdd/SKILL.md",
+      "computedHash": "de2ef613ad280bfb885f28019abbd6829f4e720c1ebf3d917faea567e0f27a05"
+    },
+    "test-implementation": {
+      "source": "TiagoJacinto/skills",
+      "sourceType": "github",
+      "skillPath": "test-implementation/SKILL.md",
+      "computedHash": "e1e406019a4a6a5e4b7f36eefdadcaadf369cda65062d195a23905f5ba94135e"
+    },
+    "testing": {
+      "source": "TiagoJacinto/skills",
+      "sourceType": "github",
+      "skillPath": "testing/SKILL.md",
+      "computedHash": "a12482dd87d7aca72d29668dd94bf561a051e5733c47b2c89fbc6f83fb8384e2"
+    }
+  }
+}

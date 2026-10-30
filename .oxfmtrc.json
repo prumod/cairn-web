@@ -1,3 +1,16 @@
 {
-  "ignorePatterns": ["apps/web/src/routeTree.gen.ts", "tools/oxlint/anti-slop/**"]
+  "ignorePatterns": [
+    "apps/web/src/routeTree.gen.ts",
+    "tools/oxlint/anti-slop/**",
+    ".agents/skills/atdd/**",
+    ".agents/skills/before-and-after/**",
+    ".agents/skills/behavior-specification/**",
+    ".agents/skills/codebase-design/**",
+    ".agents/skills/gherkin/**",
+    ".agents/skills/high-value-testing/**",
+    ".agents/skills/hvtdd/**",
+    ".agents/skills/tdd/**",
+    ".agents/skills/test-implementation/**",
+    ".agents/skills/testing/**"
+  ]
 }

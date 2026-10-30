@@ -38,3 +38,6 @@ infra/**/*.tfplan
 # Mutation testing output and sandboxes
 reports/mutation/
 .stryker-tmp/
+
+# Local PRD workflow drafts (prd-research, prd-design)
+.rpi/
