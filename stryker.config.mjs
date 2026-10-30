@@ -14,6 +14,7 @@ export default {
     "*.tfstate*",
     "*.tfplan",
     ".herenow",
+    ".claude",
     ".env",
     ".env.*",
   ],
