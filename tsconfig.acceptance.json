@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.checks.json",
+  "contentMappers": [{ "package": "vitest-cucumber-context-mapper", "extensions": [".feature"] }],
+  "include": ["apps/web/tests/**/*.feature.test.ts"],
+  "exclude": []
+}

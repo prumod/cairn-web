@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, expect, test } from "vitest";
-import { createTestApplication, type TestApplication } from "./testSupport.js";
+import { createTestApplication, type TestApplication } from "../../support/testSupport.js";
 
 let app: TestApplication;
 

@@ -78,7 +78,9 @@ apps/web/
   src/shared/<module>/                # reusable client modules
   src/server/modules/<domain>/        # server capabilities shared across feature/route consumers
   src/server/shared/<module>/         # server-only support
-  tests/acceptance/integration/       # HTTP/database integration tests
+  tests/acceptance/integration/       # Vitest bindings of root .feature contracts (*.feature.test.ts)
+  tests/typical/integration/          # technical HTTP/database integration tests without a scenario
+  tests/support/                      # shared test application fixtures
   tests/acceptance/e2e/               # Playwright-BDD step bindings
   references/                         # reference designs and prototypes, outside the app
     interactive-wireframe.tsx         #   wireframe of the future features
