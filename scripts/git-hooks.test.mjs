@@ -17,6 +17,7 @@ test("ordinary commits and pushes scan docs, reject secrets, and validate refere
 
   const env = {
     ...process.env,
+    AGENT_SESSION: "1",
     GITLEAKS_BIN: join(dir, "scanner"),
     LEFTHOOK_BIN: lefthook,
     PATH: `${dir}/bin:${process.env.PATH}`,
@@ -73,6 +74,21 @@ test("ordinary commits and pushes scan docs, reject secrets, and validate refere
     writeFileSync(join(dir, "consumer.js"), 'const doc = "note.md";\n');
     git("add", ".");
     assert.throws(() => git("commit", "-m", "code"));
+    delete env.AGENT_SESSION;
+    git("commit", "-m", "human code");
+    git("push", "origin", "HEAD:main");
+    writeFileSync(join(dir, "note.md"), "TEST_SECRET\n");
+    git("add", ".");
+    assert.throws(() => git("commit", "-m", "human secret"));
+    writeFileSync(join(dir, "note.md"), "[missing](missing.md)\n");
+    git("add", ".");
+    assert.throws(() => git("commit", "-m", "human broken link"));
+    git("-c", "core.hooksPath=/dev/null", "commit", "-m", "broken link");
+    assert.throws(() => git("push", "origin", "HEAD:main"));
+    git("reset", "--hard", "HEAD^");
+    env.AGENT_SESSION = "1";
+    writeFileSync(join(dir, "consumer.js"), 'const doc = "note.md"; // changed\n');
+    git("add", ".");
     git("-c", "core.hooksPath=/dev/null", "commit", "-m", "consumer");
     writeFileSync(join(dir, "note.md"), "referenced docs\n");
     git("add", ".");

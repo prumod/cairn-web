@@ -11,6 +11,10 @@ while read -r local_ref local_sha remote_ref remote_sha; do
   export CHECK_TIMINGS_GROUP=${local_sha:0:7}
   timed "Secret scan" bash "$runner_dir/check-secrets.sh" history "$range"
   timed "Documentation links" node "$runner_dir/check-doc-links.mjs" "$local_sha"
+  if [[ "${AGENT_SESSION:-}" != 1 ]]; then
+    printf 'Human session: secret scan and link checks complete.\n'
+    continue
+  fi
   # Inspect every outgoing commit so a later revert cannot hide code changes.
   while read -r commit; do
     parent=$(git rev-parse "$commit^" 2>/dev/null || git hash-object -t tree /dev/null)

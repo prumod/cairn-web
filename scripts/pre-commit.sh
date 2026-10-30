@@ -14,11 +14,15 @@ base=$(git rev-parse --verify HEAD 2>/dev/null || git hash-object -t tree /dev/n
 export CHECK_TIMINGS_GROUP=staged
 timed "Secret scan" bash "$runner_dir/check-secrets.sh" staged
 timed "Documentation links" node "$runner_dir/check-doc-links.mjs" "$tree"
-scope=$(node "$runner_dir/check-scope.mjs" "$base" "$tree")
-if [[ "$scope" == code ]]; then
-  check_tree "$tree" commit
+if [[ "${AGENT_SESSION:-}" == 1 ]]; then
+  scope=$(node "$runner_dir/check-scope.mjs" "$base" "$tree")
+  if [[ "$scope" == code ]]; then
+    check_tree "$tree" commit
+  else
+    printf 'Documentation-only diff: secret scan and link checks sufficient.\n'
+  fi
 else
-  printf 'Documentation-only diff: secret scan sufficient.\n'
+  printf 'Human session: secret scan and link checks complete.\n'
 fi
 if [[ "$(git write-tree)" != "$tree" ]]; then
   printf 'The staging area changed during validation. Retry the commit.\n' >&2
