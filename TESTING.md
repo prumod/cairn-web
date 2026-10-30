@@ -29,7 +29,9 @@ An untested responsibility or connection is a parity gap. Executing a layer is i
 
 Keep one domain `.feature` file per use case and import it into independent, complementary bindings. Share the behavioral specification, fixture capabilities, and data builders where useful; each binding performs actions and observations appropriate to its boundary. Do not force technical cases or identical scenario coverage into every suite. For example, a revocation contract needs browser evidence of the resulting member experience and backend evidence that revocation affects the existing session.
 
-The selected target runner is [vitest-cucumber-context-mapper](https://github.com/TiagoJacinto/vitest-cucumber-context-mapper), including browser acceptance bindings driven by Vitest in Node and Playwright's browser automation API. This is a migration target, not the currently installed runner. Verify compiler/runtime compatibility, fixture lifecycle, failure artifacts, and coverage before replacing Playwright-BDD; remove its obsolete paths when the migration is complete.
+Two runners consume these shared `.feature` files. [Playwright-BDD](https://github.com/vitalets/playwright-bdd) stays the runner for Frontend E2E (real browser, fake backend) and the small full Browser E2E suite. [vitest-cucumber-context-mapper](https://github.com/TiagoJacinto/vitest-cucumber-context-mapper) is the target runner for high-value Vitest tests: backend unit, integration, and backend E2E, and frontend unit and possibly frontend integration. It does not replace Playwright-BDD. Each runner binds only the scenarios that fit its boundary. The Vitest migration is in progress; verify fixture lifecycle, failure artifacts, and coverage as each binding moves, and remove obsolete paths when it completes.
+
+Playwright-BDD currently uses `missingSteps: "fail-on-gen"`, so a feature that contains scenarios unbound in the browser suites would fail generation. The planned approach is for the browser suites to select their scenarios by tag (for example `@frontend`). This selection is planned, not implemented.
 
 The fake backend must match the real API contract. The target suites must check request/response compatibility mechanically, including serialization, errors, and session behavior used by the frontend. A shared TypeScript type alone does not prove runtime compatibility. Exercise representative exchanges against both implementations; keep the full Browser E2E wiring checks to catch a connection that passes independently but fails when assembled. Until these checks exist, frontend and backend suites passing separately do not establish parity at their seam.
 
@@ -80,6 +82,8 @@ For each feature, record which tests cover its architectural responsibilities an
 
 Vitest discovers colocated tests under `{apps/web,shared}/src/**/*.{spec,test}.{ts,tsx}` and `packages/*/src/**/*.{spec,test}.{ts,tsx}`. It also discovers acceptance/typical integration tests under `apps/web/tests/{acceptance,typical}/integration/`. Playwright-BDD discovers capability contracts under `features/company/` and `features/access/`, with step bindings under `apps/web/tests/acceptance/e2e/`.
 
+In `apps/web/tests/acceptance/integration/`, `*.feature.test.ts` files are Vitest bindings that import a `.feature` contract through `vitest-cucumber-context-mapper` and run its scenarios against the compiled Worker and a disposable database; `account-approval.feature.test.ts` binds `features/access/account-approval.feature`. `apps/web/tests/typical/integration/` holds technical integration tests that have no scenario, such as the transport checks in `accessTransport.spec.ts` (analytics configuration, RPC rejection of anonymous and non-admin users, no-store caching). `apps/web/tests/support/testSupport.ts` is the shared application fixture for these tests and for `scripts/start-browser-test-server.ts`.
+
 The access integration and browser tests target the built TanStack Start Worker, including the feature-owned server-function transport, database-backed access, origin checks, and authentication handling. Colocated backoffice tests cover infrastructure-independent application rules, the application-failure-to-HTTP mapping, and Query behavior with injected fakes. The Worker integration tests cover Zod input rejection, session and origin checks, and no-store responses. The company scenarios check that the removed profile editor and `/api/company-profile` endpoint stay unavailable; the access scenarios check that approval and revocation are reflected in the user's existing session. Browser identities are controlled fixtures; they do not run Google's OAuth redirect, consent, state, or PKCE flow.
 
 Lint rejects module mocking (`vi.mock`); tests inject fake dependencies through the public interface instead.
@@ -103,12 +107,12 @@ Run commands from the repository root with Bun 1.3.14:
 - `bun run test:fast` builds the Worker and runs Vitest using the disposable PostgreSQL/Neon proxy pair.
 - `bun run test:browser` builds the Worker and runs the Chromium Playwright-BDD scenarios against the local test Worker. Install Chromium with the repository setup command or `bunx --no-install playwright install chromium`.
 - `bun run test` runs a fresh build, fast tests, and browser tests.
-- `bun run typecheck` first regenerates environment types, then checks workspace packages and root test/config types.
+- `bun run typecheck` first regenerates environment types, then checks workspace packages and root test/config types. Its last step checks the `*.feature.test.ts` bindings with `tsconfig.acceptance.json` and a pinned TypeScript 7.1 dev build (alias `typescript-mappers`) that maps `.feature` imports to types; a scenario title that differs from the contract fails to compile. Other packages stay on the catalog TypeScript.
 - `bun run check` runs formatting, lint, boundary checks/proofs, typecheck, build, dependency audit, and the fast and browser test suites. The required `Agent checks` CI workflow runs the same full check; the local commit and push gates do not run tests.
 
 ## Scoped mutation pilot
 
-Run these commands from the repository root after installing locked dependencies. The scripts use Node for Vitest/Stryker; CI pins Node 22.23.2 and Bun 1.3.14.
+Run these commands from the repository root after installing locked dependencies. The scripts use Node for Vitest/Stryker; CI pins Node 24.22.0 and Bun 1.3.14.
 
 ```sh
 bun run test:mutation
@@ -166,3 +170,14 @@ PR [#122](https://github.com/prumod/cairn-web/pull/122) merged as `ee24e21ea4642
 - Vite server source maps were generated and the testing deployment upload path included them as `application/source-map`. Live mapping of an uncaught Worker exception to an original source frame remains unverified. Sanitized `safeFrames` logged inside Cairn are not source-mapped.
 
 The production deployment, production telemetry for the merged revision, raw replay/network payload audit, source-map remapping, and application-request-to-platform-trace correlation remain open verification items. Local controlled-identity tests do not establish real Google OAuth behavior.
+
+## Vitest feature binding verification (2026-10-30, local)
+
+Local results on the working tree; CI was not run.
+
+- `bun run typecheck`, `bun run format:check`, `bun run lint`, and `bun run lint:boundaries` passed.
+- `bun run test:fast`: 116 of 117 tests passed. The failure is the existing intermittent `googleSignIn.spec.ts` test "a rate-limited Google sign-in retries after the server's retry interval" (HTTP 500 from the stub server). It reproduces without this change: 3 of 8 isolated runs failed on Node 24 with the previous Vitest config, and 2 of 8 on Node 22.23.2.
+- The 8 steps of the new `account-approval.feature.test.ts` binding passed.
+- `bun run test:browser:run`: 3 of 3 scenarios passed.
+- `bun run test:mutation`: 68 of 68 tests passed on Node 24.22.0.
+- Not run: full `bun run check`, CI, and Stryker on Node 24.

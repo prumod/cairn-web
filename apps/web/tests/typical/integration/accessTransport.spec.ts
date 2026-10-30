@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, expect, test } from "vitest";
-import { createTestApplication, type TestApplication } from "./testSupport.js";
+import { createTestApplication, type TestApplication } from "../../support/testSupport.js";
 
 let app: TestApplication;
 
@@ -11,48 +11,10 @@ afterAll(async () => {
   await app?.close();
 });
 
-test("a pending user retains an unapproved session", async () => {
-  const user = await app.identity("pending@example.test");
-  const currentUser = await app.request("/api/me", user.cookie);
-  expect(currentUser.status).toBe(200);
-  expect(await currentUser.json()).toEqual({
-    id: user.user.id,
-    email: "pending@example.test",
-    approved: false,
-    administrator: false,
-  });
-});
-
 test("the acceptance Worker never exposes production analytics configuration", async () => {
   const response = await app.request("/api/analytics-config");
   expect(response.status).toBe(200);
   expect(await response.json()).toBeNull();
-});
-
-test("an administrator can approve and revoke an existing user session", async () => {
-  const admin = await app.identity("admin@example.test");
-  const user = await app.identity("approved@example.test");
-
-  const response = await app.rpc("changeAccess", admin.cookie, {
-    userId: user.user.id,
-    approved: true,
-  });
-
-  // state verification
-  expect(response.status).toBe(200);
-  expect(await (await app.request("/api/me", user.cookie)).json()).toMatchObject({
-    approved: true,
-  });
-
-  const revoked = await app.rpc("changeAccess", admin.cookie, {
-    userId: user.user.id,
-    approved: false,
-  });
-
-  expect(revoked.status).toBe(200);
-  expect(await (await app.request("/api/me", user.cookie)).json()).toMatchObject({
-    approved: false,
-  });
 });
 
 test("RPC rejects anonymous and non-administrator users and does not cache private responses", async () => {

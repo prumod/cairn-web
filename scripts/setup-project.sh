@@ -316,10 +316,10 @@ if ! command -v bun >/dev/null 2>&1 || [[ "$(bun --version)" != 1.3.14 ]]; then
 fi
 [[ "$(bun --version)" == 1.3.14 ]] || fail "Não foi possível ativar o Bun 1.3.14."
 node_ready() {
-  command -v node >/dev/null 2>&1 && node -e 'const [a,b]=process.versions.node.split(".").map(Number); process.exit((a>22 || (a===22 && b>=12)) && typeof require("node:fs").globSync === "function" ? 0 : 1)'
+  command -v node >/dev/null 2>&1 && node -e 'const [a,b]=process.versions.node.split(".").map(Number); process.exit((a>24 || (a===24 && b>=11)) && typeof require("node:fs").globSync === "function" ? 0 : 1)'
 }
 if ! node_ready; then
-  NODE_VERSION=22.23.2
+  NODE_VERSION=24.22.0
   archive="node-v$NODE_VERSION-linux-$NODE_ARCH.tar.xz"
   base="https://nodejs.org/dist/v$NODE_VERSION"
   run curl --fail --silent --show-error --location "$base/$archive" --output "$TMP_SETUP/$archive"
@@ -332,12 +332,12 @@ if ! node_ready; then
   mkdir -p "$HOME/.local/share/cairn" "$HOME/.local/bin"
   run tar -xJf "$TMP_SETUP/$archive" -C "$HOME/.local/share/cairn"
   if [[ -e "$HOME/.local/bin/node" || -L "$HOME/.local/bin/node" ]]; then
-    fail "Já existe $HOME/.local/bin/node. Atualize-o para Node.js 22.12 ou superior e repita a configuração. O script não o substitui."
+    fail "Já existe $HOME/.local/bin/node. Atualize-o para Node.js 24.11 ou superior e repita a configuração. O script não o substitui."
   fi
   ln -s "$destination/bin/node" "$HOME/.local/bin/node"
   hash -r
 fi
-node_ready || fail "É necessário Node.js 22.12 ou superior."
+node_ready || fail "É necessário Node.js 24.11 ou superior."
 run node --version
 run bun --version
 # Torna o PATH permanente para que os terminais novos encontrem Bun e Node.js sem passos manuais.

@@ -1,6 +1,8 @@
 import { defineConfig } from "vitest/config";
+import { gherkinFeaturePlugin } from "vitest-cucumber-context-mapper/vite";
 
 export default defineConfig({
+  plugins: [gherkinFeaturePlugin()],
   test: {
     environment: "node",
     fileParallelism: false,

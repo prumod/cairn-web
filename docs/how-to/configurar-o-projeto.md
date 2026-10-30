@@ -55,7 +55,7 @@ Depois de atualizar o repositório, execute `bun run update` para instalar as de
 Precisa de:
 
 - Git, para clonar o repositório. Confirme com `git --version`.
-- [Bun](https://bun.sh/docs/installation) 1.3.14. Confirme com `bun --version`. Se executar o Vite com Node.js, precisa de Node.js 22.12 ou superior.
+- [Bun](https://bun.sh/docs/installation) 1.3.14. Confirme com `bun --version`. Se executar o Vite com Node.js, precisa de Node.js 24.11 ou superior.
 - Docker com Compose v2, para a base de dados local e para os testes.
 - Chromium, para os testes de browser.
 - Para enviar alterações: uma conta GitHub com o convite para o repositório aceite.

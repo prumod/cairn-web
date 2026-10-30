@@ -22,7 +22,7 @@ Each hook records per-phase durations in `<git-common-dir>/check-timings/` (newe
 
 With host prerequisites installed, execute `scripts/setup.sh` to prepare the locked dependencies, scanner, and browser. The human `setup-project` wizards also provision missing host tools, including Docker, start the development database from `compose.dev.yaml`, apply its migrations, and write the ignored `packages/infra/.env.local`.
 
-The gates need Bash, Git, Bun 1.3.14, Node.js 22.12+, and Gitleaks 8.30.0. On Linux x64/arm64 the hooks run `scripts/install-gitleaks.sh` when `.tools/gitleaks` is missing, which installs the checksum-verified scanner into ignored `.tools/`; each linked worktree installs it once. On other hosts, set `GITLEAKS_BIN` to an absolute path to that version.
+The gates need Bash, Git, Bun 1.3.14, Node.js 24.11+, and Gitleaks 8.30.0. On Linux x64/arm64 the hooks run `scripts/install-gitleaks.sh` when `.tools/gitleaks` is missing, which installs the checksum-verified scanner into ignored `.tools/`; each linked worktree installs it once. On other hosts, set `GITLEAKS_BIN` to an absolute path to that version.
 
 Install Chromium with `PLAYWRIGHT_SKIP_BROWSER_GC=1 bunx --no-install playwright install chromium` before running browser scenarios. This preserves browsers used by other local tools. CI installs its system dependencies too.
 

@@ -1,4 +1,4 @@
-import { createTestApplication } from "../apps/web/tests/acceptance/integration/testSupport.js";
+import { createTestApplication } from "../apps/web/tests/support/testSupport.js";
 
 const application = await createTestApplication(4173, { testControlProxy: true });
 let closing: Promise<void> | undefined;

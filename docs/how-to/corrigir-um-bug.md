@@ -26,7 +26,8 @@ Se faltar alguma destas informações, peça-a na Issue.
 2. Reproduza o bug com `bun run dev`.
 3. Escreva um teste que falhe:
    - lógica isolada: teste unitário junto ao código;
-   - servidor ou base de dados: teste em `apps/web/tests/acceptance/integration/`;
+   - comportamento do servidor ou da base de dados descrito num `.feature`: ligação `*.feature.test.ts` (`vitest-cucumber-context-mapper`) em `apps/web/tests/acceptance/integration/`;
+   - verificação técnica do servidor ou da base de dados: teste em `apps/web/tests/typical/integration/`;
    - fluxo no browser: cenário em `features/`.
 4. Corrija o código até o teste passar.
 5. Siga os passos 6 a 10 do mesmo guia.

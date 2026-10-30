@@ -30,7 +30,7 @@
     "db:studio": "bun run --cwd packages/db db:studio",
     "env:generate": "varlock codegen --path ./apps/web/ && varlock codegen --path ./packages/db/",
     "postinstall": "bun run env:generate",
-    "typecheck": "bun run env:generate && bun run --filter '*' check-types && tsc --noEmit -p tsconfig.checks.json",
+    "typecheck": "bun run env:generate && bun run --filter '*' check-types && tsc --noEmit -p tsconfig.checks.json && node node_modules/typescript-mappers/bin/tsc --noEmit --runExternalCode -p tsconfig.acceptance.json",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
@@ -67,8 +67,10 @@
     "seroval": "1.6.11",
     "tsx": "4.23.15",
     "typescript": "^7.0.2",
+    "typescript-mappers": "npm:typescript@7.1.0-dev.20261023.1",
     "varlock": "catalog:",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "vitest-cucumber-context-mapper": "0.2.0"
   },
   "overrides": {
     "@hono/node-server": "2.1.3",

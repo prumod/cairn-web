@@ -3,5 +3,6 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["vitest.config.ts", "playwright.config.ts", "apps/web/tests/**/*.ts"]
+  "include": ["vitest.config.ts", "playwright.config.ts", "apps/web/tests/**/*.ts"],
+  "exclude": ["apps/web/tests/**/*.feature.test.ts"]
 }

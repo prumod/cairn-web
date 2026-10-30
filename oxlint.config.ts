@@ -17,6 +17,7 @@ export default defineConfig({
     "tools/oxlint/anti-slop/**",
   ],
   jsPlugins: [
+    "vitest-cucumber-context-mapper/oxlint",
     { name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" },
     {
       name: "anti-slop-effect",
@@ -24,6 +25,8 @@ export default defineConfig({
     },
   ],
   rules: {
+    "gherkin-feature/valid-step-template": "error",
+    "gherkin-feature/format-fluent-chain": "error",
     "oxc/no-accumulating-spread": "error",
     "anti-slop/no-array-filter-map": "error",
     "anti-slop/no-reduce-accumulator-copy": "error",

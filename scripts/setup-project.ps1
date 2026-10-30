@@ -46,7 +46,7 @@ function Verify-Checksum([string]$Archive, [string]$Checksums) {
 
 function Node-Ready {
     if (-not (Get-Command node -ErrorAction SilentlyContinue)) { return $false }
-    & node -e 'const [a,b]=process.versions.node.split(".").map(Number); process.exit((a>22 || (a===22 && b>=12)) && typeof require("node:fs").globSync === "function" ? 0 : 1)'
+    & node -e 'const [a,b]=process.versions.node.split(".").map(Number); process.exit((a>24 || (a===24 && b>=11)) && typeof require("node:fs").globSync === "function" ? 0 : 1)'
     return $LASTEXITCODE -eq 0
 }
 
@@ -131,7 +131,7 @@ try {
     Add-UserPath $bunDirectory
     if ((& bun --version) -ne '1.3.14') { throw 'Não foi possível ativar o Bun 1.3.14.' }
     if (-not (Node-Ready)) {
-        $nodeVersion = '22.23.2'
+        $nodeVersion = '24.22.0'
         $name = "node-v$nodeVersion-win-x64.zip"
         $archive = Join-Path $TempSetup $name
         $checksums = Join-Path $TempSetup 'node-checksums.txt'
@@ -141,7 +141,7 @@ try {
         Expand-Archive -Path $archive -DestinationPath $ToolsRoot -Force
         Add-UserPath (Join-Path $ToolsRoot "node-v$nodeVersion-win-x64")
     }
-    if (-not (Node-Ready)) { throw 'É necessário Node.js 22.12 ou superior.' }
+    if (-not (Node-Ready)) { throw 'É necessário Node.js 24.11 ou superior.' }
     Run node @('--version')
     Run bun @('--version')
 

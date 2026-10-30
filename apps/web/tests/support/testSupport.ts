@@ -194,7 +194,7 @@ export async function createTestApplication(
     const db = createDb({ DATABASE_URL: neonURL.toString() });
     await migrate(db, {
       migrationsFolder: fileURLToPath(
-        new URL("../../../../../packages/db/migrations", import.meta.url),
+        new URL("../../../../packages/db/migrations", import.meta.url),
       ),
     });
 
@@ -262,7 +262,7 @@ export async function createTestApplication(
     type Identity = Awaited<ReturnType<typeof createIdentity>>;
 
     const identities = new Map<string, Identity>();
-    const infraRoot = fileURLToPath(new URL("../../../../../packages/infra/", import.meta.url));
+    const infraRoot = fileURLToPath(new URL("../../../../packages/infra/", import.meta.url));
     appServer = spawn(
       "bun",
       [
