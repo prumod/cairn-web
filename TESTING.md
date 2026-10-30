@@ -1,6 +1,82 @@
 # Testing
 
-## Test boundaries
+## Agreed testing strategy
+
+The default acceptance strategy is complementary frontend E2E and backend E2E suites, with shared domain `.feature` contracts. Add focused technical tests, external integration tests, AI evaluations, and a small full Browser E2E suite where they supply additional evidence. Minimize unnecessary repeated coverage rather than implementing every scenario at every boundary.
+
+This is the agreed target. The [current test boundaries](#current-test-boundaries), commands, and evidence below describe the implemented suites. This documentation change does not migrate runners or establish that the target coverage exists.
+
+### Parity means architectural coverage
+
+Test parity exists when the union of the tests covers the entire E2E system, including the connections between its parts. It does not mean equal test counts or the same scenarios repeated at every level. Map each feature's actual test scopes against these six responsibilities:
+
+| Architectural responsibility                                              | Default coverage                                                          |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Browser presentation                                                      | Frontend E2E with a fake backend                                          |
+| Browser API communication                                                 | Frontend E2E with a fake backend, plus real/fake API compatibility checks |
+| Backend incoming infrastructure, including HTTP/server-function transport | Backend E2E                                                               |
+| Application                                                               | Backend E2E                                                               |
+| Domain                                                                    | Backend E2E                                                               |
+| Outgoing database infrastructure                                          | Backend E2E with real persistence                                         |
+
+An untested responsibility or connection is a parity gap. Executing a layer is insufficient if the relevant behavior is never verified. Overlap is allowed, but retain it for a concrete risk or a faster, more precise check. Backend E2E already exercises persistence, so a separate database contract suite is not mandatory for every feature. A full Browser E2E suite plus backend E2E can achieve parity, but repeating the whole feature catalogue in both is not the default.
+
+### Acceptance suites and shared feature contracts
+
+- **Frontend E2E with a fake backend** exercises the real browser presentation and client API communication. Cover selection, keyboard interaction, filters, comparisons, comments, citations, and visible assistant effects through user actions. Assert observable UI outcomes. The fake supplies controlled responses, including failures, without executing production backend logic.
+- **High-value backend E2E** enters through the compiled Worker's real API/server-function transport and exercises incoming infrastructure, application rules, domain behavior, and the real disposable database. Verify API-observable results and persisted state through the backend's public interface. Controlled external-service responses keep ordinary acceptance runs deterministic.
+- **A small full Browser E2E suite** connects the real frontend to the real backend and database. Keep deliberate overlap for authentication/session handling, transport wiring, and a critical discovery/assistant journey as those capabilities arrive. Actions and outcome assertions use what a person can do and perceive; API/database access may prepare fixtures but must not replace user-visible outcome assertions.
+
+Keep one domain `.feature` file per use case and import it into independent, complementary bindings. Share the behavioral specification, fixture capabilities, and data builders where useful; each binding performs actions and observations appropriate to its boundary. Do not force technical cases or identical scenario coverage into every suite. For example, a revocation contract needs browser evidence of the resulting member experience and backend evidence that revocation affects the existing session.
+
+The selected target runner is [vitest-cucumber-context-mapper](https://github.com/TiagoJacinto/vitest-cucumber-context-mapper), including browser acceptance bindings driven by Vitest in Node and Playwright's browser automation API. This is a migration target, not the currently installed runner. Verify compiler/runtime compatibility, fixture lifecycle, failure artifacts, and coverage before replacing Playwright-BDD; remove its obsolete paths when the migration is complete.
+
+The fake backend must match the real API contract. The target suites must check request/response compatibility mechanically, including serialization, errors, and session behavior used by the frontend. A shared TypeScript type alone does not prove runtime compatibility. Exercise representative exchanges against both implementations; keep the full Browser E2E wiring checks to catch a connection that passes independently but fails when assembled. Until these checks exist, frontend and backend suites passing separately do not establish parity at their seam.
+
+### Test vocabulary and focused technical coverage
+
+Keep these dimensions separate:
+
+| Dimension            | Meaning                                                                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Subject level        | Level 1: stateless input/output; Level 2: stateful; Level 3: application/service/use case                                    |
+| Unit boundary        | The system under test executes without communicating with another system; its subject may be Level 1, 2, or 3                |
+| Integration boundary | Our code crosses an architectural boundary to infrastructure code, a system, or a dependency we did not write and do not own |
+| Backend E2E boundary | The entire backend, from its real API to real persistence                                                                    |
+| Browser E2E boundary | The entire application, exercised and observed from a real user's perspective through the UI                                 |
+| Classification       | High-value tests protect valuable domain outcomes; typical tests protect internal or technical responsibilities              |
+
+Two application modules executing together do not by themselves make an integration test. Local versus deployed is an environment choice, separate from the boundary. Frontend E2E with a fake backend covers the frontend subsystem, not the entire application's Browser E2E path.
+
+Add typical tests when they catch a meaningful technical failure faster or more precisely than the acceptance suites:
+
+- Direct Level 1/2 unit tests for parsing, normalization, exact arithmetic, rounding, date boundaries, and complex state transitions. Use controlled clocks and property-based cases where useful invariants exist.
+- Incoming integration tests for framework transport, serialization, malformed inputs, origin checks, and HTTP failure mapping that need more detail than a domain feature provides.
+- Outgoing managed integration tests for migrations, constraints, transactions, and database failure behavior. Backend E2E provides the default persistence coverage; add focused tests for gaps.
+- Contract tests for adapter behavioral promises. When interchangeable real and in-memory implementations exist, run a shared contract against both rather than trusting the replacement's behavior.
+- Browser interaction and accessibility tests for keyboard, focus, dialogs, and selection mechanics. Automated checks supplement human usability review.
+
+There is no required technical test for every function or a duplicate test at each boundary. Tests must protect responsibilities rather than incidental implementation details. Existing module-mocking restrictions still apply.
+
+### External dependencies and AI
+
+As integrations arrive, add **outgoing unmanaged integration tests** for notice sources, document services, AI providers, and other external systems. Controlled servers or representative files verify protocols, parsing, retries, timeouts, malformed inputs, and failure reporting. A small separately scheduled live contract/smoke suite detects changes in the real service; recorded responses alone cannot establish current provider compatibility. Ordinary acceptance runs must not depend on live provider availability.
+
+With the first AI capability, add a separate versioned evaluation dataset covering applicable feature examples and broader representative/adversarial cases. Evaluate retrieval relevance, extraction/classification accuracy, grounded claims and citations, uncertainty, tool/action selection, permission boundaries, prompt injection, latency, and cost. Keep deterministic action execution and authorization in application/backend tests with controlled model decisions; real-model evaluations assess the model's judgment. Manual controls and equivalent assistant commands should use the same application operations and produce equivalent state.
+
+Prefer deterministic graders where possible and human-reviewed rubrics for qualitative judgments. Repeat stochastic cases, report failures by category, and record dataset, model, prompt, retrieval configuration, grader, and traces so changes can be compared. Define acceptance criteria per capability before using scores as a release gate. A model evaluation is not passed merely because one request succeeded or its wording matched a snapshot. No AI evaluation runner, live-provider schedule, or gate is established by this document.
+
+### Self-verifying fixtures
+
+Fixtures establish their promised preconditions and prove them before returning. For example, an approved-member fixture must confirm that a usable session reports approval, not only that a creation request returned success. Verify at the cheapest reliable public boundary; browser setup needs browser evidence only when that is part of its promise.
+
+Compose domain-named fixtures, isolate their data, return the verified state, and clean up after partial setup failures. Create specific prerequisites rather than selecting arbitrary existing records. For asynchronous setup, use bounded polling that reads fresh state on each attempt; fixed sleeps and stale objects do not establish readiness. Fixture checks prove setup, while the test independently proves its outcome. Do not perform the behavior being tested inside a setup helper.
+
+### Applying the strategy
+
+For each feature, record which tests cover its architectural responsibilities and connections, what is simulated, and which failures remain unverified. Close gaps first, then remove unnecessary overlapping coverage while preserving the evidence. Shared `.feature` imports enable specification reuse; they are not proof of architectural parity. Preserve existing coverage until replacement tests prove the required behavior. Keep commands and discovery in native configuration, and report actual verification separately from this target strategy.
+
+## Current test boundaries
 
 Vitest discovers colocated tests under `{apps/web,shared}/src/**/*.{spec,test}.{ts,tsx}` and `packages/*/src/**/*.{spec,test}.{ts,tsx}`. It also discovers acceptance/typical integration tests under `apps/web/tests/{acceptance,typical}/integration/`. Playwright-BDD discovers capability contracts under `features/company/` and `features/access/`, with step bindings under `apps/web/tests/acceptance/e2e/`.
 
