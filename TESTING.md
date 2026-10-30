@@ -180,4 +180,5 @@ Local results on the working tree; CI was not run.
 - The 8 steps of the new `account-approval.feature.test.ts` binding passed.
 - `bun run test:browser:run`: 3 of 3 scenarios passed.
 - `bun run test:mutation`: 68 of 68 tests passed on Node 24.22.0.
-- Not run: full `bun run check`, CI, and Stryker on Node 24.
+- A separate run of `bun run check` exited 0 (dependency audit clean, 117 fast tests, 3 Chromium scenarios), and `bun run mutation` scored 98.58 on Node 24.22.0.
+- Not run: CI.
