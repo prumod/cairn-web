@@ -88,12 +88,13 @@ export const web = Effect.gen(function* () {
 
 export type WebEnv = Cloudflare.InferEnv<Effect.Success<typeof web>>;
 
-// Testing keeps its state in the Cloudflare state store so CI deploys share one state. Other stages
-// keep local state until the production follow-up moves them.
+// Testing and production keep their state in the Cloudflare state store so CI deploys share one
+// state. Other stages keep local state. Copy production's local state with
+// `scripts/copy-production-state.ts` before a production deploy uses this store.
 const stateStore = Effect.gen(function* () {
   const stage = yield* Alchemy.Stage;
 
-  return stage === "testing" ? Cloudflare.state() : Alchemy.localState();
+  return stage === "testing" || stage === "production" ? Cloudflare.state() : Alchemy.localState();
 });
 
 export default Alchemy.Stack(
