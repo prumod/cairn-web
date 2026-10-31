@@ -93,15 +93,15 @@ The Vite server maps were generated and included in the testing Worker upload as
 
 ### Production follow-up
 
-Production automation is a follow-up. It needs a copy of its existing local state into the Cloudflare state store and a switch to that store. It also needs a deploy job, a GitHub environment with an approval gate, its secrets and variables, and a `/healthz` revision check. These are not built by the testing pipeline.
+Production uses the Cloudflare state store after a one-time copy of its local state. Run `packages/infra/scripts/copy-production-state.ts` once, from the checkout that owns the local state, before the first production deploy. Then run `Deploy production` (`.github/workflows/deploy-production.yml`) manually from `main`. It runs in the GitHub environment `production`, which needs an approval gate and the secrets and variables listed in the workflow.
 
 The Worker entry and compatibility-flag change in `packages/infra/alchemy.run.ts` applies to every stage, so the first production deploy ships it too. Plan production first and confirm the Worker change is intended there.
 
-Production keeps local state for now. Before a separately approved production operation, locate the checkout that owns that state. Back up `packages/infra/.alchemy` privately and preserve the production inputs. Production also requires `POSTHOG_PROJECT_TOKEN`. Confirm the stage and intended revision with the state owner before planning or deploying. Stop if the plan proposes unexpected resource creation or deletion.
+Before the copy, locate the checkout that owns the production local state. Back up `packages/infra/.alchemy` privately and preserve the production inputs. Production also requires `POSTHOG_PROJECT_TOKEN`. Confirm the stage and intended revision with the state owner before planning or deploying. Stop if the plan proposes unexpected resource creation or deletion.
 
 ### State and recovery
 
-Testing uses the encrypted Cloudflare state store `alchemy-state-store`. Local development and the `dev` stage keep local state under `packages/infra/.alchemy`. Production also keeps local state for now. Local state contains plaintext credentials; `Redacted` masks logs but does not encrypt that state. Keep local state and backups private, with directories at mode `0700` and files at `0600`. Never commit them.
+Testing uses the encrypted Cloudflare state store `alchemy-state-store`. Local development and the `dev` stage keep local state under `packages/infra/.alchemy`. Production uses the Cloudflare store after the one-time copy. Its local state in the owner checkout stays as a backup. Local state contains plaintext credentials; `Redacted` masks logs but does not encrypt that state. Keep local state and backups private, with directories at mode `0700` and files at `0600`. Never commit them.
 
 After a failed testing deployment, inspect the workflow failure privately before retrying the same revision. Confirm that it uses the testing environment and existing testing state. Do not clear state or use `--adopt` or `--force` to bypass a mismatch. A failed Neon project create can leave an orphan outside Alchemy state; reconcile it with the state owner before retrying. A rollback needs a compatible prior revision and an assessment of database migrations. `destroy:testing` is not a rollback: it deletes the Neon project and its data.
 
