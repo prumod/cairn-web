@@ -81,7 +81,7 @@ Do not supply `DATABASE_URL` or `BETTER_AUTH_SECRET` to CI. Alchemy owns the tes
 3. Inspect the deployment result. The workflow supplies the deployed commit SHA and runs `bun run --cwd packages/infra deploy:testing`.
 4. Inspect the health check result. The workflow polls `https://cairn-testing.prumod.eu/healthz` until `revision` equals the deployed commit SHA.
 
-A successful check run alone does not establish a successful deployment. The first live pipeline run and its `/healthz` result are recorded in the lead's validation notes, not here.
+A successful check run alone does not establish a successful deployment. Confirm the `Deploy testing` run result and the `/healthz` revision for the same commit.
 
 ### Configure observability inputs
 
@@ -94,6 +94,8 @@ The Vite server maps were generated and included in the testing Worker upload as
 ### Production follow-up
 
 Production automation is a follow-up. It needs a copy of its existing local state into the Cloudflare state store and a switch to that store. It also needs a deploy job, a GitHub environment with an approval gate, its secrets and variables, and a `/healthz` revision check. These are not built by the testing pipeline.
+
+The Worker entry and compatibility-flag change in `packages/infra/alchemy.run.ts` applies to every stage, so the first production deploy ships it too. Plan production first and confirm the Worker change is intended there.
 
 Production keeps local state for now. Before a separately approved production operation, locate the checkout that owns that state. Back up `packages/infra/.alchemy` privately and preserve the production inputs. Production also requires `POSTHOG_PROJECT_TOKEN`. Confirm the stage and intended revision with the state owner before planning or deploying. Stop if the plan proposes unexpected resource creation or deletion.
 
