@@ -17,8 +17,16 @@ beforeEach(async () => {
   attempts = 0;
   statuses = [200];
   retryHeaders = { "X-Retry-After": "0" };
-  server = createServer((_request, response) => {
+  server = createServer((request, response) => {
+    // Other local clients can probe this port. Only sign-in attempts consume a scripted status.
+    if (request.method !== "POST" || request.url !== "/api/auth/sign-in/social") {
+      response.writeHead(404).end();
+
+      return;
+    }
+
     const status = statuses[attempts] ?? 500;
+
     attempts += 1;
     response.writeHead(status, status === 429 ? retryHeaders : {});
     response.end();
