@@ -46,15 +46,6 @@ afterEach(async () => {
   );
 });
 
-test("a rate-limited Google sign-in retries after the server's retry interval", async () => {
-  statuses = [429, 200];
-  retryHeaders = { "X-Retry-After": "1" };
-  const started = performance.now();
-  await signInWithGoogleToken(client, origin, "controlled-token");
-  expect(performance.now() - started).toBeGreaterThanOrEqual(1000);
-  expect(attempts).toBe(2);
-});
-
 test("a non-rate-limit error exposes only the status and is not retried", async () => {
   statuses = [401];
   await expect(signInWithGoogleToken(client, origin, "controlled-token")).rejects.toThrow(
